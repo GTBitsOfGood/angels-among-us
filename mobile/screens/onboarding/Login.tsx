@@ -10,45 +10,40 @@ import {
 } from "react-native";
 import { auth } from "../../utils/firebase";
 import DismissKeyboardView from "../../components/DismissKeyboardView";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { UserSchema } from "../../utils/types";
-import { ZodError } from "zod";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { ZodError, z } from "zod";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StackNavigatorParamList } from "../../navigation/types";
+import { Screens } from "../../utils/consts";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const Login: FC = () => {
+type Props = NativeStackScreenProps<
+  StackNavigatorParamList,
+  Screens.LOGIN_SCREEN
+>;
+
+const Login: FC<Props> = ({ navigation }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
-      UserSchema.shape.email.parse(email);
-      const userCredentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredentials.user;
+      z.string({ required_error: "Email is required" }).email().parse(email);
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (e) {
       if (e instanceof ZodError) {
         alert(e.issues[0].message);
       } else {
+        console.error(e);
         alert("Invalid email and/or password");
       }
     }
   };
 
   return (
-    <View style={styles.container}>
-      <DismissKeyboardView>
-        <KeyboardAvoidingView behavior="padding" style={styles.content}>
-          <View style={styles.imageContainer}>
-            <Image
-              style={styles.logo}
-              source={require("../../assets/aau.png")}
-            />
-          </View>
+    <DismissKeyboardView>
+      <KeyboardAvoidingView behavior="padding">
+        <SafeAreaView style={styles.content}>
           <View style={styles.inputContainer}>
             <TextInput
               autoCorrect={false}
@@ -71,37 +66,39 @@ const Login: FC = () => {
             <Text style={styles.primaryText}>Forgot your password?</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>Log in</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(Screens.REGISTER_SCREEN)}
+          >
             <Text style={styles.ghostText}>
               Don't have an account?{" "}
               <Text style={styles.innerText}>Sign up</Text>
             </Text>
           </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </DismissKeyboardView>
-    </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </DismissKeyboardView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   content: {
-    flex: 1,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#fff",
+    display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
   },
+  header: {
+    marginBottom: 10,
+  },
   imageContainer: {
-    width: "100%",
-    height: 140,
-    marginBottom: 50,
+    width: "80%",
+    height: 180,
+    marginBottom: 20,
   },
   logo: {
     resizeMode: "contain",
