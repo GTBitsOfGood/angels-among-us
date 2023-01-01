@@ -26,9 +26,9 @@ jobs:
       name: Development
       # url: ${{  }}
     needs: deploy-web
-    defaults:
-      run:
-        working-directory: ./mobile
+    # defaults:
+    #   run:
+    #     working-directory: ./mobile
     steps:
       - name: Install node
         uses: actions/setup-node@v2
@@ -58,7 +58,11 @@ jobs:
           ENV_KEY_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
 
       - name: Install mobile dependencies
-        run: npm install
+        run: |
+          cd mobile
+          npm install
 
       - name: Start Expo development server
-        run: npx expo start --tunnel
+        run: |
+          cd mobile
+          npx expo start --tunnel
