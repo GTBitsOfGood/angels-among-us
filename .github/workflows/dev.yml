@@ -26,12 +26,15 @@ jobs:
       name: Development
       # url: ${{  }}
     needs: deploy-web
+    defaults:
+      run:
+        working-directory: ./mobile
     steps:
       - name: Install node
         uses: actions/setup-node@v2
         with:
           node-version: 16.x
-          cache: yarn
+          cache: npm
 
       - name: Create .env
         uses: SpicyPizza/create-envfile@v1.3
@@ -40,9 +43,7 @@ jobs:
           directory: mobile
 
       - name: Install mobile dependencies
-        working-directory: ./mobile
-        run: yarn install
+        run: npm install
 
       - name: Start Expo development server
-        working-directory: ./mobile
         run: npx expo start --tunnel
