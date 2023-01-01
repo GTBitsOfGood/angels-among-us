@@ -38,7 +38,7 @@ jobs:
           # cache-dependency-path: "**/package-lock.json"
 
       - name: Create .env
-        uses: SpicyPizza/create-envfile@v1.3
+        uses: SpicyPizza/create-envfile@v1.2
         with:
           envkey_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
           directory: mobile
