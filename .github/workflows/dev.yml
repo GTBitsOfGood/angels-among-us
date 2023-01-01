@@ -30,6 +30,9 @@ jobs:
     #   run:
     #     working-directory: ./mobile
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
       - name: Install node
         uses: actions/setup-node@v2
         with:
