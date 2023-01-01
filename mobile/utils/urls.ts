@@ -1,16 +1,13 @@
+import { VERCEL_URL } from "@env";
 import Constants from "expo-constants";
 const { manifest } = Constants;
 
 const getBaseUrl = () => {
-  if (
-    typeof manifest?.packagerOpts === "object" &&
-    manifest.packagerOpts.dev &&
-    manifest.debuggerHost
-  ) {
+  if (!process.env.VERCEL_URL && manifest?.debuggerHost) {
     return ("http://" +
       manifest.debuggerHost.split(":").shift()?.concat(":3000")) as string;
   } else {
-    return ("https://" + process.env.VERCEL_URL) as string;
+    return ("https://" + VERCEL_URL) as string;
   }
 };
 

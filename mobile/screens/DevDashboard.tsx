@@ -25,6 +25,7 @@ const DevDashboard: FC<Props> = ({ navigation }: Props) => {
   };
 
   useEffect(() => {
+    console.log(urls.baseUrl);
     axios
       .get(`${urls.baseUrl}${urls.api.test}`)
       .then((res) => setTest(res.data));
