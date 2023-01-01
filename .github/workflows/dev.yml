@@ -35,6 +35,7 @@ jobs:
         with:
           node-version: 16.x
           cache: npm
+          cache-dependency-path: ./mobile/package-lock.json
 
       - name: Create .env
         uses: SpicyPizza/create-envfile@v1.3
