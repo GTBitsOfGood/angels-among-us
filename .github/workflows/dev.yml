@@ -43,11 +43,19 @@ jobs:
       #     envkey_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
       #     directory: mobile
 
+      # - name: Create .env
+      #   uses: ozaytsev86/create-env-file@v1
+      #   with:
+      #     file-name: "./mobile/.env"
+      #     ENV_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
+
       - name: Create .env
-        uses: ozaytsev86/create-env-file@v1
+        uses: iamsauravsharma/create-dotenv@v1.2.2
         with:
-          file-name: "./mobile/.env"
-          ENV_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
+          env-prefix: "ENV_KEY_"
+          directory: "mobile/"
+        env:
+          ENV_KEY_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
 
       - name: Install mobile dependencies
         run: npm install
