@@ -1,23 +1,39 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Screens } from "../utils/consts";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackNavigatorParamList } from "../navigation/types";
 import { auth } from "../utils/firebase";
+import axios from "axios";
+import { urls } from "../utils/urls";
 
 type Props = NativeStackScreenProps<
   StackNavigatorParamList,
   Screens.DEV_DASHBOARD_SCREEN
 >;
 
+type Test = {
+  name?: string;
+};
+
 const DevDashboard: FC<Props> = ({ navigation }: Props) => {
+  const [test, setTest] = useState<Test>({});
+
   const handleSignOut = async () => {
     await auth.signOut();
   };
+
+  useEffect(() => {
+    axios
+      .get(`${urls.baseUrl}${urls.api.test}`)
+      .then((res) => setTest(res.data));
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.heading}>Dev Dashboard</Text>
+      <Text>{test.name ?? "Nothing"}</Text>
       <View>
         {Object.entries(Screens)
           .filter(
@@ -30,7 +46,7 @@ const DevDashboard: FC<Props> = ({ navigation }: Props) => {
             <TouchableOpacity
               key={key}
               style={styles.button}
-              onPress={() => navigation.navigate(val as Screens)}
+              onPress={() => navigation.navigate(val)}
             >
               <Text style={styles.buttonText}>{val}</Text>
             </TouchableOpacity>
