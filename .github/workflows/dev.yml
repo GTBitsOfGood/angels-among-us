@@ -37,11 +37,17 @@ jobs:
           # cache: npm
           # cache-dependency-path: "**/package-lock.json"
 
+      # - name: Create .env
+      #   uses: SpicyPizza/create-envfile@v1.1
+      #   with:
+      #     envkey_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
+      #     directory: mobile
+
       - name: Create .env
-        uses: SpicyPizza/create-envfile@v1.1
+        uses: ozaytsev86/create-env-file@v1
         with:
-          envkey_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
-          directory: mobile
+          file-name: "./mobile/.env"
+          ENV_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
 
       - name: Install mobile dependencies
         run: npm install
