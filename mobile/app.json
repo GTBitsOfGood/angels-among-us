@@ -11,9 +11,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
@@ -27,11 +24,9 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "209641ff-37be-498f-ab82-a2bb68c64b87"
-      }
-    },
-    "owner": "bitsofgood.aau"
+    "owner": "bitsofgood.aau",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }

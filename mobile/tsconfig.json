@@ -3,5 +3,4 @@
   "compilerOptions": {
     "strict": true
   },
-  "typeRoots": ["./types"]
 }

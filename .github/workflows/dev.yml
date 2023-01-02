@@ -4,8 +4,9 @@ on: [pull_request]
 jobs:
   deploy-web:
     runs-on: ubuntu-latest
-    outputs:
-      preview_url: ${{ steps.vercel.outputs.preview-url }}
+    environment:
+      name: Development
+      url: ${{ steps.vercel.outputs.preview-url }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -19,53 +20,3 @@ jobs:
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID}}
           working-directory: ./web
-
-  deploy-mobile:
-    runs-on: ubuntu-latest
-    environment:
-      name: Development
-      # url: ${{  }}
-    needs: deploy-web
-    # defaults:
-    #   run:
-    #     working-directory: ./mobile
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - name: Install node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-          # cache: npm
-          # cache-dependency-path: "**/package-lock.json"
-
-      # - name: Create .env
-      #   uses: SpicyPizza/create-envfile@v1.1
-      #   with:
-      #     envkey_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
-      #     directory: mobile
-
-      # - name: Create .env
-      #   uses: ozaytsev86/create-env-file@v1
-      #   with:
-      #     file-name: "./mobile/.env"
-      #     ENV_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
-
-      - name: Create .env
-        uses: iamsauravsharma/create-dotenv@v1.2.2
-        with:
-          env-prefix: "ENV_KEY_"
-          directory: "mobile/"
-        env:
-          ENV_KEY_VERCEL_URL: ${{ needs.deploy-web.outputs.preview-url }}
-
-      - name: Install mobile dependencies
-        run: |
-          cd mobile
-          npm install
-
-      - name: Start Expo development server
-        run: |
-          cd mobile
-          npx expo start --tunnel
