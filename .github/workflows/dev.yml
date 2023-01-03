@@ -48,6 +48,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       # - name: Get Commit Message
       #   id: commit_msg
@@ -56,8 +58,6 @@ jobs:
       #     echo "msg=${MSG}" >> $GITHUB_OUTPUT
 
       - name: Get Most Recent Commit Message
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
         run: |
           git checkout ${{ github.event.pull_request.head.sha }}
           MSG=$(git log --format=%B -n 1 $(git rev-list --max-parents=0 HEAD))
