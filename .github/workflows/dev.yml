@@ -56,11 +56,11 @@ jobs:
         # run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.head-commit-msg }}"
         run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --auto
 
-      - name: Create a QR code
-        id: qr
-        uses: expo/expo-preview-action@v1
-        with:
-          channel: pr-${{ github.event.number }}
+      # - name: Create a QR code
+      #   id: qr
+      #   uses: expo/expo-preview-action@v1
+      #   with:
+      #     channel: pr-${{ github.event.number }}
 
       # - name: Comment QR code
       #   uses: kentaro-m/qr-code-commenter-action@v0.1.2
@@ -71,13 +71,9 @@ jobs:
       #       :lock: Access the development build of this commit with the following QR code:
       #       :iphone: Note that you must have been granted access as a tester to be able to use this code.
       #       {qrcode}
-      - name: Comment deployment link
+      - name: Comment QR code
         uses: unsplash/comment-on-pr@master
         with:
           msg: >
-            You can [preview the PR here](${{ steps.preview.outputs.EXPO_QR_CODE_URL }}).<br><br>
-            <img src="${{ steps.qr.outputs.EXPO_QR_CODE_URL }}" height="100px" width="100px">
-            <br><br>
-            QR code not working or need a different client? Try the QR code or deep link from the [project page](${{steps.preview.outputs.EXPO_PROJECT_URL}}).
-            <br><br>
-            ${{ steps.qr.outputs.EXPO_NEW_BUILD_IS_REQUIRED_MESSAGE }}
+            Preview the PR:<br><br>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dpr-${{ github.event.number }}%26runtime-version%3Dexposdk%3A47.0.0" height="100px" width="100px" />
