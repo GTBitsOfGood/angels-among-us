@@ -36,5 +36,10 @@ export default () => ({
       },
       VERCEL_URL: process.env.VERCEL_URL || null,
     },
+    updates: {
+      url:
+        process.env.VERCEL_URL &&
+        "https://u.expo.dev/ffd1ce48-877d-4488-8b33-9ffb9c814e1c",
+    },
   },
 });
