@@ -13,10 +13,6 @@ type Props = NativeStackScreenProps<
   Screens.DEV_DASHBOARD_SCREEN
 >;
 
-type Test = {
-  name?: string;
-};
-
 const DevDashboard: FC<Props> = ({ navigation }: Props) => {
   const [test, setTest] = useState<string>("");
 
