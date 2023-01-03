@@ -4,9 +4,6 @@ on: [pull_request]
 jobs:
   deploy-web:
     runs-on: ubuntu-latest
-    # environment:
-    #   name: Development
-    #   url: ${{ steps.vercel.outputs.preview-url }}
     outputs:
       preview_url: ${{ steps.vercel.outputs.preview-url }}
     steps:
@@ -23,11 +20,43 @@ jobs:
           vercel-project-id: ${{ secrets.PROJECT_ID}}
           working-directory: ./web
 
-  # deploy-mobile:
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: Development
-  #     url: ${{ steps.vercel.outputs.preview-url }}
-  #   steps:
-  #     - name: Checkout repo
-  #       uses: actions/checkout@v2
+  deploy-mobile:
+    runs-on: ubuntu-latest
+    environment:
+      name: Development
+    needs: deploy-web
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: npm
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Get commit message
+        id: commit_msg
+        run: echo "::set-output name=head-commit-msg::$(git show -s --format=%s)"
+
+      - name: Publish update
+        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.head-commit-msg }}"
+
+      - name: Comment QR code
+        uses: kentaro-m/qr-code-commenter-action@v0.1.2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          content: "exp+angels-among-us://expo-development-client/?url=https://u.expo.dev/${{ secrets.EXPO_PROJECT_ID }}?channel-name=pr-${{ github.event.number }}"
+          comment: |
+            :lock: Access the development build of this commit with the following QR code:
+            :iphone: Note that you must have been granted access as a tester to be able to use this code.
+            {qrcode}
