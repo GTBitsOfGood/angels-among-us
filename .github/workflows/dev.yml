@@ -25,6 +25,9 @@ jobs:
     environment:
       name: Development
     needs: deploy-web
+    defaults:
+      run:
+        working-directory: mobile
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -33,7 +36,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16.x
-          cache: yarn
+          cache: npm
 
       - name: Setup Expo
         uses: expo/expo-github-action@v7
