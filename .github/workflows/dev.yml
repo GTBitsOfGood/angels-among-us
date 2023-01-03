@@ -27,7 +27,7 @@ jobs:
     needs: deploy-web
     defaults:
       run:
-        working-directory: mobile
+        working-directory: ./mobile
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
