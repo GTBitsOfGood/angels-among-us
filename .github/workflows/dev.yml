@@ -27,21 +27,21 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Deploy to Vercel
-        id: vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.ORG_ID }}
-          vercel-project-id: ${{ secrets.PROJECT_ID}}
-          working-directory: ./web
+      # - name: Deploy to Vercel
+      #   id: vercel
+      #   uses: amondnet/vercel-action@v25
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     vercel-org-id: ${{ secrets.ORG_ID }}
+      #     vercel-project-id: ${{ secrets.PROJECT_ID}}
+      #     working-directory: ./web
 
   deploy-mobile:
     runs-on: ubuntu-latest
     environment:
       name: Development
-    needs: deploy-web
+    # needs: deploy-web
     defaults:
       run:
         working-directory: ./mobile
@@ -49,36 +49,36 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-          cache: npm
-
-      - name: Setup Expo
-        uses: expo/expo-github-action@v7
-        with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Install dependencies
-        run: yarn install
-
       - name: Get Commit Message
         id: commit_msg
         run: |
-          MSG=$(git log --format=%B -n 1 ${{ github.event.after }})
+          MSG=$(git log --format=%B -n 1 ${{ github.event.pull_request.base.sha }})
           echo "msg=${MSG}" >> $GITHUB_OUTPUT
 
-      - name: Publish update
-        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.msg }}"
+      # - name: Setup Node
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: 16.x
+      #     cache: npm
 
-      - name: Comment QR code
-        uses: unsplash/comment-on-pr@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          msg: >
-            Preview the PR:<br><br>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dpr-${{ github.event.number }}%26runtime-version%3Dexposdk%3A47.0.0" height="100px" width="100px" />
+      # - name: Setup Expo
+      #   uses: expo/expo-github-action@v7
+      #   with:
+      #     expo-version: latest
+      #     eas-version: latest
+      #     token: ${{ secrets.EXPO_TOKEN }}
+
+      # - name: Install dependencies
+      #   run: yarn install
+
+      # - name: Publish update
+      #   run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.msg }}"
+
+      # - name: Comment QR code
+      #   uses: unsplash/comment-on-pr@master
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     msg: >
+      #       Preview the PR:<br><br>
+      #       <img src="https://api.qrserver.com/v1/create-qr-code/?data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dpr-${{ github.event.number }}%26runtime-version%3Dexposdk%3A47.0.0" height="100px" width="100px" />
