@@ -18,7 +18,7 @@ type Test = {
 };
 
 const DevDashboard: FC<Props> = ({ navigation }: Props) => {
-  const [test, setTest] = useState<Test>({});
+  const [test, setTest] = useState<string>("");
 
   const handleSignOut = async () => {
     await auth.signOut();
@@ -28,13 +28,13 @@ const DevDashboard: FC<Props> = ({ navigation }: Props) => {
     console.log(urls.baseUrl);
     axios
       .get(`${urls.baseUrl}${urls.api.test}`)
-      .then((res) => setTest(res.data));
+      .then((res) => setTest(urls.baseUrl));
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.heading}>Dev Dashboard</Text>
-      <Text>{test.name ?? "test.name is undefined!"}</Text>
+      <Text>{test ?? "test.name is undefined!"}</Text>
       <View>
         {Object.entries(Screens)
           .filter(
