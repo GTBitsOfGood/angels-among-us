@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Staging
-      url: https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dstaging%26runtime-version%3Dexposdk%3A47.0.0
+      url: https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp%3A%2F%2Fu.expo.dev%2Fffd1ce48-877d-4488-8b33-9ffb9c814e1c%3Fchannel-name%3Dstaging%26runtime-version%3Dexposdk%3A47.0.0
     needs: deploy-web
     defaults:
       run:
