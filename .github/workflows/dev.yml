@@ -1,0 +1,86 @@
+name: dev-deploy
+
+on:
+  pull_request:
+    paths:
+      - "web/package.json"
+      - "web/**/*.css"
+      - "web/public/*"
+      - "web/**/*.js"
+      - "web/**/*.ts"
+      - "web/**/*.jsx"
+      - "web/**/*.tsx"
+      - "mobile/package.json"
+      - "mobile/app.json"
+      - "mobile/eas.json"
+      - "mobile/**/*.js"
+      - "mobile/**/*.ts"
+      - "mobile/**/*.jsx"
+      - "mobile/**/*.tsx"
+      - "mobile/assets/*"
+jobs:
+  deploy-web:
+    runs-on: ubuntu-latest
+    outputs:
+      preview_url: ${{ steps.vercel.outputs.preview-url }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Deploy to Vercel
+        id: vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID}}
+          working-directory: ./web
+
+  deploy-mobile:
+    runs-on: ubuntu-latest
+    environment:
+      name: Development
+      url: https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp%3A%2F%2Fu.expo.dev%2Fffd1ce48-877d-4488-8b33-9ffb9c814e1c%3Fchannel-name%3Dpr-${{ github.event.number }}%26runtime-version%3Dexposdk%3A47.0.0
+    needs: deploy-web
+    defaults:
+      run:
+        working-directory: ./mobile
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Get most recent commit message
+        id: commit_msg
+        run: |
+          git checkout ${{ github.event.pull_request.head.sha }}
+          MSG=$(git log --format=%B -n 1 $(git rev-list --max-parents=0 HEAD))
+          echo "msg=${MSG}" >> $GITHUB_OUTPUT
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: npm
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Publish update
+        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.msg }}"
+
+      - name: Comment QR code
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: >
+            Preview the PR:<br><br>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dpr-${{ github.event.number }}%26runtime-version%3Dexposdk%3A47.0.0" height="150px" width="150px" />

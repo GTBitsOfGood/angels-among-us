@@ -13,27 +13,21 @@ type Props = NativeStackScreenProps<
   Screens.DEV_DASHBOARD_SCREEN
 >;
 
-type Test = {
-  name?: string;
-};
-
 const DevDashboard: FC<Props> = ({ navigation }: Props) => {
-  const [test, setTest] = useState<Test>({});
+  const [test, setTest] = useState<string>("");
 
   const handleSignOut = async () => {
     await auth.signOut();
   };
 
   useEffect(() => {
-    axios
-      .get(`${urls.baseUrl}${urls.api.test}`)
-      .then((res) => setTest(res.data));
+    setTest(urls.baseUrl);
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.heading}>Dev Dashboard</Text>
-      <Text>{test.name ?? "Nothing"}</Text>
+      <Text>{test ?? "test.name is undefined!"}</Text>
       <View>
         {Object.entries(Screens)
           .filter(
