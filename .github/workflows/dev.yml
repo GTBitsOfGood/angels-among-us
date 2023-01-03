@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Development
-    # needs: deploy-web
+    needs: deploy-web
     defaults:
       run:
         working-directory: ./mobile
