@@ -41,6 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Development
+      url: https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dpr-${{ github.event.number }}%26runtime-version%3Dexposdk%3A47.0.0
     needs: deploy-web
     defaults:
       run:
@@ -51,7 +52,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Get Most Recent Commit Message
+      - name: Get most recent commit message
         id: commit_msg
         run: |
           git checkout ${{ github.event.pull_request.head.sha }}
@@ -78,10 +79,8 @@ jobs:
         run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.msg }}"
 
       - name: Comment QR code
-        uses: unsplash/comment-on-pr@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          msg: >
+          message: >
             Preview the PR:<br><br>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dpr-${{ github.event.number }}%26runtime-version%3Dexposdk%3A47.0.0" height="100px" width="100px" />
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dpr-${{ github.event.number }}%26runtime-version%3Dexposdk%3A47.0.0" height="150px" width="150px" />

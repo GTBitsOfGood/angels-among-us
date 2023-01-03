@@ -5,14 +5,16 @@ on:
     branches:
       - staging
 jobs:
-  deploy:
+  deploy-web:
     runs-on: ubuntu-latest
-    environment:
-      name: Staging
-      url: ${{ steps.vercel.outputs.preview-url }}
+    outputs:
+      preview_url: ${{ steps.vercel.outputs.preview-url }}
     steps:
-      - uses: actions/checkout@v2
-      - id: vercel
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Deploy to Vercel
+        id: vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -20,3 +22,35 @@ jobs:
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID}}
           working-directory: ./web
+
+  deploy-mobile:
+    runs-on: ubuntu-latest
+    environment:
+      name: Staging
+      url: https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp%3A%2F%2Fu.expo.dev%2F${{ secrets.EXPO_PROJECT_ID }}%3Fchannel-name%3Dstaging%26runtime-version%3Dexposdk%3A47.0.0
+    needs: deploy-web
+    defaults:
+      run:
+        working-directory: ./mobile
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: npm
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Publish update
+        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch staging --auto
