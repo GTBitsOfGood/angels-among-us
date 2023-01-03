@@ -1,6 +1,23 @@
 name: dev-deploy
 
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - "web/package.json"
+      - "web/**/*.css"
+      - "web/public/*"
+      - "web/**/*.js"
+      - "web/**/*.ts"
+      - "web/**/*.jsx"
+      - "web/**/*.tsx"
+      - "mobile/package.json"
+      - "mobile/app.json"
+      - "mobile/eas.json"
+      - "mobile/**/*.js"
+      - "mobile/**/*.ts"
+      - "mobile/**/*.jsx"
+      - "mobile/**/*.tsx"
+      - "mobile/assets/*"
 jobs:
   deploy-web:
     runs-on: ubuntu-latest
@@ -48,29 +65,15 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      # - name: Get commit message
-      #   id: commit_msg
-      #   run: echo "::set-output name=head-commit-msg::$(git show -s --format=%s)"
+      - name: Get Commit Message
+        id: commit_msg
+        run: |
+          MSG=$(git log --format=%B -n 1 ${{ github.event.after }})
+          echo "msg=${MSG}" >> $GITHUB_OUTPUT
 
       - name: Publish update
-        # run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.head-commit-msg }}"
-        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --auto
+        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.msg }}"
 
-      # - name: Create a QR code
-      #   id: qr
-      #   uses: expo/expo-preview-action@v1
-      #   with:
-      #     channel: pr-${{ github.event.number }}
-
-      # - name: Comment QR code
-      #   uses: kentaro-m/qr-code-commenter-action@v0.1.2
-      #   with:
-      #     repo-token: "${{ secrets.GITHUB_TOKEN }}"
-      #     content: "exp+angels-among-us://expo-development-client/?url=https://u.expo.dev/${{ secrets.EXPO_PROJECT_ID }}?channel-name=pr-${{ github.event.number }}"
-      #     comment: |
-      #       :lock: Access the development build of this commit with the following QR code:
-      #       :iphone: Note that you must have been granted access as a tester to be able to use this code.
-      #       {qrcode}
       - name: Comment QR code
         uses: unsplash/comment-on-pr@master
         env:
