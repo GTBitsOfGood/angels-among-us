@@ -4,9 +4,11 @@ on: [pull_request]
 jobs:
   deploy-web:
     runs-on: ubuntu-latest
-    environment:
-      name: Development
-      url: ${{ steps.vercel.outputs.preview-url }}
+    # environment:
+    #   name: Development
+    #   url: ${{ steps.vercel.outputs.preview-url }}
+    outputs:
+      preview_url: ${{ steps.vercel.outputs.preview-url }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -20,3 +22,12 @@ jobs:
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID}}
           working-directory: ./web
+
+  # deploy-mobile:
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: Development
+  #     url: ${{ steps.vercel.outputs.preview-url }}
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v2

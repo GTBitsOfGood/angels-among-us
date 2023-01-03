@@ -34,6 +34,7 @@ const DevDashboard: FC<Props> = ({ navigation }: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.heading}>Dev Dashboard</Text>
+      <Text>Test</Text>
       <Text>{test.name ?? "test.name is undefined!"}</Text>
       <View>
         {Object.entries(Screens)
