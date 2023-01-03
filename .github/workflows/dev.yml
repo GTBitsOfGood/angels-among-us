@@ -49,11 +49,17 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Get Commit Message
-        id: commit_msg
+      # - name: Get Commit Message
+      #   id: commit_msg
+      #   run: |
+      #     MSG=$(git log --format=%B -n 1 ${{ github.event.pull_request.base.sha }})
+      #     echo "msg=${MSG}" >> $GITHUB_OUTPUT
+
+      - name: Get Most Recent Commit Message
         run: |
-          MSG=$(git log --format=%B -n 1 ${{ github.event.pull_request.base.sha }})
-          echo "msg=${MSG}" >> $GITHUB_OUTPUT
+          git checkout ${{ github.event.pull_request.head.sha }}
+          MSG=$(git log --format=%B -n 1 $(git rev-list --max-parents=0 HEAD))
+          echo "msg=${MSG}"
 
       # - name: Setup Node
       #   uses: actions/setup-node@v2
