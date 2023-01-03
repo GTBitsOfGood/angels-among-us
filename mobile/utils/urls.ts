@@ -2,7 +2,12 @@ import Constants from "expo-constants";
 const { manifest, expoConfig } = Constants;
 
 const getBaseUrl = () => {
-  if (!expoConfig?.extra?.VERCEL_URL && manifest?.debuggerHost) {
+  const envUrl = expoConfig?.extra?.VERCEL_URL;
+  if (
+    typeof envUrl !== "string" &&
+    Object.keys(envUrl).length === 0 &&
+    manifest?.debuggerHost
+  ) {
     return ("http://" +
       manifest.debuggerHost.split(":").shift()?.concat(":3000")) as string;
   } else {
