@@ -51,7 +51,7 @@ jobs:
 
       - name: Publish update
         # run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ steps.commit_msg.outputs.head-commit-msg }}"
-        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --message "${{ github.event.pull_request.head.sha }}"
+        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch pr-${{ github.event.number }} --auto
 
       - name: Comment QR code
         uses: kentaro-m/qr-code-commenter-action@v0.1.2
