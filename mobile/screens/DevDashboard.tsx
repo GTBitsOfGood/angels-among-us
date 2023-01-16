@@ -21,7 +21,10 @@ const DevDashboard: FC<Props> = ({ navigation }: Props) => {
   };
 
   useEffect(() => {
-    setTest(urls.baseUrl);
+    // setTest(urls.baseUrl);
+    fetch(`${urls.baseUrl}${urls.api.test}`)
+      .then((data) => data.json())
+      .then((data) => setTest(data.name));
   }, []);
 
   return (
