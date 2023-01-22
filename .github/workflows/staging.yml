@@ -22,35 +22,3 @@ jobs:
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID}}
           working-directory: ./web
-
-  deploy-mobile:
-    runs-on: ubuntu-latest
-    environment:
-      name: Staging
-      url: https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=exp%3A%2F%2Fu.expo.dev%2Fffd1ce48-877d-4488-8b33-9ffb9c814e1c%3Fchannel-name%3Dstaging%26runtime-version%3Dexposdk%3A47.0.0
-    needs: deploy-web
-    defaults:
-      run:
-        working-directory: ./mobile
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-          cache: npm
-
-      - name: Setup Expo
-        uses: expo/expo-github-action@v7
-        with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Publish update
-        run: VERCEL_URL="${{ needs.deploy-web.outputs.preview_url }}" eas update --branch staging --auto
