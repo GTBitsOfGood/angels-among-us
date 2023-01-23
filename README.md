@@ -10,6 +10,10 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
 ## Onboarding
 
+### Accounts
+
+We will be authenticating using Facebook login. Create a Facebook account if you do not yet have one.
+
 ### MongoDB
 
 Install [MongoDB Community Server](https://www.mongodb.com/docs/manual/administration/install-community/) to host a local instance of MongoDB. It may also be helpful to download [MongoDB Compass](https://www.mongodb.com/try/download/compass#compass) to view the state of your database.
