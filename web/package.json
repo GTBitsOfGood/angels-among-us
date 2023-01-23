@@ -6,9 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "secrets": "npm run secrets-dev",
+    "secrets-dev": "BW_ITEM=78839bf2-878b-4d5d-9129-af9300699ddf npm run secrets:fetch",
+    "secrets:fetch": "npm run secrets:logout && cross-env-shell BW_SESSION=`bw login product@bitsofgood.org --raw` \"npm run secrets:sync\"",
+    "secrets:logout": "(bw logout || exit 0)",
+    "secrets:sync": "bw sync && bw get item $BW_ITEM | npx fx .notes > \".env\""
   },
   "dependencies": {
+    "@bitwarden/cli": "^2023.1.0",
     "@next/font": "13.1.1",
     "@tanstack/react-query": "^4.22.0",
     "@trpc/client": "^10.9.0",
@@ -31,6 +37,7 @@
     "zod": "^3.20.2"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.13"
+    "@types/cors": "^2.8.13",
+    "cross-env": "^7.0.3"
   }
 }
