@@ -38,6 +38,7 @@ const postSchema = new Schema<IPost>({
         type: Schema.Types.ObjectId,
       },
     ],
+    required: true,
   },
 });
 

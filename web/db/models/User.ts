@@ -3,10 +3,10 @@ const { Schema } = mongoose;
 
 export interface IUser {
   email: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   uid: string;
   admin: boolean;
+  disabled: boolean;
 }
 
 const userSchema = new Schema<IUser>({
@@ -16,13 +16,9 @@ const userSchema = new Schema<IUser>({
     unique: true,
     index: true,
   },
-  firstName: {
+  name: {
     type: String,
-    required: false,
-  },
-  lastName: {
-    type: String,
-    required: false,
+    required: true,
   },
   uid: {
     type: String,
@@ -31,6 +27,10 @@ const userSchema = new Schema<IUser>({
     index: true,
   },
   admin: {
+    type: Boolean,
+    required: true,
+  },
+  disabled: {
     type: Boolean,
     required: true,
     default: false,

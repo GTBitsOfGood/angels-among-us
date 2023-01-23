@@ -13,10 +13,9 @@ export async function createContext(opts: CreateNextContextOptions) {
   try {
     const cookies = nookies.get(opts);
     const token = await firebaseAdmin.auth().verifyIdToken(cookies.token);
-    const { uid } = token;
 
     return {
-      session: uid,
+      session: token,
     };
   } catch (err) {
     return { session: null };

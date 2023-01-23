@@ -1,8 +1,8 @@
 import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
 import Head from "next/head";
 import { auth } from "../utils/firebase/firebaseClient";
-import { useEffect } from "react";
 import { trpc } from "../utils/trpc";
+import { useAuth } from "../context/auth";
 
 export default function Home() {
   async function handleLogin() {
@@ -11,12 +11,8 @@ export default function Home() {
     const user = result.user;
   }
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      console.log(user);
-    });
-    return unsubscribe;
-  }, []);
+  const { user } = useAuth();
+  console.log(user);
 
   const listPosts = trpc.post.list.useQuery();
   console.log(listPosts.data);
