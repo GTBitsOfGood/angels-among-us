@@ -1,12 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { removeAccount } from "../../db/actions/Account";
-import { updateUser } from "../../db/actions/User";
+import {
+  removeAccount,
+  addAccount,
+  findAccount,
+} from "../../db/actions/Account";
+import { findUser, updateUser } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { router, protectedProcedure } from "../trpc";
-import { addAccount, findAccount } from "../../db/actions/Account";
-import { updateUserAccess } from "../../db/actions/User";
-import mongoose from "mongoose";
 
 export const accountRouter = router({
   remove: protectedProcedure
@@ -42,6 +43,7 @@ export const accountRouter = router({
         });
       }
     }),
+
   add: protectedProcedure
     .input(
       z.object({
@@ -57,21 +59,27 @@ export const accountRouter = router({
         });
       }
 
-      console.log("hi");
-
-      if ((await findAccount(input.email)).length == 0) {
+      if ((await findAccount(input.email)).length != 0) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "Account already exists",
         });
       }
 
-      const session = await mongoose.startSession();
+      const session = await Account.startSession();
       session.startTransaction();
 
       try {
-        await addAccount(input.email, input.admin);
-        await updateUserAccess(input.email, input.admin);
+        const inputData: [string, boolean] = [input.email, input.admin];
+        await addAccount(inputData, session);
+        if ((await findUser(input.email)).length != 0) {
+          await updateUser(
+            input.email,
+            { admin: input.admin, disabled: false },
+            session
+          );
+        }
+        session.commitTransaction();
         return { success: true };
       } catch (e) {
         session.abortTransaction();
