@@ -1,4 +1,5 @@
-import User from "../models/User";
+import { ClientSession, UpdateQuery } from "mongoose";
+import User, { IUser } from "../models/User";
 
 async function updateUserAccess(email: string, admin: boolean) {
   return await User.updateOne(
@@ -7,4 +8,12 @@ async function updateUserAccess(email: string, admin: boolean) {
   );
 }
 
-export { updateUserAccess };
+async function updateUser(
+  email: string,
+  update: UpdateQuery<IUser>,
+  session?: ClientSession
+) {
+  return await User.findOneAndUpdate({ email }, update, { session: session });
+}
+
+export { updateUser, updateUserAccess };

@@ -1,5 +1,9 @@
-import Account from "../models/Account";
 import { ClientSession } from "mongoose";
+import Account from "../models/Account";
+
+async function removeAccount(email: string, session?: ClientSession) {
+  return await Account.findOneAndDelete({ email }, { session: session });
+}
 
 async function addAccount(
   email: string,
@@ -13,4 +17,4 @@ async function findAccount(email: string, session?: ClientSession) {
   return await Account.find({ email: email }, { session: session });
 }
 
-export { addAccount, findAccount };
+export { addAccount, findAccount, removeAccount };
