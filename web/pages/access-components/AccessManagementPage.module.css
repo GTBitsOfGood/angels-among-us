@@ -1,0 +1,85 @@
+/*PERMISSION BUTTONS*/
+
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.unselectedPermission {
+  background-color: #ffffff;
+  color: black;
+}
+
+.selectedPermission {
+  background-color: #a9a8a8;
+  color: white;
+}
+
+#adminButton {
+  box-sizing: border-box;
+  width: 188px;
+  height: 36px;
+  border: 1px solid #000000;
+  border-radius: 16px 0px 0px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#volunteerButton {
+  box-sizing: border-box;
+  width: 188px;
+  height: 36px;
+  border: 1px solid #000000;
+  border-radius: 0px 16px 16px 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/*ADD ACCOUNT*/
+#addAccountButton {
+  width: 248px;
+  height: 36px;
+  background: #b0b0b0;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#createAccountRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: right;
+  min-width: 100%;
+  column-gap: 15px;
+}
+
+/*ACCESS PAGE STRUCTURE*/
+#accessPage {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  width: 100%;
+  margin: 30px;
+}
+
+#formSection {
+  border: solid;
+  border-width: 2px;
+  border-radius: 30px;
+  border-color: #bbbbbb;
+  padding: 38px;
+  margin: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  row-gap: 15px;
+  height: 20%;
+  width: inherit;
+}
