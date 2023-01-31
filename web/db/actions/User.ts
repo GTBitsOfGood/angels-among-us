@@ -9,8 +9,4 @@ async function updateUser(
   return await User.findOneAndUpdate({ email }, update, { session: session });
 }
 
-async function findUser(email: string) {
-  return await User.find({ email });
-}
-
-export { updateUser, findUser };
+export { updateUser };

@@ -4,9 +4,8 @@ import {
   removeAccount,
   updateAccount,
   addAccount,
-  findAccount,
 } from "../../db/actions/Account";
-import { findUser, updateUser } from "../../db/actions/User";
+import { updateUser } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { router, protectedProcedure } from "../trpc";
 
@@ -106,34 +105,41 @@ export const accountRouter = router({
         });
       }
 
-      if ((await findAccount(input.email)).length != 0) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Account already exists",
-        });
-      }
-
       const session = await Account.startSession();
       session.startTransaction();
 
       try {
-        const inputData: [string, boolean] = [input.email, input.admin];
-        await addAccount(inputData, session);
-        if ((await findUser(input.email)).length != 0) {
-          await updateUser(
-            input.email,
-            { admin: input.admin, disabled: false },
-            session
-          );
+        const inputData: { email: string; admin: boolean } = {
+          email: input.email,
+          admin: input.admin,
+        };
+
+        if ((await addAccount(inputData, session)) === null) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Account already exists",
+          });
         }
+
+        await updateUser(
+          input.email,
+          { admin: input.admin, disabled: false },
+          session
+        );
+
         session.commitTransaction();
         return { success: true };
       } catch (e) {
         session.abortTransaction();
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "An unexpected error occurred",
-        });
+
+        if (e instanceof TRPCError) {
+          throw e;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occurred",
+          });
+        }
       }
     }),
 });
