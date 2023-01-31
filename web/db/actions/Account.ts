@@ -15,10 +15,7 @@ async function updateAccount(
   });
 }
 
-async function addAccount(
-  inputData: UpdateQuery<IAccount>,
-  session?: ClientSession
-) {
+async function addAccount(inputData: IAccount, session?: ClientSession) {
   try {
     return await Account.create([inputData], { session: session });
   } catch (e) {
