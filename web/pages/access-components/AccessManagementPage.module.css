@@ -1,5 +1,4 @@
 /*PERMISSION BUTTONS*/
-
 .buttonRow {
   display: flex;
   flex-direction: row;
@@ -39,6 +38,7 @@
   justify-content: center;
 }
 
+/*END PERMISSION BUTTONS*/
 /*ADD ACCOUNT*/
 #addAccountButton {
   width: 248px;
@@ -59,14 +59,15 @@
   column-gap: 15px;
 }
 
+/*END ADD ACCOUNT*/
 /*ACCESS PAGE STRUCTURE*/
 #accessPage {
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 30px;
+  margin: 0px;
 }
 
 #formSection {
@@ -81,5 +82,90 @@
   align-items: flex-start;
   row-gap: 15px;
   height: 20%;
-  width: inherit;
+  width: 95%;
+  font-family: sans-serif;
+}
+
+/*END ACCESS PAGE STRUCTURE*/
+/*TABLE*/
+.tableDiv {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  font-family: sans-serif;
+}
+
+.table {
+  overflow: auto;
+}
+
+.tableHead {
+  background-color: #d9d9d9;
+  text-align: left;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tableBody {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+.th,
+.td {
+  margin: 200px;
+  position: relative;
+  text-justify: left;
+  padding: 1em;
+}
+
+.tableRow {
+  border-bottom: 0.5px solid #000000;
+}
+
+/*EDIT AND DELETE BUTTONS*/
+
+.actionButton {
+  background-color: #a9a8a8;
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+}
+
+.buttonDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  column-gap: 10px;
+}
+
+/*END TABLE*/
+
+/*TEXT*/
+@font-face {
+  font-family: "Inter", sans-serif;
+  src: url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+  font-style: normal;
+}
+
+.header1 {
+  font-family: sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 29px;
+}
+
+.header2 {
+  font-family: sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.text {
+  font-family: sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
 }

@@ -32,7 +32,7 @@ export default function CreateAccountForm(props) {
     if (isValid) {
       setDisplayError(false);
       const temp = [...accountList];
-      temp.push({
+      temp.unshift({
         email: emailField,
         admin: admin,
       });
@@ -46,7 +46,7 @@ export default function CreateAccountForm(props) {
 
   return (
     <div id={styles.formSection}>
-      <h2>Add New Account</h2>
+      <h2 className="styles.header2">Add New Account</h2>
       <form>
         <input
           type="text"
@@ -55,7 +55,7 @@ export default function CreateAccountForm(props) {
           onChange={handleChange}
         ></input>
       </form>
-      <p>Permissions</p>
+      <p className={styles.text}>Permissions</p>
       <PermissionSelector
         admin={admin}
         setAdmin={setAdmin}

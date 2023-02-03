@@ -1,72 +1,48 @@
-import React, { useMemo } from "react";
-import { useTable } from "react-table";
+import { useTable, usePagination } from "react-table";
+import AccountManagementButtons from "./AccountActionButtons";
+import styles from "./AccessManagementPage.module.css";
 
-export default function AccountTable(props) {
-  const { accountList } = props;
-
-  const data = React.useMemo(
-    () => [
-      {
-        email: "Test1",
-        admin: "Admin",
-      },
-      {
-        email: "Test2",
-        admin: "Volunteer",
-      },
-      {
-        email: "Test3",
-        admin: "Admin",
-      },
-    ],
-    []
+function Table({ columns, data }) {
+  const {
+    page,
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    state: { pageIndex, pageSize },
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageIndex: 0 },
+    },
+    usePagination
   );
-
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Email Address",
-        accessor: "email",
-      },
-      {
-        Header: "Role",
-        accessor: "admin",
-      },
-      {
-        Header: "Access",
-        accessor: "access",
-      },
-      {
-        Header: "Actions",
-        accessor: "actions",
-      },
-    ],
-    []
-  );
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
 
   return (
-    <div>
-      <table {...getTableProps()}>
-        <thead>
+    <div className={styles.tableDiv}>
+      <table className={styles.table} {...getTableProps()}>
+        <thead className={styles.tableHead}>
           {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
+            <tr className={styles.td} {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                <th className={styles.th} {...column.getHeaderProps()}>
+                  {column.render("Header")}
+                </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
+        <tbody className={styles.tableBody} {...getTableBodyProps()}>
+          {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
+              <tr className={styles.tableRow} {...row.getRowProps()}>
                 {row.cells.map((cell) => {
                   return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    <td className={styles.td} {...cell.getCellProps()}>
+                      {cell.render("Cell")}
+                    </td>
                   );
                 })}
               </tr>
@@ -77,3 +53,39 @@ export default function AccountTable(props) {
     </div>
   );
 }
+
+function AccountTable(props) {
+  const { accountList } = props;
+
+  const columns = [
+    {
+      Header: "Email Address",
+      accessor: "email",
+    },
+    {
+      id: "admin",
+      Header: "Role",
+      accessor: (r) => {
+        return r.admin ? "Administrator" : "Volunteer";
+      },
+    },
+    {
+      id: "access",
+      Header: "Access",
+      accessor: (r) => {
+        return r.admin ? "Yes" : "Yes";
+      },
+    },
+    {
+      id: "action",
+      Header: "Actions",
+      accessor: (r) => {
+        return <AccountManagementButtons></AccountManagementButtons>;
+      },
+    },
+  ];
+
+  return <Table data={accountList} columns={columns} />;
+}
+
+export default AccountTable;
