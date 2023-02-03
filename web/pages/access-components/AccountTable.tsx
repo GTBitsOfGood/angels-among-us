@@ -73,13 +73,13 @@ function AccountTable(props) {
       id: "access",
       Header: "Access",
       accessor: (r) => {
-        return r.admin ? "Yes" : "Yes";
+        return r.admin ? "Yes" : "No";
       },
     },
     {
       id: "action",
       Header: "Actions",
-      accessor: (r) => {
+      accessor: () => {
         return <AccountManagementButtons></AccountManagementButtons>;
       },
     },

@@ -21,7 +21,9 @@ export default function CreateAccountForm(props) {
 
   function ErrorMessage() {
     if (displayError) {
-      return <p>Invalid Email Address</p>;
+      return (
+        <p className={styles.invalidEmailMessage}>Invalid Email Address</p>
+      );
     } else {
       return <></>;
     }
@@ -47,10 +49,15 @@ export default function CreateAccountForm(props) {
   return (
     <div id={styles.formSection}>
       <h2 className="styles.header2">Add New Account</h2>
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
+      >
         <input
           type="text"
           placeholder="Email"
+          className={styles.formInput}
           value={emailField}
           onChange={handleChange}
         ></input>
