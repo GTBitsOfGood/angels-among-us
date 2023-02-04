@@ -46,15 +46,19 @@ export default function Home() {
     <Flex height="100vh">
       {user === null ? (
         <Stack direction="row" width="100%" height="100%">
-          <Flex bgColor="#D9D9D9" width="50%"></Flex>
-          <Flex bgColor="#FFFFFF" width="50%" justifyContent="center">
+          <Flex bgColor="#D9D9D9" width={["0%", "50%"]}></Flex>
+          <Flex
+            bgColor="#FFFFFF"
+            width={["100%", "50%"]}
+            justifyContent="center"
+          >
             <Stack direction="column" width="100%" alignItems="center">
               <Stack
                 direction="row"
                 justifyContent="flex-end"
                 width="100%"
                 padding="2%"
-                marginBottom="15%"
+                marginBottom={["30%", "15%"]}
               >
                 <Flex
                   bgColor="#D9D9D9"
@@ -68,8 +72,8 @@ export default function Home() {
               </Stack>
               <Stack
                 direction="column"
-                alignItems="flex-start"
-                width="35%"
+                alignItems={["center", "flex-start"]}
+                width={["85%", "35%"]}
                 spacing="10"
               >
                 <Text
@@ -77,6 +81,7 @@ export default function Home() {
                   fontWeight="bold"
                   fontSize="4xl"
                   lineHeight="10"
+                  textAlign={["center", "left"]}
                 >
                   Welcome to the page message!
                 </Text>
@@ -87,6 +92,7 @@ export default function Home() {
                   bgColor="#D9D9D9"
                   width="100%"
                   borderRadius="16px"
+                  cursor={["default", "pointer"]}
                   onClick={handleLoginFacebook}
                 >
                   continue with facebook
@@ -100,6 +106,7 @@ export default function Home() {
                   bgColor="#D9D9D9"
                   width="100%"
                   borderRadius="16px"
+                  cursor={["default", "pointer"]}
                   onClick={handleLoginGoogle}
                 >
                   continue with Google
@@ -121,6 +128,7 @@ export default function Home() {
                     <Button
                       bgColor="#D9D9D9"
                       borderRadius="100%"
+                      cursor={["default", "pointer"]}
                       size="xs"
                       color="#6D6D6D"
                     >
@@ -169,14 +177,18 @@ export default function Home() {
           </Flex>
         </Stack>
       ) : (
-        <Button
-          onClick={() => {
-            signOut(auth);
-            setUser(null);
-          }}
-        >
-          Logout
-        </Button>
+        <Flex width="100%" justifyContent="center" alignItems="center">
+          <Button
+            cursor={["default", "pointer"]}
+            bgColor="#D9D9D9"
+            onClick={() => {
+              signOut(auth);
+              setUser(null);
+            }}
+          >
+            Logout
+          </Button>
+        </Flex>
       )}
     </Flex>
   );
