@@ -24,9 +24,17 @@ function Table({ columns, data }) {
       <table className={styles.table} {...getTableProps()}>
         <thead className={styles.tableHead}>
           {headerGroups.map((headerGroup) => (
-            <tr className={styles.td} {...headerGroup.getHeaderGroupProps()}>
+            <tr
+              className={styles.td}
+              {...headerGroup.getHeaderGroupProps()}
+              key={headerGroups.indexOf(headerGroup)}
+            >
               {headerGroup.headers.map((column) => (
-                <th className={styles.th} {...column.getHeaderProps()}>
+                <th
+                  className={styles.th}
+                  {...column.getHeaderProps()}
+                  key={headerGroups.indexOf(column)}
+                >
                   {column.render("Header")}
                 </th>
               ))}
@@ -37,10 +45,18 @@ function Table({ columns, data }) {
           {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr className={styles.tableRow} {...row.getRowProps()}>
+              <tr
+                className={styles.tableRow}
+                {...row.getRowProps()}
+                key={page.indexOf(row)}
+              >
                 {row.cells.map((cell) => {
                   return (
-                    <td className={styles.td} {...cell.getCellProps()}>
+                    <td
+                      className={styles.td}
+                      {...cell.getCellProps()}
+                      key={row.cells.indexOf(cell)}
+                    >
                       {cell.render("Cell")}
                     </td>
                   );
