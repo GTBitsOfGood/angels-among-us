@@ -1,6 +1,7 @@
 import { useTable, usePagination } from "react-table";
 import AccountManagementButtons from "./AccountActionButtons";
 import styles from "./AccessManagementPage.module.css";
+import { useEffect } from "react";
 
 function Table({ columns, data }) {
   const {
@@ -27,13 +28,13 @@ function Table({ columns, data }) {
             <tr
               className={styles.td}
               {...headerGroup.getHeaderGroupProps()}
-              key={headerGroups.indexOf(headerGroup)}
+              key="0"
             >
               {headerGroup.headers.map((column) => (
                 <th
                   className={styles.th}
                   {...column.getHeaderProps()}
-                  key={headerGroups.indexOf(column)}
+                  key={column.id}
                 >
                   {column.render("Header")}
                 </th>
@@ -75,6 +76,7 @@ function AccountTable(props) {
 
   const columns = [
     {
+      id: "email",
       Header: "Email Address",
       accessor: "email",
     },
