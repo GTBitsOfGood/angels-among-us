@@ -1,24 +1,17 @@
-import { useTable, usePagination } from "react-table";
+import { useTable, TableInstance, UsePaginationState } from "react-table";
 import AccountManagementButtons from "./AccountActionButtons";
 import styles from "./AccessManagementPage.module.css";
-import { useEffect } from "react";
 
-function Table({ columns, data }) {
-  const {
-    page,
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    state: { pageIndex, pageSize },
-  } = useTable(
-    {
+export type TableInstanceWithHooks<T extends object> = TableInstance<T> & {
+  state: UsePaginationState<T>;
+};
+
+const Table = ({ columns, data }: { columns: any; data: any }) => {
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useTable({
       columns,
       data,
-      initialState: { pageIndex: 0 },
-    },
-    usePagination
-  );
+    });
 
   return (
     <div className={styles.tableDiv}>
@@ -42,14 +35,15 @@ function Table({ columns, data }) {
             </tr>
           ))}
         </thead>
+
         <tbody className={styles.tableBody} {...getTableBodyProps()}>
-          {page.map((row, i) => {
+          {rows.map((row, i) => {
             prepareRow(row);
             return (
               <tr
                 className={styles.tableRow}
                 {...row.getRowProps()}
-                key={page.indexOf(row)}
+                key={rows.indexOf(row)}
               >
                 {row.cells.map((cell) => {
                   return (
@@ -69,9 +63,9 @@ function Table({ columns, data }) {
       </table>
     </div>
   );
-}
+};
 
-function AccountTable(props) {
+function AccountTable(props: any) {
   const { accountList } = props;
 
   const columns = [
@@ -83,14 +77,14 @@ function AccountTable(props) {
     {
       id: "admin",
       Header: "Role",
-      accessor: (r) => {
+      accessor: (r: any) => {
         return r.admin ? "Administrator" : "Volunteer";
       },
     },
     {
       id: "access",
       Header: "Access",
-      accessor: (r) => {
+      accessor: (r: any) => {
         return r.admin ? "Yes" : "No";
       },
     },

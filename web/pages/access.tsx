@@ -1,10 +1,10 @@
+import CreateAccountForm from "./components/CreateAccountForm";
+import AccountTable from "./components/AccountTable";
+import styles from "./components/AccessManagementPage.module.css";
 import { useState } from "react";
-import CreateAccountForm from "./access-components/CreateAccountForm";
-import AccountTable from "./access-components/AccountTable";
-import styles from "./access-components/AccessManagementPage.module.css";
 
 export default function Access() {
-  const [accountList, updateAccountList] = useState([]);
+  const [accountList, updateAccountList] = useState<Object[] | null>([]);
 
   return (
     <div id={styles.background}>
@@ -14,10 +14,7 @@ export default function Access() {
           accountList={accountList}
           updateAccountList={updateAccountList}
         ></CreateAccountForm>
-        <AccountTable
-          accountList={accountList}
-          updateAccountList={updateAccountList}
-        ></AccountTable>
+        <AccountTable accountList={accountList}></AccountTable>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import styles from "./AccessManagementPage.module.css";
 
-export default function PermissionSelector(props) {
+export default function PermissionSelector(props: any) {
   const { admin, setAdmin } = props;
   const styleUnselected = styles.unselectedPermission.toString();
   const styleSelected = styles.selectedPermission.toString();

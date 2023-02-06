@@ -2,18 +2,19 @@ import { z } from "zod";
 import { useState } from "react";
 import PermissionSelector from "./PermissionSelctor";
 import styles from "./AccessManagementPage.module.css";
+import { ChangeEvent } from "react";
 
-export default function CreateAccountForm(props) {
+const CreateAccountForm = (props: any) => {
   const { accountList, updateAccountList } = props;
   const [emailField, setEmailField] = useState("");
   const [admin, setAdmin] = useState(true);
   const [displayError, setDisplayError] = useState(false);
 
-  function handleChange(event) {
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailField(event.target.value);
   }
 
-  function validateEmail(emailField): boolean {
+  function validateEmail({ emailField }: { emailField: string }): boolean {
     const emailSchema = z.string().email();
     const result = emailSchema.safeParse(emailField);
     return result.success;
@@ -30,7 +31,7 @@ export default function CreateAccountForm(props) {
   }
 
   function updateState() {
-    const isValid = validateEmail(emailField);
+    const isValid = validateEmail({ emailField });
     if (isValid) {
       setDisplayError(false);
       const temp = [...accountList];
@@ -75,4 +76,6 @@ export default function CreateAccountForm(props) {
       </div>
     </div>
   );
-}
+};
+
+export default CreateAccountForm;

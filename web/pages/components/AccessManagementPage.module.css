@@ -160,18 +160,13 @@
 .buttonDiv {
   display: flex;
   flex-direction: row;
-  justify-content: start;
+  justify-content: flex-start;
   column-gap: 10px;
 }
 
 /*END TABLE*/
 
 /*TEXT*/
-@font-face {
-  font-family: "Inter", sans-serif;
-  src: url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
-  font-style: normal;
-}
 
 .header1 {
   font-family: sans-serif;
