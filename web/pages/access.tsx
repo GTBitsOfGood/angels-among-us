@@ -1,6 +1,6 @@
-import CreateAccountForm from "./components/CreateAccountForm";
-import AccountTable from "./components/AccountTable";
-import styles from "./components/AccessManagementPage.module.css";
+import CreateAccountForm from "../components/CreateAccountForm";
+import AccountTable from "../components/AccountTable";
+import styles from "../components/AccessManagementPage.module.css";
 import { useState } from "react";
 
 export default function Access() {
