@@ -6,7 +6,7 @@ import {
   addAccount,
 } from "../../db/actions/Account";
 import { updateUser } from "../../db/actions/User";
-import Account from "../../db/models/Account";
+import Account, { Role } from "../../db/models/Account";
 import { router, protectedProcedure } from "../trpc";
 
 const emailInput = {
@@ -17,7 +17,7 @@ export const accountRouter = router({
   modify: protectedProcedure
     .input(
       z.object({
-        admin: z.boolean(),
+        role: z.nativeEnum(Role),
         ...emailInput,
       })
     )
@@ -35,7 +35,7 @@ export const accountRouter = router({
       try {
         const updateResult = await updateAccount(
           email,
-          { admin: input.admin },
+          { role: input.role },
           session
         );
 
@@ -45,7 +45,7 @@ export const accountRouter = router({
             code: "NOT_FOUND",
           });
 
-        await updateUser(email, { admin: input.admin }, session);
+        await updateUser(email, { role: input.role }, session);
 
         session.commitTransaction();
         return { success: true };
@@ -94,7 +94,7 @@ export const accountRouter = router({
     .input(
       z.object({
         email: z.string().email(),
-        admin: z.boolean(),
+        role: z.nativeEnum(Role),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -109,9 +109,9 @@ export const accountRouter = router({
       session.startTransaction();
 
       try {
-        const inputData: { email: string; admin: boolean } = {
+        const inputData: { email: string; role: Role } = {
           email: input.email,
-          admin: input.admin,
+          role: input.role,
         };
 
         if ((await addAccount(inputData, session)) === null) {
@@ -123,7 +123,7 @@ export const accountRouter = router({
 
         await updateUser(
           input.email,
-          { admin: input.admin, disabled: false },
+          { role: input.role, disabled: false },
           session
         );
 
