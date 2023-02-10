@@ -19,25 +19,22 @@ import {
 import { auth } from "../utils/firebase/firebaseClient";
 import React from "react";
 //import { trpc } from "../utils/trpc";
-//import { useAuth } from "../context/auth";
+import { useAuth } from "../context/auth";
 
 export default function Home() {
-  const [user, setUser] = React.useState<User | null>(null);
+  const { user } = useAuth();
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    setUser(result.user);
+    const user = result.user;
   }
 
   async function handleLoginGoogle() {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    setUser(result.user);
+    const user = result.user;
   }
-
-  //const { user } = useAuth();
-  //console.log(user);
 
   //const listPosts = trpc.post.list.useQuery();
   //console.log(listPosts.data);
@@ -183,7 +180,6 @@ export default function Home() {
             bgColor="#D9D9D9"
             onClick={() => {
               signOut(auth);
-              setUser(null);
             }}
           >
             Logout
