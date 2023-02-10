@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
+import { ObjectId } from "mongoose";
 import { z } from "zod";
-import { createPost } from "../../db/actions/Post";
+import { createPost, updatePostDetails } from "../../db/actions/Post";
 import {
   Age,
   Behavioral,
@@ -14,6 +15,8 @@ import {
   Trained,
 } from "../../db/models/Post";
 import { router, creatorProcedure } from "../trpc";
+
+const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
 const postSchema = z.object({
   type: z.nativeEnum(FosterType),
@@ -46,4 +49,22 @@ export const postRouter = router({
       });
     }
   }),
+  updateDetails: creatorProcedure
+    .input(
+      z.object({
+        _id: zodOidType,
+        updateFields: postSchema.partial(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        await updatePostDetails(input._id, input.updateFields);
+        return { success: true };
+      } catch (e) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }),
 });
