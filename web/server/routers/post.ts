@@ -1,7 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { ObjectId } from "mongoose";
 import { z } from "zod";
-import { createPost, updatePostDetails } from "../../db/actions/Post";
+import {
+  createPost,
+  updatePostDetails,
+  updatePostStatus,
+} from "../../db/actions/Post";
 import {
   Age,
   Behavioral,
@@ -59,6 +63,23 @@ export const postRouter = router({
     .mutation(async ({ input }) => {
       try {
         await updatePostDetails(input._id, input.updateFields);
+        return { success: true };
+      } catch (e) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }),
+  updateStatus: creatorProcedure
+    .input(
+      z.object({
+        _id: zodOidType,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        await updatePostStatus(input._id);
         return { success: true };
       } catch (e) {
         throw new TRPCError({

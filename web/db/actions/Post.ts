@@ -15,4 +15,11 @@ async function updatePostDetails(
   });
 }
 
-export { createPost, updatePostDetails };
+async function updatePostStatus(oid: ObjectId, session?: ClientSession) {
+  return await Post.findOneAndUpdate(
+    { _id: oid },
+    [{ $set: { covered: { $not: "$covered" } } }],
+    { session: session }
+  );
+}
+export { createPost, updatePostDetails, updatePostStatus };
