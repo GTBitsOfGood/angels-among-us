@@ -14,9 +14,6 @@ export default function Home() {
   const { user } = useAuth();
   console.log(user);
 
-  const listPosts = trpc.post.list.useQuery();
-  console.log(listPosts.data);
-
   return (
     <>
       <Head>
