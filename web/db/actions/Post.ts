@@ -1,7 +1,8 @@
+import { ClientSession } from "mongoose";
 import Post, { IPost } from "../models/Post";
 
-async function readPosts(): Promise<IPost[]> {
-  return await Post.find({});
+async function createPost(post: IPost, session?: ClientSession) {
+  return await Post.create([post], { session: session });
 }
 
-export { readPosts };
+export { createPost };
