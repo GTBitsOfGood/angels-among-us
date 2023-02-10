@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
+import { Role } from "./Account";
 const { Schema } = mongoose;
 
 export interface IUser {
   email: string;
   name: string;
   uid: string;
-  admin: boolean;
+  role: Role;
   disabled: boolean;
 }
 
@@ -26,9 +27,10 @@ const userSchema = new Schema<IUser>({
     unique: true,
     index: true,
   },
-  admin: {
-    type: Boolean,
+  role: {
+    type: String,
     required: true,
+    enum: Object.values(Role),
   },
   disabled: {
     type: Boolean,

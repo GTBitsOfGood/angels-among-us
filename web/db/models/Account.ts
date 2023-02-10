@@ -3,7 +3,13 @@ const { Schema } = mongoose;
 
 export interface IAccount {
   email: string;
-  admin: boolean;
+  role: Role;
+}
+
+export enum Role {
+  Admin = "admin",
+  ContentCreator = "contentCreator",
+  Volunteer = "volunteer",
 }
 
 const accountSchema = new Schema<IAccount>({
@@ -13,9 +19,10 @@ const accountSchema = new Schema<IAccount>({
     unique: true,
     index: true,
   },
-  admin: {
-    type: Boolean,
+  role: {
+    type: String,
     required: true,
+    enum: Object.values(Role),
   },
 });
 
