@@ -72,10 +72,11 @@ export default function Home() {
             >
               <Flex
                 bgColor="#D9D9D9"
-                paddingRight="3%"
-                paddingLeft="3%"
-                paddingTop="1%"
-                paddingBottom="1%"
+                position="absolute"
+                paddingRight="30px"
+                paddingLeft="30px"
+                paddingTop="10px"
+                paddingBottom="10px"
               >
                 logo
               </Flex>
@@ -124,11 +125,11 @@ export default function Home() {
             </Stack>
             <Stack
               direction="row"
-              width="100%"
+              width="48%"
+              position="absolute"
               alignItems="center"
               justifyContent="flex-end"
-              paddingTop="15%"
-              paddingRight="2%"
+              paddingTop="700px"
             >
               <Text color="#6D6D6D" fontSize="small">
                 what is this site?
