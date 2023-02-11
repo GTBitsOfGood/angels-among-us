@@ -3,7 +3,6 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
-  User,
 } from "firebase/auth";
 import {
   Button,
@@ -11,27 +10,19 @@ import {
   Stack,
   Text,
   Divider,
-  Popover,
   Image,
-  PopoverTrigger,
-  PopoverContent,
   Link,
   Tooltip,
   useDisclosure,
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
-  ModalCloseButton,
   ModalBody,
-  ModalFooter,
   IconButton,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import React from "react";
-//import { trpc } from "../utils/trpc";
 import { useAuth } from "../context/auth";
-import Navbar from "./components/Navbar";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 
 export default function Home() {
@@ -49,9 +40,6 @@ export default function Home() {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
   }
-
-  //const listPosts = trpc.post.list.useQuery();
-  //console.log(listPosts.data);
 
   if (user !== null) {
     return (
@@ -214,6 +202,7 @@ export default function Home() {
               <IconButton
                 bgColor="white"
                 aria-label="info"
+                cursor="default"
                 icon={<QuestionOutlineIcon />}
                 onClick={onOpen}
               ></IconButton>

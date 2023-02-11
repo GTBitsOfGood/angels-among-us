@@ -17,8 +17,10 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useAuth } from "../../context/auth";
+import { trpc } from "../../utils/trpc";
 export default function Navbar() {
   const { user } = useAuth();
+  const userRole = trpc.user.getRole.useQuery({ uid: user?.uid ?? null });
   if (user !== null) {
     return (
       <Flex
@@ -51,9 +53,11 @@ export default function Navbar() {
           alignItems="center"
           spacing={10}
         >
-          <Link>
-            <Text>Access Management</Text>
-          </Link>
+          {userRole.data == "admin" && (
+            <Link>
+              <Text>Access Management</Text>
+            </Link>
+          )}
           <Link>
             <Text>Resources</Text>
           </Link>
@@ -137,10 +141,14 @@ export default function Navbar() {
                     <Text cursor="default">Resources</Text>
                   </Link>
                   <Divider border="1px solid #7D7E82" />
-                  <Link>
-                    <Text cursor="default">Access Management</Text>
-                  </Link>
-                  <Divider border="1px solid #7D7E82" />
+                  {userRole.data == "admin" && (
+                    <>
+                      <Link>
+                        <Text cursor="default">Access Management</Text>
+                      </Link>
+                      <Divider border="1px solid #7D7E82" />
+                    </>
+                  )}
                 </Stack>
                 <Stack
                   direction="column"
