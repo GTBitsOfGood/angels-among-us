@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import OnboardingQuestion from "../components/OnboardingQuestion";
 import { Flex, Progress, Text, Button } from "@chakra-ui/react";
+import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
 
 export default function Onboarding() {
   const questionData = [
@@ -91,7 +92,24 @@ export default function Onboarding() {
         marginBottom="50px"
         marginRight={{ base: "50px", md: "120px", lg: "150px" }}
       >
-        <Button
+        <OnboardingBackNextBtn
+          onClickFunc={prevQ}
+          isBack={true}
+          qNum={qNum}
+          numQs={questionData.length}
+        ></OnboardingBackNextBtn>
+        <OnboardingBackNextBtn
+          onClickFunc={nextQ}
+          isBack={false}
+          qNum={qNum}
+          numQs={questionData.length}
+        ></OnboardingBackNextBtn>
+      </Flex>
+    </div>
+  );
+}
+
+/*<Button
           className="leftButton"
           onClick={() => prevQ()}
           borderWidth="1px"
@@ -105,22 +123,4 @@ export default function Onboarding() {
           _hover={{ backgroundColor: "#000000", textColor: "#FFFFFF" }}
         >
           &lt; Back
-        </Button>
-        <Button
-          className="rightButton"
-          onClick={() => nextQ()}
-          borderWidth="1px"
-          borderColor="#000000"
-          fontSize={{ base: "12px", md: "20px", lg: "24px" }}
-          fontWeight="semibold"
-          borderRadius="10px"
-          backgroundColor="#FFFFFF"
-          paddingY={{ base: "12px", md: "25px", lg: "25px" }}
-          _hover={{ backgroundColor: "#000000", textColor: "#FFFFFF" }}
-        >
-          Next &gt;
-        </Button>
-      </Flex>
-    </div>
-  );
-}
+        </Button>*/
