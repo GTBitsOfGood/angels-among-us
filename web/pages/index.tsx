@@ -3,7 +3,6 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
-  User,
 } from "firebase/auth";
 import {
   Button,
@@ -11,18 +10,24 @@ import {
   Stack,
   Text,
   Divider,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
+  Image,
   Link,
+  Tooltip,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  IconButton,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import React from "react";
-//import { trpc } from "../utils/trpc";
 import { useAuth } from "../context/auth";
+import { QuestionOutlineIcon } from "@chakra-ui/icons";
 
 export default function Home() {
   const { user } = useAuth();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
@@ -35,9 +40,6 @@ export default function Home() {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
   }
-
-  //const listPosts = trpc.post.list.useQuery();
-  //console.log(listPosts.data);
 
   if (user !== null) {
     return (
@@ -66,25 +68,23 @@ export default function Home() {
             <Stack
               direction="row"
               justifyContent="flex-end"
+              alignItems="center"
               width="100%"
               padding="2%"
-              marginBottom={["30%", "15%"]}
+              marginBottom={["50%", "15%"]}
             >
-              <Flex
-                bgColor="#D9D9D9"
+              <Image
                 position="absolute"
-                paddingRight="30px"
-                paddingLeft="30px"
-                paddingTop="10px"
-                paddingBottom="10px"
-              >
-                logo
-              </Flex>
+                right={["165px", "30px"]}
+                top={["120px", "20px"]}
+                src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
+                alt="logo"
+              ></Image>
             </Stack>
             <Stack
               direction="column"
               alignItems={["center", "flex-start"]}
-              width={["85%", "35%"]}
+              width={["75%", "35%"]}
               spacing="10"
             >
               <Text
@@ -96,13 +96,19 @@ export default function Home() {
               >
                 Welcome to the page message!
               </Text>
-              <Text color="#000000" fontWeight="semibold" fontSize="lg">
+              <Text
+                color="#000000"
+                fontWeight="semibold"
+                fontSize={["sm", "lg"]}
+                textAlign={["center", "left"]}
+                paddingBottom={["120px", "0px"]}
+              >
                 Subtitle and further description of the site.
               </Text>
               <Button
                 bgColor="#D9D9D9"
                 width="100%"
-                borderRadius="16px"
+                borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
                 onClick={handleLoginFacebook}
               >
@@ -116,7 +122,7 @@ export default function Home() {
               <Button
                 bgColor="#D9D9D9"
                 width="100%"
-                borderRadius="16px"
+                borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
                 onClick={handleLoginGoogle}
               >
@@ -129,59 +135,118 @@ export default function Home() {
               position="absolute"
               alignItems="center"
               justifyContent="flex-end"
-              paddingTop="700px"
+              overflow="clip"
+              bottom="30px"
+              right="20px"
+              display={["none", "flex"]}
             >
               <Text color="#6D6D6D" fontSize="small">
                 what is this site?
               </Text>
-              <Popover>
-                <PopoverTrigger>
-                  <Button
-                    bgColor="#D9D9D9"
-                    borderRadius="100%"
-                    cursor={["default", "pointer"]}
-                    size="xs"
-                    color="#6D6D6D"
+              <Tooltip
+                placement="top-start"
+                closeDelay={2000}
+                bgColor="#B5B5B5"
+                label={
+                  <Stack
+                    direction="column"
+                    paddingRight={2}
+                    paddingLeft={2}
+                    paddingTop={5}
+                    paddingBottom={5}
                   >
-                    ?
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent marginRight={10}>
-                  <Flex background={"rgba(217, 217, 217, 0.5)"} padding="5%">
+                    <Text color="black">
+                      The purpose of this site is to provide a space for
+                      confirmed Angels Among Us fosters to get matched with pets
+                      in need.
+                    </Text>
+                    <Text color="black">
+                      If you have not yet applied to become a foster, fill out{" "}
+                      <Link>
+                        <Text as="span" color="#0085FF">
+                          {" "}
+                          this application{" "}
+                        </Text>
+                      </Link>
+                      to apply.
+                    </Text>
+                    <Text color="black">
+                      For any other questions or concerns please email{" "}
+                      <Link>
+                        <Text as="span" color="#0085FF">
+                          person@aau.com.
+                        </Text>
+                      </Link>
+                    </Text>
+                    <Text color="black">Thanks!</Text>
+                  </Stack>
+                }
+              >
+                <QuestionOutlineIcon />
+              </Tooltip>
+            </Stack>
+            <Stack
+              direction="row"
+              width="48%"
+              position="absolute"
+              alignItems="center"
+              justifyContent="flex-end"
+              overflow="clip"
+              bottom="30px"
+              right="20px"
+              display={["flex", "none"]}
+            >
+              <Text color="#6D6D6D" fontSize="small">
+                what is this site?
+              </Text>
+              <IconButton
+                bgColor="white"
+                aria-label="info"
+                cursor="default"
+                icon={<QuestionOutlineIcon />}
+                onClick={onOpen}
+              ></IconButton>
+
+              <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                <ModalOverlay />
+                <ModalContent width="80%" bgColor="#D9D9D9">
+                  <ModalBody>
                     <Stack
                       direction="column"
-                      fontWeight="medium"
-                      lineHeight="5"
-                      spacing={4}
+                      paddingRight={2}
+                      paddingLeft={2}
+                      paddingTop={5}
+                      paddingBottom={5}
+                      bgColor="#D9D9D9"
                     >
-                      <Text>
+                      <Text color="black">
                         The purpose of this site is to provide a space for
                         confirmed Angels Among Us fosters to get matched with
                         pets in need.
                       </Text>
-                      <Text>
+                      <Text color="black">
                         If you have not yet applied to become a foster, fill out{" "}
                         <Link>
-                          <Text as="span" color="#0085FF">
+                          <Text as="span" color="#0085FF" cursor="default">
                             {" "}
                             this application{" "}
                           </Text>
                         </Link>
                         to apply.
                       </Text>
-                      <Text>
+                      <Text color="black">
                         For any other questions or concerns please email{" "}
                         <Link>
-                          <Text as="span" color="#0085FF">
+                          <Text as="span" color="#0085FF" cursor="default">
                             person@aau.com.
                           </Text>
                         </Link>
                       </Text>
-                      <Text>Thanks!</Text>
+                      <Text color="black">Thanks!</Text>
                     </Stack>
-                  </Flex>
-                </PopoverContent>
-              </Popover>
+                  </ModalBody>
+                </ModalContent>
+              </Modal>
             </Stack>
           </Stack>
         </Flex>
