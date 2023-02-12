@@ -1,15 +1,31 @@
 import { router, publicProcedure } from "../trpc";
 import { z } from "zod";
+import { findUserByUid } from "../../db/actions/User";
+import { TRPCError } from "@trpc/server";
 export const userRouter = router({
-  create: publicProcedure
+  getRole: publicProcedure
     .input(
       z.object({
-        title: z.string(),
+        uid: z.nullable(z.string()),
       })
     )
-    .mutation(({ input }) => {}),
-  list: publicProcedure.query(() => {
-    // ...
-    return [];
-  }),
+    .query(async ({ ctx, input }) => {
+      const uid = input.uid;
+
+      if (uid === null) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Not authenticated",
+        });
+      } else {
+        const user = await findUserByUid(uid);
+        if (user === null) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Account does not exist",
+          });
+        }
+        return user.role;
+      }
+    }),
 });
