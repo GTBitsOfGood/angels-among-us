@@ -5,14 +5,14 @@ import { Flex, Progress, Text, Button } from "@chakra-ui/react";
 export default function Onboarding() {
   const questionData = [
     {
-      title: "What dog size can you manage?",
+      title: "What dog size do you think that your house can manage?",
       description: "Select a dog size based on your situation",
       options: ["Small", "Medium", "Big"],
     },
     {
       title: "What age dog can you manage?",
       description: "Select a dog age based on your situation",
-      options: ["0-2", "2-4", "4-6", "6-8", "8-10", "10-12", "12-14", "14-16"],
+      options: ["0-2", "2-4", "4-6", "6-8", "8-10", "10-12"],
     },
     {
       title: "What color dog do you want",
@@ -27,7 +27,7 @@ export default function Onboarding() {
     {
       title: "What dog volume",
       description: "how loud can ur dog be",
-      options: ["silent", "quiet", "loud", "very loud"],
+      options: ["silent", "quiet", "loud"],
     },
   ];
 
@@ -47,37 +47,61 @@ export default function Onboarding() {
 
   return (
     <div>
-      <Flex flexDir="row" marginX="200px" marginY="50px" alignItems="center">
-        <Progress
-          width="90%"
-          value={(100 * qNum) / (questionData.length - 1)}
-          borderRadius="10px"
-          height="20px"
-          colorScheme="blackAlpha"
-          backgroundColor="#D9D9D9"
-          marginRight="20px"
-        ></Progress>{" "}
-        <Text fontWeight="semibold" textColor="#3D3D3D">
-          {qNum + 1 + " of " + questionData.length}
-        </Text>
+      <Flex
+        className="page"
+        flexDir="column"
+        alignItems="center"
+        marginX={{ base: "36px", md: "100px", lg: "200px" }}
+        marginY={{ base: "64px", md: "80px", lg: "50px" }}
+      >
+        <Flex
+          className="progress"
+          flexDir="row"
+          alignItems="center"
+          justifyContent="center"
+          width="100%"
+          marginBottom={{ base: "50px", md: "60px", lg: "40px" }}
+        >
+          <Progress
+            width={{ base: "80%", md: "80%", lg: "90%" }}
+            value={(100 * qNum) / (questionData.length - 1)}
+            borderRadius="10px"
+            height={{ base: "10px", md: "20px", lg: "20px" }}
+            colorScheme="blackAlpha"
+            backgroundColor="#D9D9D9"
+            marginRight={{ base: "16px", md: "20px", lg: "25px" }}
+          ></Progress>{" "}
+          <Text
+            fontWeight="semibold"
+            textColor="#3D3D3D"
+            fontSize={{ base: "10px", md: "16px", lg: "20px" }}
+          >
+            {qNum + 1 + " of " + questionData.length}
+          </Text>
+        </Flex>
+        <OnboardingQuestion
+          title={questionData[qNum].title}
+          description={questionData[qNum].description}
+          options={questionData[qNum].options}
+        />
       </Flex>
-      <OnboardingQuestion
-        title={questionData[qNum].title}
-        description={questionData[qNum].description}
-        options={questionData[qNum].options}
-      />
-      <Flex justifyContent="flex-end" marginRight="150px" marginY="50px">
+      <Flex
+        className="buttons"
+        justifyContent="flex-end"
+        marginBottom="50px"
+        marginRight={{ base: "50px", md: "120px", lg: "150px" }}
+      >
         <Button
           className="leftButton"
           onClick={() => prevQ()}
           borderWidth="1px"
           borderColor="#000000"
-          marginRight="20px"
-          fontSize="2xl"
+          fontSize={{ base: "12px", md: "20px", lg: "24px" }}
           fontWeight="semibold"
           borderRadius="10px"
           backgroundColor="#FFFFFF"
-          paddingY="25px"
+          paddingY={{ base: "12px", md: "25px", lg: "25px" }}
+          marginRight={{ base: "12px", md: "20px", lg: "25px" }}
           _hover={{ backgroundColor: "#000000", textColor: "#FFFFFF" }}
         >
           &lt; Back
@@ -87,11 +111,11 @@ export default function Onboarding() {
           onClick={() => nextQ()}
           borderWidth="1px"
           borderColor="#000000"
-          fontSize="2xl"
+          fontSize={{ base: "12px", md: "20px", lg: "24px" }}
           fontWeight="semibold"
           borderRadius="10px"
           backgroundColor="#FFFFFF"
-          paddingY="25px"
+          paddingY={{ base: "12px", md: "25px", lg: "25px" }}
           _hover={{ backgroundColor: "#000000", textColor: "#FFFFFF" }}
         >
           Next &gt;
