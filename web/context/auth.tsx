@@ -6,16 +6,28 @@ import React, {
   PropsWithChildren,
 } from "react";
 import nookies from "nookies";
-import { app, auth } from "../utils/firebase/firebaseClient";
+import { auth } from "../utils/firebase/firebaseClient";
+import { trpc } from "../utils/trpc";
+import { IUser } from "../db/models/User";
 
-const AuthContext = createContext<{ user: typeof auth.currentUser }>({
+const AuthContext = createContext<{
+  user: typeof auth.currentUser;
+  loading: boolean;
+  userData: IUser | undefined;
+}>({
   user: null,
+  loading: true,
+  userData: undefined,
 });
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<typeof auth.currentUser>(null);
+  const [loading, setLoading] = useState(true);
+
+  const userData = trpc.user.get.useQuery({ uid: user?.uid ?? null }).data;
 
   useEffect(() => {
+    setLoading(true);
     if (typeof window !== "undefined") {
       (window as any).nookies = nookies;
     }
@@ -26,6 +38,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setUser(null);
         nookies.destroy(null, "token");
         nookies.set(null, "token", "", { path: "/" });
+        setLoading(false);
         return;
       }
 
@@ -34,21 +47,26 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setUser(user);
       nookies.destroy(null, "token");
       nookies.set(null, "token", token, { path: "/" });
+      setLoading(false);
     });
   }, []);
 
   // force refresh the token every 10 minutes
   useEffect(() => {
     const handle = setInterval(async () => {
+      setLoading(true);
       console.log(`refreshing token...`);
       const user = auth.currentUser;
       if (user) await user.getIdToken(true);
+      setLoading(false);
     }, 10 * 60 * 1000);
     return () => clearInterval(handle);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, userData }}>
+      {children}
+    </AuthContext.Provider>
   );
 }
 

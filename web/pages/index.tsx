@@ -19,6 +19,8 @@ import {
   ModalContent,
   ModalBody,
   IconButton,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import React from "react";
@@ -26,7 +28,7 @@ import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   async function handleLoginFacebook() {
@@ -39,6 +41,14 @@ export default function Home() {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+  }
+
+  if (loading) {
+    return (
+      <Center w="100vw" h="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
   }
 
   if (user !== null) {
