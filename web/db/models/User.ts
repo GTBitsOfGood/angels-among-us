@@ -1,14 +1,7 @@
 import mongoose from "mongoose";
-import { Role } from "./Account";
+import { Role } from "../../utils/types/account";
+import { IUser } from "../../utils/types/user";
 const { Schema } = mongoose;
-
-export interface IUser {
-  email: string;
-  name: string;
-  uid: string;
-  role: Role;
-  disabled: boolean;
-}
 
 const userSchema = new Schema<IUser>({
   email: {
