@@ -8,7 +8,7 @@ import React, {
 import nookies from "nookies";
 import { auth } from "../utils/firebase/firebaseClient";
 import { trpc } from "../utils/trpc";
-import { IUser } from "../db/models/User";
+import { IUser } from "../utils/types/user";
 
 const AuthContext = createContext<{
   user: typeof auth.currentUser;
