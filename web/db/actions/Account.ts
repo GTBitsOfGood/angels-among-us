@@ -1,5 +1,6 @@
 import { ClientSession, UpdateQuery } from "mongoose";
-import Account, { IAccount } from "../models/Account";
+import Account from "../models/Account";
+import { IAccount } from "../../utils/types/account";
 
 async function removeAccount(email: string, session?: ClientSession) {
   return await Account.findOneAndDelete({ email }, { session: session });

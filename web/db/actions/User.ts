@@ -1,5 +1,6 @@
 import { ClientSession, HydratedDocument, UpdateQuery } from "mongoose";
-import User, { IUser } from "../models/User";
+import User from "../models/User";
+import { IUser } from "../../utils/types/user";
 
 async function findUserByUid(
   uid: string,

@@ -6,7 +6,8 @@ import {
   addAccount,
 } from "../../db/actions/Account";
 import { updateUser } from "../../db/actions/User";
-import Account, { Role } from "../../db/models/Account";
+import Account from "../../db/models/Account";
+import { Role } from "../../utils/types/account";
 import { router, protectedProcedure } from "../trpc";
 
 const emailInput = {
