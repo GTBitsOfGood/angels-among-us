@@ -3,7 +3,7 @@ import { z } from "zod";
 import { findUserByUid } from "../../db/actions/User";
 import { TRPCError } from "@trpc/server";
 export const userRouter = router({
-  getRole: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         uid: z.nullable(z.string()),
@@ -25,7 +25,7 @@ export const userRouter = router({
             message: "Account does not exist",
           });
         }
-        return user.role;
+        return user;
       }
     }),
 });
