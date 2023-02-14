@@ -10,6 +10,7 @@ on:
       - "web/**/*.ts"
       - "web/**/*.jsx"
       - "web/**/*.tsx"
+      - ".github/workflows/*"
 
 env:
   NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
