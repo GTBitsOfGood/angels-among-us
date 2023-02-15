@@ -9,22 +9,24 @@ import nookies from "nookies";
 import { auth } from "../utils/firebase/firebaseClient";
 import { trpc } from "../utils/trpc";
 import { IUser } from "../utils/types/user";
+import { HydratedDocument } from "mongoose";
 
 const AuthContext = createContext<{
   user: typeof auth.currentUser;
   loading: boolean;
-  userData: IUser | undefined;
+  userData: HydratedDocument<IUser> | null;
 }>({
   user: null,
   loading: true,
-  userData: undefined,
+  userData: null,
 });
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<typeof auth.currentUser>(null);
   const [loading, setLoading] = useState(true);
 
-  const userData = trpc.user.get.useQuery({ uid: user?.uid ?? null }).data;
+  const userData = trpc.user.get.useQuery({ uid: user?.uid ?? null })
+    .data as HydratedDocument<IUser> | null;
 
   useEffect(() => {
     setLoading(true);

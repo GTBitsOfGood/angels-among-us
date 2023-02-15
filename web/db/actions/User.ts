@@ -5,7 +5,7 @@ import { IUser } from "../../utils/types/user";
 async function findUserByUid(
   uid: string,
   session?: ClientSession
-): Promise<IUser | null> {
+): Promise<HydratedDocument<IUser> | null> {
   return await User.findOne({ uid }, null, { session });
 }
 
