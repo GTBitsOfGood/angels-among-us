@@ -1,7 +1,7 @@
 import { useState } from "react";
-import OnboardingQuestion from "./components/OnboardingQuestion";
+import OnboardingQuestion from "../components/OnboardingQuestion";
 import { Flex, Progress, Text } from "@chakra-ui/react";
-import OnboardingBackNextBtn from "./components/OnboardingBackNextBtn";
+import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
 
 export default function Onboarding() {
   const questionData = [

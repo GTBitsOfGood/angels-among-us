@@ -16,8 +16,8 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { useAuth } from "../../context/auth";
-import { Role } from "../../utils/types/account";
+import { useAuth } from "../context/auth";
+import { Role } from "../utils/types/account";
 
 export default function Navbar() {
   const { user, loading, userData } = useAuth();
