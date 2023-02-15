@@ -1,34 +1,30 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import OnboardingQuestion from "../components/OnboardingQuestion";
-import { Flex, Progress, Text, Button } from "@chakra-ui/react";
+import { Flex, Progress, Text } from "@chakra-ui/react";
 import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
 
 export default function Onboarding() {
   const questionData = [
     {
-      title: "What dog size do you think that your house can manage?",
-      description: "Select a dog size based on your situation",
-      options: ["Small", "Medium", "Big"],
+      title: "Question 1",
+      description: "Question 1 description",
+      options: ["Option 1", "Option 2", "Option 3"],
     },
     {
-      title: "What age dog can you manage?",
-      description: "Select a dog age based on your situation",
-      options: ["0-2", "2-4", "4-6", "6-8", "8-10", "10-12"],
+      title: "Question 2: adding some filler text here for question 2",
+      description:
+        "Question 2 description: adding some more filler description text here for the question 2 description",
+      options: ["Option 1", "Option 2", "Option 3"],
     },
     {
-      title: "What color dog do you want",
-      description: "Choose a color idk man",
-      options: ["white", "brown", "black"],
+      title: "Question 3",
+      description: "Question 3 description",
+      options: ["Option 1", "Option 2", "Option 3"],
     },
     {
-      title: "What breed dog",
-      description: "Breed",
-      options: ["collie", "retriever", "terrier"],
-    },
-    {
-      title: "What dog volume",
-      description: "how loud can ur dog be",
-      options: ["silent", "quiet", "loud"],
+      title: "Question 4",
+      description: "Question 4 description",
+      options: ["Option 1", "Option 2", "Option 3"],
     },
   ];
 
@@ -61,17 +57,17 @@ export default function Onboarding() {
           alignItems="center"
           justifyContent="center"
           width="100%"
-          marginBottom={{ base: "50px", md: "60px", lg: "40px" }}
+          marginBottom={{ base: "50px", md: "60px", lg: "60px" }}
         >
           <Progress
-            width={{ base: "80%", md: "80%", lg: "90%" }}
+            width={{ base: "80%", md: "80%", lg: "85%" }}
             value={(100 * qNum) / (questionData.length - 1)}
             borderRadius="10px"
             height={{ base: "10px", md: "20px", lg: "20px" }}
             colorScheme="blackAlpha"
             backgroundColor="#D9D9D9"
             marginRight={{ base: "16px", md: "20px", lg: "25px" }}
-          ></Progress>{" "}
+          ></Progress>
           <Text
             fontWeight="semibold"
             textColor="#3D3D3D"
@@ -87,7 +83,7 @@ export default function Onboarding() {
         />
       </Flex>
       <Flex
-        className="buttons"
+        className="backnextbuttons"
         justifyContent="flex-end"
         marginBottom="50px"
         marginRight={{ base: "50px", md: "120px", lg: "150px" }}
@@ -108,19 +104,3 @@ export default function Onboarding() {
     </div>
   );
 }
-
-/*<Button
-          className="leftButton"
-          onClick={() => prevQ()}
-          borderWidth="1px"
-          borderColor="#000000"
-          fontSize={{ base: "12px", md: "20px", lg: "24px" }}
-          fontWeight="semibold"
-          borderRadius="10px"
-          backgroundColor="#FFFFFF"
-          paddingY={{ base: "12px", md: "25px", lg: "25px" }}
-          marginRight={{ base: "12px", md: "20px", lg: "25px" }}
-          _hover={{ backgroundColor: "#000000", textColor: "#FFFFFF" }}
-        >
-          &lt; Back
-        </Button>*/

@@ -10,7 +10,6 @@ function OnboardingQuestion(props: {
 
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "onboardingQOptions",
-    onChange: console.log,
   });
 
   const group = getRootProps();
@@ -25,16 +24,17 @@ function OnboardingQuestion(props: {
       <>
         <Flex className="questionText" flexDir="column">
           <Text
-            marginX={{ base: "36px", md: "60px", lg: "100px" }}
-            fontSize={{ base: "24px", md: "40px", lg: "48px" }}
-            marginBottom={{ base: "12px", md: "20px", lg: "10px" }}
-            lineHeight={{ base: "30px", md: "50px", lg: "60px" }}
+            marginX={{ base: "24px", md: "60px", lg: "100px" }}
+            fontSize={{ base: "24px", md: "40px", lg: "44px" }}
+            marginBottom={{ base: "12px", md: "20px", lg: "24px" }}
+            lineHeight={{ base: "30px", md: "50px", lg: "52px" }}
             as="b"
           >
             {title}
           </Text>
           <Text
-            fontSize={{ base: "16px", md: "24px", lg: "32px" }}
+            fontSize={{ base: "16px", md: "24px", lg: "28px" }}
+            lineHeight={{ lg: "32px" }}
             color="#696969"
           >
             {description}
