@@ -7,17 +7,17 @@ import {
   updatePostStatus,
 } from "../../db/actions/Post";
 import {
-  Age,
-  Behavioral,
   FosterType,
+  Size,
   Gender,
+  Age,
+  Temperament,
   GoodWith,
   Medical,
-  Size,
-  Status,
-  Temperament,
+  Behavioral,
   Trained,
-} from "../../db/models/Post";
+  Status,
+} from "../../utils/types/post";
 import { router, creatorProcedure } from "../trpc";
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);

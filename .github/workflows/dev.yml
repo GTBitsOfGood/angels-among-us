@@ -10,6 +10,8 @@ on:
       - "web/**/*.ts"
       - "web/**/*.jsx"
       - "web/**/*.tsx"
+      - ".github/workflows/*"
+
 jobs:
   deploy-web:
     runs-on: ubuntu-latest

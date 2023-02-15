@@ -1,5 +1,6 @@
 import { ClientSession, ObjectId, UpdateQuery } from "mongoose";
-import Post, { IPost } from "../models/Post";
+import Post from "../models/Post";
+import { IPost } from "../../utils/types/post";
 
 async function createPost(post: IPost, session?: ClientSession) {
   return await Post.create([post], { session: session });
