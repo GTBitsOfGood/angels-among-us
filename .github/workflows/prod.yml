@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Production
-      url: ${{ steps.vercel.outputs.preview-url }}
+      url: ${{ secrets.VERCEL_URL }}
     outputs:
       preview_url: ${{ steps.vercel.outputs.preview-url }}
     steps:
