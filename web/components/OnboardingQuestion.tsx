@@ -56,19 +56,3 @@ function OnboardingQuestion(props: {
 }
 
 export default OnboardingQuestion;
-
-/*<Flex className="options">
-          {options.map((option) => {
-            return (
-              <Text
-                fontSize="3xl"
-                fontWeight="semibold"
-                backgroundColor="#EDEDED"
-                margin="20px"
-                padding="50px"
-              >
-                {option}
-              </Text>
-            );
-          })}
-        </Flex>*/

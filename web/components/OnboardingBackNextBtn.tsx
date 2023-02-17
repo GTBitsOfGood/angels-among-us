@@ -9,17 +9,6 @@ function OnboardingBackNextBtn(props: {
   const { onClickFunc, isBack, qNum, numQs } = props;
   const text = isBack ? "< Back" : "Next >";
 
-  /*let buttonPosition = {
-    right: { base: "10%", md: "100px", lg: "200px" },
-    bottom: { base: "30px", md: "70px", lg: "70px" },
-  };
-  if (isBack) {
-    buttonPosition = {
-      right: { base: "75%", md: "220px", lg: "330px" },
-      bottom: { base: "30px", md: "70px", lg: "70px" },
-    };
-  }*/
-
   let buttonAppearance = {
     borderColor: "#000000",
     textColor: "#000000",

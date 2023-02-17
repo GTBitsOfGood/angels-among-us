@@ -5,9 +5,7 @@ function OnboardingOptionCard(props: PropsWithChildren<UseRadioProps>) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
 
   const input = getInputProps();
-  console.log({ ...input });
   const checkbox = getCheckboxProps();
-  console.log({ ...checkbox });
 
   return (
     <Box as="label">
