@@ -9,6 +9,17 @@ function OnboardingBackNextBtn(props: {
   const { onClickFunc, isBack, qNum, numQs } = props;
   const text = isBack ? "< Back" : "Next >";
 
+  /*let buttonPosition = {
+    right: { base: "10%", md: "100px", lg: "200px" },
+    bottom: { base: "30px", md: "70px", lg: "70px" },
+  };
+  if (isBack) {
+    buttonPosition = {
+      right: { base: "75%", md: "220px", lg: "330px" },
+      bottom: { base: "30px", md: "70px", lg: "70px" },
+    };
+  }*/
+
   let buttonAppearance = {
     borderColor: "#000000",
     textColor: "#000000",
@@ -33,12 +44,12 @@ function OnboardingBackNextBtn(props: {
       borderWidth="1px"
       borderColor={buttonAppearance.borderColor}
       textColor={buttonAppearance.textColor}
-      fontSize={{ base: "12px", md: "20px", lg: "24px" }}
+      fontSize={{ base: "16px", md: "20px", lg: "24px" }}
       fontWeight="semibold"
       borderRadius="10px"
       backgroundColor="#FFFFFF"
-      paddingY={{ base: "12px", md: "25px", lg: "25px" }}
-      marginRight={{ base: "12px", md: "20px", lg: "25px" }}
+      paddingX={{ base: "50px", md: "18px", lg: "18px" }}
+      paddingY={{ base: "22px", md: "25px", lg: "25px" }}
       _hover={hoverProperty}
     >
       {text}

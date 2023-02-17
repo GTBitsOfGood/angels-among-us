@@ -14,7 +14,14 @@ export default function Onboarding() {
       title: "Question 2: adding some filler text here for question 2",
       description:
         "Question 2 description: adding some more filler description text here for the question 2 description",
-      options: ["Option 1", "Option 2", "Option 3"],
+      options: [
+        "Option 1",
+        "Option 2",
+        "Option 3",
+        "Option 4",
+        "Option 5",
+        "Option 6",
+      ],
     },
     {
       title: "Question 3",
@@ -49,7 +56,8 @@ export default function Onboarding() {
         flexDir="column"
         alignItems="center"
         marginX={{ base: "36px", md: "100px", lg: "200px" }}
-        marginY={{ base: "64px", md: "80px", lg: "50px" }}
+        marginTop={{ base: "64px", md: "80px", lg: "50px" }}
+        marginBottom={{ base: "120px", md: "180px", lg: "180px" }}
       >
         <Flex
           className="progress"
@@ -60,7 +68,7 @@ export default function Onboarding() {
           marginBottom={{ base: "50px", md: "60px", lg: "60px" }}
         >
           <Progress
-            width={{ base: "80%", md: "80%", lg: "85%" }}
+            width={{ base: "75%", md: "80%", lg: "85%" }}
             value={(100 * qNum) / (questionData.length - 1)}
             borderRadius="10px"
             height={{ base: "10px", md: "20px", lg: "20px" }}
@@ -84,9 +92,11 @@ export default function Onboarding() {
       </Flex>
       <Flex
         className="backnextbuttons"
-        justifyContent="flex-end"
-        marginBottom="50px"
-        marginRight={{ base: "50px", md: "120px", lg: "150px" }}
+        position="fixed"
+        right={{ base: "50%", md: "200px", lg: "300px" }}
+        transform={{ base: "translateX(50%)" }}
+        bottom={{ base: "30px", md: "70px", lg: "70px" }}
+        gap={{ base: "8px", md: "20px", lg: "25px" }}
       >
         <OnboardingBackNextBtn
           onClickFunc={prevQ}

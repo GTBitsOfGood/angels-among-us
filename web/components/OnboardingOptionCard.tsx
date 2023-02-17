@@ -1,6 +1,7 @@
-import { useRadio, Box } from "@chakra-ui/react";
+import { useRadio, Box, UseRadioProps } from "@chakra-ui/react";
+import { PropsWithChildren } from "react";
 
-function OnboardingOptionCard(props: any) {
+function OnboardingOptionCard(props: PropsWithChildren<UseRadioProps>) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
 
   const input = getInputProps();
