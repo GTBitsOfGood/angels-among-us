@@ -16,14 +16,23 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
-import { useAuth } from "../../context/auth";
-import { Role } from "../../utils/types/account";
+import { useAuth } from "../context/auth";
+import { Role } from "../utils/types/account";
+import { useRouter } from "next/router";
+import { navbarVisiblity } from "../utils/visibility";
+import { Pages } from "../utils/consts";
 
 export default function Navbar() {
+  const router = useRouter();
+  console.log(navbarVisiblity[router.pathname as Pages]);
   const { user, loading, userData } = useAuth();
   const role = userData?.role;
 
-  if (loading || user === null) {
+  if (
+    loading ||
+    user === null ||
+    !(navbarVisiblity[router.pathname as Pages] ?? true)
+  ) {
     return <></>;
   }
   return (
