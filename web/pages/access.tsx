@@ -1,9 +1,9 @@
-import CreateAccountForm from "../components/CreateAccountForm";
-import AccountTable from "../components/AccountTable";
+import CreateAccountForm from "../components/AccessManagement/CreateAccountForm";
+import AccountTable from "../components/AccessManagement/AccountTable";
 import { useState } from "react";
 import { Text, Box, Stack, Grid, Flex } from "@chakra-ui/react";
-import { IAccount } from "../db/models/Account";
-import { Role } from "../components/Role";
+import { IAccount } from "../utils/types/account";
+import { Role } from "../utils/types/account";
 
 export default function Access() {
   const [accountList, updateAccountList] = useState<IAccount[]>([

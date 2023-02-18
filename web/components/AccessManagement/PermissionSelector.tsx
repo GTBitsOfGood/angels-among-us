@@ -1,5 +1,5 @@
 import styles from "./AccessManagementPage.module.css";
-import { Role } from "../components/Role";
+import { Role } from "../../utils/types/account";
 import { ButtonGroup, Button, Text } from "@chakra-ui/react";
 
 interface PropertyType {

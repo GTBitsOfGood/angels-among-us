@@ -1,4 +1,4 @@
-import { IAccount } from "../db/models/Account";
+import { IAccount } from "../../utils/types/account";
 import RoleSelector from "./RoleSelector";
 import { Box, Flex, SimpleGrid, Text, Wrap } from "@chakra-ui/react";
 import styles from "./AccessManagementPage.module.css";

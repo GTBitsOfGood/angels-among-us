@@ -1,5 +1,5 @@
-import { IAccount } from "../db/models/Account";
-import { Role } from "./Role";
+import { IAccount } from "../../utils/types/account";
+import { Role } from "../../utils/types/account";
 import {
   Popover,
   PopoverTrigger,

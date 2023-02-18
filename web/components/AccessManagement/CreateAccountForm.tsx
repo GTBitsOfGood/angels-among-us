@@ -2,8 +2,8 @@ import { z } from "zod";
 import { useState } from "react";
 import PermissionSelector from "./PermissionSelector";
 import { ChangeEvent } from "react";
-import { Role } from "../components/Role";
-import { IAccount } from "../db/models/Account";
+import { Role } from "../../utils/types/account";
+import { IAccount } from "../../utils/types/account";
 import {
   Input,
   Text,
