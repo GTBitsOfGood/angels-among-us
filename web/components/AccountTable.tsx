@@ -1,103 +1,185 @@
-import { useTable, TableInstance, UsePaginationState } from "react-table";
-import AccountManagementButtons from "./AccountActionButtons";
-import styles from "./AccessManagementPage.module.css";
+import { useState, useRef, useEffect } from "react";
+import { IAccount } from "../db/models/Account";
+import AccountCard from "./AccountCard";
+import {
+  Flex,
+  SimpleGrid,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  Stack,
+  Input,
+  Box,
+  useDisclosure,
+} from "@chakra-ui/react";
 
-export type TableInstanceWithHooks<T extends object> = TableInstance<T> & {
-  state: UsePaginationState<T>;
-};
+interface PropertyType {
+  accountList: IAccount[];
+  updateAccountList: Function;
+}
 
-const Table = ({ columns, data }: { columns: any; data: any }) => {
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({
-      columns,
-      data,
-    });
+function AccountTable(props: PropertyType) {
+  const { accountList, updateAccountList } = props;
+  const [itemsToDelete, updateItemsToDelete] = useState<Array<IAccount>>([]);
+  const [selectItems, updateSelectItems] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log(accountList);
+  }, [accountList]);
+
+  function toggleSelect() {
+    updateSelectItems(!selectItems);
+    updateItemsToDelete([]);
+  }
+
+  function handleDelete() {
+    var temp = accountList.filter((e) => itemsToDelete.indexOf(e) < 0);
+    updateAccountList(temp);
+    updateSelectItems(false);
+    updateItemsToDelete([]);
+  }
+
+  function DeletePopup() {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const cancelRef = useRef(null);
+
+    return (
+      <>
+        <Box
+          onClick={onOpen}
+          as="button"
+          bgColor="#BCBCBC"
+          borderRadius="16px"
+          maxWidth="208px"
+          minWidth="170px"
+          height="36px"
+        >
+          Delete Selected Items
+        </Box>
+        <AlertDialog
+          motionPreset="slideInBottom"
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+          isOpen={isOpen}
+          isCentered
+        >
+          <AlertDialogOverlay />
+          <AlertDialogContent borderRadius="30px" padding={5}>
+            <AlertDialogHeader alignItems="center">
+              Are you sure you want to delete the items selected?
+            </AlertDialogHeader>
+            <AlertDialogBody>This cannot be undone.</AlertDialogBody>
+            <Flex
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Box
+                as="button"
+                maxW="150px"
+                minW="120px"
+                height="35px"
+                borderRadius="16px"
+                bgColor="#CACACA"
+                onClick={onClose}
+              >
+                Cancel
+              </Box>
+              <Box
+                as="button"
+                maxW="150px"
+                minW="120px"
+                height="35px"
+                borderRadius="16px"
+                bgColor="#8E8E8E"
+                textColor="FFFFFF"
+                onClick={handleDelete}
+                ref={cancelRef}
+                ml={3}
+              >
+                Yes
+              </Box>
+            </Flex>
+          </AlertDialogContent>
+        </AlertDialog>
+      </>
+    );
+  }
 
   return (
-    <div className={styles.tableDiv}>
-      <table className={styles.table} {...getTableProps()}>
-        <thead className={styles.tableHead}>
-          {headerGroups.map((headerGroup) => (
-            <tr
-              className={styles.td}
-              {...headerGroup.getHeaderGroupProps()}
-              key="0"
+    <Stack gap={2} width="inherit">
+      <Flex
+        flexDirection={"row"}
+        alignItems="center"
+        justifyContent="space-between"
+        bgColor="#D9D9D9"
+        padding={4}
+        gap={2}
+      >
+        <Input
+          variant="filled"
+          type="text"
+          placeholder="Search"
+          bgColor="#FFFFFF"
+          borderRadius="16px"
+          border=" 1px solid #BCBCBC"
+          height="36px"
+          maxWidth="400px"
+          minWidth={9}
+        ></Input>
+        {selectItems ? (
+          <Flex flexDirection="row" gap={2}>
+            <Box
+              as="button"
+              bgColor="#F1F1F1"
+              borderRadius="16px"
+              maxWidth="127px"
+              minWidth="70px"
+              height="36px"
+              onClick={toggleSelect}
             >
-              {headerGroup.headers.map((column) => (
-                <th
-                  className={styles.th}
-                  {...column.getHeaderProps()}
-                  key={column.id}
-                >
-                  {column.render("Header")}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-
-        <tbody className={styles.tableBody} {...getTableBodyProps()}>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr
-                className={styles.tableRow}
-                {...row.getRowProps()}
-                key={rows.indexOf(row)}
-              >
-                {row.cells.map((cell) => {
-                  return (
-                    <td
-                      className={styles.td}
-                      {...cell.getCellProps()}
-                      key={row.cells.indexOf(cell)}
-                    >
-                      {cell.render("Cell")}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+              Cancel
+            </Box>
+            <DeletePopup></DeletePopup>
+          </Flex>
+        ) : (
+          <Box
+            as="button"
+            bgColor="#BCBCBC"
+            borderRadius="16px"
+            maxWidth="208px"
+            minWidth="170px"
+            height="36px"
+            onClick={toggleSelect}
+          >
+            Select Items
+          </Box>
+        )}
+      </Flex>
+      <SimpleGrid
+        spacing={4}
+        columns={{ sm: 1, md: 2 }}
+        padding={{ sm: "15px", md: "20px" }}
+        bgColor="#FFFFFF"
+      >
+        {accountList.map((e: IAccount) => {
+          return (
+            <AccountCard
+              account={e}
+              key={accountList.indexOf(e)}
+              selectItems={selectItems}
+              itemsToDelete={itemsToDelete}
+              updateItemsToDelete={updateItemsToDelete}
+              accountList={accountList}
+              updateAccountList={updateAccountList}
+            ></AccountCard>
+          );
+        })}
+      </SimpleGrid>
+    </Stack>
   );
-};
-
-function AccountTable(props: any) {
-  const { accountList } = props;
-
-  const columns = [
-    {
-      id: "email",
-      Header: "Email Address",
-      accessor: "email",
-    },
-    {
-      id: "admin",
-      Header: "Role",
-      accessor: (r: any) => {
-        return r.admin ? "Administrator" : "Volunteer";
-      },
-    },
-    {
-      id: "access",
-      Header: "Access",
-      accessor: (r: any) => {
-        return r.admin ? "Yes" : "No";
-      },
-    },
-    {
-      id: "action",
-      Header: "Actions",
-      accessor: () => {
-        return <AccountManagementButtons></AccountManagementButtons>;
-      },
-    },
-  ];
-
-  return <Table data={accountList} columns={columns} />;
 }
 
 export default AccountTable;

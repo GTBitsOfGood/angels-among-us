@@ -15,4 +15,12 @@ async function updateAccount(
   });
 }
 
-export { removeAccount, updateAccount };
+async function addAccount(inputData: IAccount, session?: ClientSession) {
+  try {
+    return await Account.create([inputData], { session: session });
+  } catch (e) {
+    return null;
+  }
+}
+
+export { addAccount, removeAccount, updateAccount };
