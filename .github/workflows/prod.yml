@@ -1,16 +1,16 @@
-name: staging-deploy
+name: prod-deploy
 
 on:
   push:
     branches:
-      - staging
+      - production
 
 jobs:
   deploy-web:
     runs-on: ubuntu-latest
     environment:
-      name: Staging
-      url: ${{ steps.vercel.outputs.preview-url }}
+      name: Production
+      url: ${{ vars.VERCEL_URL }}
     outputs:
       preview_url: ${{ steps.vercel.outputs.preview-url }}
     steps:
@@ -23,6 +23,7 @@ jobs:
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: "--prod"
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID}}
           working-directory: ./web

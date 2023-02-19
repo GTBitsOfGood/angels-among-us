@@ -1,45 +1,92 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
+import {
+  IPost,
+  FosterType,
+  Size,
+  Gender,
+  Age,
+  Temperament,
+  GoodWith,
+  Medical,
+  Behavioral,
+  Trained,
+  Status,
+} from "../../utils/types/post";
 const { Schema } = mongoose;
-
-export interface IPost {
-  date: Date;
-  title: string;
-  body: string;
-  author: Types.ObjectId;
-  attachments: string[];
-  offers: Types.ObjectId[];
-}
 
 const postSchema = new Schema<IPost>({
   date: { type: Date, default: Date.now },
-  title: {
+  type: {
     type: String,
     required: true,
+    enum: Object.values(FosterType),
   },
-  body: {
+  size: {
     type: String,
     required: true,
+    enum: Object.values(Size),
   },
-  author: {
-    type: Schema.Types.ObjectId,
+  gender: {
+    type: String,
     required: true,
+    enum: Object.values(Gender),
   },
-  attachments: {
-    type: [
-      {
-        type: String,
-      },
-    ],
+  age: {
+    type: String,
     required: true,
+    enum: Object.values(Age),
   },
-  offers: {
-    type: [
-      {
-        type: Schema.Types.ObjectId,
-      },
-    ],
+  temperament: {
+    type: String,
     required: true,
+    enum: Object.values(Temperament),
   },
+  goodWith: [
+    {
+      type: String,
+      required: true,
+      enum: Object.values(GoodWith),
+    },
+  ],
+  medical: [
+    {
+      type: String,
+      required: true,
+      enum: Object.values(Medical),
+    },
+  ],
+  behavioral: [
+    {
+      type: String,
+      required: true,
+      enum: Object.values(Behavioral),
+    },
+  ],
+  houseTrained: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
+  },
+  crateTrained: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
+  },
+  spayNeuterStatus: {
+    type: String,
+    required: true,
+    enum: Object.values(Status),
+  },
+  covered: {
+    type: Boolean,
+    default: false,
+  },
+  attachments: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
 });
 
 export default mongoose.models.Post || mongoose.model("Post", postSchema);

@@ -1,8 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { removeAccount, updateAccount } from "../../db/actions/Account";
+import {
+  removeAccount,
+  updateAccount,
+  addAccount,
+} from "../../db/actions/Account";
 import { updateUser } from "../../db/actions/User";
 import Account from "../../db/models/Account";
+import { Role } from "../../utils/types/account";
 import { router, protectedProcedure } from "../trpc";
 
 const emailInput = {
@@ -13,7 +18,7 @@ export const accountRouter = router({
   modify: protectedProcedure
     .input(
       z.object({
-        admin: z.boolean(),
+        role: z.nativeEnum(Role),
         ...emailInput,
       })
     )
@@ -31,7 +36,7 @@ export const accountRouter = router({
       try {
         const updateResult = await updateAccount(
           email,
-          { admin: input.admin },
+          { role: input.role },
           session
         );
 
@@ -41,7 +46,7 @@ export const accountRouter = router({
             code: "NOT_FOUND",
           });
 
-        await updateUser(email, { admin: input.admin }, session);
+        await updateUser(email, { role: input.role }, session);
 
         session.commitTransaction();
         return { success: true };
@@ -83,6 +88,59 @@ export const accountRouter = router({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
         });
+      }
+    }),
+
+  add: protectedProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        role: z.nativeEnum(Role),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session?.email === input.email) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User cannot add themselves",
+        });
+      }
+
+      const session = await Account.startSession();
+      session.startTransaction();
+
+      try {
+        const inputData: { email: string; role: Role } = {
+          email: input.email,
+          role: input.role,
+        };
+
+        if ((await addAccount(inputData, session)) === null) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Account already exists",
+          });
+        }
+
+        await updateUser(
+          input.email,
+          { role: input.role, disabled: false },
+          session
+        );
+
+        session.commitTransaction();
+        return { success: true };
+      } catch (e) {
+        session.abortTransaction();
+
+        if (e instanceof TRPCError) {
+          throw e;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occurred",
+          });
+        }
       }
     }),
 });

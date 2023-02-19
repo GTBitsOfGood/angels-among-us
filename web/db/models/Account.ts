@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { IAccount, Role } from "../../utils/types/account";
 const { Schema } = mongoose;
 
 const accountSchema = new Schema<IAccount>({
