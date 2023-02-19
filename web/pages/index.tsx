@@ -9,30 +9,15 @@ export default function Home() {
   async function handleLogin() {
     const provider = new FacebookAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    // console.log("result", result);
     const user = result.user;
-    // console.log("user", user);
 
     fetch("/api/users", {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify(user), // body data type must match "Content-Type" header
+      body: JSON.stringify(user),
     });
-
-    // await signInWithPopup(auth, provider).then(async (result) => {
-    //   console.log("result", result);
-    //   const user = new User(result.user);
-    //   console.log("user", user);
-    //   const credential = FacebookAuthProvider.credentialFromResult(result);
-    //   const accessToken = credential?.accessToken;
-
-    //   const duplicate = await User.findOne({
-    //     uid: user.uid
-    //   });
-    // });
   }
 
   const { user } = useAuth();
