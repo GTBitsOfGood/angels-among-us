@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 const { Schema } = mongoose;
 
 export interface IUser {
@@ -9,7 +9,7 @@ export interface IUser {
   disabled: boolean;
 }
 
-const userSchema = new Schema<IUser>({
+const userSchema = new mongoose.Schema<IUser>({
   email: {
     type: String,
     required: true,
@@ -28,12 +28,7 @@ const userSchema = new Schema<IUser>({
   },
   admin: {
     type: Boolean,
-    required: true,
-  },
-  disabled: {
-    type: Boolean,
-    required: true,
-    default: false,
+    required: false,
   },
 });
 
