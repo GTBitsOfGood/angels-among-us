@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { IAccount } from "../../db/models/Account";
+import { IAccount } from "../../utils/types/account";
 import AccountCard from "./AccountCard";
 import {
   Flex,
