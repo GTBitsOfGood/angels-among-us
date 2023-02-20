@@ -10,9 +10,14 @@ on:
       - "web/**/*.ts"
       - "web/**/*.jsx"
       - "web/**/*.tsx"
+      - ".github/workflows/*"
+
 jobs:
   deploy-web:
     runs-on: ubuntu-latest
+    environment:
+      name: Development
+      url: ${{ steps.vercel.outputs.preview-url }}
     outputs:
       preview_url: ${{ steps.vercel.outputs.preview-url }}
     steps:

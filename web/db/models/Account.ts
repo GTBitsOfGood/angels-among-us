@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
+import { IAccount, Role } from "../../utils/types/account";
 const { Schema } = mongoose;
-
-export interface IAccount {
-  email: string;
-  admin: boolean;
-}
 
 const accountSchema = new Schema<IAccount>({
   email: {
@@ -13,9 +9,10 @@ const accountSchema = new Schema<IAccount>({
     unique: true,
     index: true,
   },
-  admin: {
-    type: Boolean,
+  role: {
+    type: String,
     required: true,
+    enum: Object.values(Role),
   },
 });
 

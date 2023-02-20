@@ -9,7 +9,7 @@ if (!firebaseAdmin.apps.length) {
     credential: firebaseAdmin.credential.cert({
       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/gm, "\n"),
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      projectId: process.env.FIREBASE_PROJECT_ID,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     }),
   });
 }

@@ -1,12 +1,17 @@
 import type { AppProps } from "next/app";
 import { trpc } from "../utils/trpc";
 import { AuthProvider } from "../context/auth";
+import { ChakraProvider } from "@chakra-ui/react";
+import Navbar from "../components/Navbar";
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
-    <AuthProvider>
-      <Component {...pageProps} />
-    </AuthProvider>
+    <ChakraProvider>
+      <AuthProvider>
+        <Navbar />
+        <Component {...pageProps} />
+      </AuthProvider>
+    </ChakraProvider>
   );
 };
 

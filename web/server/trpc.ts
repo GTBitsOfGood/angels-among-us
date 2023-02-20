@@ -19,6 +19,15 @@ const isAuthed = t.middleware(({ next, ctx }) => {
   });
 });
 
+const isContentCreator = t.middleware(({ next, ctx }) => {
+  // TODO: implement
+  return next({
+    ctx: {
+      session: ctx.session,
+    },
+  });
+});
+
 const isAdmin = t.middleware(({ next, ctx }) => {
   //TODO: implement
   return next({
@@ -32,4 +41,5 @@ export const middleware = t.middleware;
 
 export const router = t.router;
 export const publicProcedure = t.procedure.use(isAuthed);
+export const creatorProcedure = t.procedure.use(isContentCreator);
 export const protectedProcedure = t.procedure.use(isAdmin);
