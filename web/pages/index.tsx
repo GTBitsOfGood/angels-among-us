@@ -27,23 +27,29 @@ import React from "react";
 import { useAuth } from "../context/auth";
 import { mongo } from "mongoose";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
+import { TRPCClientError } from "@trpc/client";
+import { trpc } from "../utils/trpc";
+import { Role } from "../utils/types/account";
 
 export default function Home() {
   const { user, loading } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const mutation = trpc.user.create.useMutation();
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    fetch("/api/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
+    console.log(user);
+    const userData = {
+      uid: user.uid as string,
+      email: user.email as string,
+      name: user.displayName as string,
+      role: Role.ContentCreator as string,
+      disabled: false,
+    };
+    mutation.mutate(userData);
   }
 
   async function handleLoginGoogle() {

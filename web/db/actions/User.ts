@@ -2,6 +2,11 @@ import { ClientSession, HydratedDocument, UpdateQuery } from "mongoose";
 import User from "../models/User";
 import { IUser } from "../../utils/types/user";
 
+async function createUser(user: IUser, session?: ClientSession) {
+  User.find({}).then((res) => console.log(res));
+  return await User.create([user], { session: session });
+}
+
 async function findUserByUid(
   uid: string,
   session?: ClientSession
@@ -17,4 +22,4 @@ async function updateUser(
   return await User.findOneAndUpdate({ email }, update, { session: session });
 }
 
-export { findUserByUid, updateUser };
+export { createUser, findUserByUid, updateUser };
