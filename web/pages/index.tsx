@@ -40,7 +40,6 @@ export default function Home() {
   const [userInfo, setUserInfo] = useState({ email: "", uid: "", name: "" });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const mutation = trpc.user.create.useMutation();
   const { data, refetch } = trpc.account.get.useQuery(userInfo);
 
   async function handleLoginFacebook() {
@@ -64,7 +63,6 @@ export default function Home() {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
   }
-
   if (loading) {
     return (
       <Center w="100vw" h="100vh">

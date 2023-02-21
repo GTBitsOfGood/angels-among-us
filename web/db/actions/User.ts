@@ -2,6 +2,7 @@ import { ClientSession, HydratedDocument, UpdateQuery } from "mongoose";
 import User from "../models/User";
 import { IUser } from "../../utils/types/user";
 
+
 async function createUser(user: IUser, session?: ClientSession) {
   return await User.create([user], { session: session });
 }
