@@ -4,6 +4,7 @@ import { createUser, findUserByUid } from "../../db/actions/User";
 import { TRPCError } from "@trpc/server";
 import User from "../../db/models/User";
 import { Role } from "../../utils/types/account";
+import { findAccount } from "../../db/actions/Account";
 
 const userSchema = z.object({
   uid: z.string(),
@@ -14,21 +15,41 @@ const userSchema = z.object({
 });
 
 export const userRouter = router({
-  create: publicProcedure.input(userSchema).mutation(async ({ input }) => {
-    try {
-      const user = findUserByUid(input.uid);
-      if (!user) {
-        await createUser({
-          ...input,
+  create: publicProcedure
+    .input(
+      z.object({
+        uid: z.string(),
+        email: z.string(),
+        name: z.string(),
+      })
+    )
+    .output(
+      z.object({
+        found: z.boolean(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const account = await findAccount(input.email);
+        if (account === null) {
+          return { found: false };
+        }
+        const user = await findUserByUid(input.uid);
+        if (!user) {
+          await createUser({
+            ...input,
+            role: account.role,
+            disabled: false,
+          });
+        }
+        return { found: true };
+      } catch (error) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
         });
       }
-    } catch (error) {
-      throw new TRPCError({
-        message: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
-  }),
+    }),
   get: publicProcedure
     .input(
       z.object({

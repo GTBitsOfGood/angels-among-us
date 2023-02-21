@@ -23,33 +23,40 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../context/auth";
 import { mongo } from "mongoose";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { TRPCClientError } from "@trpc/client";
 import { trpc } from "../utils/trpc";
 import { Role } from "../utils/types/account";
+import { findAccount } from "../db/actions/Account";
+import Account from "../db/models/Account";
+import { string } from "zod";
 
 export default function Home() {
+  const [authorized, setAuthorized] = useState(false);
   const { user, loading } = useAuth();
+  const [userInfo, setUserInfo] = useState({ email: "", uid: "", name: "" });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const mutation = trpc.user.create.useMutation();
+  const { data, refetch } = trpc.account.get.useQuery(userInfo);
+
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
-
-    console.log(user);
     const userData = {
       uid: user.uid as string,
       email: user.email as string,
       name: user.displayName as string,
-      role: Role.ContentCreator as string,
-      disabled: false,
     };
-    mutation.mutate(userData);
+    setUserInfo(userData);
+    refetch();
+    console.log(data);
+    const found = data?.found;
+    setAuthorized(found as boolean);
   }
 
   async function handleLoginGoogle() {
@@ -70,15 +77,19 @@ export default function Home() {
     return (
       <Flex height="100vh">
         <Flex width="100%" justifyContent="center" alignItems="center">
-          <Button
-            cursor={["default", "pointer"]}
-            bgColor="#D9D9D9"
-            onClick={() => {
-              signOut(auth);
-            }}
-          >
-            Logout
-          </Button>
+          {authorized ? (
+            <Button
+              cursor={["default", "pointer"]}
+              bgColor="#D9D9D9"
+              onClick={() => {
+                signOut(auth);
+              }}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Text>Not Authorized</Text>
+          )}
         </Flex>
       </Flex>
     );
@@ -135,7 +146,7 @@ export default function Home() {
                 width="100%"
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
-                onClick={handleLoginFacebook}
+                onClick={() => handleLoginFacebook()}
               >
                 continue with facebook
               </Button>

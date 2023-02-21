@@ -4,8 +4,9 @@ import {
   removeAccount,
   updateAccount,
   addAccount,
+  findAccount,
 } from "../../db/actions/Account";
-import { updateUser } from "../../db/actions/User";
+import { createUser, findUserByUid, updateUser } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { Role } from "../../utils/types/account";
 import { router, protectedProcedure } from "../trpc";
@@ -141,6 +142,42 @@ export const accountRouter = router({
             message: "An unexpected error occurred",
           });
         }
+      }
+    }),
+  get: protectedProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        uid: z.string(),
+        name: z.string(),
+      })
+    )
+    .output(
+      z.object({
+        found: z.boolean(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const email = input.email;
+      if (email === null) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Not authenticated",
+        });
+      } else {
+        const account = await findAccount(email);
+        if (account === null) {
+          return { found: false };
+        }
+        const user = await findUserByUid(input.uid);
+        if (!user) {
+          await createUser({
+            ...input,
+            role: account.role,
+            disabled: false,
+          });
+        }
+        return { found: true };
       }
     }),
 });

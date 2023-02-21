@@ -2,6 +2,14 @@ import { ClientSession, UpdateQuery } from "mongoose";
 import Account from "../models/Account";
 import { IAccount } from "../../utils/types/account";
 
+async function findAccount(email: string, session?: ClientSession) {
+  try {
+    return await Account.findOne({ email }, null, { session: session });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 async function removeAccount(email: string, session?: ClientSession) {
   return await Account.findOneAndDelete({ email }, { session: session });
 }
@@ -24,4 +32,4 @@ async function addAccount(inputData: IAccount, session?: ClientSession) {
   }
 }
 
-export { addAccount, removeAccount, updateAccount };
+export { findAccount, addAccount, removeAccount, updateAccount };

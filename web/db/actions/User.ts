@@ -3,7 +3,6 @@ import User from "../models/User";
 import { IUser } from "../../utils/types/user";
 
 async function createUser(user: IUser, session?: ClientSession) {
-  User.find({}).then((res) => console.log(res));
   return await User.create([user], { session: session });
 }
 
