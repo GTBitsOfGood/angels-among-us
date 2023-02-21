@@ -6,14 +6,6 @@ import User from "../../db/models/User";
 import { Role } from "../../utils/types/account";
 import { findAccount } from "../../db/actions/Account";
 
-const userSchema = z.object({
-  uid: z.string(),
-  email: z.string(),
-  name: z.string(),
-  role: z.nativeEnum(Role),
-  disabled: z.boolean(false),
-});
-
 export const userRouter = router({
   create: publicProcedure
     .input(
