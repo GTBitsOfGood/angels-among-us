@@ -9,16 +9,17 @@ import {
   useDisclosure,
   Portal,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 interface PropertyType {
   account: IAccount;
   accountList: IAccount[];
   updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  createLabel: CallableFunction;
 }
 
 function RoleSelector(props: PropertyType) {
-  const { account, accountList, updateAccountList } = props;
+  const { account, accountList, updateAccountList, createLabel } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   var idx = accountList.indexOf(account);
 
@@ -45,7 +46,6 @@ function RoleSelector(props: PropertyType) {
       onClose={onClose}
       placement="bottom"
       gutter={0.5}
-      //   trigger="hover"
     >
       <PopoverTrigger>
         <Box
@@ -90,15 +90,3 @@ function RoleSelector(props: PropertyType) {
   );
 }
 export default RoleSelector;
-
-function createLabel(r: Role) {
-  var labelText = "";
-  if (r === Role.Admin) {
-    labelText = "Admin";
-  } else if (r === Role.Volunteer) {
-    labelText = "Volunteer";
-  } else {
-    labelText = "Content Creator";
-  }
-  return labelText;
-}

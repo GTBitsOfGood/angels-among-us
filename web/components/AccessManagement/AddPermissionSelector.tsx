@@ -1,4 +1,3 @@
-import styles from "./AccessManagementPage.module.css";
 import { Role } from "../../utils/types/account";
 import { ButtonGroup, Button, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
@@ -10,59 +9,55 @@ interface PropertyType {
 
 export default function PermissionSelector(props: PropertyType) {
   const { role, setRole } = props;
-  const styleUnselected = styles.unselectedPermission.toString();
-  const styleSelected = styles.selectedPermission.toString();
-  const tstyleUnselected = styles.tunselectedPermission.toString();
-  const tstyleSelected = styles.tselectedPermission.toString();
 
-  let buttonStyle = {};
+  let buttonSelected = {
+    bgColor: "#a9a8a8",
+  };
 
-  let textStyle = {};
+  let buttonUnselected = {
+    bgColor: "#ffffff",
+  };
+
+  let textSelected = {
+    color: "#ffffff",
+  };
+
+  let textUnselected = {
+    color: "#000000",
+  };
+
+  let a = role === Role.Admin;
+  let c = role === Role.ContentCreator;
+  let v = role === Role.Volunteer;
 
   return (
     <ButtonGroup size="sm" isAttached variant="outline">
       <Button
-        className={`${role == Role.Admin ? styleSelected : styleUnselected}`}
+        bgColor={a ? buttonSelected.bgColor : buttonUnselected.bgColor}
         onClick={() => setRole(Role.Admin)}
         borderRadius="12px 0px 0px 12px"
         border="1px solid black"
       >
-        <Text
-          className={`${
-            role == Role.Admin ? tstyleSelected : tstyleUnselected
-          }`}
-        >
+        <Text color={a ? textSelected.color : textUnselected.color}>
           Administrator
         </Text>
       </Button>
       <Button
-        className={`${
-          role == Role.ContentCreator ? styleSelected : styleUnselected
-        }`}
+        bgColor={c ? buttonSelected.bgColor : buttonUnselected.bgColor}
         onClick={() => setRole(Role.ContentCreator)}
         border="1px solid black"
       >
-        <Text
-          className={`${
-            role == Role.ContentCreator ? tstyleSelected : tstyleUnselected
-          }`}
-        >
+        <Text color={c ? textSelected.color : textUnselected.color}>
           Content Creator
         </Text>
       </Button>
       <Button
-        className={`${
-          role == Role.Volunteer ? styleSelected : styleUnselected
-        }`}
+        bgColor={v ? buttonSelected.bgColor : buttonUnselected.bgColor}
         onClick={() => setRole(Role.Volunteer)}
         borderRadius="0px 12px 12px 0px"
         border="1px solid black"
       >
-        <Text
-          className={`${
-            role == Role.Volunteer ? tstyleSelected : tstyleUnselected
-          }`}
-        >
+        <Text color={v ? textSelected.color : textUnselected.color}>
           Volunteer
         </Text>
       </Button>
