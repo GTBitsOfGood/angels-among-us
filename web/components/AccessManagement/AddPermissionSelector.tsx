@@ -1,10 +1,11 @@
 import styles from "./AccessManagementPage.module.css";
 import { Role } from "../../utils/types/account";
 import { ButtonGroup, Button, Text } from "@chakra-ui/react";
+import { Dispatch, SetStateAction } from "react";
 
 interface PropertyType {
   role: Role;
-  setRole: Function;
+  setRole: Dispatch<SetStateAction<Role>>;
 }
 
 export default function PermissionSelector(props: PropertyType) {
@@ -13,6 +14,10 @@ export default function PermissionSelector(props: PropertyType) {
   const styleSelected = styles.selectedPermission.toString();
   const tstyleUnselected = styles.tunselectedPermission.toString();
   const tstyleSelected = styles.tselectedPermission.toString();
+
+  let buttonStyle = {};
+
+  let textStyle = {};
 
   return (
     <ButtonGroup size="sm" isAttached variant="outline">

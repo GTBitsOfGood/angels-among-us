@@ -6,16 +6,20 @@ import {
   PopoverContent,
   Box,
   Flex,
+  useDisclosure,
+  Portal,
 } from "@chakra-ui/react";
+import { Dispatch, SetStateAction, useRef } from "react";
 
 interface PropertyType {
   account: IAccount;
   accountList: IAccount[];
-  updateAccountList: Function;
+  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
 }
 
 function RoleSelector(props: PropertyType) {
   const { account, accountList, updateAccountList } = props;
+  const { isOpen, onOpen, onClose } = useDisclosure();
   var idx = accountList.indexOf(account);
 
   const ops = [
@@ -25,8 +29,6 @@ function RoleSelector(props: PropertyType) {
   ];
 
   function changeRole(r: Role) {
-    console.log("changing to:");
-    console.log(r);
     var temp = {
       email: account.email,
       role: r,
@@ -36,57 +38,67 @@ function RoleSelector(props: PropertyType) {
     updateAccountList(tempList);
   }
 
-  function createLabel(r: Role) {
-    var labelText = "";
-    if (r === Role.Admin) {
-      labelText = "Admin";
-    } else if (r === Role.Volunteer) {
-      labelText = "Volunteer";
-    } else {
-      labelText = "Content Creator";
-    }
-    return labelText;
-  }
-
   return (
-    <Popover placement="bottom" gutter={0.5}>
+    <Popover
+      isOpen={isOpen}
+      onOpen={onOpen}
+      onClose={onClose}
+      placement="bottom"
+      gutter={0.5}
+      //   trigger="hover"
+    >
       <PopoverTrigger>
         <Box
           as="button"
           bgColor="#CECCCC"
           borderRadius="8px"
-          maxWidth="208px"
-          minWidth="170px"
+          width="147px"
           height="36px"
         >
           {createLabel(accountList[idx].role)}
         </Box>
       </PopoverTrigger>
-      <PopoverContent padding={2} maxW="210px">
-        <Flex flexDirection="column" gap={2} alignItems="center">
-          {ops
-            .filter((option) => option.role != accountList[idx].role)
-            .map((option) => {
-              return (
-                <Box
-                  onClick={() => changeRole(option.role)}
-                  key={ops.indexOf(option)}
-                >
+      <Portal>
+        <PopoverContent padding={2} maxW="210px">
+          <Flex
+            flexDirection="column"
+            gap={2}
+            alignItems="center"
+            onClick={onClose}
+          >
+            {ops
+              .filter((option) => option.role != accountList[idx].role)
+              .map((option) => {
+                return (
                   <Box
+                    key={ops.indexOf(option)}
+                    onClick={() => changeRole(option.role)}
                     as="button"
                     bgColor="#CECCCC"
                     borderRadius="8px"
-                    width="200px"
+                    width="147px"
                     height="36px"
                   >
                     {option.label}
                   </Box>
-                </Box>
-              );
-            })}
-        </Flex>
-      </PopoverContent>
+                );
+              })}
+          </Flex>
+        </PopoverContent>
+      </Portal>
     </Popover>
   );
 }
 export default RoleSelector;
+
+function createLabel(r: Role) {
+  var labelText = "";
+  if (r === Role.Admin) {
+    labelText = "Admin";
+  } else if (r === Role.Volunteer) {
+    labelText = "Volunteer";
+  } else {
+    labelText = "Content Creator";
+  }
+  return labelText;
+}

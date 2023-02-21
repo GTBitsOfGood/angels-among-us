@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { useState } from "react";
-import PermissionSelector from "./PermissionSelector";
+import { Dispatch, SetStateAction, useState } from "react";
+import AddPermissionSelector from "./AddPermissionSelector";
 import { ChangeEvent } from "react";
 import { Role } from "../../utils/types/account";
 import { IAccount } from "../../utils/types/account";
@@ -18,11 +18,12 @@ import {
 
 interface PropertyType {
   accountList: IAccount[];
-  updateAccountList: Function;
+  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
 
 const CreateAccountForm = (props: PropertyType) => {
-  const { accountList, updateAccountList } = props;
+  const { accountList, updateAccountList, updateSelectItems } = props;
   const [emailField, setEmailField] = useState("");
   const [role, setRole] = useState(Role.Volunteer);
   const [displayError, setDisplayError] = useState(false);
@@ -70,6 +71,7 @@ const CreateAccountForm = (props: PropertyType) => {
       paddingBottom={4}
       margin={{ sm: "12px", lg: "40px" }}
       marginTop={{ sm: "6px", lg: "20px" }}
+      onClick={() => updateSelectItems(false)}
     >
       <Text fontSize="md" fontWeight="regular" lineHeight="24px">
         Add New Account
@@ -94,8 +96,6 @@ const CreateAccountForm = (props: PropertyType) => {
                 borderRadius="16px"
                 bgColor="#D9D9D9"
                 height="36px"
-                maxWidth="380px"
-                minWidth="330px"
               />
               <Alert status="error">
                 <AlertIcon />
@@ -112,8 +112,6 @@ const CreateAccountForm = (props: PropertyType) => {
               onChange={handleChange}
               borderRadius="16px"
               height="36px"
-              maxWidth="380px"
-              minWidth="330px"
             />
           )}
         </FormControl>
@@ -122,10 +120,10 @@ const CreateAccountForm = (props: PropertyType) => {
             <Text lineHeight="22px" fontSize="md" fontWeight="400">
               Add Permission:
             </Text>
-            <PermissionSelector
+            <AddPermissionSelector
               role={role}
               setRole={setRole}
-            ></PermissionSelector>
+            ></AddPermissionSelector>
           </Flex>
           <Box
             as={"button"}

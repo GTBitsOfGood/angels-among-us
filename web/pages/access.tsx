@@ -1,7 +1,7 @@
 import CreateAccountForm from "../components/AccessManagement/CreateAccountForm";
 import AccountTable from "../components/AccessManagement/AccountTable";
 import { useState } from "react";
-import { Text, Box, Stack, Grid, Flex } from "@chakra-ui/react";
+import { Text, Box, Flex } from "@chakra-ui/react";
 import { IAccount } from "../utils/types/account";
 import { Role } from "../utils/types/account";
 
@@ -28,6 +28,7 @@ export default function Access() {
       role: Role.Volunteer,
     },
   ]);
+  const [selectItems, updateSelectItems] = useState<boolean>(false);
 
   return (
     <Flex bgColor="#EEEEEE">
@@ -61,10 +62,13 @@ export default function Access() {
             <CreateAccountForm
               accountList={accountList}
               updateAccountList={updateAccountList}
+              updateSelectItems={updateSelectItems}
             ></CreateAccountForm>
             <AccountTable
               accountList={accountList}
               updateAccountList={updateAccountList}
+              selectItems={selectItems}
+              updateSelectItems={updateSelectItems}
             ></AccountTable>
           </Flex>
         </Box>
