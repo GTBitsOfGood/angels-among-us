@@ -24,7 +24,6 @@ import { Pages } from "../utils/consts";
 
 export default function Navbar() {
   const router = useRouter();
-  console.log(navbarVisiblity[router.pathname as Pages]);
   const { user, loading, userData } = useAuth();
   const role = userData?.role;
 
