@@ -11,19 +11,30 @@ function OnboardingBackNextBtn(props: {
 
   let buttonAppearance = {
     borderColor: "#000000",
+    backgroundColor: "#FFFFFF",
     textColor: "#000000",
     cursor: "pointer",
   };
-  let hoverProperty = { backgroundColor: "#000000", textColor: "#FFFFFF" };
+
+  if (!isBack) {
+    buttonAppearance = {
+      borderColor: "#000000",
+      backgroundColor: "#000000",
+      textColor: "#FFFFFF",
+      cursor: "pointer",
+    };
+  }
 
   if ((qNum == 0 && isBack) || (qNum == numQs - 1 && !isBack)) {
     buttonAppearance = {
       borderColor: "#8D8D8D",
+      backgroundColor: "#FFFFFF",
       textColor: "#8D8D8D",
       cursor: "default",
     };
-    hoverProperty = { backgroundColor: "#FFFFFF", textColor: "#8D8D8D" };
   }
+
+  let hoverProperty = { backgroundColor: buttonAppearance.backgroundColor };
 
   return (
     <Button
@@ -32,11 +43,11 @@ function OnboardingBackNextBtn(props: {
       onClick={() => onClickFunc()}
       borderWidth="1px"
       borderColor={buttonAppearance.borderColor}
+      backgroundColor={buttonAppearance.backgroundColor}
       textColor={buttonAppearance.textColor}
       fontSize={{ base: "16px", md: "20px", lg: "24px" }}
       fontWeight="semibold"
       borderRadius="10px"
-      backgroundColor="#FFFFFF"
       paddingX={{ base: "50px", md: "18px", lg: "18px" }}
       paddingY={{ base: "22px", md: "25px", lg: "25px" }}
       _hover={hoverProperty}

@@ -2,36 +2,108 @@ import { useState } from "react";
 import OnboardingQuestion from "../components/OnboardingQuestion";
 import { Flex, Progress, Text } from "@chakra-ui/react";
 import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
+import OnboardingIntro from "../components/OnboardingIntro";
 
 export default function Onboarding() {
   const questionData = [
     {
-      title: "Question 1",
-      description: "Question 1 description",
-      options: ["Option 1", "Option 2", "Option 3"],
+      title: "",
+      description: "",
+      options: [],
     },
     {
-      title: "Question 2: adding some filler text here for question 2",
-      description:
-        "Question 2 description: adding some more filler description text here for the question 2 description",
+      title: "Are you able to help with all these types of fosters?",
+      description: "",
       options: [
-        "Option 1",
-        "Option 2",
-        "Option 3",
-        "Option 4",
-        "Option 5",
-        "Option 6",
+        "Return",
+        "Boarding",
+        "Temporary",
+        "Shelter",
+        "Owner Surrender",
+        "Foster Move",
       ],
     },
     {
-      title: "Question 3",
-      description: "Question 3 description",
-      options: ["Option 1", "Option 2", "Option 3"],
+      title: "What sizes of dogs are you able to foster?",
+      description: "",
+      options: ["Extra Small", "Small", "Medium", "Large", "Extra Large"],
     },
     {
-      title: "Question 4",
-      description: "Question 4 description",
-      options: ["Option 1", "Option 2", "Option 3"],
+      title: "Are there any breeds that you are not comfortable fostering?",
+      description: "",
+      options: [
+        "American Eskimo",
+        "Australian Shepherd",
+        "...",
+        "Whippet",
+        "Other",
+      ],
+    },
+    {
+      title:
+        "Are you okay with both male and female dogs? How about a litter of puppies?",
+      description: "",
+      options: ["Male", "Female", "Litter"],
+    },
+    {
+      title: "What age of dogs are you willing to foster?",
+      description: "",
+      options: ["Puppy", "Young", "Adult", "Senior", "Mom & Puppies"],
+    },
+    {
+      title: "What temperament can you foster?",
+      description: "",
+      options: ["Friendly", "Scared", "Active", "Calm"],
+    },
+    {
+      title: "Are you able to foster dogs that are not good with:",
+      description: "",
+      options: [
+        "Men",
+        "Women",
+        "Older Children",
+        "Young Children",
+        "Large Dogs",
+        "Small Dogs",
+        "Cats",
+      ],
+    },
+    {
+      title: "Are you able to foster dogs that have or are:",
+      description: "",
+      options: [
+        "Illness",
+        "Injury",
+        "Heartworms",
+        "Pregnant",
+        "Nursing",
+        "Bottle Feeding",
+        "Chronic Condition",
+        "Parvo",
+        "Hospice",
+      ],
+    },
+    {
+      title: "Are you able to foster dogs that have or are:",
+      description: "",
+      options: [
+        "Separation Anxiety",
+        "Barking",
+        "Jumping",
+        "Bite Risk",
+        "Pulls on Leash",
+        "Flight Risk",
+      ],
+    },
+    {
+      title: "Are you able to foster a dog who isn't house trained?",
+      description: "",
+      options: ["Yes", "No"],
+    },
+    {
+      title: "Are you able to foster a dog who isn't crate trained?",
+      description: "",
+      options: ["Yes", "No"],
     },
   ];
 
@@ -49,13 +121,24 @@ export default function Onboarding() {
     }
   }
 
+  let onboardingDisplay = <OnboardingIntro></OnboardingIntro>;
+  if (qNum != 0) {
+    onboardingDisplay = (
+      <OnboardingQuestion
+        title={questionData[qNum].title}
+        description={questionData[qNum].description}
+        options={questionData[qNum].options}
+      />
+    );
+  }
+
   return (
     <div>
       <Flex
         className="page"
         flexDir="column"
         alignItems="center"
-        marginX={{ base: "36px", md: "100px", lg: "200px" }}
+        marginX={{ base: "50px", md: "100px", lg: "200px" }}
         marginTop={{ base: "64px", md: "80px", lg: "50px" }}
         marginBottom={{ base: "120px", md: "180px", lg: "180px" }}
       >
@@ -81,14 +164,10 @@ export default function Onboarding() {
             textColor="#3D3D3D"
             fontSize={{ base: "10px", md: "16px", lg: "20px" }}
           >
-            {qNum + 1 + " of " + questionData.length}
+            {qNum + " of " + (questionData.length - 1)}
           </Text>
         </Flex>
-        <OnboardingQuestion
-          title={questionData[qNum].title}
-          description={questionData[qNum].description}
-          options={questionData[qNum].options}
-        />
+        {onboardingDisplay}
       </Flex>
       <Flex
         className="backnextbuttons"

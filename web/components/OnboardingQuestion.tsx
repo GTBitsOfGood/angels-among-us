@@ -1,4 +1,11 @@
-import { Flex, Text, useRadioGroup, HStack, ScaleFade } from "@chakra-ui/react";
+import {
+  Flex,
+  Text,
+  useRadioGroup,
+  CheckboxGroup,
+  Checkbox,
+  Stack,
+} from "@chakra-ui/react";
 import OnboardingOptionCard from "./OnboardingOptionCard";
 
 function OnboardingQuestion(props: {
@@ -40,16 +47,7 @@ function OnboardingQuestion(props: {
             {description}
           </Text>
         </Flex>
-        <HStack {...group} flexWrap="wrap" justifyContent="space-between">
-          {options.map((value) => {
-            const radio = getRadioProps({ value });
-            return (
-              <OnboardingOptionCard key={value} {...radio}>
-                {value}
-              </OnboardingOptionCard>
-            );
-          })}
-        </HStack>
+        <OnboardingOptionCard options={options}></OnboardingOptionCard>
       </>
     </Flex>
   );
