@@ -19,6 +19,7 @@ export default function Onboarding() {
       options: [],
       qtype: QType.Intro,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "Are you able to help with all these types of fosters?",
@@ -33,6 +34,7 @@ export default function Onboarding() {
       ],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "What sizes of dogs are you able to foster?",
@@ -40,6 +42,7 @@ export default function Onboarding() {
       options: ["Extra Small", "Small", "Medium", "Large", "Extra Large"],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "Are there any breeds that you are not comfortable fostering?",
@@ -53,6 +56,7 @@ export default function Onboarding() {
       ],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: true,
     },
     {
       title:
@@ -61,6 +65,7 @@ export default function Onboarding() {
       options: ["Male", "Female", "Litter"],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "What age of dogs are you willing to foster?",
@@ -68,6 +73,7 @@ export default function Onboarding() {
       options: ["Puppy", "Young", "Adult", "Senior", "Mom & Puppies"],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "What temperament can you foster?",
@@ -75,6 +81,7 @@ export default function Onboarding() {
       options: ["Friendly", "Scared", "Active", "Calm"],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "Are you able to foster dogs that are not good with:",
@@ -90,6 +97,7 @@ export default function Onboarding() {
       ],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "Are you able to foster dogs that have or are:",
@@ -107,6 +115,7 @@ export default function Onboarding() {
       ],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "Are you able to foster dogs that have or are:",
@@ -121,6 +130,7 @@ export default function Onboarding() {
       ],
       qtype: QType.Question,
       singleAnswer: false,
+      dropdown: false,
     },
     {
       title: "Are you able to foster a dog who isn't house trained?",
@@ -128,6 +138,7 @@ export default function Onboarding() {
       options: ["Yes", "No"],
       qtype: QType.Question,
       singleAnswer: true,
+      dropdown: false,
     },
     {
       title: "Are you able to foster a dog who isn't crate trained?",
@@ -135,14 +146,24 @@ export default function Onboarding() {
       options: ["Yes", "No"],
       qtype: QType.Question,
       singleAnswer: true,
+      dropdown: false,
     },
     {
-      title: "Thanks for completing your profile!",
+      title: "Are you able to foster a dog who isn't spayed/neutered?",
+      description: "",
+      options: ["Yes", "No"],
+      qtype: QType.Question,
+      singleAnswer: true,
+      dropdown: false,
+    },
+    {
+      title: "🎉 Thanks for completing your profile!",
       description:
         "We're super excited that you're interested in helping our dogs in need by providing them with a kind home!",
       options: [],
       qtype: QType.Completion,
       singleAnswer: false,
+      dropdown: false,
     },
   ];
 
@@ -182,13 +203,13 @@ export default function Onboarding() {
           onClickFunc={prevQ}
           isBack={true}
           qNum={qNum}
-          numQs={questionData.length}
+          questionData={questionData}
         ></OnboardingBackNextBtn>
         <OnboardingBackNextBtn
           onClickFunc={nextQ}
           isBack={false}
           qNum={qNum}
-          numQs={questionData.length}
+          questionData={questionData}
         ></OnboardingBackNextBtn>
       </Flex>
     );

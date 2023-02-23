@@ -1,14 +1,25 @@
-import { Flex } from "@chakra-ui/react";
+import { Flex, Select } from "@chakra-ui/react";
 import OnboardingOptionColumn from "./OnboardingOptionColumn";
 
 function OnboardingOptions(props: {
   options: string[];
   singleAnswer: boolean;
+  dropdown: boolean;
   checked: boolean[][];
   setChecked: (arg: boolean[][]) => void;
   qNum: number;
 }) {
-  const { options, singleAnswer, checked, setChecked, qNum } = props;
+  const { options, singleAnswer, dropdown, checked, setChecked, qNum } = props;
+
+  if (dropdown) {
+    return (
+      <Select placeholder="None" focusBorderColor="#000000">
+        {options.map((o, ind) => {
+          return <option value={ind}>{o}</option>;
+        })}
+      </Select>
+    );
+  }
 
   let optionsLeft = [];
   let optionsRight = [];

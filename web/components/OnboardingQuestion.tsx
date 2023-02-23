@@ -14,6 +14,7 @@ function OnboardingQuestion(props: {
     options: string[];
     qtype: QType;
     singleAnswer: boolean;
+    dropdown: boolean;
   }[];
   checked: boolean[][];
   setChecked: (arg: boolean[][]) => void;
@@ -53,6 +54,7 @@ function OnboardingQuestion(props: {
         <OnboardingOptions
           options={questionData[qNum].options}
           singleAnswer={questionData[qNum].singleAnswer}
+          dropdown={questionData[qNum].dropdown}
           checked={checked}
           setChecked={setChecked}
           qNum={qNum}

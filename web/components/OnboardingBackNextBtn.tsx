@@ -1,13 +1,32 @@
 import { Button } from "@chakra-ui/react";
 
+enum QType {
+  Intro,
+  Question,
+  Completion,
+}
+
 function OnboardingBackNextBtn(props: {
   onClickFunc: (arg: void) => void;
   isBack: boolean;
   qNum: number;
-  numQs: number;
+  questionData: {
+    title: string;
+    description: string;
+    options: string[];
+    qtype: QType;
+    singleAnswer: boolean;
+  }[];
 }) {
-  const { onClickFunc, isBack, qNum, numQs } = props;
-  const text = isBack ? "< Back" : "Next >";
+  const { onClickFunc, isBack, qNum, questionData } = props;
+  let text = isBack ? "< Back" : "Next >";
+  if (
+    qNum != questionData.length - 1 &&
+    !isBack &&
+    questionData[qNum + 1].qtype == QType.Completion
+  ) {
+    text = "Finish >";
+  }
 
   let buttonAppearance = {
     borderColor: "#000000",
@@ -25,7 +44,7 @@ function OnboardingBackNextBtn(props: {
     };
   }
 
-  if ((qNum == 0 && isBack) || (qNum == numQs - 1 && !isBack)) {
+  if (qNum == 0 && isBack) {
     buttonAppearance = {
       borderColor: "#8D8D8D",
       backgroundColor: "#FFFFFF",
