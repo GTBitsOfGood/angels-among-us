@@ -19,10 +19,14 @@ import {
   Box,
 } from "@chakra-ui/react";
 
+import { EditIcon } from "@chakra-ui/icons";
+
 import React from "react";
 import Select from "react-select";
 
 export default function Profile() {
+  const [editing, setEditing] = React.useState(false);
+
   const options = [
     { value: "return", label: "Return" },
     { value: "boarding", label: "Boarding" },
@@ -111,12 +115,46 @@ export default function Profile() {
             <Text fontSize="3xl" fontWeight="semibold">
               Profile
             </Text>
-            <Button bgColor="#BCBCBC" width="6%" borderRadius="16px">
-              Edit
-            </Button>
+            {editing == false && (
+              <Button
+                bgColor="#BCBCBC"
+                width="6%"
+                borderRadius="16px"
+                onClick={() => setEditing(true)}
+              >
+                Edit
+              </Button>
+            )}
+            {editing == true && (
+              <Stack direction="row">
+                <Button
+                  bgColor="#DAD8D8"
+                  borderRadius="16px"
+                  onClick={() => setEditing(false)}
+                >
+                  Cancel
+                </Button>
+
+                <Button
+                  bgColor="#BCBCBC"
+                  borderRadius="16px"
+                  onClick={() => setEditing(false)}
+                >
+                  Save
+                </Button>
+              </Stack>
+            )}
           </Stack>
           <Stack direction="column">
-            <Text fontWeight="semibold">General Information</Text>
+            <Stack direction="row">
+              <Text fontWeight="semibold">General Information</Text>
+              {editing && (
+                <Text fontSize="larger" color="red" fontWeight="bold">
+                  *
+                </Text>
+              )}
+            </Stack>
+
             <Flex border="1px solid black" padding={10}>
               <Stack
                 width="100%"
@@ -125,27 +163,78 @@ export default function Profile() {
                 alignItems="center"
               >
                 <Box bgColor="#C9C9C9" borderRadius="100%" boxSize={36}></Box>
+                {editing && (
+                  <IconButton
+                    icon={<EditIcon />}
+                    position="absolute"
+                    bgColor="white"
+                    left="100px"
+                    top="260px"
+                    border="1px solid black"
+                    borderRadius="100%"
+                    boxSize={10}
+                    aria-label={""}
+                  ></IconButton>
+                )}
                 <Stack direction="column" width="85%" spacing={5}>
                   <Stack direction="row" spacing={5}>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">Name</Text>
-                      <Input placeholder="Firstname Lastname"></Input>
+                      {editing && (
+                        <Input
+                          placeholder="Firstname Lastname"
+                          disabled={false}
+                        ></Input>
+                      )}
+                      {!editing && (
+                        <Input
+                          placeholder="Firstname Lastname"
+                          disabled={true}
+                        ></Input>
+                      )}
                     </Stack>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">Preferred Email</Text>
-                      <Input placeholder="example@domainname.com"></Input>
+                      {editing && (
+                        <Input
+                          placeholder="example@domainname.com"
+                          disabled={false}
+                        ></Input>
+                      )}
+                      {!editing && (
+                        <Input
+                          placeholder="example@domainname.com"
+                          disabled={true}
+                        ></Input>
+                      )}
                     </Stack>
                   </Stack>
                   <Stack direction="row" spacing={5}>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">Email</Text>
-                      <Input placeholder="example@domainname.com"></Input>
+                      {editing && (
+                        <Input
+                          placeholder="example@domainname.com"
+                          disabled={false}
+                        ></Input>
+                      )}
+                      {!editing && (
+                        <Input
+                          placeholder="example@domainname.com"
+                          disabled={true}
+                        ></Input>
+                      )}
                     </Stack>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">
                         Which types of fosters can you help with?
                       </Text>
-                      <Select isMulti options={options} />
+                      {editing && (
+                        <Select isDisabled={false} isMulti options={options} />
+                      )}
+                      {!editing && (
+                        <Select isDisabled={true} isMulti options={options} />
+                      )}
                     </Stack>
                   </Stack>
                 </Stack>
@@ -159,21 +248,41 @@ export default function Profile() {
                 <Stack direction="row" spacing={5}>
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Breed Restrictions</Text>
-                    <Select isMulti options={options1} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options1} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options1} />
+                    )}
                   </Stack>
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Age Preferences</Text>
-                    <Select isMulti options={options2} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options2} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options2} />
+                    )}
                   </Stack>
                 </Stack>
                 <Stack direction="row" spacing={5}>
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Dog Size Preference</Text>
-                    <Select isMulti options={options3} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options3} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options3} />
+                    )}
                   </Stack>
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Gender Preference</Text>
-                    <Select isMulti options={options4} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options4} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options4} />
+                    )}
                   </Stack>
                 </Stack>
               </Stack>
@@ -188,17 +297,32 @@ export default function Profile() {
                     <Text fontWeight="medium">
                       Able to foster dogs NOT good with:
                     </Text>
-                    <Select isMulti options={options5} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options5} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options5} />
+                    )}
                   </Stack>
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Able to foster dogs with:</Text>
-                    <Select isMulti options={options6} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options6} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options6} />
+                    )}
                   </Stack>
                 </Stack>
                 <Stack direction="row">
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Temperament Restrictions:</Text>
-                    <Select isMulti options={options7} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options7} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options7} />
+                    )}
                   </Stack>
                 </Stack>
               </Stack>
@@ -213,13 +337,23 @@ export default function Profile() {
                     <Text fontWeight="medium">
                       Able to foster dogs not house trained...
                     </Text>
-                    <Select isMulti options={options8} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options8} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options8} />
+                    )}
                   </Stack>
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">
                       Able to foster dogs not crate trained...
                     </Text>
-                    <Select isMulti options={options8} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options8} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options8} />
+                    )}
                   </Stack>
                 </Stack>
                 <Stack direction="row">
@@ -227,7 +361,12 @@ export default function Profile() {
                     <Text fontWeight="medium">
                       Able to foster dogs not spayed or neutered...
                     </Text>
-                    <Select isMulti options={options8} />
+                    {editing && (
+                      <Select isDisabled={false} isMulti options={options8} />
+                    )}
+                    {!editing && (
+                      <Select isDisabled={true} isMulti options={options8} />
+                    )}
                   </Stack>
                 </Stack>
               </Stack>
