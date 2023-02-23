@@ -112,7 +112,7 @@ export default function Profile() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Text fontSize="3xl" fontWeight="semibold">
+            <Text fontSize="2xl" fontWeight="semibold">
               Profile
             </Text>
             {editing == false && (
