@@ -2,15 +2,15 @@ import { useState } from "react";
 import OnboardingQuestion from "../components/OnboardingQuestion";
 import { Flex, Progress, Text } from "@chakra-ui/react";
 import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
-import OnboardingIntro from "../components/OnboardingIntro";
+import OnboardingSingleBtn from "../components/OnboardingSingleBtn";
+
+enum QType {
+  Intro,
+  Question,
+  Completion,
+}
 
 export default function Onboarding() {
-  enum QType {
-    Intro,
-    Question,
-    Completion,
-  }
-
   const questionData = [
     {
       title: "Hello, new foster!",
@@ -129,7 +129,7 @@ export default function Onboarding() {
       description:
         "We're super excited that you're interested in helping our dogs in need by providing them with a kind home!",
       options: [],
-      qtype: QType.Question,
+      qtype: QType.Completion,
     },
   ];
 
@@ -154,62 +154,9 @@ export default function Onboarding() {
 
   const [checked, setChecked] = useState(checkboxState);
 
-  let onboardingDisplay;
-  switch (questionData[qNum].qtype) {
-    case QType.Intro:
-      onboardingDisplay = (
-        <OnboardingIntro questionData={questionData} qNum={0}></OnboardingIntro>
-      );
-      break;
-    case QType.Question:
-      onboardingDisplay = (
-        <OnboardingQuestion
-          questionData={questionData}
-          checked={checked}
-          setChecked={setChecked}
-          qNum={qNum}
-        />
-      );
-      break;
-  }
-
-  return (
-    <div>
-      <Flex
-        className="page"
-        flexDir="column"
-        alignItems="center"
-        marginX={{ base: "50px", md: "100px", lg: "200px" }}
-        marginTop={{ base: "64px", md: "80px", lg: "50px" }}
-        marginBottom={{ base: "120px", md: "180px", lg: "180px" }}
-      >
-        <Flex
-          className="progress"
-          flexDir="row"
-          alignItems="center"
-          justifyContent="center"
-          width="100%"
-          marginBottom={{ base: "50px", md: "60px", lg: "60px" }}
-        >
-          <Progress
-            width={{ base: "75%", md: "80%", lg: "85%" }}
-            value={(100 * qNum) / (questionData.length - 1)}
-            borderRadius="10px"
-            height={{ base: "10px", md: "20px", lg: "20px" }}
-            colorScheme="blackAlpha"
-            backgroundColor="#D9D9D9"
-            marginRight={{ base: "16px", md: "20px", lg: "25px" }}
-          ></Progress>
-          <Text
-            fontWeight="semibold"
-            textColor="#3D3D3D"
-            fontSize={{ base: "10px", md: "16px", lg: "20px" }}
-          >
-            {qNum + " of " + (questionData.length - 1)}
-          </Text>
-        </Flex>
-        {onboardingDisplay}
-      </Flex>
+  let btnDisplay;
+  if (questionData[qNum].qtype == QType.Question) {
+    btnDisplay = (
       <Flex
         className="backnextbuttons"
         position="fixed"
@@ -231,6 +178,68 @@ export default function Onboarding() {
           numQs={questionData.length}
         ></OnboardingBackNextBtn>
       </Flex>
+    );
+  } else {
+    btnDisplay = (
+      <Flex
+        className="getStartedBtn"
+        position="fixed"
+        right={{ base: "50%", md: "200px", lg: "300px" }}
+        transform={{ base: "translateX(50%)" }}
+        bottom={{ base: "30px", md: "70px", lg: "70px" }}
+        gap={{ base: "8px", md: "20px", lg: "25px" }}
+      >
+        <OnboardingSingleBtn onClickFunc={nextQ}></OnboardingSingleBtn>
+      </Flex>
+    );
+  }
+
+  return (
+    <div>
+      <Flex
+        className="page"
+        flexDir="column"
+        alignItems="center"
+        marginX={{ base: "50px", md: "100px", lg: "200px" }}
+        marginTop={{ base: "64px", md: "80px", lg: "50px" }}
+        marginBottom={{ base: "120px", md: "180px", lg: "180px" }}
+      >
+        <Flex
+          className="progress"
+          flexDir="row"
+          alignItems="center"
+          justifyContent="center"
+          width="100%"
+          marginBottom={{ base: "50px", md: "60px", lg: "60px" }}
+          visibility={
+            questionData[qNum].qtype == QType.Completion ? "hidden" : "visible"
+          }
+        >
+          <Progress
+            width={{ base: "75%", md: "80%", lg: "85%" }}
+            value={(100 * qNum) / (questionData.length - 1)}
+            borderRadius="10px"
+            height={{ base: "10px", md: "20px", lg: "20px" }}
+            colorScheme="blackAlpha"
+            backgroundColor="#D9D9D9"
+            marginRight={{ base: "16px", md: "20px", lg: "25px" }}
+          ></Progress>
+          <Text
+            fontWeight="semibold"
+            textColor="#3D3D3D"
+            fontSize={{ base: "10px", md: "16px", lg: "20px" }}
+          >
+            {qNum + " of " + (questionData.length - 1)}
+          </Text>
+        </Flex>
+        <OnboardingQuestion
+          questionData={questionData}
+          checked={checked}
+          setChecked={setChecked}
+          qNum={qNum}
+        />
+      </Flex>
+      {btnDisplay}
     </div>
   );
 }

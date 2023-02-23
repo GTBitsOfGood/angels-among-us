@@ -1,8 +1,19 @@
 import { Flex, Text } from "@chakra-ui/react";
 import OnboardingOptions from "./OnboardingOptions";
 
+enum QType {
+  Intro,
+  Question,
+  Completion,
+}
+
 function OnboardingQuestion(props: {
-  questionData: { title: string; description: string; options: string[] }[];
+  questionData: {
+    title: string;
+    description: string;
+    options: string[];
+    qtype: QType;
+  }[];
   checked: boolean[][];
   setChecked: (arg: boolean[][]) => void;
   qNum: number;
@@ -31,6 +42,9 @@ function OnboardingQuestion(props: {
             fontSize={{ base: "16px", md: "24px", lg: "28px" }}
             lineHeight={{ lg: "32px" }}
             color="#696969"
+            textAlign={
+              questionData[qNum].qtype == QType.Intro ? "left" : "center"
+            }
           >
             {questionData[qNum].description}
           </Text>
