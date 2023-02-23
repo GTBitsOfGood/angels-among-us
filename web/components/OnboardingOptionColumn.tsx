@@ -3,12 +3,12 @@ import { Text, Checkbox, Stack, Box, Flex } from "@chakra-ui/react";
 function OnboardingOptionColumn(props: {
   options: string[];
   singleAnswer: boolean;
-  checked: boolean[][];
-  setChecked: (arg: boolean[][]) => void;
+  answers: boolean[][];
+  setAnswers: (arg: boolean[][]) => void;
   qNum: number;
   isLeft: boolean;
 }) {
-  const { options, singleAnswer, checked, setChecked, qNum, isLeft } = props;
+  const { options, singleAnswer, answers, setAnswers, qNum, isLeft } = props;
 
   return (
     <Stack marginRight="10px">
@@ -20,8 +20,8 @@ function OnboardingOptionColumn(props: {
             borderWidth="2px"
             borderColor={
               singleAnswer &&
-              !checked[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
-              checked[qNum][ind * 2 + (isLeft ? 1 : 0)]
+              !answers[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
+              answers[qNum][ind * 2 + (isLeft ? 1 : 0)]
                 ? "#BBBBBB"
                 : "#000000"
             }
@@ -39,29 +39,28 @@ function OnboardingOptionColumn(props: {
               key={o}
               borderColor={
                 singleAnswer &&
-                !checked[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
-                checked[qNum][ind * 2 + (isLeft ? 1 : 0)]
+                !answers[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
+                answers[qNum][ind * 2 + (isLeft ? 1 : 0)]
                   ? "#BBBBBB"
                   : "#000000"
               }
-              isChecked={checked[qNum][ind * 2 + (isLeft ? 0 : 1)]}
+              isChecked={answers[qNum][ind * 2 + (isLeft ? 0 : 1)]}
               onChange={() => {
-                let tempState = [...checked];
+                let tempState = [...answers];
                 let prevCBState = tempState[qNum][ind * 2 + (isLeft ? 0 : 1)];
                 tempState[qNum][ind * 2 + (isLeft ? 0 : 1)] = !prevCBState;
                 if (singleAnswer && prevCBState == false) {
                   tempState[qNum][ind * 2 + (isLeft ? 1 : 0)] = false;
                 }
-                setChecked(tempState);
-                console.log(checked);
+                setAnswers(tempState);
               }}
             >
               <Text
                 fontSize="14px"
                 color={
                   singleAnswer &&
-                  !checked[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
-                  checked[qNum][ind * 2 + (isLeft ? 1 : 0)]
+                  !answers[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
+                  answers[qNum][ind * 2 + (isLeft ? 1 : 0)]
                     ? "#BBBBBB"
                     : "#000000"
                 }

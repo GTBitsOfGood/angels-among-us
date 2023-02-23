@@ -1,5 +1,5 @@
 import { useState } from "react";
-import OnboardingQuestion from "../components/OnboardingQuestion";
+import OnboardingSlide from "../components/OnboardingSlide";
 import { Flex, Progress, Text } from "@chakra-ui/react";
 import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
 import OnboardingSingleBtn from "../components/OnboardingSingleBtn";
@@ -48,6 +48,7 @@ export default function Onboarding() {
       title: "Are there any breeds that you are not comfortable fostering?",
       description: "",
       options: [
+        "None",
         "American Eskimo",
         "Australian Shepherd",
         "...",
@@ -181,12 +182,18 @@ export default function Onboarding() {
     }
   }
 
-  let checkboxState = [];
+  let answersState = [];
   for (let i = 0; i < questionData.length; i++) {
-    checkboxState.push(Array(questionData[i].options.length).fill(false));
+    if (questionData[i].dropdown) {
+      let ddAns = Array(questionData[i].options.length).fill(false);
+      ddAns[0] = true;
+      answersState.push(ddAns);
+    } else {
+      answersState.push(Array(questionData[i].options.length).fill(false));
+    }
   }
 
-  const [checked, setChecked] = useState(checkboxState);
+  const [answers, setAnswers] = useState(answersState);
 
   let btnDisplay;
   if (questionData[qNum].qtype == QType.Question) {
@@ -266,10 +273,10 @@ export default function Onboarding() {
             {qNum + " of " + (questionData.length - 1)}
           </Text>
         </Flex>
-        <OnboardingQuestion
+        <OnboardingSlide
           questionData={questionData}
-          checked={checked}
-          setChecked={setChecked}
+          answers={answers}
+          setAnswers={setAnswers}
           qNum={qNum}
         />
       </Flex>

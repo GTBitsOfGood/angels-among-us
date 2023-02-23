@@ -7,7 +7,7 @@ enum QType {
   Completion,
 }
 
-function OnboardingQuestion(props: {
+function OnboardingSlide(props: {
   questionData: {
     title: string;
     description: string;
@@ -16,11 +16,11 @@ function OnboardingQuestion(props: {
     singleAnswer: boolean;
     dropdown: boolean;
   }[];
-  checked: boolean[][];
-  setChecked: (arg: boolean[][]) => void;
+  answers: boolean[][];
+  setAnswers: (arg: boolean[][]) => void;
   qNum: number;
 }) {
-  const { questionData, checked, setChecked, qNum } = props;
+  const { questionData, answers, setAnswers, qNum } = props;
 
   return (
     <Flex
@@ -55,8 +55,8 @@ function OnboardingQuestion(props: {
           options={questionData[qNum].options}
           singleAnswer={questionData[qNum].singleAnswer}
           dropdown={questionData[qNum].dropdown}
-          checked={checked}
-          setChecked={setChecked}
+          answers={answers}
+          setAnswers={setAnswers}
           qNum={qNum}
         ></OnboardingOptions>
       </>
@@ -64,4 +64,4 @@ function OnboardingQuestion(props: {
   );
 }
 
-export default OnboardingQuestion;
+export default OnboardingSlide;

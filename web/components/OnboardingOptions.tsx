@@ -5,17 +5,26 @@ function OnboardingOptions(props: {
   options: string[];
   singleAnswer: boolean;
   dropdown: boolean;
-  checked: boolean[][];
-  setChecked: (arg: boolean[][]) => void;
+  answers: boolean[][];
+  setAnswers: (arg: boolean[][]) => void;
   qNum: number;
 }) {
-  const { options, singleAnswer, dropdown, checked, setChecked, qNum } = props;
+  const { options, singleAnswer, dropdown, answers, setAnswers, qNum } = props;
 
   if (dropdown) {
     return (
-      <Select placeholder="None" focusBorderColor="#000000">
+      <Select
+        value={options[answers[qNum].indexOf(true)]}
+        focusBorderColor="#000000"
+        onChange={(event) => {
+          let tempState = [...answers];
+          tempState[qNum] = Array(options.length).fill(false);
+          tempState[qNum][options.indexOf(event.target.value)] = true;
+          setAnswers(tempState);
+        }}
+      >
         {options.map((o, ind) => {
-          return <option value={ind}>{o}</option>;
+          return <option key={ind}>{o}</option>;
         })}
       </Select>
     );
@@ -34,16 +43,16 @@ function OnboardingOptions(props: {
       <OnboardingOptionColumn
         options={optionsLeft}
         singleAnswer={singleAnswer}
-        checked={checked}
-        setChecked={setChecked}
+        answers={answers}
+        setAnswers={setAnswers}
         qNum={qNum}
         isLeft={true}
       ></OnboardingOptionColumn>
       <OnboardingOptionColumn
         options={optionsRight}
         singleAnswer={singleAnswer}
-        checked={checked}
-        setChecked={setChecked}
+        answers={answers}
+        setAnswers={setAnswers}
         qNum={qNum}
         isLeft={false}
       ></OnboardingOptionColumn>
