@@ -1,4 +1,4 @@
-import { Text, Checkbox, Stack, Box, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import OnboardingOptionColumn from "./OnboardingOptionColumn";
 
 function OnboardingOptions(props: {
@@ -24,12 +24,14 @@ function OnboardingOptions(props: {
         checked={checked}
         setChecked={setChecked}
         qNum={qNum}
+        isLeft={true}
       ></OnboardingOptionColumn>
       <OnboardingOptionColumn
         options={optionsRight}
         checked={checked}
         setChecked={setChecked}
         qNum={qNum}
+        isLeft={false}
       ></OnboardingOptionColumn>
     </Flex>
   );

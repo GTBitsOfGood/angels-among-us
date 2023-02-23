@@ -1,13 +1,13 @@
-import { Flex, Text, useRadioGroup, HStack } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 
-function OnboardingIntro() {
+function OnboardingIntro(props: {
+  questionData: { title: string; description: string; options: string[] }[];
+  qNum: number;
+}) {
+  const { questionData, qNum } = props;
+
   return (
-    <Flex
-      className="onboardingIntro"
-      direction="column"
-      align="center"
-      textAlign="center"
-    >
+    <Flex className="onboardingIntro" direction="column">
       <>
         <Flex className="questionText" flexDir="column">
           <Text
@@ -17,7 +17,7 @@ function OnboardingIntro() {
             lineHeight={{ base: "30px", md: "50px", lg: "52px" }}
             as="b"
           >
-            Hello, new foster!
+            {questionData[qNum].title}
           </Text>
           <Text
             fontSize={{ base: "16px", md: "24px", lg: "28px" }}
@@ -25,14 +25,7 @@ function OnboardingIntro() {
             color="#696969"
             textAlign="left"
           >
-            Let&apos;s start by walking through building your foster profile!
-            This will help us connect you with the best pet for your situation
-            to ensure a positive experience for everyone involved.
-            <br></br> <br></br>
-            Answer the following questions with all possible animals you would
-            be willing to foster in mind. Keep in mind that once your profile is
-            complete, you will still be able to edit these answers in the
-            future.
+            {questionData[qNum].description}
           </Text>
         </Flex>
       </>

@@ -5,14 +5,16 @@ function OnboardingOptionColumn(props: {
   checked: boolean[][];
   setChecked: (arg: boolean[][]) => void;
   qNum: number;
+  isLeft: boolean;
 }) {
-  const { options, checked, setChecked, qNum } = props;
+  const { options, checked, setChecked, qNum, isLeft } = props;
 
   return (
     <Stack marginRight="10px">
       {options.map((o, ind) => {
         return (
           <Box
+            key={o}
             width="125px"
             borderWidth="2px"
             borderColor="#000000"
@@ -30,10 +32,11 @@ function OnboardingOptionColumn(props: {
               key={o}
               borderColor="#000000"
               outlineColor="#000000"
-              isChecked={checked[qNum][ind]}
+              isChecked={checked[qNum][ind * 2 + (isLeft ? 0 : 1)]}
               onChange={() => {
                 let tempState = [...checked];
-                tempState[qNum][ind] = !tempState[qNum][ind];
+                tempState[qNum][ind * 2 + (isLeft ? 0 : 1)] =
+                  !tempState[qNum][ind * 2 + (isLeft ? 0 : 1)];
                 setChecked(tempState);
                 console.log(checked);
               }}

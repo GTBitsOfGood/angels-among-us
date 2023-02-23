@@ -5,11 +5,19 @@ import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
 import OnboardingIntro from "../components/OnboardingIntro";
 
 export default function Onboarding() {
+  enum QType {
+    Intro,
+    Question,
+    Completion,
+  }
+
   const questionData = [
     {
-      title: "",
-      description: "",
+      title: "Hello, new foster!",
+      description:
+        "Let's start by walking through building your foster profile! This will help us connect you with the best pet for your situation to ensure a positive experience for everyone involved. \n\n Answer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.",
       options: [],
+      qtype: QType.Intro,
     },
     {
       title: "Are you able to help with all these types of fosters?",
@@ -22,11 +30,13 @@ export default function Onboarding() {
         "Owner Surrender",
         "Foster Move",
       ],
+      qtype: QType.Question,
     },
     {
       title: "What sizes of dogs are you able to foster?",
       description: "",
       options: ["Extra Small", "Small", "Medium", "Large", "Extra Large"],
+      qtype: QType.Question,
     },
     {
       title: "Are there any breeds that you are not comfortable fostering?",
@@ -38,22 +48,26 @@ export default function Onboarding() {
         "Whippet",
         "Other",
       ],
+      qtype: QType.Question,
     },
     {
       title:
         "Are you okay with both male and female dogs? How about a litter of puppies?",
       description: "",
       options: ["Male", "Female", "Litter"],
+      qtype: QType.Question,
     },
     {
       title: "What age of dogs are you willing to foster?",
       description: "",
       options: ["Puppy", "Young", "Adult", "Senior", "Mom & Puppies"],
+      qtype: QType.Question,
     },
     {
       title: "What temperament can you foster?",
       description: "",
       options: ["Friendly", "Scared", "Active", "Calm"],
+      qtype: QType.Question,
     },
     {
       title: "Are you able to foster dogs that are not good with:",
@@ -67,6 +81,7 @@ export default function Onboarding() {
         "Small Dogs",
         "Cats",
       ],
+      qtype: QType.Question,
     },
     {
       title: "Are you able to foster dogs that have or are:",
@@ -82,6 +97,7 @@ export default function Onboarding() {
         "Parvo",
         "Hospice",
       ],
+      qtype: QType.Question,
     },
     {
       title: "Are you able to foster dogs that have or are:",
@@ -94,16 +110,26 @@ export default function Onboarding() {
         "Pulls on Leash",
         "Flight Risk",
       ],
+      qtype: QType.Question,
     },
     {
       title: "Are you able to foster a dog who isn't house trained?",
       description: "",
       options: ["Yes", "No"],
+      qtype: QType.Question,
     },
     {
       title: "Are you able to foster a dog who isn't crate trained?",
       description: "",
       options: ["Yes", "No"],
+      qtype: QType.Question,
+    },
+    {
+      title: "Thanks for completing your profile!",
+      description:
+        "We're super excited that you're interested in helping our dogs in need by providing them with a kind home!",
+      options: [],
+      qtype: QType.Question,
     },
   ];
 
@@ -128,18 +154,23 @@ export default function Onboarding() {
 
   const [checked, setChecked] = useState(checkboxState);
 
-  let onboardingDisplay = <OnboardingIntro></OnboardingIntro>;
-  if (qNum != 0) {
-    onboardingDisplay = (
-      <OnboardingQuestion
-        title={questionData[qNum].title}
-        description={questionData[qNum].description}
-        options={questionData[qNum].options}
-        checked={checked}
-        setChecked={setChecked}
-        qNum={qNum}
-      />
-    );
+  let onboardingDisplay;
+  switch (questionData[qNum].qtype) {
+    case QType.Intro:
+      onboardingDisplay = (
+        <OnboardingIntro questionData={questionData} qNum={0}></OnboardingIntro>
+      );
+      break;
+    case QType.Question:
+      onboardingDisplay = (
+        <OnboardingQuestion
+          questionData={questionData}
+          checked={checked}
+          setChecked={setChecked}
+          qNum={qNum}
+        />
+      );
+      break;
   }
 
   return (
