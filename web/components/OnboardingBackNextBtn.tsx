@@ -15,7 +15,6 @@ function OnboardingBackNextBtn(props: {
     description: string;
     options: string[];
     qtype: QType;
-    singleAnswer: boolean;
   }[];
 }) {
   const { onClickFunc, isBack, qNum, questionData } = props;

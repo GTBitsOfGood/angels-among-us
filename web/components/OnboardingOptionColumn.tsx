@@ -1,4 +1,4 @@
-import { Text, Checkbox, Stack, Box, Flex } from "@chakra-ui/react";
+import { Text, Checkbox, Stack, Box } from "@chakra-ui/react";
 
 function OnboardingOptionColumn(props: {
   options: string[];

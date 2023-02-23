@@ -1,8 +1,7 @@
 import { useState } from "react";
 import OnboardingSlide from "../components/OnboardingSlide";
-import { Flex, Progress, Text } from "@chakra-ui/react";
+import { Flex, Progress, Text, Button } from "@chakra-ui/react";
 import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
-import OnboardingSingleBtn from "../components/OnboardingSingleBtn";
 
 enum QType {
   Intro,
@@ -20,6 +19,7 @@ export default function Onboarding() {
       qtype: QType.Intro,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "Are you able to help with all these types of fosters?",
@@ -35,6 +35,8 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
+      tooltip:
+        "Return Foster \n A dog that was adopted but then returned to AAU by the adopter. \n Boarding \n A foster parent or other dogs’ owner goes on vacation or other hiatus and needs someone to take their dog for a little \n Temporary \n During holidays, vacations, and emergencies until permanent fosters can be found or return. \n Shelter \n Lorem ipsum dolor sit amet consectetur. \n Owner Surrender \n Lorem ipsum dolor sit amet consectetur. \n Foster Move \n A dog whose previous foster parents can't care for the foster dog any more.",
     },
     {
       title: "What sizes of dogs are you able to foster?",
@@ -43,6 +45,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "Are there any breeds that you are not comfortable fostering?",
@@ -58,6 +61,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: true,
+      tooltip: "",
     },
     {
       title:
@@ -67,6 +71,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "What age of dogs are you willing to foster?",
@@ -75,6 +80,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "What temperament can you foster?",
@@ -83,6 +89,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "Are you able to foster dogs that are not good with:",
@@ -99,6 +106,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "Are you able to foster dogs that have or are:",
@@ -117,6 +125,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "Are you able to foster dogs that have or are:",
@@ -132,6 +141,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "Are you able to foster a dog who isn't house trained?",
@@ -140,6 +150,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: true,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "Are you able to foster a dog who isn't crate trained?",
@@ -148,6 +159,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: true,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "Are you able to foster a dog who isn't spayed/neutered?",
@@ -156,6 +168,7 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: true,
       dropdown: false,
+      tooltip: "",
     },
     {
       title: "🎉 Thanks for completing your profile!",
@@ -165,6 +178,7 @@ export default function Onboarding() {
       qtype: QType.Completion,
       singleAnswer: false,
       dropdown: false,
+      tooltip: "",
     },
   ];
 
@@ -230,7 +244,21 @@ export default function Onboarding() {
         bottom={{ base: "30px", md: "70px", lg: "70px" }}
         gap={{ base: "8px", md: "20px", lg: "25px" }}
       >
-        <OnboardingSingleBtn onClickFunc={nextQ}></OnboardingSingleBtn>
+        <Button
+          className="getStartedBtn"
+          onClick={() => nextQ()}
+          borderWidth="1px"
+          borderColor="#000000"
+          backgroundColor="#000000"
+          textColor="#FFFFFF"
+          fontSize={{ base: "16px", md: "20px", lg: "24px" }}
+          fontWeight="semibold"
+          borderRadius="10px"
+          paddingX={{ base: "100px", md: "18px", lg: "18px" }}
+          paddingY={{ base: "22px", md: "25px", lg: "25px" }}
+        >
+          Get started! {">"}
+        </Button>
       </Flex>
     );
   }
