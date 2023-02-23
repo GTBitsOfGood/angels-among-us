@@ -6,9 +6,15 @@ enum QType {
   Completion,
 }
 
-function OnboardingBackNextBtn(props: {
+enum ButtonType {
+  Back,
+  Next,
+  Singular,
+}
+
+function OnboardingButton(props: {
   onClickFunc: (arg: void) => void;
-  isBack: boolean;
+  btnType: ButtonType;
   qNum: number;
   questionData: {
     title: string;
@@ -17,11 +23,20 @@ function OnboardingBackNextBtn(props: {
     qtype: QType;
   }[];
 }) {
-  const { onClickFunc, isBack, qNum, questionData } = props;
-  let text = isBack ? "< Back" : "Next >";
+  const { onClickFunc, btnType, qNum, questionData } = props;
+
+  let text;
+  if (btnType == ButtonType.Back) {
+    text = " <Back";
+  } else if (btnType == ButtonType.Next) {
+    text = "Next >";
+  } else if (btnType == ButtonType.Singular) {
+    text = "Get Started >";
+  }
+
   if (
     qNum != questionData.length - 1 &&
-    !isBack &&
+    btnType == ButtonType.Next &&
     questionData[qNum + 1].qtype == QType.Completion
   ) {
     text = "Finish >";
@@ -34,7 +49,7 @@ function OnboardingBackNextBtn(props: {
     cursor: "pointer",
   };
 
-  if (!isBack) {
+  if (btnType != ButtonType.Back) {
     buttonAppearance = {
       borderColor: "#000000",
       backgroundColor: "#000000",
@@ -43,21 +58,16 @@ function OnboardingBackNextBtn(props: {
     };
   }
 
-  if (qNum == 0 && isBack) {
-    buttonAppearance = {
-      borderColor: "#8D8D8D",
-      backgroundColor: "#FFFFFF",
-      textColor: "#8D8D8D",
-      cursor: "default",
-    };
-  }
-
   let hoverProperty = { backgroundColor: buttonAppearance.backgroundColor };
+
+  let paddingX = { base: "50px", md: "18px", lg: "18px" };
+  if (btnType == ButtonType.Singular) {
+    paddingX = { base: "100px", md: "36px", lg: "36px" };
+  }
 
   return (
     <Button
-      cursor={buttonAppearance.cursor}
-      className="leftButton"
+      className="onboardingButton"
       onClick={() => onClickFunc()}
       borderWidth="1px"
       borderColor={buttonAppearance.borderColor}
@@ -66,7 +76,7 @@ function OnboardingBackNextBtn(props: {
       fontSize={{ base: "16px", md: "20px", lg: "24px" }}
       fontWeight="semibold"
       borderRadius="10px"
-      paddingX={{ base: "50px", md: "18px", lg: "18px" }}
+      paddingX={paddingX}
       paddingY={{ base: "22px", md: "25px", lg: "25px" }}
       _hover={hoverProperty}
     >
@@ -75,4 +85,4 @@ function OnboardingBackNextBtn(props: {
   );
 }
 
-export default OnboardingBackNextBtn;
+export default OnboardingButton;

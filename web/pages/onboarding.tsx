@@ -1,12 +1,18 @@
 import { useState } from "react";
 import OnboardingSlide from "../components/OnboardingSlide";
 import { Flex, Progress, Text, Button } from "@chakra-ui/react";
-import OnboardingBackNextBtn from "../components/OnboardingBackNextBtn";
+import OnboardingButton from "../components/OnboardingButton";
 
 enum QType {
   Intro,
   Question,
   Completion,
+}
+
+enum ButtonType {
+  Back,
+  Next,
+  Singular,
 }
 
 export default function Onboarding() {
@@ -212,54 +218,29 @@ export default function Onboarding() {
   let btnDisplay;
   if (questionData[qNum].qtype == QType.Question) {
     btnDisplay = (
-      <Flex
-        className="backnextbuttons"
-        position="fixed"
-        right={{ base: "50%", md: "200px", lg: "300px" }}
-        transform={{ base: "translateX(50%)" }}
-        bottom={{ base: "30px", md: "70px", lg: "70px" }}
-        gap={{ base: "8px", md: "20px", lg: "25px" }}
-      >
-        <OnboardingBackNextBtn
+      <Flex gap={{ base: "8px", md: "20px", lg: "25px" }}>
+        <OnboardingButton
           onClickFunc={prevQ}
-          isBack={true}
+          btnType={ButtonType.Back}
           qNum={qNum}
           questionData={questionData}
-        ></OnboardingBackNextBtn>
-        <OnboardingBackNextBtn
+        ></OnboardingButton>
+        <OnboardingButton
           onClickFunc={nextQ}
-          isBack={false}
+          btnType={ButtonType.Next}
           qNum={qNum}
           questionData={questionData}
-        ></OnboardingBackNextBtn>
+        ></OnboardingButton>
       </Flex>
     );
   } else {
     btnDisplay = (
-      <Flex
-        className="getStartedBtn"
-        position="fixed"
-        right={{ base: "50%", md: "200px", lg: "300px" }}
-        transform={{ base: "translateX(50%)" }}
-        bottom={{ base: "30px", md: "70px", lg: "70px" }}
-        gap={{ base: "8px", md: "20px", lg: "25px" }}
-      >
-        <Button
-          className="getStartedBtn"
-          onClick={() => nextQ()}
-          borderWidth="1px"
-          borderColor="#000000"
-          backgroundColor="#000000"
-          textColor="#FFFFFF"
-          fontSize={{ base: "16px", md: "20px", lg: "24px" }}
-          fontWeight="semibold"
-          borderRadius="10px"
-          paddingX={{ base: "100px", md: "18px", lg: "18px" }}
-          paddingY={{ base: "22px", md: "25px", lg: "25px" }}
-        >
-          Get started! {">"}
-        </Button>
-      </Flex>
+      <OnboardingButton
+        onClickFunc={nextQ}
+        btnType={ButtonType.Singular}
+        qNum={qNum}
+        questionData={questionData}
+      ></OnboardingButton>
     );
   }
 
@@ -308,7 +289,16 @@ export default function Onboarding() {
           qNum={qNum}
         />
       </Flex>
-      {btnDisplay}
+
+      <Flex
+        className="backnextbuttons"
+        position="fixed"
+        right={{ base: "50%", md: "200px", lg: "300px" }}
+        transform={{ base: "translateX(50%)" }}
+        bottom={{ base: "30px", md: "70px", lg: "70px" }}
+      >
+        {btnDisplay}
+      </Flex>
     </div>
   );
 }
