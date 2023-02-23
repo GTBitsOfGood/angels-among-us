@@ -26,6 +26,54 @@ export default function Profile() {
   const options1 = [
     { value: "none", label: "None" },
     { value: "american eskimo", label: "American Eskimo" },
+    { value: "australian shepherd", label: "Australian Shepherd" },
+    { value: "beagle", label: "Beagle" },
+    { value: "bichon frise", label: "Bichon Frise" },
+    { value: "border collie", label: "Border Collie" },
+    { value: "boxer", label: "Boxer" },
+    { value: "brussels griffon", label: "Brussels Griffon" },
+    { value: "bulldog", label: "Bulldog" },
+    { value: "cane corso/mastiff", label: "Cane Corso/Mastiff" },
+    { value: "cattle dog/heeler", label: "Cattle Dog/Heeler" },
+    { value: "chihuahua", label: "Chihuahua" },
+    { value: "chow chow", label: "Chow Chow" },
+    { value: "collie", label: "Collie" },
+    { value: "corgi", label: "Corgi" },
+    { value: "dachshund", label: "Dachshund" },
+    { value: "dalmatian", label: "Dalmatian" },
+    { value: "doberman pinscher", label: "Doberman Pinscher" },
+    { value: "german shepherd", label: "German Shepherd" },
+    { value: "golden retriever", label: "Golden Retriever" },
+    { value: "great dane", label: "Great Dane" },
+    { value: "great pyrenees", label: "Great Pyrenees" },
+    { value: "greyhound", label: "Greyhound" },
+    { value: "hound", label: "Hound" },
+    { value: "husky", label: "Husky" },
+    { value: "labrador retriever", label: "Labrador Retriever" },
+    { value: "malamute", label: "Malamute" },
+    { value: "maltese", label: "Maltese" },
+    { value: "min pin", label: "Min Pin" },
+    { value: "mix", label: "Mix" },
+    { value: "newfoundland", label: "Newfoundland" },
+    { value: "pekingese", label: "Pekingese" },
+    { value: "pitbull", label: "Pitbull" },
+    { value: "pointer", label: "Pointer" },
+    { value: "pomeranian", label: "Pomeranian" },
+    { value: "poodle", label: "Poodle" },
+    { value: "pug", label: "Pug" },
+    { value: "rottweiler", label: "Rottweiler" },
+    { value: "schnauzer", label: "Schnauzer" },
+    { value: "scottie", label: "Scottie" },
+    { value: "setter", label: "Setter" },
+    { value: "sharpei", label: "Sharpei" },
+    { value: "sheepdog", label: "Sheepdog" },
+    { value: "shepherd", label: "Shepherd" },
+    { value: "shih tzu", label: "Shih Tzu" },
+    { value: "spaniel", label: "Spaniel" },
+    { value: "st. bernard", label: "St. Bernard" },
+    { value: "terrier (med-large)", label: "Terrier (Med-Large)" },
+    { value: "terrier (small)", label: "Terrier (Small)" },
+    { value: "weimaraner", label: "Weimaraner" },
     { value: "whippet", label: "Whippet" },
   ];
   const options2 = [
@@ -92,7 +140,7 @@ export default function Profile() {
           <Stack
             direction="column"
             position="absolute"
-            top="150px"
+            top="170px"
             width="80%"
             spacing={5}
           >
