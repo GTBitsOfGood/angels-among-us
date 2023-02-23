@@ -3,13 +3,13 @@ import {
   Text,
   Tooltip,
   Stack,
-  Link,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalBody,
   IconButton,
   useDisclosure,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import OnboardingOptions from "./OnboardingOptions";
@@ -42,25 +42,27 @@ function OnboardingSlide(props: {
     <Flex
       className="onboardingQuestion"
       direction="column"
-      align="center"
       textAlign="center"
+      align="center"
     >
       <Flex className="questionText" flexDir="column">
         <Text
-          marginX={{ base: "24px", md: "60px", lg: "100px" }}
-          fontSize={{ base: "24px", md: "40px", lg: "44px" }}
-          marginBottom={{ base: "28px", md: "20px", lg: "24px" }}
-          lineHeight={{ base: "30px", md: "50px", lg: "52px" }}
-          as="b"
+          className="questionTitle"
+          marginX={{ base: "10px", md: "60px", lg: "100px" }}
+          fontSize={{ base: "22px", md: "40px", lg: "44px" }}
+          marginBottom={{ base: "36px", md: "20px", lg: "24px" }}
+          lineHeight={{ base: "28px", md: "50px", lg: "52px" }}
+          fontWeight="bold"
         >
           {questionData[qNum].title}
         </Text>
         <Text
+          className="questionDescription"
           fontSize={{ base: "16px", md: "24px", lg: "28px" }}
           lineHeight={{ lg: "32px" }}
           color="#696969"
           textAlign={
-            questionData[qNum].qtype == QType.Intro ? "left" : "center"
+            questionData[qNum].qtype == QType.Question ? "center" : "left"
           }
         >
           {questionData[qNum].description}
@@ -75,8 +77,8 @@ function OnboardingSlide(props: {
         qNum={qNum}
       ></OnboardingOptions>
       <Flex
+        className="tooltip"
         display={questionData[qNum].tooltip != "" ? "initial" : "none"}
-        marginTop="50px"
       >
         <Stack
           direction="row"
@@ -94,7 +96,6 @@ function OnboardingSlide(props: {
           </Text>
           <Tooltip
             placement="top-start"
-            closeDelay={2000}
             bgColor="#B5B5B5"
             label={<Text color="#000000">{questionData[qNum].tooltip}</Text>}
           >
@@ -102,31 +103,41 @@ function OnboardingSlide(props: {
           </Tooltip>
         </Stack>
         <Stack
+          className="mobileTooltip"
           direction="row"
-          width="48%"
-          position="absolute"
           alignItems="center"
-          justifyContent="flex-end"
-          overflow="clip"
-          bottom="30px"
-          right="20px"
           display={["flex", "none"]}
+          marginTop="16px"
         >
-          <Text color="#6D6D6D" fontSize="small">
-            what does this mean?
-          </Text>
           <IconButton
+            className="tooltipIcon"
             bgColor="white"
             aria-label="info"
-            cursor="default"
             icon={<QuestionOutlineIcon />}
             onClick={onOpen}
+            marginRight="-8px"
           ></IconButton>
-
-          <Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <Text
+            className="tooltipIconText"
+            color="#6D6D6D"
+            fontSize="small"
+            align="left"
+            lineHeight="16px"
+          >
+            what does this mean?
+          </Text>
+          <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            isCentered
+            scrollBehavior="inside"
+          >
             <ModalOverlay />
-            <ModalContent width="80%" bgColor="#D9D9D9">
-              <ModalBody>{questionData[qNum].tooltip}</ModalBody>
+            <ModalContent width="80%" bgColor="#EEEEEE" height="60%">
+              <ModalCloseButton />
+              <ModalBody className="tooltipDisplayText" padding="30px">
+                {questionData[qNum].tooltip}
+              </ModalBody>
             </ModalContent>
           </Modal>
         </Stack>

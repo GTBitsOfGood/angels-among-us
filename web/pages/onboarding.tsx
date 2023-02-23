@@ -1,6 +1,6 @@
 import { useState } from "react";
 import OnboardingSlide from "../components/OnboardingSlide";
-import { Flex, Progress, Text, Button } from "@chakra-ui/react";
+import { Flex, Progress, Text } from "@chakra-ui/react";
 import OnboardingButton from "../components/OnboardingButton";
 
 enum QType {
@@ -19,8 +19,11 @@ export default function Onboarding() {
   const questionData = [
     {
       title: "Hello, new foster!",
-      description:
-        "Let's start by walking through building your foster profile! This will help us connect you with the best pet for your situation to ensure a positive experience for everyone involved. \n\n Answer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.",
+      description: `Let's start by walking through building your foster profile! This will help us connect you with the best pet for your situation to ensure a positive experience for everyone involved. 
+        
+        
+        
+        Answer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.`,
       options: [],
       qtype: QType.Intro,
       singleAnswer: false,
@@ -42,7 +45,7 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip:
-        "Return Foster \n A dog that was adopted but then returned to AAU by the adopter. \n Boarding \n A foster parent or other dogs’ owner goes on vacation or other hiatus and needs someone to take their dog for a little \n Temporary \n During holidays, vacations, and emergencies until permanent fosters can be found or return. \n Shelter \n Lorem ipsum dolor sit amet consectetur. \n Owner Surrender \n Lorem ipsum dolor sit amet consectetur. \n Foster Move \n A dog whose previous foster parents can't care for the foster dog any more.",
+        "Return Foster \n\n A dog that was adopted but then returned to AAU by the adopter. \n Boarding \n A foster parent or other dogs’ owner goes on vacation or other hiatus and needs someone to take their dog for a little \n Temporary \n During holidays, vacations, and emergencies until permanent fosters can be found or return. \n Shelter \n Lorem ipsum dolor sit amet consectetur. \n Owner Surrender \n Lorem ipsum dolor sit amet consectetur. \n Foster Move \n A dog whose previous foster parents can't care for the foster dog any more.",
     },
     {
       title: "What sizes of dogs are you able to foster?",
@@ -60,9 +63,54 @@ export default function Onboarding() {
         "None",
         "American Eskimo",
         "Australian Shepherd",
-        "...",
+        "Beagle",
+        "Bichon Frise",
+        "Border Collie",
+        "Boxer",
+        "Brussels Griffon",
+        "Bulldog",
+        "Cane Corso/Mastiff",
+        "Cattle Dog/Heeler",
+        "Chihuahua",
+        "Chow Chow",
+        "Collie",
+        "Corgi",
+        "Dachshund",
+        "Dalmatian",
+        "Doberman Pinscher",
+        "German Shepherd",
+        "Golden Retriever",
+        "Great Dane",
+        "Great Pyrenees",
+        "Greyhound",
+        "Hound",
+        "Husky",
+        "Labrador Retriever",
+        "Malamute",
+        "Maltese",
+        "Min Pin",
+        "Mix",
+        "Newfoundland",
+        "Pekingese",
+        "Pitbull",
+        "Pointer",
+        "Pomeranian",
+        "Poodle",
+        "Pug",
+        "Rottweiler",
+        "Schnauzer",
+        "Scottie",
+        "Setter",
+        "Sharpei",
+        "Sheepdog",
+        "Shepherd",
+        "Shih Tzu",
+        "Spaniel",
+        "St. Bernard",
+        "Terrier (Med-Large)",
+        "Terrier (Small)",
+        "Weimaraner",
         "Whippet",
-        "Other",
       ],
       qtype: QType.Question,
       singleAnswer: false,
@@ -179,7 +227,7 @@ export default function Onboarding() {
     {
       title: "🎉 Thanks for completing your profile!",
       description:
-        "We're super excited that you're interested in helping our dogs in need by providing them with a kind home!",
+        "We're super excited that you're interested in helping our dogs in need by providing them with a kind home! \n\n Lorem ipsum dolor sit amet consectetur. Purus vehicula eget pharetra vitae. Varius id libero id aliquam in.",
       options: [],
       qtype: QType.Completion,
       singleAnswer: false,
@@ -266,6 +314,7 @@ export default function Onboarding() {
           }
         >
           <Progress
+            className="progressBar"
             width={{ base: "75%", md: "80%", lg: "85%" }}
             value={(100 * qNum) / (questionData.length - 1)}
             borderRadius="10px"
@@ -275,6 +324,7 @@ export default function Onboarding() {
             marginRight={{ base: "16px", md: "20px", lg: "25px" }}
           ></Progress>
           <Text
+            className="progressBarText"
             fontWeight="semibold"
             textColor="#3D3D3D"
             fontSize={{ base: "10px", md: "16px", lg: "20px" }}
@@ -291,7 +341,7 @@ export default function Onboarding() {
       </Flex>
 
       <Flex
-        className="backnextbuttons"
+        className="buttonDisplay"
         position="fixed"
         right={{ base: "50%", md: "200px", lg: "300px" }}
         transform={{ base: "translateX(50%)" }}

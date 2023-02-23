@@ -14,6 +14,7 @@ function OnboardingOptions(props: {
   if (dropdown) {
     return (
       <Select
+        className="onboardingDropdown"
         value={options[answers[qNum].indexOf(true)]}
         focusBorderColor="#000000"
         onChange={(event) => {
@@ -39,7 +40,7 @@ function OnboardingOptions(props: {
   }
 
   return (
-    <Flex flexDirection="row">
+    <Flex className="onboardingOptions" flexDirection="row" gap="16px">
       <OnboardingOptionColumn
         options={optionsLeft}
         singleAnswer={singleAnswer}

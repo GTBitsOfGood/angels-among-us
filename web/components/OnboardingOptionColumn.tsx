@@ -11,10 +11,11 @@ function OnboardingOptionColumn(props: {
   const { options, singleAnswer, answers, setAnswers, qNum, isLeft } = props;
 
   return (
-    <Stack marginRight="10px">
+    <Stack className="onboardingOptionColumn" gap="16px">
       {options.map((o, ind) => {
         return (
           <Box
+            className="optionBox"
             key={o}
             width="125px"
             borderWidth="2px"
@@ -32,6 +33,7 @@ function OnboardingOptionColumn(props: {
             paddingX="10px"
           >
             <Checkbox
+              className="optionCheckbox"
               colorScheme="none"
               iconColor="#000000"
               textAlign="left"
@@ -56,6 +58,7 @@ function OnboardingOptionColumn(props: {
               }}
             >
               <Text
+                className="optionText"
                 fontSize="14px"
                 color={
                   singleAnswer &&
