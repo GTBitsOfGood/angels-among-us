@@ -18,6 +18,7 @@ export default function Onboarding() {
         "Let's start by walking through building your foster profile! This will help us connect you with the best pet for your situation to ensure a positive experience for everyone involved. \n\n Answer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.",
       options: [],
       qtype: QType.Intro,
+      singleAnswer: false,
     },
     {
       title: "Are you able to help with all these types of fosters?",
@@ -31,12 +32,14 @@ export default function Onboarding() {
         "Foster Move",
       ],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title: "What sizes of dogs are you able to foster?",
       description: "",
       options: ["Extra Small", "Small", "Medium", "Large", "Extra Large"],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title: "Are there any breeds that you are not comfortable fostering?",
@@ -49,6 +52,7 @@ export default function Onboarding() {
         "Other",
       ],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title:
@@ -56,18 +60,21 @@ export default function Onboarding() {
       description: "",
       options: ["Male", "Female", "Litter"],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title: "What age of dogs are you willing to foster?",
       description: "",
       options: ["Puppy", "Young", "Adult", "Senior", "Mom & Puppies"],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title: "What temperament can you foster?",
       description: "",
       options: ["Friendly", "Scared", "Active", "Calm"],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title: "Are you able to foster dogs that are not good with:",
@@ -82,6 +89,7 @@ export default function Onboarding() {
         "Cats",
       ],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title: "Are you able to foster dogs that have or are:",
@@ -98,6 +106,7 @@ export default function Onboarding() {
         "Hospice",
       ],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title: "Are you able to foster dogs that have or are:",
@@ -111,18 +120,21 @@ export default function Onboarding() {
         "Flight Risk",
       ],
       qtype: QType.Question,
+      singleAnswer: false,
     },
     {
       title: "Are you able to foster a dog who isn't house trained?",
       description: "",
       options: ["Yes", "No"],
       qtype: QType.Question,
+      singleAnswer: true,
     },
     {
       title: "Are you able to foster a dog who isn't crate trained?",
       description: "",
       options: ["Yes", "No"],
       qtype: QType.Question,
+      singleAnswer: true,
     },
     {
       title: "Thanks for completing your profile!",
@@ -130,6 +142,7 @@ export default function Onboarding() {
         "We're super excited that you're interested in helping our dogs in need by providing them with a kind home!",
       options: [],
       qtype: QType.Completion,
+      singleAnswer: false,
     },
   ];
 

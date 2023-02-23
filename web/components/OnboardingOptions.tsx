@@ -3,11 +3,12 @@ import OnboardingOptionColumn from "./OnboardingOptionColumn";
 
 function OnboardingOptions(props: {
   options: string[];
+  singleAnswer: boolean;
   checked: boolean[][];
   setChecked: (arg: boolean[][]) => void;
   qNum: number;
 }) {
-  const { options, checked, setChecked, qNum } = props;
+  const { options, singleAnswer, checked, setChecked, qNum } = props;
 
   let optionsLeft = [];
   let optionsRight = [];
@@ -21,6 +22,7 @@ function OnboardingOptions(props: {
     <Flex flexDirection="row">
       <OnboardingOptionColumn
         options={optionsLeft}
+        singleAnswer={singleAnswer}
         checked={checked}
         setChecked={setChecked}
         qNum={qNum}
@@ -28,6 +30,7 @@ function OnboardingOptions(props: {
       ></OnboardingOptionColumn>
       <OnboardingOptionColumn
         options={optionsRight}
+        singleAnswer={singleAnswer}
         checked={checked}
         setChecked={setChecked}
         qNum={qNum}

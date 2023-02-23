@@ -13,6 +13,7 @@ function OnboardingQuestion(props: {
     description: string;
     options: string[];
     qtype: QType;
+    singleAnswer: boolean;
   }[];
   checked: boolean[][];
   setChecked: (arg: boolean[][]) => void;
@@ -51,6 +52,7 @@ function OnboardingQuestion(props: {
         </Flex>
         <OnboardingOptions
           options={questionData[qNum].options}
+          singleAnswer={questionData[qNum].singleAnswer}
           checked={checked}
           setChecked={setChecked}
           qNum={qNum}
