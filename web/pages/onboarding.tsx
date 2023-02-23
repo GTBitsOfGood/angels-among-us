@@ -121,6 +121,13 @@ export default function Onboarding() {
     }
   }
 
+  let checkboxState = [];
+  for (let i = 0; i < questionData.length; i++) {
+    checkboxState.push(Array(questionData[i].options.length).fill(false));
+  }
+
+  const [checked, setChecked] = useState(checkboxState);
+
   let onboardingDisplay = <OnboardingIntro></OnboardingIntro>;
   if (qNum != 0) {
     onboardingDisplay = (
@@ -128,6 +135,9 @@ export default function Onboarding() {
         title={questionData[qNum].title}
         description={questionData[qNum].description}
         options={questionData[qNum].options}
+        checked={checked}
+        setChecked={setChecked}
+        qNum={qNum}
       />
     );
   }

@@ -1,25 +1,15 @@
-import {
-  Flex,
-  Text,
-  useRadioGroup,
-  CheckboxGroup,
-  Checkbox,
-  Stack,
-} from "@chakra-ui/react";
-import OnboardingOptionCard from "./OnboardingOptionCard";
+import { Flex, Text } from "@chakra-ui/react";
+import OnboardingOptions from "./OnboardingOptions";
 
 function OnboardingQuestion(props: {
   title: string;
   description: string;
   options: string[];
+  checked: boolean[][];
+  setChecked: (arg: boolean[][]) => void;
+  qNum: number;
 }) {
-  const { title, description, options } = props;
-
-  const { getRootProps, getRadioProps } = useRadioGroup({
-    name: "onboardingQOptions",
-  });
-
-  const group = getRootProps();
+  const { title, description, options, checked, setChecked, qNum } = props;
 
   return (
     <Flex
@@ -47,7 +37,12 @@ function OnboardingQuestion(props: {
             {description}
           </Text>
         </Flex>
-        <OnboardingOptionCard options={options}></OnboardingOptionCard>
+        <OnboardingOptions
+          options={options}
+          checked={checked}
+          setChecked={setChecked}
+          qNum={qNum}
+        ></OnboardingOptions>
       </>
     </Flex>
   );

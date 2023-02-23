@@ -25,9 +25,9 @@ function OnboardingIntro() {
             color="#696969"
             textAlign="left"
           >
-            Let's start by walking through building your foster profile! This
-            will help us connect you with the best pet for your situation to
-            ensure a positive experience for everyone involved.
+            Let&apos;s start by walking through building your foster profile!
+            This will help us connect you with the best pet for your situation
+            to ensure a positive experience for everyone involved.
             <br></br> <br></br>
             Answer the following questions with all possible animals you would
             be willing to foster in mind. Keep in mind that once your profile is
