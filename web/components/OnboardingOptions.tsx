@@ -1,4 +1,5 @@
-import { Flex, Select } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
+import Select from "react-select";
 import OnboardingOptionColumn from "./OnboardingOptionColumn";
 
 function OnboardingOptions(props: {
@@ -11,23 +12,49 @@ function OnboardingOptions(props: {
 }) {
   const { options, singleAnswer, dropdown, answers, setAnswers, qNum } = props;
 
+  const dropdownOps = options.map((o) => {
+    return { value: o, label: o };
+  });
+
+  const selected = answers[qNum].reduce(
+    (arr: { value: string; label: string }[], val, ind) => {
+      if (val) {
+        arr.push(dropdownOps[ind]);
+      }
+      return arr;
+    },
+    []
+  );
+
   if (dropdown) {
     return (
       <Select
-        className="onboardingDropdown"
-        value={options[answers[qNum].indexOf(true)]}
-        focusBorderColor="#000000"
-        onChange={(event) => {
+        className="dropdown"
+        placeholder="None"
+        styles={{
+          control: (baseStyles: any) => ({
+            ...baseStyles,
+            width: "260px",
+            fontSize: "16px",
+            border: "1px solid gray",
+            boxShadow: "none",
+            "&:hover": {
+              border: "1px solid gray",
+            },
+          }),
+        }}
+        options={dropdownOps}
+        isMulti
+        value={selected}
+        onChange={(event: any) => {
           let tempState = [...answers];
           tempState[qNum] = Array(options.length).fill(false);
-          tempState[qNum][options.indexOf(event.target.value)] = true;
+          event.forEach((o: any) => {
+            tempState[qNum][options.indexOf(o.value)] = true;
+          });
           setAnswers(tempState);
         }}
-      >
-        {options.map((o, ind) => {
-          return <option key={ind}>{o}</option>;
-        })}
-      </Select>
+      />
     );
   }
 

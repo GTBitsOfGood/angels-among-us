@@ -61,6 +61,7 @@ function OnboardingSlide(props: {
           fontSize={{ base: "16px", md: "24px", lg: "28px" }}
           lineHeight={{ lg: "32px" }}
           color="#696969"
+          white-space="pre-wrap"
           textAlign={
             questionData[qNum].qtype == QType.Question ? "center" : "left"
           }
@@ -136,7 +137,11 @@ function OnboardingSlide(props: {
             <ModalContent width="80%" bgColor="#EEEEEE" height="60%">
               <ModalCloseButton />
               <ModalBody className="tooltipDisplayText" padding="30px">
-                {questionData[qNum].tooltip}
+                <Text
+                  dangerouslySetInnerHTML={{
+                    __html: questionData[qNum].tooltip,
+                  }}
+                ></Text>
               </ModalBody>
             </ModalContent>
           </Modal>

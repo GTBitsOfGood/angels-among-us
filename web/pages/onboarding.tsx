@@ -19,11 +19,7 @@ export default function Onboarding() {
   const questionData = [
     {
       title: "Hello, new foster!",
-      description: `Let's start by walking through building your foster profile! This will help us connect you with the best pet for your situation to ensure a positive experience for everyone involved. 
-        
-        
-        
-        Answer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.`,
+      description: `Let's start by walking through building your foster profile! This will help us connect you with the best pet for your situation to ensure a positive experience for everyone involved.\n\nAnswer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.`,
       options: [],
       qtype: QType.Intro,
       singleAnswer: false,
@@ -45,7 +41,7 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip:
-        "Return Foster \n\n A dog that was adopted but then returned to AAU by the adopter. \n Boarding \n A foster parent or other dogs’ owner goes on vacation or other hiatus and needs someone to take their dog for a little \n Temporary \n During holidays, vacations, and emergencies until permanent fosters can be found or return. \n Shelter \n Lorem ipsum dolor sit amet consectetur. \n Owner Surrender \n Lorem ipsum dolor sit amet consectetur. \n Foster Move \n A dog whose previous foster parents can't care for the foster dog any more.",
+        "<b>Return Foster</b> <br> A dog that was adopted but then returned to AAU by the adopter. <br><br> <b> Boarding </b> <br> A foster parent or other dogs' owner goes on vacation or other hiatus and needs someone to take their dog for a little <br><br> <b> Temporary </b> <br> During holidays, vacations, and emergencies until permanent fosters can be found or return. <br><br> <b> Shelter </b> <br> Lorem ipsum dolor sit amet consectetur. <br><br> <b> Owner Surrender </b> <br> Lorem ipsum dolor sit amet consectetur. <br><br> <b> Foster Move </b> <br> A dog whose previous foster parents can't care for the foster dog any more.",
     },
     {
       title: "What sizes of dogs are you able to foster?",
@@ -60,7 +56,6 @@ export default function Onboarding() {
       title: "Are there any breeds that you are not comfortable fostering?",
       description: "",
       options: [
-        "None",
         "American Eskimo",
         "Australian Shepherd",
         "Beagle",
@@ -254,7 +249,6 @@ export default function Onboarding() {
   for (let i = 0; i < questionData.length; i++) {
     if (questionData[i].dropdown) {
       let ddAns = Array(questionData[i].options.length).fill(false);
-      ddAns[0] = true;
       answersState.push(ddAns);
     } else {
       answersState.push(Array(questionData[i].options.length).fill(false));
