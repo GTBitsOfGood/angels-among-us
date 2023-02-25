@@ -220,7 +220,7 @@ export default function Onboarding() {
       tooltip: "",
     },
     {
-      title: "🎉\n\nThanks for completing your profile!",
+      title: "🎉\nThanks for completing your profile!",
       description: `We're super excited that you're interested in helping our dogs in need by providing them with a kind home!\n\nLorem ipsum dolor sit amet consectetur. Purus vehicula eget pharetra vitae. Varius id libero id aliquam in.`,
       options: [],
       qtype: QType.Completion,
@@ -265,12 +265,14 @@ export default function Onboarding() {
           btnType={ButtonType.Back}
           qNum={qNum}
           questionData={questionData}
+          answers={answers}
         ></OnboardingButton>
         <OnboardingButton
           onClickFunc={nextQ}
           btnType={ButtonType.Next}
           qNum={qNum}
           questionData={questionData}
+          answers={answers}
         ></OnboardingButton>
       </Flex>
     );
@@ -281,6 +283,7 @@ export default function Onboarding() {
         btnType={ButtonType.Singular}
         qNum={qNum}
         questionData={questionData}
+        answers={answers}
       ></OnboardingButton>
     );
   }

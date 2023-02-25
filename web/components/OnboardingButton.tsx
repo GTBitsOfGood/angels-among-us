@@ -22,8 +22,27 @@ function OnboardingButton(props: {
     options: string[];
     qtype: QType;
   }[];
+  answers: boolean[][];
 }) {
-  const { onClickFunc, btnType, qNum, questionData } = props;
+  const { onClickFunc, btnType, qNum, questionData, answers } = props;
+
+  let print = false;
+  function printAnswers() {
+    let ans = [];
+    for (let i = 0; i < answers.length; i++) {
+      if (questionData[i].qtype != QType.Question) {
+        continue;
+      }
+      const selected = answers[i].reduce((arr: string[], val, ind) => {
+        if (val) {
+          arr.push(questionData[i].options[ind]);
+        }
+        return arr;
+      }, []);
+      ans.push(selected);
+    }
+    console.log(ans);
+  }
 
   let text;
   if (btnType == ButtonType.Back) {
@@ -40,6 +59,7 @@ function OnboardingButton(props: {
     questionData[qNum + 1].qtype == QType.Completion
   ) {
     text = "Finish >";
+    print = true;
   }
 
   let buttonAppearance = {
@@ -68,7 +88,10 @@ function OnboardingButton(props: {
   return (
     <Button
       className="onboardingButton"
-      onClick={() => onClickFunc()}
+      onClick={() => {
+        onClickFunc();
+        if (print) printAnswers();
+      }}
       borderWidth="1px"
       borderColor={buttonAppearance.borderColor}
       backgroundColor={buttonAppearance.backgroundColor}

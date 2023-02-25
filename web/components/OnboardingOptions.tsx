@@ -12,6 +12,18 @@ function OnboardingOptions(props: {
 }) {
   const { options, singleAnswer, dropdown, answers, setAnswers, qNum } = props;
 
+  const numCols =
+    useBreakpointValue(
+      {
+        base: 2,
+        md: 2,
+        lg: 3,
+      },
+      {
+        fallback: "base",
+      }
+    ) || 2;
+
   const dropdownOps = options.map((o) => {
     return { value: o, label: o };
   });
@@ -58,18 +70,6 @@ function OnboardingOptions(props: {
     );
   }
 
-  const numCols =
-    useBreakpointValue(
-      {
-        base: 2,
-        md: 2,
-        lg: 3,
-      },
-      {
-        fallback: "base",
-      }
-    ) || 2;
-
   let opsByCol: string[][] = [];
   let numColsArr: number[] = [];
   for (let i = 0; i < numCols; i++) {
@@ -79,7 +79,6 @@ function OnboardingOptions(props: {
   for (let i = 0; i < options.length; i++) {
     opsByCol[i % numCols].push(options[i]);
   }
-  console.log(opsByCol);
 
   return (
     <Flex
@@ -90,6 +89,7 @@ function OnboardingOptions(props: {
       {numColsArr.map((val, ind) => {
         return (
           <OnboardingOptionColumn
+            key={ind}
             options={opsByCol[ind]}
             singleAnswer={singleAnswer}
             answers={answers}

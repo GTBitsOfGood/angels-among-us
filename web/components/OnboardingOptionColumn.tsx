@@ -12,8 +12,6 @@ function OnboardingOptionColumn(props: {
   const { options, singleAnswer, answers, setAnswers, qNum, colNum, numCols } =
     props;
 
-  console.log(answers[qNum]);
-
   return (
     <Stack
       className="onboardingOptionColumn"
