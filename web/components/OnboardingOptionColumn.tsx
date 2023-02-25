@@ -6,31 +6,40 @@ function OnboardingOptionColumn(props: {
   answers: boolean[][];
   setAnswers: (arg: boolean[][]) => void;
   qNum: number;
-  isLeft: boolean;
+  colNum: number;
+  numCols: number;
 }) {
-  const { options, singleAnswer, answers, setAnswers, qNum, isLeft } = props;
+  const { options, singleAnswer, answers, setAnswers, qNum, colNum, numCols } =
+    props;
+
+  console.log(answers[qNum]);
 
   return (
-    <Stack className="onboardingOptionColumn" gap="16px">
+    <Stack
+      className="onboardingOptionColumn"
+      gap={{ base: "16px", md: "30px", lg: "40px" }}
+    >
       {options.map((o, ind) => {
         return (
           <Box
             className="optionBox"
             key={o}
-            width="125px"
-            borderWidth="2px"
+            width={{ base: "125px", md: "175px", lg: "175px" }}
+            height={{ base: "60px", md: "70px", lg: "70px" }}
+            display="flex"
+            borderWidth={{ base: "2px", md: "2.5px", lg: "2.5px" }}
             borderColor={
               singleAnswer &&
-              !answers[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
-              answers[qNum][ind * 2 + (isLeft ? 1 : 0)]
+              !answers[qNum][ind * numCols + colNum] &&
+              answers[qNum].includes(true)
                 ? "#BBBBBB"
                 : "#000000"
             }
             textAlign="left"
-            borderRadius="5px"
+            borderRadius={{ base: "5px", md: "8px", lg: "8px" }}
             backgroundColor="#EDEDED"
-            paddingY="10px"
-            paddingX="10px"
+            paddingY={{ base: "10px", md: "15px", lg: "15px" }}
+            paddingX={{ base: "10px", md: "15px", lg: "15px" }}
           >
             <Checkbox
               className="optionCheckbox"
@@ -41,29 +50,30 @@ function OnboardingOptionColumn(props: {
               key={o}
               borderColor={
                 singleAnswer &&
-                !answers[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
-                answers[qNum][ind * 2 + (isLeft ? 1 : 0)]
+                !answers[qNum][ind * numCols + colNum] &&
+                answers[qNum].includes(true)
                   ? "#BBBBBB"
                   : "#000000"
               }
-              isChecked={answers[qNum][ind * 2 + (isLeft ? 0 : 1)]}
+              isChecked={answers[qNum][ind * numCols + colNum]}
               onChange={() => {
                 let tempState = [...answers];
-                let prevCBState = tempState[qNum][ind * 2 + (isLeft ? 0 : 1)];
-                tempState[qNum][ind * 2 + (isLeft ? 0 : 1)] = !prevCBState;
-                if (singleAnswer && prevCBState == false) {
-                  tempState[qNum][ind * 2 + (isLeft ? 1 : 0)] = false;
+                const prevState = tempState[qNum][ind * numCols + colNum];
+                if (singleAnswer && prevState == false) {
+                  tempState[qNum] = Array(tempState[qNum].length).fill(false);
                 }
+                tempState[qNum][ind * numCols + colNum] = !prevState;
                 setAnswers(tempState);
               }}
             >
               <Text
                 className="optionText"
-                fontSize="14px"
+                fontSize={{ base: "15px", md: "20px", lg: "20px" }}
+                fontWeight={{ base: "normal", md: "normal", lg: "semibold" }}
                 color={
                   singleAnswer &&
-                  !answers[qNum][ind * 2 + (isLeft ? 0 : 1)] &&
-                  answers[qNum][ind * 2 + (isLeft ? 1 : 0)]
+                  !answers[qNum][ind * numCols + colNum] &&
+                  answers[qNum].includes(true)
                     ? "#BBBBBB"
                     : "#000000"
                 }

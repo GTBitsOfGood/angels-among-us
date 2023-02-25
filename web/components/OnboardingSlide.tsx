@@ -38,77 +38,83 @@ function OnboardingSlide(props: {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const question = questionData[qNum];
+
   return (
     <Flex
       className="onboardingQuestion"
       direction="column"
       textAlign="center"
       align="center"
+      marginX={{ base: "10px", md: "20px", lg: "80px" }}
     >
       <Flex className="questionText" flexDir="column">
         <Text
           className="questionTitle"
-          marginX={{ base: "10px", md: "60px", lg: "100px" }}
-          fontSize={{ base: "22px", md: "40px", lg: "44px" }}
-          marginBottom={{ base: "36px", md: "20px", lg: "24px" }}
-          lineHeight={{ base: "28px", md: "50px", lg: "52px" }}
+          fontSize={{ base: "22px", md: "32px", lg: "42px" }}
+          marginX={{ base: "10px", md: "50px", lg: "150px" }}
+          marginBottom={{ base: "24px", md: "30px", lg: "30px" }}
+          lineHeight={{ base: "28px", md: "42px", lg: "52px" }}
           fontWeight="bold"
+          whiteSpace="pre-wrap"
         >
-          {questionData[qNum].title}
+          {question.title}
         </Text>
         <Text
           className="questionDescription"
-          fontSize={{ base: "16px", md: "24px", lg: "28px" }}
+          fontSize={{ base: "16px", md: "22px", lg: "25px" }}
+          marginBottom={{ base: "24px", md: "30px", lg: "30px" }}
           lineHeight={{ lg: "32px" }}
           color="#696969"
-          white-space="pre-wrap"
-          textAlign={
-            questionData[qNum].qtype == QType.Question ? "center" : "left"
-          }
+          whiteSpace="pre-wrap"
+          textAlign={question.qtype == QType.Question ? "center" : "left"}
         >
-          {questionData[qNum].description}
+          {question.description}
         </Text>
       </Flex>
       <OnboardingOptions
-        options={questionData[qNum].options}
-        singleAnswer={questionData[qNum].singleAnswer}
-        dropdown={questionData[qNum].dropdown}
+        options={question.options}
+        singleAnswer={question.singleAnswer}
+        dropdown={question.dropdown}
         answers={answers}
         setAnswers={setAnswers}
         qNum={qNum}
       ></OnboardingOptions>
       <Flex
         className="tooltip"
-        display={questionData[qNum].tooltip != "" ? "initial" : "none"}
+        display={question.tooltip != "" ? "initial" : "none"}
       >
         <Stack
           direction="row"
-          width="48%"
-          position="absolute"
+          marginTop="50px"
           alignItems="center"
-          justifyContent="flex-end"
-          overflow="clip"
-          bottom="30px"
-          right="20px"
-          display={["none", "flex"]}
+          display={{ base: "none", md: "none", lg: "flex" }}
         >
-          <Text color="#6D6D6D" fontSize="small">
-            what does this mean?
-          </Text>
           <Tooltip
             placement="top-start"
-            bgColor="#B5B5B5"
-            label={<Text color="#000000">{questionData[qNum].tooltip}</Text>}
+            bgColor="#CCCCCC"
+            padding="16px"
+            label={
+              <Text
+                color="#000000"
+                dangerouslySetInnerHTML={{
+                  __html: question.tooltip,
+                }}
+              ></Text>
+            }
           >
             <QuestionOutlineIcon />
           </Tooltip>
+          <Text color="#6D6D6D" fontSize="small" align="left" lineHeight="16px">
+            what does this mean?
+          </Text>
         </Stack>
         <Stack
           className="mobileTooltip"
           direction="row"
-          alignItems="center"
-          display={["flex", "none"]}
-          marginTop="16px"
+          display={{ base: "flex", md: "flex", lg: "none" }}
+          marginTop={{ base: "16px", md: "30px" }}
+          align="center"
         >
           <IconButton
             className="tooltipIcon"
@@ -134,12 +140,13 @@ function OnboardingSlide(props: {
             scrollBehavior="inside"
           >
             <ModalOverlay />
-            <ModalContent width="80%" bgColor="#EEEEEE" height="60%">
+            <ModalContent width="80%" bgColor="#EEEEEE" maxHeight="60%">
               <ModalCloseButton />
               <ModalBody className="tooltipDisplayText" padding="30px">
                 <Text
+                  fontSize={{ base: "15px", md: "22px" }}
                   dangerouslySetInnerHTML={{
-                    __html: questionData[qNum].tooltip,
+                    __html: question.tooltip,
                   }}
                 ></Text>
               </ModalBody>

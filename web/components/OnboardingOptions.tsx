@@ -1,4 +1,4 @@
-import { Flex } from "@chakra-ui/react";
+import { Flex, useBreakpointValue } from "@chakra-ui/react";
 import Select from "react-select";
 import OnboardingOptionColumn from "./OnboardingOptionColumn";
 
@@ -30,12 +30,12 @@ function OnboardingOptions(props: {
     return (
       <Select
         className="dropdown"
-        placeholder="None"
+        placeholder="Type here..."
         styles={{
           control: (baseStyles: any) => ({
             ...baseStyles,
             width: "260px",
-            fontSize: "16px",
+            fontSize: "18px",
             border: "1px solid gray",
             boxShadow: "none",
             "&:hover": {
@@ -58,32 +58,48 @@ function OnboardingOptions(props: {
     );
   }
 
-  let optionsLeft = [];
-  let optionsRight = [];
+  const numCols =
+    useBreakpointValue(
+      {
+        base: 2,
+        md: 2,
+        lg: 3,
+      },
+      {
+        fallback: "base",
+      }
+    ) || 2;
 
-  for (let i = 0; i < options.length; i++) {
-    if (i % 2 == 0) optionsLeft.push(options[i]);
-    else optionsRight.push(options[i]);
+  let opsByCol: string[][] = [];
+  let numColsArr: number[] = [];
+  for (let i = 0; i < numCols; i++) {
+    opsByCol.push([]);
+    numColsArr.push(i);
   }
+  for (let i = 0; i < options.length; i++) {
+    opsByCol[i % numCols].push(options[i]);
+  }
+  console.log(opsByCol);
 
   return (
-    <Flex className="onboardingOptions" flexDirection="row" gap="16px">
-      <OnboardingOptionColumn
-        options={optionsLeft}
-        singleAnswer={singleAnswer}
-        answers={answers}
-        setAnswers={setAnswers}
-        qNum={qNum}
-        isLeft={true}
-      ></OnboardingOptionColumn>
-      <OnboardingOptionColumn
-        options={optionsRight}
-        singleAnswer={singleAnswer}
-        answers={answers}
-        setAnswers={setAnswers}
-        qNum={qNum}
-        isLeft={false}
-      ></OnboardingOptionColumn>
+    <Flex
+      className="onboardingOptions"
+      flexDirection="row"
+      gap={{ base: "16px", md: "60px", lg: "90px" }}
+    >
+      {numColsArr.map((val, ind) => {
+        return (
+          <OnboardingOptionColumn
+            options={opsByCol[ind]}
+            singleAnswer={singleAnswer}
+            answers={answers}
+            setAnswers={setAnswers}
+            qNum={qNum}
+            colNum={ind}
+            numCols={numCols}
+          ></OnboardingOptionColumn>
+        );
+      })}
     </Flex>
   );
 }

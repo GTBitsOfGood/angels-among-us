@@ -54,7 +54,7 @@ export default function Onboarding() {
     },
     {
       title: "Are there any breeds that you are not comfortable fostering?",
-      description: "",
+      description: "Leave blank if none",
       options: [
         "American Eskimo",
         "Australian Shepherd",
@@ -220,9 +220,8 @@ export default function Onboarding() {
       tooltip: "",
     },
     {
-      title: "🎉 Thanks for completing your profile!",
-      description:
-        "We're super excited that you're interested in helping our dogs in need by providing them with a kind home! \n\n Lorem ipsum dolor sit amet consectetur. Purus vehicula eget pharetra vitae. Varius id libero id aliquam in.",
+      title: "🎉\n\nThanks for completing your profile!",
+      description: `We're super excited that you're interested in helping our dogs in need by providing them with a kind home!\n\nLorem ipsum dolor sit amet consectetur. Purus vehicula eget pharetra vitae. Varius id libero id aliquam in.`,
       options: [],
       qtype: QType.Completion,
       singleAnswer: false,
@@ -302,7 +301,7 @@ export default function Onboarding() {
           alignItems="center"
           justifyContent="center"
           width="100%"
-          marginBottom={{ base: "50px", md: "60px", lg: "60px" }}
+          marginBottom={{ base: "50px", md: "70px", lg: "84px" }}
           visibility={
             questionData[qNum].qtype == QType.Completion ? "hidden" : "visible"
           }
