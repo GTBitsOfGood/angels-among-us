@@ -33,35 +33,57 @@ import { Role } from "../utils/types/account";
 import { findAccount } from "../db/actions/Account";
 import Account from "../db/models/Account";
 import { string } from "zod";
+import { createUser } from "../db/actions/User";
 
 export default function Home() {
-  const [authorized, setAuthorized] = useState(false);
-  const { user, loading } = useAuth();
-  const [userInfo, setUserInfo] = useState({ email: "", uid: "", name: "" });
+  // const [authorized, setAuthorized] = useState(false);
+  const { user, loading, userData } = useAuth();
+  const [userInfo, setUserInfo] = useState({ email: "" });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { data, refetch } = trpc.account.get.useQuery(userInfo);
+
+  const found = data?.success;
+  console.log("found", found);
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+    const email = user.email as string;
+    setUserInfo({ email });
+    refetch();
+    const role = data?.role;
     const userData = {
       uid: user.uid as string,
       email: user.email as string,
       name: user.displayName as string,
+      role: role!,
     };
-    setUserInfo(userData);
-    refetch();
-    console.log(data);
-    const found = data?.found;
-    setAuthorized(found as boolean);
+    const newUser =
+      role !== undefined ? trpc.user.add.useQuery(userData) : null;
+    console.log("data", data);
+    console.log("userdata", userData);
   }
 
   async function handleLoginGoogle() {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+    const email = user.email as string;
+    setUserInfo({ email });
+    refetch();
+    const role = data?.role;
+    const userData = {
+      uid: user.uid as string,
+      email: user.email as string,
+      name: user.displayName as string,
+      role: role!,
+    };
+    const newUser =
+      role !== undefined ? trpc.user.add.useQuery(userData) : null;
+    console.log("data", data);
+    console.log("userdata", userData);
   }
   if (loading) {
     return (
@@ -71,23 +93,23 @@ export default function Home() {
     );
   }
 
-  if (user !== null) {
+  if (user !== null && found) {
     return (
       <Flex height="100vh">
         <Flex width="100%" justifyContent="center" alignItems="center">
-          {authorized ? (
-            <Button
-              cursor={["default", "pointer"]}
-              bgColor="#D9D9D9"
-              onClick={() => {
-                signOut(auth);
-              }}
-            >
-              Logout
-            </Button>
-          ) : (
+          {/* {authorized ? ( */}
+          <Button
+            cursor={["default", "pointer"]}
+            bgColor="#D9D9D9"
+            onClick={() => {
+              signOut(auth);
+            }}
+          >
+            Logout
+          </Button>
+          {/* ) : (
             <Text>Not Authorized</Text>
-          )}
+          )} */}
         </Flex>
       </Flex>
     );

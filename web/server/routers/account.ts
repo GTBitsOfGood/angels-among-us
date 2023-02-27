@@ -148,13 +148,12 @@ export const accountRouter = router({
     .input(
       z.object({
         email: z.string().email(),
-        uid: z.string(),
-        name: z.string(),
       })
     )
     .output(
       z.object({
-        found: z.boolean(),
+        success: z.boolean(),
+        role: z.nativeEnum(Role),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -167,17 +166,12 @@ export const accountRouter = router({
       } else {
         const account = await findAccount(email);
         if (account === null) {
-          return { found: false };
-        }
-        const user = await findUserByUid(input.uid);
-        if (!user) {
-          await createUser({
-            ...input,
-            role: account.role,
-            disabled: false,
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Not authenticated",
           });
         }
-        return { found: true };
+        return { success: true, role: account.role };
       }
     }),
 });

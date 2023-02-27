@@ -7,6 +7,24 @@ import { Role } from "../../utils/types/account";
 import { findAccount } from "../../db/actions/Account";
 
 export const userRouter = router({
+  add: publicProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        uid: z.string(),
+        name: z.string(),
+        role: z.nativeEnum(Role),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = await findUserByUid(input.uid);
+      if (!user) {
+        await createUser({
+          ...input,
+          disabled: false,
+        });
+      }
+    }),
   get: publicProcedure
     .input(
       z.object({
