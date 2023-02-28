@@ -3,9 +3,11 @@ import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   createPost,
+  finalizePost,
   updatePostDetails,
   updatePostStatus,
 } from "../../db/actions/Post";
+import Post from "../../db/models/Post";
 import {
   FosterType,
   Size,
@@ -36,25 +38,61 @@ const postSchema = z.object({
   houseTrained: z.nativeEnum(Trained),
   crateTrained: z.nativeEnum(Trained),
   spayNeuterStatus: z.nativeEnum(Status),
-  attachments: z.array(z.string()),
+  attachments: z.array(
+    z.discriminatedUnion("type", [
+      z.object({
+        type: z.literal("image"),
+        key: z.string(),
+        length: z.number(),
+        width: z.number(),
+      }),
+      z.object({
+        type: z.literal("video"),
+        key: z.string(),
+      }),
+    ])
+  ),
 });
 
 export const postRouter = router({
   create: creatorProcedure.input(postSchema).mutation(async ({ input }) => {
+    const session = await Post.startSession();
+    session.startTransaction();
     try {
-      const post = await createPost({
-        ...input,
-        date: new Date(),
-        covered: false,
-      });
+      const post = await createPost(
+        {
+          ...input,
+          date: new Date(),
+          covered: false,
+        },
+        session
+      );
+      await session.commitTransaction();
       return post;
     } catch (e) {
+      await session.abortTransaction();
       throw new TRPCError({
         message: "Internal Server Error",
         code: "INTERNAL_SERVER_ERROR",
       });
     }
   }),
+  finalize: creatorProcedure
+    .input(
+      z.object({
+        _id: zodOidType,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        await finalizePost(input._id);
+      } catch (e) {
+        throw new TRPCError({
+          message: "All attachments not uploaded",
+          code: "PRECONDITION_FAILED",
+        });
+      }
+    }),
   updateDetails: creatorProcedure
     .input(
       z.object({
