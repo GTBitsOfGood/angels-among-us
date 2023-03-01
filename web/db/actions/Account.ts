@@ -1,12 +1,15 @@
-import { ClientSession, UpdateQuery } from "mongoose";
+import { ClientSession, HydratedDocument, UpdateQuery } from "mongoose";
 import Account from "../models/Account";
 import { IAccount } from "../../utils/types/account";
 
-async function findAccount(email: string, session?: ClientSession) {
+async function findAccount(
+  email: string,
+  session?: ClientSession
+): Promise<HydratedDocument<IAccount> | null> {
   try {
     return await Account.findOne({ email }, null, { session: session });
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
+    return null;
   }
 }
 

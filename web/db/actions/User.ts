@@ -13,7 +13,7 @@ async function findUserByUid(
   return await User.findOne({ uid }, null, { session });
 }
 
-async function updateUser(
+async function updateUserByEmail(
   email: string,
   update: UpdateQuery<IUser>,
   session?: ClientSession
@@ -21,4 +21,12 @@ async function updateUser(
   return await User.findOneAndUpdate({ email }, update, { session: session });
 }
 
-export { createUser, findUserByUid, updateUser };
+async function updateUserByUid(
+  uid: string,
+  update: UpdateQuery<IUser>,
+  session?: ClientSession
+) {
+  return await User.findOneAndUpdate({ uid }, update, { session: session });
+}
+
+export { createUser, findUserByUid, updateUserByEmail, updateUserByUid };
