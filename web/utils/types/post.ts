@@ -3,39 +3,48 @@ export enum FosterType {
   Boarding = "boarding",
   Temporary = "temporary",
   FosterMove = "fosterMove",
-  NewIntake = "newIntake",
+  OwnerSurrender = "ownerSurrender",
+  Shelter = "shelter",
+}
+
+export enum Size {
+  XS = "xs",
+  S = "s",
+  M = "m",
+  L = "l",
+  XL = "xl",
 }
 
 export enum Breed {
-  None = "none",
-  AmericanEskimo = "americanEskimo",
-  AustralianShepherd = "australianShepherd",
+  None = "none", // None
+  AmericanEskimo = "americanEskimo", // American Eskimo
+  AustralianShepherd = "australianShepherd", // Australian Shepherd
   Beagle = "beagle",
-  BichonFrise = "bichonFrise",
-  BorderCollie = "borderCollie",
+  BichonFrise = "bichonFrise", // Bichon Frise
+  BorderCollie = "borderCollie", // Border Collie
   Boxer = "boxer",
-  BrusselsGriffon = "brusselsGriffon",
+  BrusselsGriffon = "brusselsGriffon", // Brussels Griffon
   Bulldog = "bulldog",
-  CaneCorsoMastiff = "caneCorsoMastiff",
-  CattleDogHeeler = "cattleDogHeeler",
+  CaneCorsoMastiff = "caneCorsoMastiff", // Cane Corso/Mastiff
+  CattleDogHeeler = "cattleDogHeeler", // Cattle Dog/Heeler
   Chihuahua = "chihuahua",
-  ChowChow = "chowChow",
+  ChowChow = "chowChow", // Chow Chow
   Collie = "collie",
   Corgi = "corgi",
   Dachshund = "dachshund",
   Dalmatian = "dalmatian",
-  DobermanPinscher = "dobermanPinscher",
-  GermanShepherd = "germanShepherd",
-  GoldenRetriever = "goldenRetriever",
-  GreatDane = "greatDane",
-  GreatPyrenees = "greatPyrenees",
+  DobermanPinscher = "dobermanPinscher", // Doberman Pinscher
+  GermanShepherd = "germanShepherd", // German Shepherd
+  GoldenRetriever = "goldenRetriever", // Golden Retriever
+  GreatDane = "greatDane", // Great Dane
+  GreatPyrenees = "greatPyrenees", // Great Pyrenees
   Greyhound = "greyhound",
   Hound = "hound",
   Husky = "husky",
-  LabradorRetriever = "labradorRetriever",
+  LabradorRetriever = "labradorRetriever", // Labrador Retriever
   Malamute = "malamute",
   Maltese = "maltese",
-  MinPin = "minPin",
+  MinPin = "minPin", // Min Pin
   Mix = "mix",
   Newfoundland = "newfoundland",
   Pekingese = "pekingese",
@@ -51,21 +60,13 @@ export enum Breed {
   Sharpei = "sharpei",
   Sheepdog = "sheepdog",
   Shepherd = "shepherd",
-  ShihTzu = "shihTzu",
+  ShihTzu = "shihTzu", // Shih Tzu
   Spaniel = "spaniel",
-  StBernard = "stBernard",
-  TerrierMedLarge = "terrierMedLarge",
-  TerrierSmall = "terrierSmall",
+  StBernard = "stBernard", // St. Bernard
+  TerrierMedLarge = "terrierMedLarge", // Terrier (Med-Large)
+  TerrierSmall = "terrierSmall", // Terrier (Small)
   Weimaraner = "weimaraner",
   Whippet = "whippet",
-}
-
-export enum Size {
-  XS = "xs",
-  S = "s",
-  M = "m",
-  L = "l",
-  XL = "xl",
 }
 
 export enum Gender {
@@ -135,6 +136,7 @@ export interface IPost {
   date: Date;
   type: FosterType;
   size: Size;
+  breed: Breed;
   gender: Gender;
   age: Age;
   temperament: Temperament;

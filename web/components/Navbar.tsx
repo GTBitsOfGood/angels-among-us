@@ -24,12 +24,12 @@ import { Pages } from "../utils/consts";
 
 export default function Navbar() {
   const router = useRouter();
-  const { user, loading, userData } = useAuth();
+  const { user, loading, userData, authorized } = useAuth();
   const role = userData?.role;
 
   if (
     loading ||
-    user === null ||
+    !authorized ||
     !(navbarVisiblity[router.pathname as Pages] ?? true)
   ) {
     return <></>;
@@ -99,10 +99,10 @@ export default function Navbar() {
                 <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
                 <Stack direction="column">
                   <Text fontWeight="bold" color="#7D7E82">
-                    {user.displayName}
+                    {user?.displayName}
                   </Text>
                   <Text fontWeight="semibold" color="#7D7E82" fontSize="sm">
-                    {user.email}
+                    {user?.email}
                   </Text>
                 </Stack>
               </Stack>
@@ -176,10 +176,10 @@ export default function Navbar() {
                   <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
                   <Stack direction="column">
                     <Text fontWeight="bold" color="#7D7E82">
-                      {user.displayName}
+                      {user?.displayName}
                     </Text>
                     <Text fontWeight="semibold" color="#7D7E82" fontSize="sm">
-                      {user.email}
+                      {user?.email}
                     </Text>
                   </Stack>
                 </Stack>

@@ -32,7 +32,7 @@ export default function Profile() {
     { value: FosterType.Boarding, label: "Boarding" },
     { value: FosterType.Temporary, label: "Temporary" },
     { value: FosterType.FosterMove, label: "Foster Move" },
-    { value: FosterType.NewIntake, label: "Shelter" },
+    { value: FosterType.Shelter, label: "Shelter" },
   ];
   const breeds = [
     { value: Breed.None, label: "None" },

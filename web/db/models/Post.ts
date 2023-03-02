@@ -3,6 +3,7 @@ import {
   IPost,
   FosterType,
   Size,
+  Breed,
   Gender,
   Age,
   Temperament,
@@ -25,6 +26,11 @@ const postSchema = new Schema<IPost>({
     type: String,
     required: true,
     enum: Object.values(Size),
+  },
+  breed: {
+    type: String,
+    required: true,
+    enum: Object.values(Breed),
   },
   gender: {
     type: String,
