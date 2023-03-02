@@ -12,115 +12,126 @@ import { EditIcon } from "@chakra-ui/icons";
 
 import React from "react";
 import Select from "react-select";
+import {
+  Age,
+  Behavioral,
+  Breed,
+  FosterType,
+  Gender,
+  GoodWith,
+  Size,
+  Status,
+  Temperament,
+} from "../utils/types/post";
 
 export default function Profile() {
   const [editing, setEditing] = React.useState(false);
 
-  const options = [
-    { value: "return", label: "Return" },
-    { value: "boarding", label: "Boarding" },
-    { value: "temporary", label: "Temporary" },
-    { value: "foster move", label: "Foster Move" },
-    { value: "shelter", label: "Shelter" },
+  const fosterTypes = [
+    { value: FosterType.Return, label: "Return" },
+    { value: FosterType.Boarding, label: "Boarding" },
+    { value: FosterType.Temporary, label: "Temporary" },
+    { value: FosterType.FosterMove, label: "Foster Move" },
+    { value: FosterType.NewIntake, label: "Shelter" },
   ];
-  const options1 = [
-    { value: "none", label: "None" },
-    { value: "american eskimo", label: "American Eskimo" },
-    { value: "australian shepherd", label: "Australian Shepherd" },
-    { value: "beagle", label: "Beagle" },
-    { value: "bichon frise", label: "Bichon Frise" },
-    { value: "border collie", label: "Border Collie" },
-    { value: "boxer", label: "Boxer" },
-    { value: "brussels griffon", label: "Brussels Griffon" },
-    { value: "bulldog", label: "Bulldog" },
-    { value: "cane corso/mastiff", label: "Cane Corso/Mastiff" },
-    { value: "cattle dog/heeler", label: "Cattle Dog/Heeler" },
-    { value: "chihuahua", label: "Chihuahua" },
-    { value: "chow chow", label: "Chow Chow" },
-    { value: "collie", label: "Collie" },
-    { value: "corgi", label: "Corgi" },
-    { value: "dachshund", label: "Dachshund" },
-    { value: "dalmatian", label: "Dalmatian" },
-    { value: "doberman pinscher", label: "Doberman Pinscher" },
-    { value: "german shepherd", label: "German Shepherd" },
-    { value: "golden retriever", label: "Golden Retriever" },
-    { value: "great dane", label: "Great Dane" },
-    { value: "great pyrenees", label: "Great Pyrenees" },
-    { value: "greyhound", label: "Greyhound" },
-    { value: "hound", label: "Hound" },
-    { value: "husky", label: "Husky" },
-    { value: "labrador retriever", label: "Labrador Retriever" },
-    { value: "malamute", label: "Malamute" },
-    { value: "maltese", label: "Maltese" },
-    { value: "min pin", label: "Min Pin" },
-    { value: "mix", label: "Mix" },
-    { value: "newfoundland", label: "Newfoundland" },
-    { value: "pekingese", label: "Pekingese" },
-    { value: "pitbull", label: "Pitbull" },
-    { value: "pointer", label: "Pointer" },
-    { value: "pomeranian", label: "Pomeranian" },
-    { value: "poodle", label: "Poodle" },
-    { value: "pug", label: "Pug" },
-    { value: "rottweiler", label: "Rottweiler" },
-    { value: "schnauzer", label: "Schnauzer" },
-    { value: "scottie", label: "Scottie" },
-    { value: "setter", label: "Setter" },
-    { value: "sharpei", label: "Sharpei" },
-    { value: "sheepdog", label: "Sheepdog" },
-    { value: "shepherd", label: "Shepherd" },
-    { value: "shih tzu", label: "Shih Tzu" },
-    { value: "spaniel", label: "Spaniel" },
-    { value: "st. bernard", label: "St. Bernard" },
-    { value: "terrier (med-large)", label: "Terrier (Med-Large)" },
-    { value: "terrier (small)", label: "Terrier (Small)" },
-    { value: "weimaraner", label: "Weimaraner" },
-    { value: "whippet", label: "Whippet" },
+  const breeds = [
+    { value: Breed.None, label: "None" },
+    { value: Breed.AmericanEskimo, label: "American Eskimo" },
+    { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
+    { value: Breed.Beagle, label: "Beagle" },
+    { value: Breed.BichonFrise, label: "Bichon Frise" },
+    { value: Breed.BorderCollie, label: "Border Collie" },
+    { value: Breed.Boxer, label: "Boxer" },
+    { value: Breed.BrusselsGriffon, label: "Brussels Griffon" },
+    { value: Breed.Bulldog, label: "Bulldog" },
+    { value: Breed.CaneCorsoMastiff, label: "Cane Corso/Mastiff" },
+    { value: Breed.CattleDogHeeler, label: "Cattle Dog/Heeler" },
+    { value: Breed.Chihuahua, label: "Chihuahua" },
+    { value: Breed.ChowChow, label: "Chow Chow" },
+    { value: Breed.Collie, label: "Collie" },
+    { value: Breed.Corgi, label: "Corgi" },
+    { value: Breed.Dachshund, label: "Dachshund" },
+    { value: Breed.Dalmatian, label: "Dalmatian" },
+    { value: Breed.DobermanPinscher, label: "Doberman Pinscher" },
+    { value: Breed.GermanShepherd, label: "German Shepherd" },
+    { value: Breed.GoldenRetriever, label: "Golden Retriever" },
+    { value: Breed.GreatDane, label: "Great Dane" },
+    { value: Breed.GreatPyrenees, label: "Great Pyrenees" },
+    { value: Breed.Greyhound, label: "Greyhound" },
+    { value: Breed.Hound, label: "Hound" },
+    { value: Breed.Husky, label: "Husky" },
+    { value: Breed.LabradorRetriever, label: "Labrador Retriever" },
+    { value: Breed.Malamute, label: "Malamute" },
+    { value: Breed.Maltese, label: "Maltese" },
+    { value: Breed.MinPin, label: "Min Pin" },
+    { value: Breed.Mix, label: "Mix" },
+    { value: Breed.Newfoundland, label: "Newfoundland" },
+    { value: Breed.Pekingese, label: "Pekingese" },
+    { value: Breed.Pitbull, label: "Pitbull" },
+    { value: Breed.Pointer, label: "Pointer" },
+    { value: Breed.Pomeranian, label: "Pomeranian" },
+    { value: Breed.Poodle, label: "Poodle" },
+    { value: Breed.Pug, label: "Pug" },
+    { value: Breed.Rottweiler, label: "Rottweiler" },
+    { value: Breed.Schnauzer, label: "Schnauzer" },
+    { value: Breed.Scottie, label: "Scottie" },
+    { value: Breed.Setter, label: "Setter" },
+    { value: Breed.Sharpei, label: "Sharpei" },
+    { value: Breed.Sheepdog, label: "Sheepdog" },
+    { value: Breed.Shepherd, label: "Shepherd" },
+    { value: Breed.ShihTzu, label: "Shih Tzu" },
+    { value: Breed.Spaniel, label: "Spaniel" },
+    { value: Breed.StBernard, label: "St. Bernard" },
+    { value: Breed.TerrierMedLarge, label: "Terrier (Med-Large)" },
+    { value: Breed.TerrierSmall, label: "Terrier (Small)" },
+    { value: Breed.Weimaraner, label: "Weimaraner" },
+    { value: Breed.Whippet, label: "Whippet" },
   ];
-  const options2 = [
-    { value: "puppy", label: "Puppy" },
-    { value: "young adult", label: "Young Adult" },
-    { value: "adult", label: "Adult" },
-    { value: "senior", label: "Senior" },
-    { value: "mom & puppies", label: "Mom & Puppies" },
+  const ages = [
+    { value: Age.Puppy, label: "Puppy" },
+    { value: Age.Young, label: "Young Adult" },
+    { value: Age.Adult, label: "Adult" },
+    { value: Age.Senior, label: "Senior" },
+    { value: Age.MomAndPuppies, label: "Mom & Puppies" },
   ];
-  const options3 = [
-    { value: "xs", label: "XS" },
-    { value: "s", label: "S" },
-    { value: "m", label: "M" },
-    { value: "l", label: "L" },
-    { value: "xl", label: "XL" },
+  const sizes = [
+    { value: Size.XS, label: "XS" },
+    { value: Size.S, label: "S" },
+    { value: Size.M, label: "M" },
+    { value: Size.L, label: "L" },
+    { value: Size.XL, label: "XL" },
   ];
-  const options4 = [
-    { value: "male", label: "Male" },
-    { value: "female", label: "Female" },
-    { value: "litter", label: "Litter" },
+  const genders = [
+    { value: Gender.Male, label: "Male" },
+    { value: Gender.Female, label: "Female" },
+    { value: Gender.Litter, label: "Litter" },
   ];
-  const options5 = [
-    { value: "men", label: "Men" },
-    { value: "women", label: "Women" },
-    { value: "older children", label: "Older Children" },
-    { value: "young children", label: "Young Children" },
-    { value: "large dogs", label: "Large Dogs" },
-    { value: "small dogs", label: "Small Dogs" },
-    { value: "cats", label: "Cats" },
+  const compatibilities = [
+    { value: GoodWith.Men, label: "Men" },
+    { value: GoodWith, label: "Women" },
+    { value: GoodWith.OlderChildren, label: "Older Children" },
+    { value: GoodWith.YoungChildren, label: "Young Children" },
+    { value: GoodWith.LargeDogs, label: "Large Dogs" },
+    { value: GoodWith.SmallDogs, label: "Small Dogs" },
+    { value: GoodWith.Cats, label: "Cats" },
   ];
-  const options6 = [
-    { value: "separation anxiety", label: "Separation Anxiety" },
-    { value: "barking", label: "Barking" },
-    { value: "jumping", label: "Jumping" },
-    { value: "flight risk", label: "Flight Risk" },
-    { value: "bite risk", label: "Bite Risk" },
-    { value: "pulls on leash", label: "Pulls on Leash" },
+  const behaviors = [
+    { value: Behavioral.SeparationAnxiety, label: "Separation Anxiety" },
+    { value: Behavioral.Barking, label: "Barking" },
+    { value: Behavioral.Jumping, label: "Jumping" },
+    { value: Behavioral.FlightRisk, label: "Flight Risk" },
+    { value: Behavioral.BiteRisk, label: "Bite Risk" },
+    { value: Behavioral.PullsOnLeash, label: "Pulls on Leash" },
   ];
-  const options7 = [
-    { value: "friendly", label: "Friendly" },
-    { value: "scared", label: "Scared" },
-    { value: "active", label: "Active" },
-    { value: "calm", label: "Calm" },
+  const temperaments = [
+    { value: Temperament.Friendly, label: "Friendly" },
+    { value: Temperament.Scared, label: "Scared" },
+    { value: Temperament.Active, label: "Active" },
+    { value: Temperament.Calm, label: "Calm" },
   ];
-  const options8 = [
-    { value: "yes", label: "Yes" },
-    { value: "no", label: "No" },
+  const statuses = [
+    { value: Status.Yes, label: "Yes" },
+    { value: Status.No, label: "No" },
   ];
   return (
     <>
@@ -153,7 +164,7 @@ export default function Profile() {
               <Text fontSize="2xl" fontWeight="semibold">
                 Profile
               </Text>
-              {editing == false && (
+              {!editing ? (
                 <Button
                   bgColor="#BCBCBC"
                   width="6%"
@@ -162,8 +173,7 @@ export default function Profile() {
                 >
                   Edit
                 </Button>
-              )}
-              {editing == true && (
+              ) : (
                 <Stack direction="row">
                   <Button
                     bgColor="#DAD8D8"
@@ -218,65 +228,36 @@ export default function Profile() {
                     <Stack direction="row" spacing={5}>
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">Name</Text>
-                        {editing && (
-                          <Input
-                            placeholder="Firstname Lastname"
-                            disabled={false}
-                          ></Input>
-                        )}
-                        {!editing && (
-                          <Input
-                            placeholder="Firstname Lastname"
-                            disabled={true}
-                          ></Input>
-                        )}
+                        <Input
+                          placeholder="Firstname Lastname"
+                          disabled={!editing}
+                        ></Input>
                       </Stack>
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">Preferred Email</Text>
-                        {editing && (
-                          <Input
-                            placeholder="example@domainname.com"
-                            disabled={false}
-                          ></Input>
-                        )}
-                        {!editing && (
-                          <Input
-                            placeholder="example@domainname.com"
-                            disabled={true}
-                          ></Input>
-                        )}
+                        <Input
+                          placeholder="example@domainname.com"
+                          disabled={!editing}
+                        ></Input>
                       </Stack>
                     </Stack>
                     <Stack direction="row" spacing={5}>
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">Email</Text>
-                        {editing && (
-                          <Input
-                            placeholder="example@domainname.com"
-                            disabled={false}
-                          ></Input>
-                        )}
-                        {!editing && (
-                          <Input
-                            placeholder="example@domainname.com"
-                            disabled={true}
-                          ></Input>
-                        )}
+                        <Input
+                          placeholder="example@domainname.com"
+                          disabled={!editing}
+                        ></Input>
                       </Stack>
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">
                           Which types of fosters can you help with?
                         </Text>
-                        {editing && (
-                          <Select
-                            isDisabled={false}
-                            isMulti
-                            options={options}
-                          />
-                        )}
-                        {!editing && (
-                          <Select isDisabled={true} isMulti options={options} />
-                        )}
+                        <Select
+                          isDisabled={!editing}
+                          isMulti
+                          options={fosterTypes}
+                        />
                       </Stack>
                     </Stack>
                   </Stack>
@@ -294,41 +275,21 @@ export default function Profile() {
                   <Stack direction="row" spacing={5}>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">Breed Restrictions</Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options1} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options1} />
-                      )}
+                      <Select isDisabled={!editing} isMulti options={breeds} />
                     </Stack>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">Age Preferences</Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options2} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options2} />
-                      )}
+                      <Select isDisabled={!editing} isMulti options={ages} />
                     </Stack>
                   </Stack>
                   <Stack direction="row" spacing={5}>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">Dog Size Preference</Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options3} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options3} />
-                      )}
+                      <Select isDisabled={!editing} isMulti options={sizes} />
                     </Stack>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">Gender Preference</Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options4} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options4} />
-                      )}
+                      <Select isDisabled={!editing} isMulti options={genders} />
                     </Stack>
                   </Stack>
                 </Stack>
@@ -347,32 +308,31 @@ export default function Profile() {
                       <Text fontWeight="medium">
                         Able to foster dogs NOT good with:
                       </Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options5} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options5} />
-                      )}
+                      <Select
+                        isDisabled={!editing}
+                        isMulti
+                        options={compatibilities}
+                      />
                     </Stack>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">Able to foster dogs with:</Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options6} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options6} />
-                      )}
+                      <Select
+                        isDisabled={!editing}
+                        isMulti
+                        options={behaviors}
+                      />
                     </Stack>
                   </Stack>
                   <Stack direction="row">
                     <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Temperament Restrictions:</Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options7} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options7} />
-                      )}
+                      <Text fontWeight="medium">
+                        Able to foster dogs with these temperaments:
+                      </Text>
+                      <Select
+                        isDisabled={!editing}
+                        isMulti
+                        options={temperaments}
+                      />
                     </Stack>
                   </Stack>
                 </Stack>
@@ -391,23 +351,21 @@ export default function Profile() {
                       <Text fontWeight="medium">
                         Able to foster dogs not house trained...
                       </Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options8} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options8} />
-                      )}
+                      <Select
+                        isDisabled={!editing}
+                        isMulti
+                        options={statuses}
+                      />
                     </Stack>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">
                         Able to foster dogs not crate trained...
                       </Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options8} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options8} />
-                      )}
+                      <Select
+                        isDisabled={!editing}
+                        isMulti
+                        options={statuses}
+                      />
                     </Stack>
                   </Stack>
                   <Stack direction="row">
@@ -415,12 +373,11 @@ export default function Profile() {
                       <Text fontWeight="medium">
                         Able to foster dogs not spayed or neutered...
                       </Text>
-                      {editing && (
-                        <Select isDisabled={false} isMulti options={options8} />
-                      )}
-                      {!editing && (
-                        <Select isDisabled={true} isMulti options={options8} />
-                      )}
+                      <Select
+                        isDisabled={!editing}
+                        isMulti
+                        options={statuses}
+                      />
                     </Stack>
                   </Stack>
                 </Stack>
@@ -453,7 +410,7 @@ export default function Profile() {
                 )}
               </Stack>
             </Stack>
-            {editing && (
+            {!editing ? (
               <Stack direction="row">
                 <Button
                   cursor="default"
@@ -473,8 +430,7 @@ export default function Profile() {
                   Save
                 </Button>
               </Stack>
-            )}
-            {!editing && (
+            ) : (
               <Button
                 cursor="default"
                 bgColor="#C9C9C9"
@@ -501,65 +457,33 @@ export default function Profile() {
             <Stack direction="column" spacing={4}>
               <Stack direction="column">
                 <Text fontWeight="medium">Name</Text>
-                {editing && (
-                  <Input
-                    border="1px solid #D9D9D9"
-                    placeholder="Firstname Lastname"
-                    disabled={false}
-                  ></Input>
-                )}
-                {!editing && (
-                  <Input
-                    placeholder="Firstname Lastname"
-                    disabled={true}
-                    border="1px solid gray"
-                  ></Input>
-                )}
+                <Input
+                  placeholder="Firstname Lastname"
+                  disabled={!editing}
+                  border="1px solid gray"
+                ></Input>
               </Stack>
               <Stack direction="column">
                 <Text fontWeight="medium">Email</Text>
-                {editing && (
-                  <Input
-                    border="1px solid #D9D9D9"
-                    placeholder="example@domainname.com"
-                    disabled={false}
-                  ></Input>
-                )}
-                {!editing && (
-                  <Input
-                    border="1px solid gray"
-                    placeholder="example@domainname.com"
-                    disabled={true}
-                  ></Input>
-                )}
+                <Input
+                  border="1px solid gray"
+                  placeholder="example@domainname.com"
+                  disabled={!editing}
+                ></Input>
               </Stack>
               <Stack direction="column">
                 <Text fontWeight="medium">Preferred Email</Text>
-                {editing && (
-                  <Input
-                    border="1px solid #D9D9D9"
-                    placeholder="example@domainname.com"
-                    disabled={false}
-                  ></Input>
-                )}
-                {!editing && (
-                  <Input
-                    border="1px solid gray"
-                    placeholder="example@domainname.com"
-                    disabled={true}
-                  ></Input>
-                )}
+                <Input
+                  border="1px solid gray"
+                  placeholder="example@domainname.com"
+                  disabled={!editing}
+                ></Input>
               </Stack>
               <Stack direction="column">
                 <Text fontWeight="medium">
                   Which types of fosters can you NOT help with?
                 </Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options} />
-                )}
+                <Select isDisabled={!editing} isMulti options={fosterTypes} />
               </Stack>
             </Stack>
             <Text fontSize="lg" fontWeight="bold">
@@ -568,39 +492,19 @@ export default function Profile() {
             <Stack direction="column" spacing={4}>
               <Stack direction="column" width="100%">
                 <Text fontWeight="medium">Breed Restrictions</Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options1} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options1} />
-                )}
+                <Select isDisabled={!editing} isMulti options={breeds} />
               </Stack>
               <Stack direction="column" width="100%">
                 <Text fontWeight="medium">Dog Sizes you do NOT Prefer</Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options3} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options3} />
-                )}
+                <Select isDisabled={!editing} isMulti options={sizes} />
               </Stack>
               <Stack direction="column" width="100%">
                 <Text fontWeight="medium">Ages NOT Preferred</Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options2} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options2} />
-                )}
+                <Select isDisabled={!editing} isMulti options={ages} />
               </Stack>
               <Stack direction="column" width="100%">
                 <Text fontWeight="medium">Genders you do NOT Prefer</Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options4} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options4} />
-                )}
+                <Select isDisabled={!editing} isMulti options={genders} />
               </Stack>
             </Stack>
             <Text fontSize="lg" fontWeight="bold">
@@ -611,30 +515,21 @@ export default function Profile() {
                 <Text fontWeight="medium">
                   Able to foster dogs NOT good with:
                 </Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options5} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options5} />
-                )}
+                <Select
+                  isDisabled={!editing}
+                  isMulti
+                  options={compatibilities}
+                />
               </Stack>
               <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Temperament Restrictions:</Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options7} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options7} />
-                )}
+                <Text fontWeight="medium">
+                  Able to foster dogs with these temperaments:
+                </Text>
+                <Select isDisabled={!editing} isMulti options={temperaments} />
               </Stack>
               <Stack direction="column" width="100%">
                 <Text fontWeight="medium">Able to foster dogs with:</Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options6} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options6} />
-                )}
+                <Select isDisabled={!editing} isMulti options={behaviors} />
               </Stack>
             </Stack>
             <Text fontSize="lg" fontWeight="bold">
@@ -645,38 +540,23 @@ export default function Profile() {
                 <Text fontWeight="medium">
                   Able to foster dogs not house trained...
                 </Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options8} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options8} />
-                )}
+                <Select isDisabled={!editing} isMulti options={statuses} />
               </Stack>
               <Stack direction="column" width="100%">
                 <Text fontWeight="medium">
                   Able to foster dogs not spayed or neutered...
                 </Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options8} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options8} />
-                )}
+                <Select isDisabled={!editing} isMulti options={statuses} />
               </Stack>
               <Stack direction="column" width="100%">
                 <Text fontWeight="medium">
                   Able to foster dogs not crate trained...
                 </Text>
-                {editing && (
-                  <Select isDisabled={false} isMulti options={options8} />
-                )}
-                {!editing && (
-                  <Select isDisabled={true} isMulti options={options8} />
-                )}
+                <Select isDisabled={!editing} isMulti options={statuses} />
               </Stack>
             </Stack>
             <Stack direction="row" justifyContent="flex-end" paddingBottom={10}>
-              {editing && (
+              {!editing ? (
                 <>
                   <Button
                     cursor="default"
@@ -696,8 +576,7 @@ export default function Profile() {
                     Save
                   </Button>
                 </>
-              )}
-              {!editing && (
+              ) : (
                 <Button
                   bgColor="#C9C9C9"
                   cursor="default"
