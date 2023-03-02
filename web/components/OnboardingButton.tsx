@@ -1,47 +1,25 @@
 import { Button } from "@chakra-ui/react";
-
-enum QType {
-  Intro,
-  Question,
-  Completion,
-}
-
-enum ButtonType {
-  Back,
-  Next,
-  Singular,
-}
+import {
+  QType,
+  ButtonType,
+  IQuestion,
+  Answers,
+  StoredQuestion,
+  PossibleTypes,
+} from "../pages/onboarding";
 
 function OnboardingButton(props: {
   onClickFunc: (arg: void) => void;
   btnType: ButtonType;
   qNum: number;
-  questionData: {
-    title: string;
-    description: string;
-    options: string[];
-    qtype: QType;
-  }[];
-  answers: boolean[][];
+  questionData: IQuestion[];
+  answers: Answers<StoredQuestion<PossibleTypes>>;
 }) {
   const { onClickFunc, btnType, qNum, questionData, answers } = props;
 
   let print = false;
   function printAnswers() {
-    let ans = [];
-    for (let i = 0; i < answers.length; i++) {
-      if (questionData[i].qtype != QType.Question) {
-        continue;
-      }
-      const selected = answers[i].reduce((arr: string[], val, ind) => {
-        if (val) {
-          arr.push(questionData[i].options[ind]);
-        }
-        return arr;
-      }, []);
-      ans.push(selected);
-    }
-    console.log(ans);
+    console.log(answers);
   }
 
   let text;

@@ -1,16 +1,19 @@
 import { Flex, useBreakpointValue } from "@chakra-ui/react";
+import { Dispatch, SetStateAction } from "react";
 import Select from "react-select";
 import OnboardingOptionColumn from "./OnboardingOptionColumn";
+import { Answers, PossibleTypes, StoredQuestion } from "../pages/onboarding";
+import { OptionType } from "./OnboardingSlide";
 
 function OnboardingOptions(props: {
-  options: string[];
+  options: OptionType[];
   singleAnswer: boolean;
   dropdown: boolean;
-  answers: boolean[][];
-  setAnswers: (arg: boolean[][]) => void;
-  qNum: number;
+  answers: Answers<StoredQuestion<PossibleTypes>>;
+  setAnswers: Dispatch<SetStateAction<Answers<StoredQuestion<PossibleTypes>>>>;
+  qKey: string;
 }) {
-  const { options, singleAnswer, dropdown, answers, setAnswers, qNum } = props;
+  const { options, singleAnswer, dropdown, answers, setAnswers, qKey } = props;
 
   const numCols =
     useBreakpointValue(
@@ -24,19 +27,24 @@ function OnboardingOptions(props: {
       }
     ) || 2;
 
-  const dropdownOps = options.map((o) => {
-    return { value: o, label: o };
-  });
-
-  const selected = answers[qNum].reduce(
-    (arr: { value: string; label: string }[], val, ind) => {
-      if (val) {
-        arr.push(dropdownOps[ind]);
+  const dropdownWidth =
+    useBreakpointValue(
+      {
+        base: "260px",
+        md: "400px",
+        lg: "500px",
+      },
+      {
+        fallback: "base",
       }
-      return arr;
-    },
-    []
-  );
+    ) || "260px";
+
+  const selected = options.reduce((arr: OptionType[], val) => {
+    if (answers[qKey].includes(val.value)) {
+      arr.push(val);
+    }
+    return arr;
+  }, []);
 
   if (dropdown) {
     return (
@@ -46,7 +54,7 @@ function OnboardingOptions(props: {
         styles={{
           control: (baseStyles: any) => ({
             ...baseStyles,
-            width: "260px",
+            width: dropdownWidth,
             fontSize: "18px",
             border: "1px solid gray",
             boxShadow: "none",
@@ -55,14 +63,15 @@ function OnboardingOptions(props: {
             },
           }),
         }}
-        options={dropdownOps}
+        options={options}
         isMulti
         value={selected}
+        closeMenuOnSelect={false}
         onChange={(event: any) => {
-          let tempState = [...answers];
-          tempState[qNum] = Array(options.length).fill(false);
+          let tempState = { ...answers };
+          tempState[qKey] = [];
           event.forEach((o: any) => {
-            tempState[qNum][options.indexOf(o.value)] = true;
+            tempState[qKey].push(o.value);
           });
           setAnswers(tempState);
         }}
@@ -70,15 +79,13 @@ function OnboardingOptions(props: {
     );
   }
 
-  let opsByCol: string[][] = [];
-  let numColsArr: number[] = [];
-  for (let i = 0; i < numCols; i++) {
-    opsByCol.push([]);
-    numColsArr.push(i);
-  }
-  for (let i = 0; i < options.length; i++) {
-    opsByCol[i % numCols].push(options[i]);
-  }
+  const opsByCol = options.reduce((arr: OptionType[][], val, ind) => {
+    if (arr.length < numCols) {
+      arr.push([]);
+    }
+    arr[ind % numCols].push(options[ind]);
+    return arr;
+  }, []);
 
   return (
     <Flex
@@ -86,17 +93,15 @@ function OnboardingOptions(props: {
       flexDirection="row"
       gap={{ base: "16px", md: "60px", lg: "90px" }}
     >
-      {numColsArr.map((val, ind) => {
+      {opsByCol.map((colVal, ind) => {
         return (
           <OnboardingOptionColumn
             key={ind}
-            options={opsByCol[ind]}
+            options={colVal}
             singleAnswer={singleAnswer}
             answers={answers}
             setAnswers={setAnswers}
-            qNum={qNum}
-            colNum={ind}
-            numCols={numCols}
+            qKey={qKey}
           ></OnboardingOptionColumn>
         );
       })}

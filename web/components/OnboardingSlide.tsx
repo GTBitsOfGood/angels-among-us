@@ -13,25 +13,24 @@ import {
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import OnboardingOptions from "./OnboardingOptions";
+import { Dispatch, SetStateAction } from "react";
+import {
+  QType,
+  IQuestion,
+  Answers,
+  StoredQuestion,
+  PossibleTypes,
+} from "../pages/onboarding";
 
-enum QType {
-  Intro,
-  Question,
-  Completion,
-}
+export type OptionType = {
+  value: PossibleTypes;
+  label: string;
+};
 
 function OnboardingSlide(props: {
-  questionData: {
-    title: string;
-    description: string;
-    options: string[];
-    qtype: QType;
-    singleAnswer: boolean;
-    dropdown: boolean;
-    tooltip: string;
-  }[];
-  answers: boolean[][];
-  setAnswers: (arg: boolean[][]) => void;
+  questionData: IQuestion[];
+  answers: Answers<StoredQuestion<PossibleTypes>>;
+  setAnswers: Dispatch<SetStateAction<Answers<StoredQuestion<PossibleTypes>>>>;
   qNum: number;
 }) {
   const { questionData, answers, setAnswers, qNum } = props;
@@ -73,16 +72,26 @@ function OnboardingSlide(props: {
         </Text>
       </Flex>
       <OnboardingOptions
-        options={question.options}
-        singleAnswer={question.singleAnswer}
-        dropdown={question.dropdown}
+        options={
+          ("options" in question ? question.options : []) as OptionType[]
+        }
+        singleAnswer={
+          ("singleAnswer" in question
+            ? question.singleAnswer
+            : false) as boolean
+        }
+        dropdown={
+          ("dropdown" in question ? question.dropdown : false) as boolean
+        }
         answers={answers}
         setAnswers={setAnswers}
-        qNum={qNum}
+        qKey={("key" in question ? question.key : "") as string}
       ></OnboardingOptions>
       <Flex
         className="tooltip"
-        display={question.tooltip != "" ? "initial" : "none"}
+        display={
+          "tooltip" in question && question.tooltip != "" ? "initial" : "none"
+        }
       >
         <Stack
           direction="row"
@@ -98,7 +107,9 @@ function OnboardingSlide(props: {
               <Text
                 color="#000000"
                 dangerouslySetInnerHTML={{
-                  __html: question.tooltip,
+                  __html: ("tooltip" in question
+                    ? question.tooltip
+                    : "") as string,
                 }}
               ></Text>
             }
@@ -146,7 +157,9 @@ function OnboardingSlide(props: {
                 <Text
                   fontSize={{ base: "15px", md: "22px" }}
                   dangerouslySetInnerHTML={{
-                    __html: question.tooltip,
+                    __html: ("tooltip" in question
+                      ? question.tooltip
+                      : "") as string,
                   }}
                 ></Text>
               </ModalBody>

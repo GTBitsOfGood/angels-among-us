@@ -1,16 +1,29 @@
 import { Text, Checkbox, Stack, Box } from "@chakra-ui/react";
+import { Dispatch, SetStateAction } from "react";
+import { Answers, PossibleTypes, StoredQuestion } from "../pages/onboarding";
+import { OptionType } from "./OnboardingSlide";
 
 function OnboardingOptionColumn(props: {
-  options: string[];
+  options: OptionType[];
   singleAnswer: boolean;
-  answers: boolean[][];
-  setAnswers: (arg: boolean[][]) => void;
-  qNum: number;
-  colNum: number;
-  numCols: number;
+  answers: Answers<StoredQuestion<PossibleTypes>>;
+  setAnswers: Dispatch<SetStateAction<Answers<StoredQuestion<PossibleTypes>>>>;
+  qKey: string;
 }) {
-  const { options, singleAnswer, answers, setAnswers, qNum, colNum, numCols } =
-    props;
+  const { options, singleAnswer, answers, setAnswers, qKey } = props;
+
+  function updateAnswers(ind: number) {
+    let tempState = { ...answers };
+    if (singleAnswer && tempState[qKey].length == 1) {
+      tempState[qKey] = [];
+    }
+    if (tempState[qKey].includes(options[ind].value)) {
+      tempState[qKey].splice(tempState[qKey].indexOf(options[ind].value), 1);
+    } else {
+      tempState[qKey].push(options[ind].value);
+    }
+    setAnswers(tempState);
+  }
 
   return (
     <Stack
@@ -21,15 +34,15 @@ function OnboardingOptionColumn(props: {
         return (
           <Box
             className="optionBox"
-            key={o}
+            key={o.value}
             width={{ base: "125px", md: "175px", lg: "175px" }}
             height={{ base: "60px", md: "70px", lg: "70px" }}
             display="flex"
             borderWidth={{ base: "2px", md: "2.5px", lg: "2.5px" }}
             borderColor={
               singleAnswer &&
-              !answers[qNum][ind * numCols + colNum] &&
-              answers[qNum].includes(true)
+              !answers[qKey].includes(options[ind].value) &&
+              answers[qKey].length > 0
                 ? "#BBBBBB"
                 : "#000000"
             }
@@ -38,6 +51,10 @@ function OnboardingOptionColumn(props: {
             backgroundColor="#EDEDED"
             paddingY={{ base: "10px", md: "15px", lg: "15px" }}
             paddingX={{ base: "10px", md: "15px", lg: "15px" }}
+            cursor="pointer"
+            onClick={() => {
+              updateAnswers(ind);
+            }}
           >
             <Checkbox
               className="optionCheckbox"
@@ -45,23 +62,17 @@ function OnboardingOptionColumn(props: {
               iconColor="#000000"
               textAlign="left"
               lineHeight="20px"
-              key={o}
+              key={o.value}
               borderColor={
                 singleAnswer &&
-                !answers[qNum][ind * numCols + colNum] &&
-                answers[qNum].includes(true)
+                !answers[qKey].includes(options[ind].value) &&
+                answers[qKey].length > 0
                   ? "#BBBBBB"
                   : "#000000"
               }
-              isChecked={answers[qNum][ind * numCols + colNum]}
+              isChecked={answers[qKey].includes(options[ind].value)}
               onChange={() => {
-                let tempState = [...answers];
-                const prevState = tempState[qNum][ind * numCols + colNum];
-                if (singleAnswer && prevState == false) {
-                  tempState[qNum] = Array(tempState[qNum].length).fill(false);
-                }
-                tempState[qNum][ind * numCols + colNum] = !prevState;
-                setAnswers(tempState);
+                updateAnswers(ind);
               }}
             >
               <Text
@@ -70,13 +81,13 @@ function OnboardingOptionColumn(props: {
                 fontWeight={{ base: "normal", md: "normal", lg: "semibold" }}
                 color={
                   singleAnswer &&
-                  !answers[qNum][ind * numCols + colNum] &&
-                  answers[qNum].includes(true)
+                  !answers[qKey].includes(options[ind].value) &&
+                  answers[qKey].length > 0
                     ? "#BBBBBB"
                     : "#000000"
                 }
               >
-                {o}
+                {o.label}
               </Text>
             </Checkbox>
           </Box>
