@@ -410,7 +410,7 @@ export default function Profile() {
                 )}
               </Stack>
             </Stack>
-            {!editing ? (
+            {editing ? (
               <Stack direction="row">
                 <Button
                   cursor="default"
@@ -556,7 +556,7 @@ export default function Profile() {
               </Stack>
             </Stack>
             <Stack direction="row" justifyContent="flex-end" paddingBottom={10}>
-              {!editing ? (
+              {editing ? (
                 <>
                   <Button
                     cursor="default"
