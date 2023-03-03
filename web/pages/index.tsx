@@ -26,6 +26,7 @@ import { auth } from "../utils/firebase/firebaseClient";
 import React from "react";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
+import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -138,6 +139,7 @@ export default function Home() {
               >
                 continue with Google
               </Button>
+              <PostCreationModal></PostCreationModal>
             </Stack>
             <Stack
               direction="row"
