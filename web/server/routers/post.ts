@@ -85,7 +85,7 @@ export const postRouter = router({
     )
     .mutation(async ({ input }) => {
       try {
-        await finalizePost(input._id);
+        return await finalizePost(input._id);
       } catch (e) {
         throw new TRPCError({
           message: "All attachments not uploaded",

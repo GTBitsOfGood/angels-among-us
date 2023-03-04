@@ -4,6 +4,8 @@ import { IPendingPost, IPost } from "../../utils/types/post";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import b2Client from "../b2connect";
+import { consts } from "../../utils/consts";
+import { sign } from "jsonwebtoken";
 
 type UploadInfo = Record<string, string>;
 
@@ -46,7 +48,7 @@ async function getAttachmentUploadURLs(
     if (attachment.type === "image") {
       const size = attachment.length * attachment.width;
       uploadUrl =
-        size > 500
+        size > 2000 * 2000
           ? getResizedUploadUrl(attachmentUUID)
           : getDirectUploadUrl(attachmentUUID);
     } else {
@@ -60,38 +62,41 @@ async function getAttachmentUploadURLs(
 async function getDirectUploadUrl(uuid: string): Promise<string> {
   const command = new PutObjectCommand({
     Key: uuid,
-    Bucket: process.env.B2_BUCKET,
+    Bucket: consts.b2Bucket,
   });
   return getSignedUrl(b2Client, command);
 }
 
 async function getResizedUploadUrl(uuid: string): Promise<string> {
-  return "";
+  const token = sign({ uuid: uuid }, process.env.JWT_SIGNING_KEY ?? "");
+  return `${consts.baseUrl}/api/resizedUpload/${token}`;
 }
 
-async function finalizePost(id: ObjectId) {
+async function finalizePost(id: ObjectId, session?: ClientSession) {
   const post = await Post.findOne({ _id: id });
   const uploadedObjects = await b2Client.listObjectsV2({
-    Bucket: process.env.B2_BUCKET,
+    Bucket: consts.b2Bucket,
     Prefix: `${id}`,
   });
-
-  const allKeys = post.attachments.images.concat(post.attachments.videos);
-  allKeys.sort();
+  const attachmentKeys = post.attachments.sort();
 
   if (
     !uploadedObjects.Contents ||
-    uploadedObjects.Contents.length < allKeys.length
+    uploadedObjects.KeyCount !== attachmentKeys.length
   ) {
     throw new Error("All posts not successfully uploaded");
   }
-  uploadedObjects.Contents.sort();
-  for (let i = 0; i < allKeys; i++) {
-    if (allKeys[i] !== uploadedObjects.Contents[i]) {
+  const uploadKeys = uploadedObjects.Contents.map((x) => x.Key).sort();
+  for (let i = 0; i < attachmentKeys.length; i++) {
+    if (attachmentKeys[i] !== uploadKeys[i]) {
       throw new Error("All posts not successfully uploaded");
     }
   }
-  await post.findOneAndUpdate({ _id: id }, { pending: false });
+  return await Post.findOneAndUpdate(
+    { _id: id },
+    { pending: false },
+    { session: session, returnDocument: "after" }
+  );
 }
 
 async function updatePostDetails(
