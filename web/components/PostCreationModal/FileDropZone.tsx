@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useEffect } from "react";
+import { Dispatch, SetStateAction, useCallback } from "react";
 import { Text, Flex } from "@chakra-ui/react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { ArrowUpIcon } from "@chakra-ui/icons";
@@ -7,17 +7,12 @@ interface PropsType {
   fileArr: Array<File>;
   setFileArr: Dispatch<SetStateAction<Array<File>>>;
   numFiles: number;
-  numVideos: number;
+  setShowAlert: Dispatch<SetStateAction<boolean>>;
 }
 
 function FileDropZone(props: PropsType) {
-  const { fileArr, setFileArr, numFiles, numVideos } = props;
+  const { fileArr, setFileArr, numFiles, setShowAlert } = props;
 
-  //if num videos is 1 change accept criteria
-  useEffect(() => {}, [numVideos]);
-
-  //TODO fix previews for videos
-  //Abstract out this function
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       console.log("REJECTIONS");
@@ -25,25 +20,35 @@ function FileDropZone(props: PropsType) {
       console.log("ACCEPTED");
       console.log(acceptedFiles);
 
-      if (acceptedFiles.length > 0) {
-        var tempFileArr = [...fileArr, ...acceptedFiles];
-        setFileArr(tempFileArr);
-        console.log("NEW FILE ARRAY");
-        console.log(tempFileArr);
-      }
+      if (fileRejections.length > 0) {
+        setShowAlert(true);
+      } else setShowAlert(false);
+
+      let newFiles = acceptedFiles.filter((file) => {
+        let idx = acceptedFiles.indexOf(file);
+        if (
+          file.type === "video/mp4" &&
+          (fileArr.some((f) => f.type === "video/mp4") ||
+            acceptedFiles.slice(0, idx).some((f) => f.type === "video/mp4"))
+        ) {
+          setShowAlert(true);
+          return false;
+        }
+        return true;
+      });
+      setFileArr([...fileArr, ...newFiles]);
     },
-    []
+    [fileArr, setFileArr, setShowAlert]
   );
 
-  const { getRootProps, getInputProps, acceptedFiles, fileRejections } =
-    useDropzone({
-      onDrop,
-      maxFiles: 6 - numFiles,
-      accept: {
-        "image/*": [".jpg", ".png"],
-        "video/*": [".mp4"],
-      },
-    });
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    maxFiles: 6 - numFiles,
+    accept: {
+      "image/*": [".jpg", ".png"],
+      "video/*": [".mp4"],
+    },
+  });
 
   let dropZoneStyle = {
     width: "688px",

@@ -16,11 +16,21 @@ import FileUploadSlide from "./FileUploadSlide";
 function PostCreationModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isContentView, setIsContentView] = useState(true);
-
   const [numFiles, setNumFiles] = useState<number>(0);
-  const [numVideos, setNumVideos] = useState<number>(0);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
+
+  useEffect(() => {
+    console.log("FILE ARRAY");
+    console.log(fileArr);
+    setNumFiles(fileArr.length);
+  }, [fileArr]);
+
+  useEffect(() => {
+    console.log("SELECTED FILES");
+    console.log(selectedFiles);
+  }, [selectedFiles]);
 
   let postButtonStyle = {
     color: "#8C8C8C",
@@ -38,25 +48,6 @@ function PostCreationModal() {
     };
   }
 
-  useEffect(() => {
-    console.log("FILE ARR");
-    console.log(fileArr);
-    let tempArr = fileArr.filter((e) => e.type === "video/mp4");
-    setNumVideos(tempArr.length);
-    setNumFiles(fileArr.length);
-  }, [fileArr]);
-
-  useEffect(() => {
-    console.log("NUM FILES AND VIDEOS");
-    console.log(numFiles);
-    console.log(numVideos);
-  }, [numFiles, numVideos]);
-
-  useEffect(() => {
-    console.log("SELECTED FILES");
-    console.log(selectedFiles);
-  }, [selectedFiles]);
-
   return (
     <>
       <Button onClick={onOpen}>Post Creation Modal</Button>
@@ -69,22 +60,19 @@ function PostCreationModal() {
             paddingTop={"40px"}
             paddingBottom={"40px"}
           >
-            {isContentView ? (
-              <Flex direction={"row"} alignItems={"center"} onClick={onClose}>
-                <ArrowBackIcon></ArrowBackIcon>
+            <Flex
+              direction={"row"}
+              alignItems={"center"}
+              columnGap={2}
+              onClick={isContentView ? onClose : () => setIsContentView(true)}
+            >
+              <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
+              {isContentView ? (
                 <Text>Back to feed</Text>
-              </Flex>
-            ) : (
-              <Flex
-                direction={"row"}
-                alignItems={"center"}
-                onClick={() => setIsContentView(true)}
-              >
-                <ArrowBackIcon></ArrowBackIcon>
+              ) : (
                 <Text>Back to New Pet content</Text>
-              </Flex>
-            )}
-
+              )}
+            </Flex>
             <Text fontSize={"5xl"} fontWeight={"bold"} lineHeight={"56px"}>
               Add A New Pet
             </Text>
@@ -101,7 +89,8 @@ function PostCreationModal() {
               </Flex>
             )}
             {isContentView ? (
-              <>insert new pet content component here</>
+              //TODO: Add new pet content slide component here.
+              <></>
             ) : (
               <FileUploadSlide
                 fileArr={fileArr}
@@ -109,14 +98,27 @@ function PostCreationModal() {
                 setSelectedFiles={setSelectedFiles}
                 setFileArr={setFileArr}
                 numFiles={numFiles}
-                numVideos={numVideos}
+                showAlert={showAlert}
+                setShowAlert={setShowAlert}
               ></FileUploadSlide>
             )}
             <ModalFooter>
               {isContentView ? (
-                <Button onClick={() => setIsContentView(false)}>Next</Button>
+                <Button
+                  onClick={() => setIsContentView(false)}
+                  color={postButtonStyle.color}
+                  bgColor={postButtonStyle.bgColor}
+                  borderRadius={postButtonStyle.borderRadius}
+                  borderColor={postButtonStyle.borderColor}
+                  width={"150px"}
+                  height={"56px"}
+                  border={"1px solid"}
+                >
+                  Next
+                </Button>
               ) : (
                 <Button
+                  //TODO: On click, query database to create post.
                   onClick={onClose}
                   color={postButtonStyle.color}
                   bgColor={postButtonStyle.bgColor}
@@ -126,7 +128,13 @@ function PostCreationModal() {
                   height={"56px"}
                   border={"1px solid"}
                 >
-                  Post
+                  <Text
+                    lineHeight={"28px"}
+                    fontWeight={"semibold"}
+                    fontSize={"lg"}
+                  >
+                    Post
+                  </Text>
                 </Button>
               )}
             </ModalFooter>

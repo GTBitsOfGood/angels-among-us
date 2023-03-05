@@ -1,4 +1,5 @@
-import { Image, Box, CloseButton } from "@chakra-ui/react";
+import { AddIcon, CloseIcon, MinusIcon } from "@chakra-ui/icons";
+import { Image, Box, AspectRatio, Button } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 
 interface PropsType {
@@ -32,7 +33,6 @@ function FilePreview(props: PropsType) {
   }
 
   function removeFile() {
-    console.log("remove");
     setSelectedFiles(selectedFiles.filter((e) => e != fileArr[idx]));
     let temp = [...fileArr];
     setFileArr(temp.filter((e) => e != fileArr[idx]));
@@ -40,21 +40,53 @@ function FilePreview(props: PropsType) {
 
   return (
     <Box position={"relative"}>
-      <Image
-        width={"200px"}
-        height={"215px"}
-        objectFit={"cover"}
-        borderRadius={"5.82474px"}
-        src={URL.createObjectURL(fileArr[idx])}
-        style={
-          selectedFiles.indexOf(fileArr[idx]) > -1
-            ? selectedStyle
-            : previewStyle
-        }
-        onClick={updateSelections}
-      ></Image>
+      {fileArr[idx].type === "video/mp4" ? (
+        <Box
+          width={"200px"}
+          height={"215px"}
+          borderRadius={"5.82474px"}
+          bgColor={"#000000"}
+          style={
+            selectedFiles.indexOf(fileArr[idx]) > -1
+              ? selectedStyle
+              : previewStyle
+          }
+          onClick={updateSelections}
+        >
+          <AspectRatio maxW={"200px"} ratio={1}>
+            <iframe src={URL.createObjectURL(fileArr[idx])} />
+          </AspectRatio>
+          <Box position={"absolute"} top={1} right={16}>
+            <Button onClick={updateSelections} colorScheme={"blackAlpha"}>
+              {selectedFiles.indexOf(fileArr[idx]) > -1 ? (
+                <MinusIcon></MinusIcon>
+              ) : (
+                <AddIcon></AddIcon>
+              )}
+            </Button>
+          </Box>
+        </Box>
+      ) : (
+        <Image
+          objectFit={"cover"}
+          width={"200px"}
+          height={"215px"}
+          borderRadius={"5.82474px"}
+          style={
+            selectedFiles.indexOf(fileArr[idx]) > -1
+              ? selectedStyle
+              : previewStyle
+          }
+          onClick={updateSelections}
+          src={URL.createObjectURL(fileArr[idx])}
+          alt="Uploaded image"
+        ></Image>
+      )}
+
       <Box position={"absolute"} top={1} right={5}>
-        <CloseButton onClick={removeFile}></CloseButton>
+        <Button onClick={removeFile} colorScheme={"blackAlpha"}>
+          <CloseIcon></CloseIcon>
+        </Button>
       </Box>
     </Box>
   );
