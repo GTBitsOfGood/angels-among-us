@@ -10,7 +10,7 @@ import {
   Text,
   Flex,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FileUploadSlide from "./FileUploadSlide";
 
 function PostCreationModal() {
@@ -19,15 +19,48 @@ function PostCreationModal() {
 
   const [numFiles, setNumFiles] = useState<number>(0);
   const [numVideos, setNumVideos] = useState<number>(0);
-  //TODO what is this type
-  const [filePreviewArr, setFilePreviewArr] = useState<Array<File>>([]);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
-  const [isFirstUpload, setIsFirstUpload] = useState<boolean>(true);
+  const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
+
+  let postButtonStyle = {
+    color: "#8C8C8C",
+    bgColor: "#FFFFFF",
+    borderColor: "#8C8C8C",
+    borderRadius: "20px",
+  };
+
+  if (selectedFiles.length > 0) {
+    postButtonStyle = {
+      color: "#FFFFFF",
+      bgColor: "#000000",
+      borderColor: "000000",
+      borderRadius: "20px",
+    };
+  }
+
+  useEffect(() => {
+    console.log("FILE ARR");
+    console.log(fileArr);
+    let tempArr = fileArr.filter((e) => e.type === "video/mp4");
+    setNumVideos(tempArr.length);
+    setNumFiles(fileArr.length);
+  }, [fileArr]);
+
+  useEffect(() => {
+    console.log("NUM FILES AND VIDEOS");
+    console.log(numFiles);
+    console.log(numVideos);
+  }, [numFiles, numVideos]);
+
+  useEffect(() => {
+    console.log("SELECTED FILES");
+    console.log(selectedFiles);
+  }, [selectedFiles]);
 
   return (
     <>
       <Button onClick={onOpen}>Post Creation Modal</Button>
-      <Modal onClose={onClose} isOpen={isOpen}>
+      <Modal onClose={onClose} isOpen={isOpen} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent minW={"850px"} minH={"790px"}>
           <Stack
@@ -37,11 +70,7 @@ function PostCreationModal() {
             paddingBottom={"40px"}
           >
             {isContentView ? (
-              <Flex
-                direction={"row"}
-                alignItems={"center"}
-                onClick={() => setIsContentView(true)}
-              >
+              <Flex direction={"row"} alignItems={"center"} onClick={onClose}>
                 <ArrowBackIcon></ArrowBackIcon>
                 <Text>Back to feed</Text>
               </Flex>
@@ -75,23 +104,30 @@ function PostCreationModal() {
               <>insert new pet content component here</>
             ) : (
               <FileUploadSlide
-                isFirstUpload={isFirstUpload}
-                setIsFirstUpload={setIsFirstUpload}
-                filePreviewArr={filePreviewArr}
-                setFilePreviewArr={setFilePreviewArr}
                 fileArr={fileArr}
+                selectedFiles={selectedFiles}
+                setSelectedFiles={setSelectedFiles}
                 setFileArr={setFileArr}
                 numFiles={numFiles}
-                setNumFiles={setNumFiles}
                 numVideos={numVideos}
-                setNumVideos={setNumVideos}
               ></FileUploadSlide>
             )}
             <ModalFooter>
               {isContentView ? (
                 <Button onClick={() => setIsContentView(false)}>Next</Button>
               ) : (
-                <Button onClick={onClose}>Post</Button>
+                <Button
+                  onClick={onClose}
+                  color={postButtonStyle.color}
+                  bgColor={postButtonStyle.bgColor}
+                  borderRadius={postButtonStyle.borderRadius}
+                  borderColor={postButtonStyle.borderColor}
+                  width={"150px"}
+                  height={"56px"}
+                  border={"1px solid"}
+                >
+                  Post
+                </Button>
               )}
             </ModalFooter>
           </Stack>

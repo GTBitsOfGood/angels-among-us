@@ -3,33 +3,15 @@ import { Text, Flex } from "@chakra-ui/react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { ArrowUpIcon } from "@chakra-ui/icons";
 
-//TODO what types for previews
 interface PropsType {
-  filePreviewArr: Object[];
-  setFilePreviewArr: Function;
-  isFirstUpload: boolean;
-  setIsFirstUpload: Dispatch<SetStateAction<boolean>>;
-  fileArr: File[];
-  setFileArr: Dispatch<SetStateAction<File[]>>;
+  fileArr: Array<File>;
+  setFileArr: Dispatch<SetStateAction<Array<File>>>;
   numFiles: number;
-  setNumFiles: Dispatch<SetStateAction<number>>;
   numVideos: number;
-  setNumVideos: Dispatch<SetStateAction<number>>;
 }
 
 function FileDropZone(props: PropsType) {
-  const {
-    filePreviewArr,
-    setFilePreviewArr,
-    isFirstUpload,
-    setIsFirstUpload,
-    fileArr,
-    setFileArr,
-    numFiles,
-    setNumFiles,
-    numVideos,
-    setNumVideos,
-  } = props;
+  const { fileArr, setFileArr, numFiles, numVideos } = props;
 
   //if num videos is 1 change accept criteria
   useEffect(() => {}, [numVideos]);
@@ -38,23 +20,16 @@ function FileDropZone(props: PropsType) {
   //Abstract out this function
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
-      var tempFileArr = [...fileArr];
-      var newFileArr = tempFileArr.concat(acceptedFiles);
-      setFileArr(newFileArr);
-      console.log("NEW FILE ARRAY");
-      console.log(newFileArr);
+      console.log("REJECTIONS");
+      console.log(fileRejections);
+      console.log("ACCEPTED");
+      console.log(acceptedFiles);
 
-      //Update previews
       if (acceptedFiles.length > 0) {
-        var tempFilePreviewArr = [...filePreviewArr];
-        var newFilePreviewArr = acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        );
-        setFilePreviewArr(tempFilePreviewArr.concat(newFilePreviewArr));
-
-        setIsFirstUpload(false);
+        var tempFileArr = [...fileArr, ...acceptedFiles];
+        setFileArr(tempFileArr);
+        console.log("NEW FILE ARRAY");
+        console.log(tempFileArr);
       }
     },
     []
@@ -77,7 +52,7 @@ function FileDropZone(props: PropsType) {
     borderRadius: "5.82474px",
   };
 
-  if (!isFirstUpload) {
+  if (numFiles > 0) {
     dropZoneStyle.width = "200px";
     dropZoneStyle.height = "215px";
   }
@@ -94,7 +69,7 @@ function FileDropZone(props: PropsType) {
       {...getRootProps()}
     >
       <input {...getInputProps()} />
-      {isFirstUpload ? (
+      {numFiles <= 0 ? (
         <Flex
           direction={"column"}
           alignItems={"center"}
