@@ -1,4 +1,5 @@
 enum Pages {
+  FEED = "/",
   ACCESS_MANAGEMENT = "/access",
   ONBOARDING = "/onboarding",
 }

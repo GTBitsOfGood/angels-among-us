@@ -1,7 +1,7 @@
 import CreateAccountForm from "../components/AccessManagement/CreateAccountForm";
 import AccountTable from "../components/AccessManagement/AccountTable";
 import { useState } from "react";
-import { Text, Box, Flex } from "@chakra-ui/react";
+import { Text, Box, Flex, Center } from "@chakra-ui/react";
 import { IAccount } from "../utils/types/account";
 import { Role } from "../utils/types/account";
 
@@ -31,47 +31,35 @@ export default function Access() {
   const [selectItems, updateSelectItems] = useState<boolean>(false);
 
   return (
-    <Flex bgColor="#EEEEEE">
+    <Flex
+      direction="row"
+      justifyContent="center"
+      w="100%"
+      h="100%"
+      bgColor="#dfdfdf"
+    >
       <Flex
-        flexDir="column"
-        alignItems="center"
-        display={["none", "flex"]}
-        marginX={{ base: "none", md: "100px", lg: "170px" }}
+        bgColor="white"
+        direction="column"
         marginTop={{ base: "10px", md: "50px", lg: "100px" }}
+        width={["100%", "80%"]}
+        alignItems="center"
+        paddingTop={6}
       >
-        <Box
-          position="absolute"
-          width="100%"
-          height="56px"
-          left="0px"
-          top="0px"
-          bgColor="#B6B6B6"
-        ></Box>
-        <Box>
-          <Flex
-            bgColor="#FFFFFF"
-            direction="column"
-            width="100%"
-            alignItems="center"
-            justifyContent="center"
-            paddingTop={6}
-          >
-            <Text fontSize="lg" fontWeight="semibold" lineHeight="24px">
-              Accounts List
-            </Text>
-            <CreateAccountForm
-              accountList={accountList}
-              updateAccountList={updateAccountList}
-              updateSelectItems={updateSelectItems}
-            ></CreateAccountForm>
-            <AccountTable
-              accountList={accountList}
-              updateAccountList={updateAccountList}
-              selectItems={selectItems}
-              updateSelectItems={updateSelectItems}
-            ></AccountTable>
-          </Flex>
-        </Box>
+        <Text fontSize="lg" fontWeight="semibold" lineHeight="24px">
+          Accounts List
+        </Text>
+        <CreateAccountForm
+          accountList={accountList}
+          updateAccountList={updateAccountList}
+          updateSelectItems={updateSelectItems}
+        ></CreateAccountForm>
+        <AccountTable
+          accountList={accountList}
+          updateAccountList={updateAccountList}
+          selectItems={selectItems}
+          updateSelectItems={updateSelectItems}
+        ></AccountTable>
       </Flex>
     </Flex>
   );
