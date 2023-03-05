@@ -16,7 +16,6 @@ export enum Size {
 }
 
 export enum Breed {
-  None = "none", // None
   AmericanEskimo = "americanEskimo", // American Eskimo
   AustralianShepherd = "australianShepherd", // Australian Shepherd
   Beagle = "beagle",

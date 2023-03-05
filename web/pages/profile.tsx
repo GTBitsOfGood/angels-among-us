@@ -32,10 +32,10 @@ export default function Profile() {
     { value: FosterType.Boarding, label: "Boarding" },
     { value: FosterType.Temporary, label: "Temporary" },
     { value: FosterType.FosterMove, label: "Foster Move" },
+    { value: FosterType.OwnerSurrender, label: "Owner Surrender" },
     { value: FosterType.Shelter, label: "Shelter" },
   ];
   const breeds = [
-    { value: Breed.None, label: "None" },
     { value: Breed.AmericanEskimo, label: "American Eskimo" },
     { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
     { value: Breed.Beagle, label: "Beagle" },
