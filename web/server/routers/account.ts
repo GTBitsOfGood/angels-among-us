@@ -4,8 +4,9 @@ import {
   removeAccount,
   updateAccount,
   addAccount,
+  findAccount,
 } from "../../db/actions/Account";
-import { updateUser } from "../../db/actions/User";
+import { updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { Role } from "../../utils/types/account";
 import { router, protectedProcedure } from "../trpc";
@@ -46,7 +47,7 @@ export const accountRouter = router({
             code: "NOT_FOUND",
           });
 
-        await updateUser(email, { role: input.role }, session);
+        await updateUserByEmail(email, { role: input.role }, session);
 
         session.commitTransaction();
         return { success: true };
@@ -76,7 +77,7 @@ export const accountRouter = router({
 
       try {
         await removeAccount(email, session);
-        await updateUser(email, { disabled: true }, session);
+        await updateUserByEmail(email, { disabled: true }, session);
 
         session.commitTransaction();
 
@@ -122,7 +123,7 @@ export const accountRouter = router({
           });
         }
 
-        await updateUser(
+        await updateUserByEmail(
           input.email,
           { role: input.role, disabled: false },
           session
@@ -141,6 +142,39 @@ export const accountRouter = router({
             message: "An unexpected error occurred",
           });
         }
+      }
+    }),
+  get: protectedProcedure
+    .input(
+      z.object({
+        email: z.string().email().nullable(),
+      })
+    )
+    .output(
+      z.object({
+        role: z.nativeEnum(Role).nullable(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        if (input.email === null) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Not authenticated",
+          });
+        } else {
+          const account = await findAccount(input.email);
+          return {
+            role: !account ? null : account.role,
+          };
+        }
+      } catch (e) {
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occurred",
+          });
       }
     }),
 });
