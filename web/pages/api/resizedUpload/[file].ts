@@ -2,6 +2,7 @@ import { verify } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import sharp from "sharp";
 import b2Client from "../../../db/b2connect";
+import { consts } from "../../../utils/consts";
 
 export const config = {
   api: {
@@ -56,7 +57,7 @@ export default async function handler(
     const uploadRes = await b2Client.putObject({
       Body: body,
       Key: decoded["uuid"],
-      Bucket: process.env.B2_BUCKET,
+      Bucket: consts.b2Bucket,
       ContentLength: body.length,
     });
 

@@ -22,7 +22,7 @@ const consts = {
   dbName: "angels-among-us",
   pages: Object.values(Pages),
   baseUrl: getBaseUrl(),
-  b2Bucket: process.env.B2_BUCKET,
+  b2Bucket: process.env.B2_BUCKET_NAME,
 };
 
 export { Pages, consts };
