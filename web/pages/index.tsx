@@ -52,24 +52,23 @@ export default function Home() {
     );
   }
 
-  // if (user !== null) {
-  return (
-    <Flex height="100vh">
-      <Flex width="100%" justifyContent="center" alignItems="center">
-        <Button
-          cursor={["default", "pointer"]}
-          bgColor="#D9D9D9"
-          onClick={() => {
-            signOut(auth);
-          }}
-        >
-          Logout
-        </Button>
-        <CreatePost />
+  if (user !== null) {
+    return (
+      <Flex height="100vh">
+        <Flex width="100%" justifyContent="center" alignItems="center">
+          <Button
+            cursor={["default", "pointer"]}
+            bgColor="#D9D9D9"
+            onClick={() => {
+              signOut(auth);
+            }}
+          >
+            Logout
+          </Button>
+        </Flex>
       </Flex>
-    </Flex>
-  );
-  // }
+    );
+  }
 
   return (
     <Flex height="100vh">
