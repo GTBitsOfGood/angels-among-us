@@ -26,6 +26,7 @@ import { auth } from "../utils/firebase/firebaseClient";
 import React from "react";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
+import CreatePost from "../components/CreatePost";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -51,23 +52,23 @@ export default function Home() {
     );
   }
 
-  if (user !== null) {
-    return (
-      <Flex height="100vh">
-        <Flex width="100%" justifyContent="center" alignItems="center">
-          <Button
-            cursor={["default", "pointer"]}
-            bgColor="#D9D9D9"
-            onClick={() => {
-              signOut(auth);
-            }}
-          >
-            Logout
-          </Button>
-        </Flex>
+  // if (user !== null) {
+  return (
+    <Flex height="100vh">
+      <Flex width="100%" justifyContent="center" alignItems="center">
+        <Button
+          cursor={["default", "pointer"]}
+          bgColor="#D9D9D9"
+          onClick={() => {
+            signOut(auth);
+          }}
+        >
+          Logout
+        </Button>
       </Flex>
-    );
-  }
+    </Flex>
+  );
+  // }
 
   return (
     <Flex height="100vh">
