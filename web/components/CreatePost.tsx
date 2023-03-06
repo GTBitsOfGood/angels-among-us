@@ -1,11 +1,11 @@
 import {
   Button,
+  Flex,
   FormControl,
   FormLabel,
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -13,6 +13,7 @@ import {
   Select,
   Stack,
   useDisclosure,
+  Text,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 // import { useForm } from "react-hook-form";
@@ -28,11 +29,7 @@ import {
   Size,
   Temperament,
 } from "../utils/types/post";
-
-// const defaultValues: FormValues = {
-//   name: "",
-//   description: "",
-// };
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 export default function CreatePost() {
   const formSchema = z.object({
@@ -91,12 +88,19 @@ export default function CreatePost() {
   return (
     <>
       <Button onClick={onOpen}>Add a new pet</Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent maxW="1000px">
+          <Flex ml={5} mt={5} onClick={onClose}>
+            <ArrowBackIcon boxSize={"20px"} mr={2}></ArrowBackIcon>
+            <Text fontSize={"md"}>Back to feed</Text>
+          </Flex>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>Add A New Pet</ModalHeader>
-            <ModalCloseButton />
+            <ModalHeader fontSize="5xl">Add A New Pet</ModalHeader>
+            <ModalHeader fontSize="xl">
+              Fill out the following fields to add a new pet to the Angels Among
+              Us Foster Feed!
+            </ModalHeader>
             <ModalBody>
               {/* if it doesnt get fixed then just bring formik into return :  onSubmit={formik.handleSubmit}*/}
               <Stack>
@@ -262,7 +266,12 @@ export default function CreatePost() {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} type="submit">
+              <Button
+                colorScheme="black"
+                mr={3}
+                type="submit"
+                backgroundColor="#000000"
+              >
                 Next
               </Button>
             </ModalFooter>

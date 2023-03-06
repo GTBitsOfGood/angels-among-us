@@ -65,6 +65,7 @@ export default function Home() {
         >
           Logout
         </Button>
+        <CreatePost />
       </Flex>
     </Flex>
   );
