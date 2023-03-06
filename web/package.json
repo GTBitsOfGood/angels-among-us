@@ -46,6 +46,8 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.43.4",
     "react-hooks-useform": "^0.1.86",
+    "react-select": "^5.7.0",
+    "react-dropzone": "^14.2.3",
     "react-table": "^7.8.0",
     "react-use-form-state": "^0.13.2",
     "styled-components": "^5.3.6",
@@ -55,6 +57,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "cross-env": "^7.0.3",
-    "lint-staged": "^13.1.2"
+    "lint-staged": "^13.1.2",
+    "prettier": "^2.8.4"
   }
 }

@@ -12,10 +12,12 @@ import { IUser } from "../utils/types/user";
 import { HydratedDocument } from "mongoose";
 
 const AuthContext = createContext<{
+  authorized: boolean;
   user: typeof auth.currentUser;
   loading: boolean;
   userData: HydratedDocument<IUser> | null;
 }>({
+  authorized: false,
   user: null,
   loading: true,
   userData: null,
@@ -24,9 +26,31 @@ const AuthContext = createContext<{
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<typeof auth.currentUser>(null);
   const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
 
-  const userData = trpc.user.get.useQuery({ uid: user?.uid ?? null })
-    .data as HydratedDocument<IUser> | null;
+  const {
+    data: userData,
+    isLoading: userIsLoading,
+    isError: userIsError,
+  } = trpc.user.get.useQuery({
+    uid: user?.uid ?? null,
+  }) as {
+    data: HydratedDocument<IUser> | null;
+    isLoading: boolean;
+    isError: boolean;
+  };
+
+  const {
+    data: accountData,
+    isLoading: accountIsLoading,
+    isError: accountIsError,
+  } = trpc.account.get.useQuery({
+    email: user?.email ?? null,
+  });
+
+  const createUserMutation = trpc.user.add.useMutation();
+  const disableStatusMutation = trpc.user.disableStatus.useMutation();
+  const roleStatusMutation = trpc.user.modifyRoleEnableStatus.useMutation();
 
   useEffect(() => {
     setLoading(true);
@@ -40,6 +64,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setUser(null);
         nookies.destroy(null, "token");
         nookies.set(null, "token", "", { path: "/" });
+        setAuthorized(false);
         setLoading(false);
         return;
       }
@@ -49,9 +74,39 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setUser(user);
       nookies.destroy(null, "token");
       nookies.set(null, "token", token, { path: "/" });
-      setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (accountIsLoading || userIsLoading || accountIsError || userIsError)
+      return;
+    if (userData !== null) {
+      if (accountData.role !== null) {
+        // Subsequent signin, authorized account
+        roleStatusMutation.mutate({
+          uid: user!.uid,
+          role: accountData.role,
+        });
+        setAuthorized(true);
+      } else {
+        // Subsequent signin, unauthorized account
+        disableStatusMutation.mutate({
+          uid: user!.uid,
+        });
+      }
+    } else if (accountData.role !== null) {
+      // First-time signin, authorized account
+      createUserMutation.mutate({
+        email: user!.email!,
+        uid: user!.uid,
+        name: user!.displayName!,
+        role: accountData.role,
+      });
+      setAuthorized(true);
+    }
+    // First-time signin, unauthorized account, do nothing
+    setLoading(false);
+  }, [accountData, userData]);
 
   // force refresh the token every 10 minutes
   useEffect(() => {
@@ -66,7 +121,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, userData }}>
+    <AuthContext.Provider value={{ user, loading, authorized, userData }}>
       {children}
     </AuthContext.Provider>
   );

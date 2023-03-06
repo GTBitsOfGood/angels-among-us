@@ -1,3 +1,4 @@
+import React from "react";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -23,27 +24,24 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
-import React from "react";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import CreatePost from "../components/CreatePost";
+import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { loading, authorized } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+    await signInWithPopup(auth, provider);
   }
 
   async function handleLoginGoogle() {
     const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+    await signInWithPopup(auth, provider);
   }
-
   if (loading) {
     return (
       <Center w="100vw" h="100vh">
@@ -52,7 +50,7 @@ export default function Home() {
     );
   }
 
-  if (user !== null) {
+  if (authorized) {
     return (
       <Flex height="100vh">
         <Flex width="100%" justifyContent="center" alignItems="center">
@@ -121,7 +119,7 @@ export default function Home() {
                 width="100%"
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
-                onClick={handleLoginFacebook}
+                onClick={() => handleLoginFacebook()}
               >
                 continue with facebook
               </Button>
@@ -139,6 +137,7 @@ export default function Home() {
               >
                 continue with Google
               </Button>
+              <PostCreationModal></PostCreationModal>
             </Stack>
             <Stack
               direction="row"
