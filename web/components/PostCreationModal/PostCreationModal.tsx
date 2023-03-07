@@ -11,7 +11,8 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import FileUploadSlide from "./FileUploadSlide";
+import FileUploadSlide from "./FileUpload/FileUploadSlide";
+import FormSlide from "./Form/FormSlide";
 
 function PostCreationModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -67,17 +68,18 @@ function PostCreationModal() {
               onClick={isContentView ? onClose : () => setIsContentView(true)}
             >
               <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
-              {isContentView ? (
-                <Text>Back to feed</Text>
-              ) : (
-                <Text>Back to New Pet content</Text>
-              )}
+              <Text>
+                {isContentView ? "Back to feed" : "Back to New Pet content"}
+              </Text>
             </Flex>
             <Text fontSize={"5xl"} fontWeight={"bold"} lineHeight={"56px"}>
               Add A New Pet
             </Text>
             {isContentView ? (
-              <></>
+              <Text>
+                Fill out the following fields to add a new pet to the Angels
+                Among Us Foster Feed!
+              </Text>
             ) : (
               <Flex direction={"row"} justifyContent={"space-between"}>
                 <Text size={"xl"} textStyle={"semibold"} color={"#000000"}>
@@ -89,8 +91,7 @@ function PostCreationModal() {
               </Flex>
             )}
             {isContentView ? (
-              //TODO: Add new pet content slide component here.
-              <></>
+              <FormSlide />
             ) : (
               <FileUploadSlide
                 fileArr={fileArr}

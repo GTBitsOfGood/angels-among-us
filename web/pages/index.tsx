@@ -26,7 +26,6 @@ import {
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import CreatePost from "../components/CreatePost";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
 
 export default function Home() {
