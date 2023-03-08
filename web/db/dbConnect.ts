@@ -3,8 +3,6 @@ declare var global: any;
 import mongoose from "mongoose";
 import { consts } from "../utils/consts";
 
-mongoose.set("strictQuery", false);
-
 let cached = global.mongoose;
 
 if (!cached) {
