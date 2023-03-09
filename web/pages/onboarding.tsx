@@ -1,7 +1,7 @@
 import { useState } from "react";
-import OnboardingSlide from "../components/OnboardingSlide";
+import OnboardingSlide from "../components/Onboarding/OnboardingSlide";
 import { Flex, Progress, Text } from "@chakra-ui/react";
-import OnboardingButton from "../components/OnboardingButton";
+import OnboardingButton from "../components/Onboarding/OnboardingButton";
 import {
   FosterType,
   Size,

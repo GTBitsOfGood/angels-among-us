@@ -1,4 +1,6 @@
+import NextLink from "next/link";
 import {
+  Link,
   Box,
   Button,
   Flex,
@@ -8,7 +10,6 @@ import {
   Image,
   Stack,
   Text,
-  Link,
   AccordionButton,
   AccordionItem,
   Accordion,
@@ -27,102 +28,121 @@ export default function Navbar() {
   const { user, loading, userData, authorized } = useAuth();
   const role = userData?.role;
 
-  if (
-    loading ||
-    !authorized ||
-    !(navbarVisiblity[router.pathname as Pages] ?? true)
-  ) {
+  const visible = navbarVisiblity[router.pathname as Pages] ?? false;
+
+  if (loading && visible) {
+    return <Box h="64px"></Box>;
+  }
+
+  if ((loading && !visible) || !authorized || !visible) {
     return <></>;
   }
+
   return (
-    <Flex
-      bgColor="white"
-      width="100%"
-      maxH="70px"
-      position="absolute"
-      top="0%"
-      bottom="90%"
-      height="auto"
-    >
-      <Stack
-        display={["none", "flex"]}
+    <Flex bgColor="white" width="100%" minH="64px" position="absolute" top={0}>
+      <Flex
         direction="row"
-        width="50%"
-        alignItems="center"
-        paddingLeft={2}
+        justifyContent="space-between"
+        w="100%"
+        marginLeft={2}
       >
-        <Image
-          src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
-          alt="logo"
-          boxSize={[8, 10]}
-        ></Image>
-      </Stack>
-      <Stack
-        display={["none", "flex"]}
-        width="50%"
-        justifyContent="flex-end"
-        direction="row"
-        alignItems="center"
-        spacing={10}
-      >
-        {role === Role.Admin && (
-          <Link>
-            <Text>Access Management</Text>
-          </Link>
-        )}
-        <Link>
-          <Text>Resources</Text>
+        <Link as={NextLink} href={Pages.FEED}>
+          <Flex h="100%" alignItems="center" paddingBottom={0.8}>
+            <Image
+              src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
+              alt="logo"
+              boxSize={[8, 10]}
+              w={46}
+            ></Image>
+          </Flex>
         </Link>
-        <Menu>
-          <MenuButton
-            as={Button}
-            bgColor="white"
-            _hover={{ bgColor: "white" }}
-            _active={{ bgColor: "white" }}
-            borderLeft="1px solid black"
-            borderRadius="0%"
-          >
-            <Stack direction="row" alignItems="center">
-              <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
-              <ChevronDownIcon />
-            </Stack>
-          </MenuButton>
-          <MenuList marginTop={4} marginRight={2}>
-            <Stack
-              direction="column"
-              paddingRight={5}
-              paddingLeft={2}
-              paddingTop={2}
-              spacing={5}
+        <Stack
+          display={["none", "flex"]}
+          width="50%"
+          justifyContent="flex-end"
+          direction="row"
+          alignItems="center"
+          spacing={10}
+        >
+          {role === Role.Admin && (
+            <Link
+              as={NextLink}
+              href={Pages.ACCESS_MANAGEMENT}
+              _hover={{
+                textDecor: "none",
+              }}
             >
-              <Stack direction="row">
+              <Text>Access Management</Text>
+            </Link>
+          )}
+          <Link _hover={{ textDecor: "none" }}>
+            <Text>Resources</Text>
+          </Link>
+          <Menu>
+            <MenuButton
+              as={Button}
+              bgColor="white"
+              _hover={{ bgColor: "white" }}
+              _active={{ bgColor: "white" }}
+              borderLeft="1px solid black"
+              borderRadius="0%"
+            >
+              <Stack direction="row" alignItems="center">
                 <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
-                <Stack direction="column">
-                  <Text fontWeight="bold" color="#7D7E82">
-                    {user?.displayName}
-                  </Text>
-                  <Text fontWeight="semibold" color="#7D7E82" fontSize="sm">
-                    {user?.email}
-                  </Text>
+                <ChevronDownIcon />
+              </Stack>
+            </MenuButton>
+            <MenuList marginTop={4} marginRight={2}>
+              <Stack
+                direction="column"
+                paddingRight={5}
+                paddingLeft={2}
+                paddingTop={2}
+                spacing={5}
+              >
+                <Stack direction="row">
+                  <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
+                  <Stack direction="column">
+                    <Text fontWeight="bold" color="#7D7E82">
+                      {user?.displayName}
+                    </Text>
+                    <Text fontWeight="semibold" color="#7D7E82" fontSize="sm">
+                      {user?.email}
+                    </Text>
+                  </Stack>
+                </Stack>
+                <Stack direction="row" justifyContent="flex-end">
+                  <Link
+                    as={NextLink}
+                    href={Pages.PROFILE}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Button
+                      variant="solid"
+                      bgColor="#57A0D5"
+                      borderRadius="16px"
+                      color="white"
+                      size="sm"
+                      _hover={{
+                        bgColor: "rgb(87, 161, 213, 0.5)",
+                      }}
+                    >
+                      View Profile
+                    </Button>
+                  </Link>
                 </Stack>
               </Stack>
-              <Stack direction="row" justifyContent="flex-end">
-                <Button
-                  bgColor="#57A0D5"
-                  borderRadius="16px"
-                  color="white"
-                  size="sm"
-                  _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
-                >
-                  Edit Profile
-                </Button>
-              </Stack>
-            </Stack>
-          </MenuList>
-        </Menu>
-      </Stack>
+            </MenuList>
+          </Menu>
+        </Stack>
+      </Flex>
 
-      <Accordion display={["flex", "none"]} allowToggle width="100%">
+      <Accordion
+        display={["flex", "none"]}
+        allowToggle
+        width="100%"
+        zIndex={10}
+      >
         <AccordionItem width="100%">
           <Stack direction="row" width="100%">
             <Flex width="90%" alignItems="center" paddingLeft={2}>
@@ -192,7 +212,7 @@ export default function Navbar() {
                     size="sm"
                     _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
                   >
-                    Edit Profile
+                    View Profile
                   </Button>
                 </Stack>
               </Stack>
