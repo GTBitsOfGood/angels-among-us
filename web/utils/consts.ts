@@ -2,6 +2,7 @@ enum Pages {
   FEED = "/",
   ACCESS_MANAGEMENT = "/access",
   ONBOARDING = "/onboarding",
+  PROFILE = "/profile",
 }
 
 function getBaseUrl() {

@@ -46,7 +46,7 @@ export default function Navbar() {
         w="100%"
         marginLeft={2}
       >
-        <Link as={NextLink} href="/">
+        <Link as={NextLink} href={Pages.FEED}>
           <Flex h="100%" alignItems="center" paddingBottom={0.8}>
             <Image
               src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
@@ -65,11 +65,17 @@ export default function Navbar() {
           spacing={10}
         >
           {role === Role.Admin && (
-            <Link>
+            <Link
+              as={NextLink}
+              href={Pages.ACCESS_MANAGEMENT}
+              _hover={{
+                textDecor: "none",
+              }}
+            >
               <Text>Access Management</Text>
             </Link>
           )}
-          <Link>
+          <Link _hover={{ textDecor: "none" }}>
             <Text>Resources</Text>
           </Link>
           <Menu>
@@ -106,15 +112,24 @@ export default function Navbar() {
                   </Stack>
                 </Stack>
                 <Stack direction="row" justifyContent="flex-end">
-                  <Button
-                    bgColor="#57A0D5"
-                    borderRadius="16px"
-                    color="white"
-                    size="sm"
-                    _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
+                  <Link
+                    as={NextLink}
+                    href={Pages.PROFILE}
+                    style={{ textDecoration: "none" }}
                   >
-                    Edit Profile
-                  </Button>
+                    <Button
+                      variant="solid"
+                      bgColor="#57A0D5"
+                      borderRadius="16px"
+                      color="white"
+                      size="sm"
+                      _hover={{
+                        bgColor: "rgb(87, 161, 213, 0.5)",
+                      }}
+                    >
+                      View Profile
+                    </Button>
+                  </Link>
                 </Stack>
               </Stack>
             </MenuList>
@@ -197,7 +212,7 @@ export default function Navbar() {
                     size="sm"
                     _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
                   >
-                    Edit Profile
+                    View Profile
                   </Button>
                 </Stack>
               </Stack>

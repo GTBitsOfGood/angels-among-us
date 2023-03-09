@@ -6,7 +6,7 @@ import {
   Answers,
   StoredQuestion,
   PossibleTypes,
-} from "../pages/onboarding";
+} from "../../pages/onboarding";
 
 function OnboardingButton(props: {
   onClickFunc: (arg: void) => void;

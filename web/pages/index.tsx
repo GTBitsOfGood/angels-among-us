@@ -6,6 +6,7 @@ import {
   signOut,
 } from "firebase/auth";
 import {
+  Heading,
   Button,
   Flex,
   Stack,
@@ -56,12 +57,16 @@ export default function Home() {
           <Button
             cursor={["default", "pointer"]}
             bgColor="#D9D9D9"
-            onClick={() => {
-              signOut(auth);
-            }}
+            onClick={() => signOut(auth)}
           >
             Logout
           </Button>
+          <Button onClick={onOpen}>Open Post Creation Modal</Button>
+          <PostCreationModal
+            isOpen={isOpen}
+            onOpen={onOpen}
+            onClose={onClose}
+          />
         </Flex>
       </Flex>
     );
@@ -95,15 +100,9 @@ export default function Home() {
               width={["75%", "35%"]}
               spacing="10"
             >
-              <Text
-                color="#000000"
-                fontWeight="bold"
-                fontSize="4xl"
-                lineHeight="10"
-                textAlign={["center", "left"]}
-              >
+              <Heading size="xl" lineHeight="10" textAlign={["center", "left"]}>
                 Welcome to the page message!
-              </Text>
+              </Heading>
               <Text
                 color="#000000"
                 fontWeight="semibold"
@@ -136,7 +135,6 @@ export default function Home() {
               >
                 continue with Google
               </Button>
-              <PostCreationModal></PostCreationModal>
             </Stack>
             <Stack
               direction="row"
@@ -149,7 +147,7 @@ export default function Home() {
               right="20px"
               display={["none", "flex"]}
             >
-              <Text color="#6D6D6D" fontSize="small">
+              <Text color="#6D6D6D" fontSize="sm">
                 what is this site?
               </Text>
               <Tooltip

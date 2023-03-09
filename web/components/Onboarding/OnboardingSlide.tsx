@@ -20,7 +20,7 @@ import {
   Answers,
   StoredQuestion,
   PossibleTypes,
-} from "../pages/onboarding";
+} from "../../pages/onboarding";
 
 export type OptionType = {
   value: PossibleTypes;
