@@ -1,3 +1,4 @@
+import React from "react";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -5,6 +6,7 @@ import {
   signOut,
 } from "firebase/auth";
 import {
+  Heading,
   Button,
   Flex,
   Stack,
@@ -23,26 +25,23 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
-import React from "react";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
+import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { loading, authorized } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+    await signInWithPopup(auth, provider);
   }
 
   async function handleLoginGoogle() {
     const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
+    await signInWithPopup(auth, provider);
   }
-
   if (loading) {
     return (
       <Center w="100vw" h="100vh">
@@ -51,19 +50,23 @@ export default function Home() {
     );
   }
 
-  if (user !== null) {
+  if (authorized) {
     return (
       <Flex height="100vh">
         <Flex width="100%" justifyContent="center" alignItems="center">
           <Button
             cursor={["default", "pointer"]}
             bgColor="#D9D9D9"
-            onClick={() => {
-              signOut(auth);
-            }}
+            onClick={() => signOut(auth)}
           >
             Logout
           </Button>
+          <Button onClick={onOpen}>Open Post Creation Modal</Button>
+          <PostCreationModal
+            isOpen={isOpen}
+            onOpen={onOpen}
+            onClose={onClose}
+          />
         </Flex>
       </Flex>
     );
@@ -97,15 +100,9 @@ export default function Home() {
               width={["75%", "35%"]}
               spacing="10"
             >
-              <Text
-                color="#000000"
-                fontWeight="bold"
-                fontSize="4xl"
-                lineHeight="10"
-                textAlign={["center", "left"]}
-              >
+              <Heading size="xl" lineHeight="10" textAlign={["center", "left"]}>
                 Welcome to the page message!
-              </Text>
+              </Heading>
               <Text
                 color="#000000"
                 fontWeight="semibold"
@@ -120,7 +117,7 @@ export default function Home() {
                 width="100%"
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
-                onClick={handleLoginFacebook}
+                onClick={() => handleLoginFacebook()}
               >
                 continue with facebook
               </Button>
@@ -150,7 +147,7 @@ export default function Home() {
               right="20px"
               display={["none", "flex"]}
             >
-              <Text color="#6D6D6D" fontSize="small">
+              <Text color="#6D6D6D" fontSize="sm">
                 what is this site?
               </Text>
               <Tooltip

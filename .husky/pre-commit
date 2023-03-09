@@ -2,3 +2,13 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npx lint-staged
+
+CURRENT_DIR=$(pwd)
+
+if [ "$(basename "$CURRENT_DIR")" != "web" ]; then
+    cd web
+fi
+
+yarn build
+
+exit $?

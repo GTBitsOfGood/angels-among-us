@@ -3,6 +3,7 @@ import {
   IPost,
   FosterType,
   Size,
+  Breed,
   Gender,
   Age,
   Temperament,
@@ -25,6 +26,11 @@ const postSchema = new Schema<IPost>({
     type: String,
     required: true,
     enum: Object.values(Size),
+  },
+  breed: {
+    type: String,
+    required: true,
+    enum: Object.values(Breed),
   },
   gender: {
     type: String,
@@ -80,6 +86,10 @@ const postSchema = new Schema<IPost>({
   covered: {
     type: Boolean,
     default: false,
+  },
+  pending: {
+    type: Boolean,
+    default: true,
   },
   attachments: [
     {
