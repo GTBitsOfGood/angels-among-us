@@ -16,8 +16,10 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ChakraProvider theme={theme}>
       <AuthProvider>
-        <Navbar />
-        <Component {...pageProps} />
+        <Box h="100vh" w="100vw">
+          <Navbar />
+          <Component {...pageProps} />
+        </Box>
       </AuthProvider>
     </ChakraProvider>
   );
