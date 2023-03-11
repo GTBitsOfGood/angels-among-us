@@ -1,5 +1,7 @@
 import { IAccount } from "../../utils/types/account";
 import { Role } from "../../utils/types/account";
+import { trpc } from "../../utils/trpc";
+
 import {
   Popover,
   PopoverTrigger,
@@ -23,6 +25,8 @@ function RoleSelector(props: PropertyType) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   var idx = accountList.indexOf(account);
 
+  const mutation = trpc.account.modify.useMutation();
+
   const ops = [
     { label: "Admin", role: Role.Admin },
     { label: "Content Creator", role: Role.ContentCreator },
@@ -34,6 +38,7 @@ function RoleSelector(props: PropertyType) {
       email: account.email,
       role: r,
     };
+    mutation.mutate({ role: r, email: account.email });
     var tempList = [...accountList];
     tempList[idx] = temp;
     updateAccountList(tempList);

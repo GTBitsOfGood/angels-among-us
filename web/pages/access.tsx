@@ -1,11 +1,14 @@
 import CreateAccountForm from "../components/AccessManagement/CreateAccountForm";
 import AccountTable from "../components/AccessManagement/AccountTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, Box, Flex } from "@chakra-ui/react";
 import { IAccount } from "../utils/types/account";
 import { Role } from "../utils/types/account";
+import { trpc } from "../utils/trpc";
 
 export default function Access() {
+  //TODO - initial state of accountlist needs to query from DB
+
   const [accountList, updateAccountList] = useState<IAccount[]>([
     {
       email: "exmpleaddress1@domainname.com",

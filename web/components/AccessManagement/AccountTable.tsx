@@ -1,4 +1,4 @@
-import { useState, SetStateAction, Dispatch } from "react";
+import { useState, SetStateAction, Dispatch, useEffect } from "react";
 import { IAccount } from "../../utils/types/account";
 import AccountCard from "./AccountCard";
 import { SimpleGrid, Stack } from "@chakra-ui/react";
@@ -15,6 +15,12 @@ function AccountTable(props: PropertyType) {
   const { accountList, updateAccountList, selectItems, updateSelectItems } =
     props;
   const [itemsToDelete, updateItemsToDelete] = useState<Number[]>([]);
+
+  useEffect(() => {
+    if (!selectItems) {
+      updateItemsToDelete([]);
+    }
+  }, [selectItems]);
 
   return (
     <Stack gap={2} width="inherit">

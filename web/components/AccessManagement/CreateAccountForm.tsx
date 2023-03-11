@@ -4,6 +4,8 @@ import AddPermissionSelector from "./AddPermissionSelector";
 import { ChangeEvent } from "react";
 import { Role } from "../../utils/types/account";
 import { IAccount } from "../../utils/types/account";
+import { trpc } from "../../utils/trpc";
+
 import {
   Input,
   Text,
@@ -22,11 +24,13 @@ interface PropertyType {
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
 
-const CreateAccountForm = (props: PropertyType) => {
+export default function CreateAccountForm(props: PropertyType) {
   const { accountList, updateAccountList, updateSelectItems } = props;
   const [emailField, setEmailField] = useState("");
   const [role, setRole] = useState(Role.Volunteer);
   const [displayError, setDisplayError] = useState(false);
+
+  const mutation = trpc.account.add.useMutation();
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailField(event.target.value);
@@ -38,6 +42,7 @@ const CreateAccountForm = (props: PropertyType) => {
     return result.success;
   }
 
+  //TODO add a DB call here with trpc
   function updateState() {
     const isValid = validateEmail({ emailField });
     if (isValid) {
@@ -46,12 +51,16 @@ const CreateAccountForm = (props: PropertyType) => {
         email: emailField,
         role: role,
       };
-      const temp = [...accountList];
-      temp.unshift(newAccount);
-      updateAccountList(temp);
-      setEmailField("");
-      setRole(Role.Volunteer);
-      setDisplayError(false);
+
+      mutation.mutate(newAccount);
+      if (mutation.data) {
+        const temp = [...accountList];
+        temp.unshift(newAccount);
+        updateAccountList(temp);
+        setEmailField("");
+        setRole(Role.Volunteer);
+        setDisplayError(false);
+      }
     } else {
       setDisplayError(true);
     }
@@ -71,7 +80,9 @@ const CreateAccountForm = (props: PropertyType) => {
       paddingBottom={4}
       margin={{ sm: "12px", lg: "40px" }}
       marginTop={{ sm: "6px", lg: "20px" }}
-      onClick={() => updateSelectItems(false)}
+      onClick={() => {
+        updateSelectItems(false);
+      }}
     >
       <Text fontSize="md" fontWeight="regular" lineHeight="24px">
         Add New Account
@@ -133,6 +144,7 @@ const CreateAccountForm = (props: PropertyType) => {
             boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
             borderRadius="16px"
             onClick={updateState}
+            disabled={mutation.isLoading}
           >
             Add Account
           </Box>
@@ -140,6 +152,4 @@ const CreateAccountForm = (props: PropertyType) => {
       </SimpleGrid>
     </Flex>
   );
-};
-
-export default CreateAccountForm;
+}
