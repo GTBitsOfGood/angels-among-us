@@ -79,7 +79,7 @@ async function finalizePost(id: ObjectId, session?: ClientSession) {
     Prefix: `${id}`,
   });
   const attachmentKeys = post.attachments.sort();
-
+  if (post.attachments.length == 0) return;
   if (
     !uploadedObjects.Contents ||
     uploadedObjects.KeyCount !== attachmentKeys.length
