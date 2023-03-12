@@ -83,7 +83,7 @@ export default function Home() {
         <Flex bgColor="#D9D9D9" width={["0%", "50%"]}></Flex>
         <Link
           href="https://www.netlify.com"
-          position="fixed"
+          position="absolute"
           left="10px"
           bottom="0px"
           display={{ base: "none", lg: "initial" }}
@@ -157,7 +157,7 @@ export default function Home() {
             <Stack
               direction="row"
               width="48%"
-              position="absolute"
+              position="fixed"
               bottom="30px"
               right="20px"
               alignItems="center"
