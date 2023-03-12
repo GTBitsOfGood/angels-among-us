@@ -396,6 +396,7 @@ export default function Onboarding() {
   return (
     <Flex>
       <Flex
+        width="100%"
         className="page"
         flexDir="column"
         alignItems="center"
