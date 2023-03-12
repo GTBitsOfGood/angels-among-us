@@ -15,6 +15,7 @@ import {
   Status,
   Breed,
 } from "../utils/types/post";
+import { useAuth } from "../context/auth";
 
 export enum QType {
   Intro,
@@ -53,6 +54,7 @@ export interface StoredQuestion<T extends PossibleTypes> extends IQuestion {
   singleAnswer: boolean;
   dropdown: boolean;
   tooltip: string;
+  allSelected: boolean;
 }
 
 export type Answers<T extends StoredQuestion<PossibleTypes>> = {
@@ -60,15 +62,18 @@ export type Answers<T extends StoredQuestion<PossibleTypes>> = {
 };
 
 export default function Onboarding() {
+  const { user } = useAuth();
+
   const questionData: IQuestion[] = [
     {
-      title: "Hello, new foster!",
-      description: `Let's start by walking through building your foster profile! This will help us connect you with the best pet for your situation to ensure a positive experience for everyone involved.\n\nAnswer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.`,
+      title: "Hello, " + user?.displayName + "!",
+      description: `Let's start by walking through building your foster profile! This will help us connect you with the best foster dog for your situation to ensure a positive experience for you and the foster.\n\nPlease answer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.`,
       qtype: QType.Intro,
     },
     {
       key: "type",
-      title: "Are you able to help with all these types of fosters?",
+      title:
+        "Are you comfortable with fostering the following types of foster dogs?",
       description: "",
       options: [
         { value: FosterType.Return, label: "Return" },
@@ -82,7 +87,8 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip:
-        "<b>Return Foster</b> <br> A dog that was adopted but then returned to AAU by the adopter. <br><br> <b> Boarding </b> <br> A foster parent or other dogs' owner goes on vacation or other hiatus and needs someone to take their dog for a little <br><br> <b> Temporary </b> <br> During holidays, vacations, and emergencies until permanent fosters can be found or return. <br><br> <b> Shelter </b> <br> Lorem ipsum dolor sit amet consectetur. <br><br> <b> Owner Surrender </b> <br> Lorem ipsum dolor sit amet consectetur. <br><br> <b> Foster Move </b> <br> A dog whose previous foster parents can't care for the foster dog any more.",
+        "<b>Return Foster</b> <br> A dog that was adopted but then returned to AAU by the adopter. <br><br> <b> Boarding </b> <br> A foster parent or other dogs' owner goes on vacation or other hiatus and needs someone to take their dog for a little <br><br> <b> Temporary </b> <br> During holidays, vacations, and emergencies until permanent fosters can be found or return. <br><br> <b> Shelter </b> <br> A dog that comes from or is currently in a shelter and in need of a home. <br><br> <b> Owner Surrender </b> <br> A dog that has been handed over from their previous owner and now needs a home. <br><br> <b> Foster Move </b> <br> A dog whose previous foster parents can't care for the foster dog any more.",
+      allSelected: true,
     } as StoredQuestion<FosterType>,
     {
       key: "size",
@@ -99,11 +105,12 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip: "",
+      allSelected: true,
     } as StoredQuestion<Size>,
 
     {
       key: "breed",
-      title: "Are there any breeds that you are not comfortable fostering?",
+      title: "Are there any breeds that you are NOT comfortable fostering?",
       description: "Leave blank if none",
       options: [
         { value: Breed.AmericanEskimo, label: "American Eskimo" },
@@ -161,6 +168,7 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: true,
       tooltip: "",
+      allSelected: false,
     } as StoredQuestion<Breed>,
     {
       key: "gender",
@@ -176,6 +184,7 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip: "",
+      allSelected: true,
     } as StoredQuestion<Gender>,
     {
       key: "age",
@@ -192,6 +201,7 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip: "",
+      allSelected: true,
     } as StoredQuestion<Age>,
     {
       key: "temperament",
@@ -207,10 +217,11 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip: "",
+      allSelected: true,
     } as StoredQuestion<Temperament>,
     {
       key: "goodWith",
-      title: "Are you able to foster dogs that are not good with:",
+      title: "Are you able to foster dogs that do NOT get along with:",
       description: "",
       options: [
         { value: GoodWith.Men, label: "Men" },
@@ -225,6 +236,7 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip: "",
+      allSelected: true,
     } as StoredQuestion<GoodWith>,
     {
       key: "medical",
@@ -236,7 +248,7 @@ export default function Onboarding() {
         { value: Medical.Heartworms, label: "Heartworms" },
         { value: Medical.Pregnant, label: "Pregnant" },
         { value: Medical.Nursing, label: "Nursing" },
-        { value: Medical.BottleFeeding, label: "Bottle Feeding" },
+        { value: Medical.BottleFed, label: "Bottle Fed" },
         { value: Medical.ChronicCondition, label: "Chronic Condition" },
         { value: Medical.Parvo, label: "Parvo" },
         { value: Medical.Hospice, label: "Hospice" },
@@ -244,11 +256,13 @@ export default function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip: "",
+      tooltip:
+        "<b>Heartworms</b> <br> Lorem ipsum <br><br> <b>Chronic Condition</b> <br> Lorem ipsum <br><br> <b> Parvo </b> <br> Lorem ipsum <br><br> <b> Hospice </b> <br> Lorem ipsum",
+      allSelected: true,
     } as StoredQuestion<Medical>,
     {
       key: "behavioral",
-      title: "Are you able to foster dogs that have or are:",
+      title: "Are you able to foster dogs that have or will:",
       description: "",
       options: [
         { value: Behavioral.SeparationAnxiety, label: "Separation Anxiety" },
@@ -262,10 +276,11 @@ export default function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       tooltip: "",
+      allSelected: true,
     } as StoredQuestion<Behavioral>,
     {
       key: "houseTrained",
-      title: "Are you able to foster a dog who isn't house trained?",
+      title: "Are you able to foster a dog who is NOT house trained?",
       description: "",
       options: [
         { value: Trained.Yes, label: "Yes" },
@@ -278,7 +293,7 @@ export default function Onboarding() {
     } as StoredQuestion<Trained>,
     {
       key: "crateTrained",
-      title: "Are you able to foster a dog who isn't crate trained?",
+      title: "Are you able to foster a dog who is NOT crate trained?",
       description: "",
       options: [
         { value: Trained.Yes, label: "Yes" },
@@ -291,7 +306,7 @@ export default function Onboarding() {
     } as StoredQuestion<Trained>,
     {
       key: "spayNeuterStatus",
-      title: "Are you able to foster a dog who isn't spayed/neutered?",
+      title: "Are you able to foster a dog who is NOT spayed/neutered?",
       description: "",
       options: [
         { value: Status.Yes, label: "Yes" },
@@ -326,9 +341,12 @@ export default function Onboarding() {
   const initialAnswers: Answers<StoredQuestion<PossibleTypes>> =
     questionData.reduce((acc, curr) => {
       if (curr.qtype !== QType.Question) return acc;
+      const storedQCurr = curr as StoredQuestion<PossibleTypes>;
       return {
         ...acc,
-        [(curr as StoredQuestion<PossibleTypes>).key]: [],
+        [storedQCurr.key]: storedQCurr.allSelected
+          ? storedQCurr.options.map((val) => val.value)
+          : [],
       } as Answers<StoredQuestion<PossibleTypes>>;
     }, {} as Answers<StoredQuestion<PossibleTypes>>);
 
@@ -366,8 +384,17 @@ export default function Onboarding() {
     );
   }
 
+  const numQuestions = questionData.reduce((acc, curr) => {
+    if (curr.qtype == QType.Question) acc += 1;
+    return acc;
+  }, 0);
+  const numIntros = questionData.reduce((acc, curr) => {
+    if (curr.qtype == QType.Intro) acc += 1;
+    return acc;
+  }, 0);
+
   return (
-    <div>
+    <Flex>
       <Flex
         className="page"
         flexDir="column"
@@ -390,7 +417,7 @@ export default function Onboarding() {
           <Progress
             className="progressBar"
             width={{ base: "75%", md: "80%", lg: "85%" }}
-            value={(100 * qNum) / (questionData.length - 1)}
+            value={(100 * Math.max(0, qNum - numIntros + 1)) / numQuestions}
             borderRadius="10px"
             height={{ base: "10px", md: "20px", lg: "20px" }}
             colorScheme="blackAlpha"
@@ -403,7 +430,7 @@ export default function Onboarding() {
             textColor="#3D3D3D"
             fontSize={{ base: "10px", md: "16px", lg: "20px" }}
           >
-            {qNum + " of " + (questionData.length - 1)}
+            {Math.max(0, qNum - numIntros + 1) + " of " + numQuestions}
           </Text>
         </Flex>
         <OnboardingSlide
@@ -423,6 +450,6 @@ export default function Onboarding() {
       >
         {btnDisplay}
       </Flex>
-    </div>
+    </Flex>
   );
 }
