@@ -53,12 +53,13 @@ const PostCreationModal: React.FC<{
   return (
     <Modal onClose={onClose} isOpen={isOpen} closeOnOverlayClick={false}>
       <ModalOverlay />
-      <ModalContent minW={"850px"} minH={"790px"}>
+      <ModalContent minW={"850px"} maxH={"600px"} minH={"600px"}>
         <Stack
           paddingLeft={"75px"}
           paddingRight={"75px"}
           paddingTop={"40px"}
           paddingBottom={"40px"}
+          overflowY="auto"
         >
           <Flex
             direction={"row"}
@@ -73,7 +74,7 @@ const PostCreationModal: React.FC<{
               <Text>Back to New Pet content</Text>
             )}
           </Flex>
-          <Text fontSize={"5xl"} fontWeight={"bold"} lineHeight={"56px"}>
+          <Text fontSize={"48px"} fontWeight={"bold"} lineHeight={"55px"}>
             Add A New Pet
           </Text>
           {isContentView ? (
@@ -88,20 +89,22 @@ const PostCreationModal: React.FC<{
               </Text>
             </Flex>
           )}
-          {isContentView ? (
-            //TODO: Add new pet content slide component here.
-            <></>
-          ) : (
-            <FileUploadSlide
-              fileArr={fileArr}
-              selectedFiles={selectedFiles}
-              setSelectedFiles={setSelectedFiles}
-              setFileArr={setFileArr}
-              numFiles={numFiles}
-              showAlert={showAlert}
-              setShowAlert={setShowAlert}
-            ></FileUploadSlide>
-          )}
+          <Stack overflowY="auto">
+            {isContentView ? (
+              //TODO: Add new pet content slide component here.
+              <></>
+            ) : (
+              <FileUploadSlide
+                fileArr={fileArr}
+                selectedFiles={selectedFiles}
+                setSelectedFiles={setSelectedFiles}
+                setFileArr={setFileArr}
+                numFiles={numFiles}
+                showAlert={showAlert}
+                setShowAlert={setShowAlert}
+              ></FileUploadSlide>
+            )}
+          </Stack>
           <ModalFooter>
             {isContentView ? (
               <Button
