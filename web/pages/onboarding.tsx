@@ -66,7 +66,10 @@ export default function Onboarding() {
 
   const questionData: IQuestion[] = [
     {
-      title: "Hello, " + user?.displayName + "!",
+      title:
+        "Hello, " +
+        (user?.displayName == undefined ? "new foster" : user?.displayName) +
+        "!",
       description: `Let's start by walking through building your foster profile! This will help us connect you with the best foster dog for your situation to ensure a positive experience for you and the foster.\n\nPlease answer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.`,
       qtype: QType.Intro,
     },
@@ -396,6 +399,7 @@ export default function Onboarding() {
   return (
     <Flex>
       <Flex
+        width="100%"
         className="page"
         flexDir="column"
         alignItems="center"
