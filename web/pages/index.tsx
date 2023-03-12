@@ -164,7 +164,7 @@ export default function Home() {
               justifyContent="flex-end"
               display={["none", "flex"]}
             >
-              <Popover>
+              <Popover trigger="hover">
                 <Text color="#6D6D6D" fontSize="sm">
                   what is this site?
                 </Text>
