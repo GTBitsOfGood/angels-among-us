@@ -24,7 +24,9 @@ const consts = {
   dbName: "angels-among-us",
   pages: Object.values(Pages),
   baseUrl: getBaseUrl(),
-  b2Bucket: process.env.B2_BUCKET_NAME,
+  storageBucket: process.env.STORAGE_BUCKET_NAME,
+  storageS3Endpoint: process.env.STORAGE_S3_ENDPOINT,
+  storageS3Region: process.env.STORAGE_S3_REGION,
 };
 
 export { Pages, consts };
