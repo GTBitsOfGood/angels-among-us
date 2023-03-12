@@ -37,7 +37,6 @@ export default function Navbar() {
   if ((loading && !visible) || !authorized || !visible) {
     return <></>;
   }
-
   return (
     <Flex bgColor="white" width="100%" minH="64px" position="absolute" top={0}>
       <Flex
@@ -88,7 +87,11 @@ export default function Navbar() {
               borderRadius="0%"
             >
               <Stack direction="row" alignItems="center">
-                <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
+                <Image
+                  borderRadius="100%"
+                  boxSize={10}
+                  src={user?.photoURL ?? undefined}
+                ></Image>
                 <ChevronDownIcon />
               </Stack>
             </MenuButton>
@@ -101,7 +104,11 @@ export default function Navbar() {
                 spacing={5}
               >
                 <Stack direction="row">
-                  <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
+                  <Image
+                    borderRadius="100%"
+                    boxSize={10}
+                    src={user?.photoURL ?? undefined}
+                  />
                   <Stack direction="column">
                     <Text fontWeight="bold" color="#7D7E82">
                       {user?.displayName}
