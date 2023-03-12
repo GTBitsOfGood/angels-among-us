@@ -23,9 +23,11 @@ import {
   Status,
   Temperament,
 } from "../utils/types/post";
+import { useAuth } from "../context/auth";
 
 export default function Profile() {
   const [editing, setEditing] = React.useState(false);
+  const { user } = useAuth();
 
   const fosterTypes = [
     { value: FosterType.Return, label: "Return" },
@@ -229,24 +231,21 @@ export default function Profile() {
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">Name</Text>
                         <Input
-                          placeholder="Firstname Lastname"
-                          disabled={!editing}
+                          placeholder={user?.displayName || ""}
+                          disabled={true}
                         ></Input>
                       </Stack>
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">Preferred Email</Text>
-                        <Input
-                          placeholder="example@domainname.com"
-                          disabled={!editing}
-                        ></Input>
+                        <Input placeholder={""} disabled={!editing}></Input>
                       </Stack>
                     </Stack>
                     <Stack direction="row" spacing={5}>
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">Email</Text>
                         <Input
-                          placeholder="example@domainname.com"
-                          disabled={!editing}
+                          placeholder={user?.email || ""}
+                          disabled={true}
                         ></Input>
                       </Stack>
                       <Stack direction="column" width="50%">
@@ -458,8 +457,8 @@ export default function Profile() {
               <Stack direction="column">
                 <Text fontWeight="medium">Name</Text>
                 <Input
-                  placeholder="Firstname Lastname"
-                  disabled={!editing}
+                  placeholder={user?.displayName || ""}
+                  disabled={true}
                   border="1px solid gray"
                 ></Input>
               </Stack>
@@ -467,15 +466,15 @@ export default function Profile() {
                 <Text fontWeight="medium">Email</Text>
                 <Input
                   border="1px solid gray"
-                  placeholder="example@domainname.com"
-                  disabled={!editing}
+                  placeholder={user?.email || ""}
+                  disabled={true}
                 ></Input>
               </Stack>
               <Stack direction="column">
                 <Text fontWeight="medium">Preferred Email</Text>
                 <Input
                   border="1px solid gray"
-                  placeholder="example@domainname.com"
+                  placeholder={""}
                   disabled={!editing}
                 ></Input>
               </Stack>
