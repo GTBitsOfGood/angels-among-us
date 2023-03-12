@@ -9,6 +9,14 @@ import storageClient from "../storageConnect";
 
 type UploadInfo = Record<string, string>;
 
+async function getPost(oid: ObjectId) {
+  const post = await Post.findOne({ _id: oid });
+  post.attachments = post.attachments.map((attachment: string) => {
+    return `${consts.storageBucketURL}/${attachment}`;
+  });
+  return post;
+}
+
 async function createPost(post: IPendingPost, session?: ClientSession) {
   const pending = post.attachments.length != 0;
   const createdPost = await Post.create(
@@ -116,4 +124,10 @@ async function updatePostStatus(oid: ObjectId, session?: ClientSession) {
     { session: session }
   );
 }
-export { createPost, updatePostDetails, updatePostStatus, finalizePost };
+export {
+  createPost,
+  getPost,
+  updatePostDetails,
+  updatePostStatus,
+  finalizePost,
+};
