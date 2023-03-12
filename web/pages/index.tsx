@@ -23,6 +23,12 @@ import {
   IconButton,
   Spinner,
   Center,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
@@ -153,28 +159,28 @@ export default function Home() {
               direction="row"
               width="48%"
               position="absolute"
-              alignItems="center"
-              justifyContent="flex-end"
-              overflow="clip"
               bottom="30px"
               right="20px"
+              alignItems="center"
+              justifyContent="flex-end"
               display={["none", "flex"]}
             >
-              <Text color="#6D6D6D" fontSize="sm">
-                what is this site?
-              </Text>
-              <Tooltip
-                placement="top-start"
-                closeDelay={2000}
-                bgColor="#B5B5B5"
-                label={
-                  <Stack
-                    direction="column"
-                    paddingRight={2}
-                    paddingLeft={2}
-                    paddingTop={5}
-                    paddingBottom={5}
+              <Popover>
+                <Text color="#6D6D6D" fontSize="sm">
+                  what is this site?
+                </Text>
+                <PopoverTrigger>
+                  <Button
+                    backgroundColor="#FFFFFF"
+                    _hover={{ background: "#FFFFFF" }}
                   >
+                    <QuestionOutlineIcon />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent backgroundColor="#D9D9D9">
+                  <PopoverArrow bgColor="#D9D9D9" />
+                  <PopoverCloseButton />
+                  <PopoverBody>
                     <Text color="black">
                       The purpose of this site is to provide a space for
                       confirmed Angels Among Us fosters to get matched with pets
@@ -199,11 +205,9 @@ export default function Home() {
                       </Link>
                     </Text>
                     <Text color="black">Thanks!</Text>
-                  </Stack>
-                }
-              >
-                <QuestionOutlineIcon />
-              </Tooltip>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
             </Stack>
             <Flex
               direction="row"
