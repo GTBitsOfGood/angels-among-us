@@ -6,6 +6,16 @@ async function createUser(user: IUser, session?: ClientSession) {
   return await User.create([user], { session: session });
 }
 
+async function updateAllUsers(
+  emails: string[],
+  update: UpdateQuery<IUser>,
+  session?: ClientSession
+) {
+  return await User.updateMany({ email: { $in: emails } }, update, {
+    session: session,
+  });
+}
+
 async function findUserByUid(
   uid: string,
   session?: ClientSession
@@ -29,4 +39,10 @@ async function updateUserByUid(
   return await User.findOneAndUpdate({ uid }, update, { session: session });
 }
 
-export { createUser, findUserByUid, updateUserByEmail, updateUserByUid };
+export {
+  createUser,
+  findUserByUid,
+  updateAllUsers,
+  updateUserByEmail,
+  updateUserByUid,
+};
