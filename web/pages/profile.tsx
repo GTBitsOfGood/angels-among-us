@@ -231,7 +231,7 @@ export default function Profile() {
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">Name</Text>
                         <Input
-                          placeholder={user?.displayName || ""}
+                          placeholder={user?.displayName ?? undefined}
                           disabled={true}
                         ></Input>
                       </Stack>
@@ -244,7 +244,7 @@ export default function Profile() {
                       <Stack direction="column" width="50%">
                         <Text fontWeight="medium">Email</Text>
                         <Input
-                          placeholder={user?.email || ""}
+                          placeholder={user?.email ?? undefined}
                           disabled={true}
                         ></Input>
                       </Stack>
@@ -457,7 +457,7 @@ export default function Profile() {
               <Stack direction="column">
                 <Text fontWeight="medium">Name</Text>
                 <Input
-                  placeholder={user?.displayName || ""}
+                  placeholder={user?.displayName ?? undefined}
                   disabled={true}
                   border="1px solid gray"
                 ></Input>
@@ -466,7 +466,7 @@ export default function Profile() {
                 <Text fontWeight="medium">Email</Text>
                 <Input
                   border="1px solid gray"
-                  placeholder={user?.email || ""}
+                  placeholder={user?.email || undefined}
                   disabled={true}
                 ></Input>
               </Stack>
