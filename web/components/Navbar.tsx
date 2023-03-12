@@ -15,6 +15,7 @@ import {
   Accordion,
   AccordionPanel,
   Divider,
+  MenuItem,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
@@ -117,18 +118,20 @@ export default function Navbar() {
                     href={Pages.PROFILE}
                     style={{ textDecoration: "none" }}
                   >
-                    <Button
-                      variant="solid"
-                      bgColor="#57A0D5"
-                      borderRadius="16px"
-                      color="white"
-                      size="sm"
-                      _hover={{
-                        bgColor: "rgb(87, 161, 213, 0.5)",
-                      }}
-                    >
-                      View Profile
-                    </Button>
+                    <MenuItem borderRadius="16px" padding={0}>
+                      <Button
+                        variant="solid"
+                        bgColor="#57A0D5"
+                        borderRadius="16px"
+                        color="white"
+                        size="sm"
+                        _hover={{
+                          bgColor: "rgb(87, 161, 213, 0.5)",
+                        }}
+                      >
+                        View Profile
+                      </Button>
+                    </MenuItem>
                   </Link>
                 </Stack>
               </Stack>
