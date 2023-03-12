@@ -39,7 +39,15 @@ export default function Navbar() {
   }
 
   return (
-    <Flex bgColor="white" width="100%" minH="64px" position="absolute" top={0}>
+    <Flex
+      id="navbar"
+      bgColor="white"
+      width="100%"
+      minH="64px"
+      position="absolute"
+      top={0}
+      zIndex="1"
+    >
       <Flex
         direction="row"
         justifyContent="space-between"
