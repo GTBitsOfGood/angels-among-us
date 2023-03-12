@@ -107,7 +107,7 @@ export enum Medical {
   ChronicCondition = "chronicCondition",
   Pregnant = "pregnant",
   Nursing = "nursing",
-  BottleFeeding = "bottleFeeding",
+  BottleFed = "bottleFed",
   Hospice = "hospice",
 }
 

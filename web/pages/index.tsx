@@ -14,7 +14,6 @@ import {
   Divider,
   Image,
   Link,
-  Tooltip,
   useDisclosure,
   Modal,
   ModalOverlay,
@@ -23,6 +22,12 @@ import {
   IconButton,
   Spinner,
   Center,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
   Accordion,
   AccordionItem,
   AccordionButton,
@@ -98,6 +103,19 @@ export default function Home() {
     <Flex height="100vh">
       <Stack direction="row" width="100%" height="100%">
         <Flex bgColor="#D9D9D9" width={["0%", "50%"]}></Flex>
+        <Link
+          href="https://www.netlify.com"
+          position="absolute"
+          left="10px"
+          bottom="0px"
+          display={{ base: "none", lg: "initial" }}
+        >
+          <Image
+            boxSize={{ base: "50px", lg: "80px" }}
+            src="https://www.netlify.com/v3/img/components/netlify-dark.svg"
+            alt="Deploys by Netlify"
+          />
+        </Link>
         <Flex bgColor="#FFFFFF" width={["100%", "50%"]} justifyContent="center">
           <Stack direction="column" width="100%" alignItems="center">
             <Stack
@@ -130,7 +148,7 @@ export default function Home() {
                 fontWeight="semibold"
                 fontSize={["sm", "lg"]}
                 textAlign={["center", "left"]}
-                paddingBottom={["120px", "0px"]}
+                paddingBottom={["100px", "0px"]}
               >
                 Subtitle and further description of the site.
               </Text>
@@ -161,29 +179,29 @@ export default function Home() {
             <Stack
               direction="row"
               width="48%"
-              position="absolute"
-              alignItems="center"
-              justifyContent="flex-end"
-              overflow="clip"
+              position="fixed"
               bottom="30px"
               right="20px"
+              alignItems="center"
+              justifyContent="flex-end"
               display={["none", "flex"]}
             >
-              <Text color="#6D6D6D" fontSize="sm">
-                what is this site?
-              </Text>
-              <Tooltip
-                placement="top-start"
-                closeDelay={2000}
-                bgColor="#B5B5B5"
-                label={
-                  <Stack
-                    direction="column"
-                    paddingRight={2}
-                    paddingLeft={2}
-                    paddingTop={5}
-                    paddingBottom={5}
+              <Popover trigger="hover">
+                <Text color="#6D6D6D" fontSize="sm">
+                  what is this site?
+                </Text>
+                <PopoverTrigger>
+                  <Button
+                    backgroundColor="#FFFFFF"
+                    _hover={{ background: "#FFFFFF" }}
                   >
+                    <QuestionOutlineIcon />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent backgroundColor="#D9D9D9">
+                  <PopoverArrow bgColor="#D9D9D9" />
+                  <PopoverCloseButton />
+                  <PopoverBody>
                     <Text color="black">
                       The purpose of this site is to provide a space for
                       confirmed Angels Among Us fosters to get matched with pets
@@ -208,33 +226,37 @@ export default function Home() {
                       </Link>
                     </Text>
                     <Text color="black">Thanks!</Text>
-                  </Stack>
-                }
-              >
-                <QuestionOutlineIcon />
-              </Tooltip>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
             </Stack>
-            <Stack
+            <Flex
               direction="row"
-              width="48%"
-              position="absolute"
-              alignItems="center"
-              justifyContent="flex-end"
-              overflow="clip"
-              bottom="30px"
-              right="20px"
               display={["flex", "none"]}
+              width="80%"
+              justifyContent="space-between"
+              paddingTop="20px"
+              paddingBottom="20px"
             >
-              <Text color="#6D6D6D" fontSize="small">
-                what is this site?
-              </Text>
-              <IconButton
-                bgColor="white"
-                aria-label="info"
-                cursor="default"
-                icon={<QuestionOutlineIcon />}
-                onClick={onOpen}
-              ></IconButton>
+              <Link href="https://www.netlify.com" alignSelf="flex-start">
+                <Image
+                  boxSize={{ base: "50px", lg: "80px" }}
+                  src="https://www.netlify.com/v3/img/components/netlify-dark.svg"
+                  alt="Deploys by Netlify"
+                />
+              </Link>
+              <Stack direction="row" alignItems="center">
+                <Text color="#6D6D6D" fontSize="small">
+                  what is this site?
+                </Text>
+                <IconButton
+                  bgColor="white"
+                  aria-label="info"
+                  cursor="default"
+                  icon={<QuestionOutlineIcon />}
+                  onClick={onOpen}
+                ></IconButton>
+              </Stack>
 
               <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
@@ -276,7 +298,7 @@ export default function Home() {
                   </ModalBody>
                 </ModalContent>
               </Modal>
-            </Stack>
+            </Flex>
           </Stack>
         </Flex>
       </Stack>
