@@ -14,7 +14,6 @@ import {
   Divider,
   Image,
   Link,
-  Tooltip,
   useDisclosure,
   Modal,
   ModalOverlay,
