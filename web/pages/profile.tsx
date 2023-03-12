@@ -466,7 +466,7 @@ export default function Profile() {
                 <Text fontWeight="medium">Email</Text>
                 <Input
                   border="1px solid gray"
-                  placeholder={user?.email || undefined}
+                  placeholder={user?.email ?? undefined}
                   disabled={true}
                 ></Input>
               </Stack>
