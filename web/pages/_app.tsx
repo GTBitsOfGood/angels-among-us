@@ -11,10 +11,10 @@ const theme = extendTheme({
     body: `'Roboto', sans-serif`,
   },
   colors: {
-    angelsGray: "#7D7E82",
-    angelsBlue: "#57A0D5",
-    lighterBlue: "#C6E3F9",
-    outlineGray: "#BBBBBB",
+    angelsGray: { 100: "#C9C9C9" },
+    angelsBlue: { 100: "#57A0D5" },
+    lighterBlue: { 100: "#C6E3F9" },
+    outlineGray: { 100: "#BBBBBB" },
   },
 });
 

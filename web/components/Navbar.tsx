@@ -89,7 +89,11 @@ export default function Navbar() {
               borderRadius="0%"
             >
               <Stack direction="row" alignItems="center">
-                <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
+                <Box
+                  bgColor="angelsBlue.100"
+                  borderRadius="100%"
+                  boxSize={10}
+                ></Box>
                 <ChevronDownIcon />
               </Stack>
             </MenuButton>
@@ -102,12 +106,16 @@ export default function Navbar() {
                 spacing={5}
               >
                 <Stack direction="row">
-                  <Box bgColor="#57A0D5" borderRadius="100%" boxSize={10}></Box>
+                  <Box
+                    bgColor="angelsBlue.100"
+                    borderRadius="100%"
+                    boxSize={10}
+                  ></Box>
                   <Stack direction="column">
-                    <Text fontWeight="bold" color="#7D7E82">
+                    <Text fontWeight="bold" color="gray">
                       {user?.displayName}
                     </Text>
-                    <Text fontWeight="semibold" color="#7D7E82" fontSize="sm">
+                    <Text fontWeight="semibold" color="gray" fontSize="sm">
                       {user?.email}
                     </Text>
                   </Stack>
@@ -121,7 +129,7 @@ export default function Navbar() {
                     <MenuItem borderRadius="16px" padding={0}>
                       <Button
                         variant="solid"
-                        bgColor="#57A0D5"
+                        bgColor="angelsBlue.100"
                         borderRadius="16px"
                         color="white"
                         size="sm"
@@ -171,7 +179,7 @@ export default function Navbar() {
                 _active={{ bgColor: "white" }}
                 cursor="default"
               >
-                <HamburgerIcon fontSize="30px" color="#969696" />
+                <HamburgerIcon fontSize="30px" color="gray" />
               </AccordionButton>
             </Stack>
             <AccordionPanel bgColor="white">
@@ -180,13 +188,13 @@ export default function Navbar() {
                   <Link>
                     <Text cursor="default">Resources</Text>
                   </Link>
-                  <Divider border="1px solid #7D7E82" />
+                  <Divider border="1px solid angelsGray.100" />
                   {role === Role.Admin && (
                     <>
                       <Link>
                         <Text cursor="default">Access Management</Text>
                       </Link>
-                      <Divider border="1px solid #7D7E82" />
+                      <Divider border="1px solid angelsGray.100" />
                     </>
                   )}
                 </Stack>
@@ -198,26 +206,26 @@ export default function Navbar() {
                   paddingBottom={2}
                   spacing={5}
                   borderRadius="12px"
-                  border="1px solid #7D7E82"
+                  border="1px solid angels.Gray"
                 >
                   <Stack direction="row">
                     <Box
-                      bgColor="#57A0D5"
+                      bgColor="angelsBlue.100"
                       borderRadius="100%"
                       boxSize={10}
                     ></Box>
                     <Stack direction="column">
-                      <Text fontWeight="bold" color="#7D7E82">
+                      <Text fontWeight="bold" color="gray">
                         {user?.displayName}
                       </Text>
-                      <Text fontWeight="semibold" color="#7D7E82" fontSize="sm">
+                      <Text fontWeight="semibold" color="gray" fontSize="sm">
                         {user?.email}
                       </Text>
                     </Stack>
                   </Stack>
                   <Stack direction="row" justifyContent="flex-end">
                     <Button
-                      bgColor="#57A0D5"
+                      bgColor="angelsBlue.100"
                       cursor="default"
                       borderRadius="16px"
                       color="white"
