@@ -10,6 +10,12 @@ const theme = extendTheme({
     heading: `'Roboto', sans-serif`,
     body: `'Roboto', sans-serif`,
   },
+  colors: {
+    angelsGray: "#7D7E82",
+    angelsBlue: "#57A0D5",
+    lighterBlue: "#C6E3F9",
+    outlineGray: "#BBBBBB",
+  },
 });
 
 const App = ({ Component, pageProps }: AppProps) => {
