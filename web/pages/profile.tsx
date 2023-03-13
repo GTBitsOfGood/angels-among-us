@@ -25,6 +25,7 @@ import {
   Temperament,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
+import { colors } from "react-select/dist/declarations/src/theme";
 
 export default function Profile() {
   const { user, loading, userData, authorized } = useAuth();
@@ -141,7 +142,7 @@ export default function Profile() {
       <Flex
         display={["none", "flex"]}
         minHeight="180vh"
-        bgColor="#C9C9C9"
+        bgColor="angelsGray.100"
         justifyContent="center"
       >
         <Flex
@@ -169,7 +170,7 @@ export default function Profile() {
               </Text>
               {!editing ? (
                 <Button
-                  bgColor="#BCBCBC"
+                  bgColor="angelsGray.100"
                   width="6%"
                   borderRadius="16px"
                   onClick={() => setEditing(true)}
@@ -179,7 +180,7 @@ export default function Profile() {
               ) : (
                 <Stack direction="row">
                   <Button
-                    bgColor="#DAD8D8"
+                    bgColor="angelsGray.100"
                     borderRadius="16px"
                     onClick={() => setEditing(false)}
                   >
@@ -187,7 +188,7 @@ export default function Profile() {
                   </Button>
 
                   <Button
-                    bgColor="#BCBCBC"
+                    bgColor="angelsGray.100"
                     borderRadius="16px"
                     onClick={() => setEditing(false)}
                   >
@@ -213,11 +214,13 @@ export default function Profile() {
                   spacing={10}
                   alignItems="center"
                 >
+
                   <Image
                     borderRadius="100%"
                     boxSize={36}
                     src={user?.photoURL ?? undefined}
                   ></Image>
+
                   <Stack direction="column" width="85%" spacing={5}>
                     <Stack direction="row" spacing={5}>
                       <Stack direction="column" width="50%">
@@ -405,7 +408,7 @@ export default function Profile() {
               <Stack direction="row">
                 <Button
                   cursor="default"
-                  bgColor="#DAD8D8"
+                  bgColor="angelsGray.100"
                   borderRadius="16px"
                   onClick={() => setEditing(false)}
                 >
@@ -414,7 +417,7 @@ export default function Profile() {
 
                 <Button
                   cursor="default"
-                  bgColor="#C9C9C9"
+                  bgColor="angelsGray.100"
                   borderRadius="16px"
                   onClick={() => setEditing(false)}
                 >
@@ -424,7 +427,7 @@ export default function Profile() {
             ) : (
               <Button
                 cursor="default"
-                bgColor="#C9C9C9"
+                bgColor="angelsGray.100"
                 borderRadius="16px"
                 onClick={() => setEditing(true)}
               >
@@ -432,7 +435,7 @@ export default function Profile() {
               </Button>
             )}
           </Stack>
-          <Box bgColor="#C9C9C9" borderRadius="100%" boxSize={20}></Box>
+          <Box bgColor="angelsGray.100" borderRadius="100%" boxSize={20}></Box>
           {editing && (
             <IconButton
               icon={<EditIcon />}
@@ -451,13 +454,13 @@ export default function Profile() {
                 <Input
                   placeholder={user?.displayName ?? undefined}
                   disabled={true}
-                  border="1px solid gray"
+                  border="1px solid angelsGray.100"
                 ></Input>
               </Stack>
               <Stack direction="column">
                 <Text fontWeight="medium">Email</Text>
                 <Input
-                  border="1px solid gray"
+                  border="1px solid angelsGray.100"
                   placeholder={user?.email ?? undefined}
                   disabled={true}
                 ></Input>
@@ -465,7 +468,7 @@ export default function Profile() {
               <Stack direction="column">
                 <Text fontWeight="medium">Preferred Email</Text>
                 <Input
-                  border="1px solid gray"
+                  border="1px solid angelsGray.100"
                   placeholder={""}
                   disabled={!editing}
                 ></Input>
@@ -551,7 +554,7 @@ export default function Profile() {
                 <>
                   <Button
                     cursor="default"
-                    bgColor="#DAD8D8"
+                    bgColor={"angelsGray.100"}
                     borderRadius="16px"
                     onClick={() => setEditing(false)}
                   >
@@ -560,7 +563,7 @@ export default function Profile() {
 
                   <Button
                     cursor="default"
-                    bgColor="#C9C9C9"
+                    bgColor="angelsGray.100"
                     borderRadius="16px"
                     onClick={() => setEditing(false)}
                   >
@@ -569,7 +572,7 @@ export default function Profile() {
                 </>
               ) : (
                 <Button
-                  bgColor="#C9C9C9"
+                  bgColor="angelsGray.100"
                   cursor="default"
                   borderRadius="16px"
                   onClick={() => setEditing(true)}
