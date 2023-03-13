@@ -29,7 +29,6 @@ import { useAuth } from "../context/auth";
 export default function Profile() {
   const { user, loading, userData, authorized } = useAuth();
   const [editing, setEditing] = React.useState(false);
-  const { user } = useAuth();
 
   const fosterTypes = [
     { value: FosterType.Return, label: "Return" },
