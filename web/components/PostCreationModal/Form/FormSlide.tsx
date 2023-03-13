@@ -10,7 +10,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Select,
   Stack,
   useDisclosure,
   Text,
@@ -21,52 +20,161 @@ import { useFormik } from "formik";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   Age,
+  Behavioral,
+  Breed,
   FosterType,
   Gender,
+  GoodWith,
+  Medical,
+  PetKind,
   Size,
   Temperament,
+  Trained,
 } from "../../../utils/types/post";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { z } from "zod";
+import { FormState, formSchema } from "../../../utils/types/post";
+import Select from "react-select";
 
-export default function FormSlide() {
-  const formSchema = z.object({
-    name: z.string(),
-    description: z.string(),
-    petKind: z.string(),
-    gender: z.string(),
-    age: z.string(),
-    fosterType: z.string(),
-    size: z.string(),
-    breed: z.string(),
-    temperament: z.string(),
-    goodWith: z.string(),
-    medical: z.string(),
-    behavioral: z.string(),
-    houseTrained: z.string(),
-    crateTrained: z.string(),
-    spayNeuterStatus: z.string(),
-  });
+const petKindOptions = [
+  { value: PetKind.Dog, label: "Dog" },
+  { value: PetKind.Cat, label: "Cat" },
+];
 
-  type FormState = z.infer<typeof formSchema>;
+const genderOptions = [
+  { value: Gender.Female, label: "Female" },
+  { value: Gender.Male, label: "Male" },
+  { value: Gender.Litter, label: "Litter" },
+];
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormState>({
-    resolver: zodResolver(formSchema),
-  });
+const ageOptions = [
+  { value: Age.Puppy, label: "Puppy" },
+  { value: Age.Young, label: "Young" },
+  { value: Age.Adult, label: "Adult" },
+  { value: Age.Senior, label: "Senior" },
+  { value: Age.MomAndPuppies, label: "Mom & Puppies" },
+];
 
-  const onSubmit: SubmitHandler<FormState> = (data) => {
-    console.log(data);
-    console.log("condole");
-  };
+const fosterTypeOptions = [
+  { value: FosterType.Return, label: "Return" },
+  { value: FosterType.Boarding, label: "Boarding" },
+  { value: FosterType.Temporary, label: "Temporary" },
+  { value: FosterType.FosterMove, label: "FosterMove" },
+  { value: FosterType.Shelter, label: "Shelter" },
+  { value: FosterType.OwnerSurrender, label: "Owner Surrender" },
+];
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const sizeOptions = [
+  { value: Size.XS, label: "XS" },
+  { value: Size.S, label: "S" },
+  { value: Size.M, label: "M" },
+  { value: Size.L, label: "L" },
+  { value: Size.XL, label: "XL" },
+];
 
+const breedOptions = [
+  { value: Breed.AmericanEskimo, label: "American Eskimo" },
+  { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
+  { value: Breed.Beagle, label: "Beagle" },
+  { value: Breed.BichonFrise, label: "Bichon Frise" },
+  { value: Breed.BorderCollie, label: "Border Collie" },
+  { value: Breed.Boxer, label: "Boxer" },
+  { value: Breed.BrusselsGriffon, label: "Brussels Griffon" },
+  { value: Breed.Bulldog, label: "Bulldog" },
+  { value: Breed.CaneCorsoMastiff, label: "Cane Corso/Mastiff" },
+  { value: Breed.CattleDogHeeler, label: "Cattle Dog/Heeler" },
+  { value: Breed.Chihuahua, label: "Chihuahua" },
+  { value: Breed.ChowChow, label: "Chow Chow" },
+  { value: Breed.Collie, label: "Collie" },
+  { value: Breed.Corgi, label: "Corgi" },
+  { value: Breed.Dachshund, label: "Dachshund" },
+  { value: Breed.Dalmatian, label: "Dalmatian" },
+  { value: Breed.DobermanPinscher, label: "Doberman Pinscher" },
+  { value: Breed.GermanShepherd, label: "German Shepherd" },
+  { value: Breed.GoldenRetriever, label: "Golden Retriever" },
+  { value: Breed.GreatDane, label: "Great Dane" },
+  { value: Breed.GreatPyrenees, label: "Great Pyrenees" },
+  { value: Breed.Greyhound, label: "Greyhound" },
+  { value: Breed.Hound, label: "Hound" },
+  { value: Breed.Husky, label: "Husky" },
+  { value: Breed.LabradorRetriever, label: "Labrador Retriever" },
+  { value: Breed.Malamute, label: "Malamute" },
+  { value: Breed.Maltese, label: "Maltese" },
+  { value: Breed.MinPin, label: "Min Pin" },
+  { value: Breed.Mix, label: "Mix" },
+  { value: Breed.Newfoundland, label: "Newfoundland" },
+  { value: Breed.Pekingese, label: "Pekingese" },
+  { value: Breed.Pitbull, label: "Pitbull" },
+  { value: Breed.Pointer, label: "Pointer" },
+  { value: Breed.Pomeranian, label: "Pomeranian" },
+  { value: Breed.Poodle, label: "Poodle" },
+  { value: Breed.Pug, label: "Pug" },
+  { value: Breed.Rottweiler, label: "Rottweiler" },
+  { value: Breed.Schnauzer, label: "Schnauzer" },
+  { value: Breed.Scottie, label: "Scottie" },
+  { value: Breed.Setter, label: "Setter" },
+  { value: Breed.Sharpei, label: "Sharpei" },
+  { value: Breed.Sheepdog, label: "Sheepdog" },
+  { value: Breed.Shepherd, label: "Shepherd" },
+  { value: Breed.ShihTzu, label: "Shih Tzu" },
+  { value: Breed.Spaniel, label: "Spaniel" },
+  { value: Breed.StBernard, label: "StBernard" },
+  { value: Breed.TerrierMedLarge, label: "Terrier (Med-Large)" },
+  { value: Breed.TerrierSmall, label: "Terrier (Small)" },
+  { value: Breed.Weimaraner, label: "Weimaraner" },
+  { value: Breed.Whippet, label: "Whippet" },
+];
+
+const tempermentOptions = [
+  { value: Temperament.Friendly, label: "Friendly" },
+  { value: Temperament.Scared, label: "Scared" },
+  { value: Temperament.Active, label: "Active" },
+  { value: Temperament.Calm, label: "Calm" },
+];
+
+const goodWithOptions = [
+  { value: GoodWith.Men, label: "Men" },
+  { value: GoodWith.Women, label: "Women" },
+  { value: GoodWith.OlderChildren, label: "Older Children" },
+  { value: GoodWith.YoungChildren, label: "Young Children" },
+  { value: GoodWith.LargeDogs, label: "Large Dogs" },
+  { value: GoodWith.SmallDogs, label: "Small Dogs" },
+  { value: GoodWith.Cats, label: "Cats" },
+];
+
+const medicalOptions = [
+  { value: Medical.Illness, label: "Illness" },
+  { value: Medical.Injury, label: "Injury" },
+  { value: Medical.Heartworms, label: "Heartworms" },
+  { value: Medical.Parvo, label: "Parvo" },
+  { value: Medical.ChronicCondition, label: "ChronicCondition" },
+  { value: Medical.Pregnant, label: "Pregnant" },
+  { value: Medical.Nursing, label: "Nursing" },
+  { value: Medical.BottleFeeding, label: "Bottle Feeding" },
+];
+
+const behavioralOptions = [
+  { value: Behavioral.SeparationAnxiety, label: "Separation Anxiety" },
+  { value: Behavioral.Barking, label: "Barking" },
+  { value: Behavioral.Jumping, label: "Jumping" },
+  { value: Behavioral.FlightRisk, label: "Flight Risk" },
+  { value: Behavioral.BiteRisk, label: "Bite Risk" },
+  { value: Behavioral.PullsOnLeash, label: "Pulls On Leash" },
+];
+
+const trainedOptions = [
+  { value: Trained.Yes, label: "Yes" },
+  { value: Trained.No, label: "No" },
+  { value: Trained.Unknown, label: "Unknown" },
+];
+
+export const FormSlide: React.FC<{
+  setIsFormValid: React.Dispatch<React.SetStateAction<boolean>>;
+  setFormState: React.Dispatch<React.SetStateAction<FormState>>;
+  formState: FormState;
+}> = ({ formState, setFormState, setIsFormValid }) => {
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <>
       {/* if it doesnt get fixed then just bring formik into return :  onSubmit={formik.handleSubmit}*/}
       <Stack>
         <FormControl>
@@ -74,8 +182,9 @@ export default function FormSlide() {
           <Input
             // name="name"
             type="name"
-            // onChange={(event) => setName(event.target.value)}
-            {...register("name")}
+            onChange={(e) => {
+              setFormState({ ...formState, name: e.target.value });
+            }}
           />
         </FormControl>
         <FormControl className="descriptionForm">
@@ -83,147 +192,153 @@ export default function FormSlide() {
           <Input
             type="description"
             placeholder="Type here..."
-            {...register("description")}
+            onChange={(e) => {
+              setFormState({ ...formState, description: e.target.value });
+            }}
           />
         </FormControl>
         <Stack direction={"row"} spacing={10}>
           <FormControl className="petKindForm" maxW="450px">
             <FormLabel>What kind of pet?</FormLabel>
-            <Select placeholder=" " {...register("petKind")}>
-              <option value="dog">Dog</option>
-              <option value="cat">Cat</option>
-            </Select>
+            <Select
+              options={petKindOptions}
+              onChange={(e) => {
+                setFormState({ ...formState, petKind: e!.value });
+              }}
+              required
+            />
           </FormControl>
           <FormControl className="genderForm" maxW="450px">
             <FormLabel>Gender</FormLabel>
-            <Select placeholder=" " {...register("gender")}>
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-              <option value="litter">Litter</option>
-            </Select>
+            <Select
+              options={genderOptions}
+              onChange={(e) => {
+                setFormState({ ...formState, gender: e!.value });
+              }}
+            />
           </FormControl>
         </Stack>
         <Stack direction={"row"} spacing={10}>
           <FormControl className="ageForm" maxW="450px">
             <FormLabel>Age</FormLabel>
-            <Select placeholder=" " {...register("age")}>
-              <option value="puppy">Puppy</option>
-              <option value="young">Young</option>
-              <option value="adult">Adult</option>
-              <option value="senior">Senior</option>
-              <option value="momAndPuppies">Mom & Puppies</option>
-            </Select>
+            <Select
+              options={ageOptions}
+              onChange={(e) => {
+                setFormState({ ...formState, age: e!.value });
+              }}
+            />
           </FormControl>
           <FormControl className="fosterTypeForm" maxW="450px">
             <FormLabel>Types of Foster</FormLabel>
-            <Select placeholder=" " {...register("fosterType")}>
-              <option value="return">Return</option>
-              <option value="boarding">Boarding</option>
-              <option value="temporary">Temporary</option>
-              <option value="fosterMove">Foster Move</option>
-              <option value="shelter">Shelter</option>
-              <option value="newIntake">Owner Surrender</option>
-            </Select>
+            <Select
+              options={fosterTypeOptions}
+              onChange={(e) => {
+                setFormState({ ...formState, fosterType: e!.value });
+              }}
+            />
           </FormControl>
         </Stack>
         <FormControl className="sizeForm" maxW="450px">
           <FormLabel>Size</FormLabel>
-          <Select placeholder=" " {...register("size")}>
-            <option value="xs">XS</option>
-            <option value="s">S</option>
-            <option value="m">M</option>
-            <option value="l">L</option>
-            <option value="xl">XL</option>
-          </Select>
+          <Select
+            options={sizeOptions}
+            onChange={(e) => {
+              setFormState({ ...formState, size: e!.value });
+            }}
+          />
         </FormControl>
         <FormControl className="breedForm">
           <FormLabel>Breed</FormLabel>
-          <Select placeholder=" " {...register("breed")}>
-            <option value="americanEskimo">American Eskimo</option>
-            <option value="australianShepherd">Australian Shepherd</option>
-            <option value="...">...</option>
-            <option value="whippet">Whippet</option>
-            <option value="other">Other</option>
-          </Select>
+          <Select
+            options={breedOptions}
+            onChange={(e) => {
+              setFormState({ ...formState, breed: e!.value });
+            }}
+          />
         </FormControl>
       </Stack>
       <Stack direction={"row"} spacing={10}>
         <FormControl className="temperamentForm" maxW="450px">
           <FormLabel>Temperament</FormLabel>
-          <Select placeholder=" " {...register("temperament")}>
-            <option value="friendly">Friendly</option>
-            <option value="scared">Scared</option>
-            <option value="active">Active</option>
-            <option value="calm">Calm</option>
-          </Select>
+          <Select
+            options={tempermentOptions}
+            onChange={(e) => {
+              setFormState({ ...formState, temperament: e!.value });
+            }}
+          />
         </FormControl>
         <FormControl className="goodWithForm" maxW="450px">
           <FormLabel>Good with...</FormLabel>
-          <Select placeholder=" " {...register("goodWith")}>
-            <option value="men">Men</option>
-            <option value="women">Women</option>
-            <option value="olderChildren">Older Children</option>
-            <option value="youngChildren">Young Children</option>
-            <option value="largeDogs">Large Dogs</option>
-            <option value="smallDogs">Small Dogs</option>
-            <option value="cats">Cats</option>
-          </Select>
+          <Select
+            options={goodWithOptions}
+            isMulti
+            onChange={(e) => {
+              setFormState({
+                ...formState,
+                goodWith: e.map((option) => option.value),
+              });
+            }}
+          />
         </FormControl>
       </Stack>
-
       <Stack direction={"row"} spacing={10}>
         <FormControl className="medicalForm" maxW="450px">
           <FormLabel>Medical (Optional)</FormLabel>
-          <Select placeholder=" " {...register("medical")}>
-            <option value="illness">Illness</option>
-            <option value="injury">Injury</option>
-            <option value="heartworms">Heartworms</option>
-            <option value="parvo">Parvo</option>
-            <option value="chronicCondition">Chronic Condition</option>
-            <option value="pregnant">Pregnant</option>
-            <option value="nursing">Nursing</option>
-            <option value="bottleFeeding">Bottle Feeding</option>
-            <option value="hospice">Hospice</option>
-          </Select>
+          <Select
+            options={medicalOptions}
+            isMulti
+            onChange={(e) => {
+              setFormState({
+                ...formState,
+                medical: e.map((option) => option.value),
+              });
+            }}
+          />
         </FormControl>
         <FormControl className="behavioralForm" maxW="450px">
           <FormLabel>Behavioral</FormLabel>
-          <Select placeholder=" " {...register("behavioral")}>
-            <option value="separationAnxiety">Separation Anxiety</option>
-            <option value="barking">Barking</option>
-            <option value="jumping">Jumping</option>
-            <option value="flightRisk">Flight Risk</option>
-            <option value="biteRisk">Bite Risk</option>
-            <option value="pullsOnLeash">Pulls On Leash</option>
-          </Select>
+          <Select
+            options={behavioralOptions}
+            isMulti
+            onChange={(e) => {
+              setFormState({
+                ...formState,
+                behavioral: e.map((option) => option.value),
+              });
+            }}
+          />
         </FormControl>
       </Stack>
 
       <Stack direction={"row"} spacing={10}>
         <FormControl className="houseTrainedForm" maxW="300px">
           <FormLabel>House Trained</FormLabel>
-          <Select placeholder=" " {...register("houseTrained")}>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-            <option value="unknown">Unknown</option>
-          </Select>
+          <Select
+            options={trainedOptions}
+            onChange={(e) => {
+              setFormState({ ...formState, houseTrained: e!.value });
+            }}
+          />
         </FormControl>
         <FormControl className="crateTrainedForm" maxW="300px">
           <FormLabel>Crate Trained</FormLabel>
-          <Select placeholder=" " {...register("crateTrained")}>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-            <option value="unknown">Unknown</option>
-          </Select>
+          <Select
+            options={trainedOptions}
+            onChange={(e) => {
+              setFormState({ ...formState, crateTrained: e!.value });
+            }}
+          />
         </FormControl>
         <FormControl className="spayneuterForm" maxW="300px">
           <FormLabel>Spay/Neuter status</FormLabel>
-          <Select placeholder=" " {...register("spayNeuterStatus")}>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </Select>
+          <Select
+            options={trainedOptions}
+            onChange={(e) => {
+              setFormState({ ...formState, spayNeuterStatus: e!.value });
+            }}
+          />
         </FormControl>
       </Stack>
-    </form>
+    </>
   );
-}
+};

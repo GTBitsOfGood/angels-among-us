@@ -1,3 +1,10 @@
+import { z } from "zod";
+
+export enum PetKind {
+  Dog = "dog",
+  Cat = "cat",
+}
+
 export enum FosterType {
   Return = "return",
   Boarding = "boarding",
@@ -157,3 +164,263 @@ export interface IPost {
 export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
   attachments: AttachmentInfo[];
 };
+
+export const formSchema = z.object({
+  name: z
+    .string({ required_error: "Name is Required" })
+    .transform((val, ctx) => {
+      if (val === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  description: z
+    .string({ required_error: "description is Required" })
+    .transform((val, ctx) => {
+      if (val === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  petKind: z
+    .nativeEnum(PetKind, { required_error: "Pet Kind is Required" })
+    .nullable()
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  gender: z
+    .nativeEnum(Gender, { required_error: "Gender is Required" })
+    .nullable()
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  age: z.nativeEnum(Age, { required_error: "Age is Required" }).nullable(),
+  fosterType: z
+    .nativeEnum(FosterType, {
+      required_error: "Foster Type is Required",
+    })
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  size: z
+    .nativeEnum(Size, { required_error: "Size is Required" })
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  breed: z
+    .nativeEnum(Breed, { required_error: "Breed is Required" })
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  temperament: z
+    .nativeEnum(Temperament, {
+      required_error: "Temperament is Required",
+    })
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  goodWith: z
+    .array(z.nativeEnum(GoodWith, { required_error: "Good with is Required" }))
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  medical: z
+    .array(z.nativeEnum(Medical, { required_error: "Medical is Required" }))
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  behavioral: z
+    .array(
+      z.nativeEnum(Behavioral, {
+        required_error: "Behavioral is Required",
+      })
+    )
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  houseTrained: z
+    .nativeEnum(Trained, {
+      required_error: "HouseTrained is Required",
+    })
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  crateTrained: z
+    .nativeEnum(Trained, {
+      required_error: "Crate Trained is Required",
+    })
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+  spayNeuterStatus: z
+    .nativeEnum(Trained, {
+      required_error: "Spay/Neuter status is Required",
+    })
+    .transform((val, ctx) => {
+      if (val === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Field is empty",
+        });
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER;
+      }
+      return val;
+    }),
+});
+
+export type FormState = z.infer<typeof formSchema>;

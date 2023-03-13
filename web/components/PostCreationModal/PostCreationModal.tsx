@@ -11,16 +11,52 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
+import {
+  Age,
+  Behavioral,
+  Breed,
+  formSchema,
+  FormState,
+  FosterType,
+  Gender,
+  GoodWith,
+  Medical,
+  PetKind,
+  Size,
+  Temperament,
+  Trained,
+} from "../../utils/types/post";
 import FileUploadSlide from "./FileUpload/FileUploadSlide";
-import FormSlide from "./Form/FormSlide";
+import { FormSlide } from "./Form/FormSlide";
 
 function PostCreationModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isContentView, setIsContentView] = useState(true);
+  const [isFormSlideView, setIsFormSlideView] = useState(true);
   const [numFiles, setNumFiles] = useState<number>(0);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
+
+  //since the z are nullable, these will still pass if values are null.
+  const [formState, setFormState] = useState<FormState>({
+    name: "",
+    description: "",
+    petKind: null,
+    gender: null,
+    age: null,
+    fosterType: null,
+    size: null,
+    breed: null,
+    temperament: null,
+    goodWith: [],
+    medical: [],
+    behavioral: [],
+    houseTrained: null,
+    crateTrained: null,
+    spayNeuterStatus: null,
+  });
 
   useEffect(() => {
     console.log("FILE ARRAY");
@@ -49,6 +85,21 @@ function PostCreationModal() {
     };
   }
 
+  const handleNextButton = () => {
+    console.log("next button click", formState);
+    try {
+      formSchema.safeParse(formState);
+      console.log("formSchema", formSchema);
+      console.log("safepasrse");
+      setIsFormSlideView(false);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log("zood error");
+        return;
+      }
+    }
+  };
+
   return (
     <>
       <Button onClick={onOpen}>Post Creation Modal</Button>
@@ -65,17 +116,17 @@ function PostCreationModal() {
               direction={"row"}
               alignItems={"center"}
               columnGap={2}
-              onClick={isContentView ? onClose : () => setIsContentView(true)}
+              // onClick={isContentView ? onClose : () => setIsContentView(true)}
             >
               <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
               <Text>
-                {isContentView ? "Back to feed" : "Back to New Pet content"}
+                {isFormSlideView ? "Back to feed" : "Back to New Pet content"}
               </Text>
             </Flex>
             <Text fontSize={"5xl"} fontWeight={"bold"} lineHeight={"56px"}>
               Add A New Pet
             </Text>
-            {isContentView ? (
+            {isFormSlideView ? (
               <Text>
                 Fill out the following fields to add a new pet to the Angels
                 Among Us Foster Feed!
@@ -90,8 +141,12 @@ function PostCreationModal() {
                 </Text>
               </Flex>
             )}
-            {isContentView ? (
-              <FormSlide />
+            {isFormSlideView ? (
+              <FormSlide
+                setIsFormValid={setIsFormValid}
+                setFormState={setFormState}
+                formState={formState}
+              />
             ) : (
               <FileUploadSlide
                 fileArr={fileArr}
@@ -104,9 +159,10 @@ function PostCreationModal() {
               ></FileUploadSlide>
             )}
             <ModalFooter>
-              {isContentView ? (
+              {isFormSlideView ? (
                 <Button
-                  onClick={() => setIsContentView(false)}
+                  // onClick={() => setIsFormSlideView(!isFormValid)}
+                  onClick={handleNextButton}
                   color={postButtonStyle.color}
                   bgColor={postButtonStyle.bgColor}
                   borderRadius={postButtonStyle.borderRadius}
