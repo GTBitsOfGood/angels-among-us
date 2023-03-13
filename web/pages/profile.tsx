@@ -5,6 +5,7 @@ import {
   Text,
   IconButton,
   Input,
+  Image,
   Box,
 } from "@chakra-ui/react";
 
@@ -27,8 +28,8 @@ import { useAuth } from "../context/auth";
 import { colors } from "react-select/dist/declarations/src/theme";
 
 export default function Profile() {
+  const { user, loading, userData, authorized } = useAuth();
   const [editing, setEditing] = React.useState(false);
-  const { user } = useAuth();
 
   const fosterTypes = [
     { value: FosterType.Return, label: "Return" },
@@ -213,24 +214,13 @@ export default function Profile() {
                   spacing={10}
                   alignItems="center"
                 >
-                  <Box
-                    bgColor="angelsGray.100"
+
+                  <Image
                     borderRadius="100%"
                     boxSize={36}
-                  ></Box>
-                  {editing && (
-                    <IconButton
-                      icon={<EditIcon />}
-                      position="absolute"
-                      bgColor="white"
-                      left="100px"
-                      top="260px"
-                      border="1px solid black"
-                      borderRadius="100%"
-                      boxSize={10}
-                      aria-label={""}
-                    ></IconButton>
-                  )}
+                    src={user?.photoURL ?? undefined}
+                  ></Image>
+
                   <Stack direction="column" width="85%" spacing={5}>
                     <Stack direction="row" spacing={5}>
                       <Stack direction="column" width="50%">
