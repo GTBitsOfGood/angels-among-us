@@ -16,8 +16,6 @@ import {
   Age,
   Behavioral,
   Breed,
-  formSchema,
-  FormState,
   FosterType,
   Gender,
   GoodWith,
@@ -29,6 +27,77 @@ import {
 } from "../../utils/types/post";
 import FileUploadSlide from "./FileUpload/FileUploadSlide";
 import { FormSlide } from "./Form/FormSlide";
+
+function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
+  if (val === null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${field} value required.`,
+    });
+    return z.NEVER;
+  }
+  return val;
+}
+
+const formSchema = z.object({
+  name: z.string({ required_error: "Name required." }),
+  description: z.string({ required_error: "Description required." }),
+  petKind: z
+    .nativeEnum(PetKind, { required_error: "Pet kind value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Pet kind")),
+  gender: z
+    .nativeEnum(Gender, { required_error: "Gender value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Gender")),
+  age: z
+    .nativeEnum(Age, { required_error: "Age value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Age")),
+  fosterType: z
+    .nativeEnum(FosterType, {
+      required_error: "Foster type value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Foster type")),
+  size: z
+    .nativeEnum(Size, { required_error: "Size value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Size")),
+  breed: z
+    .nativeEnum(Breed, { required_error: "Breed value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Breed")),
+  temperament: z
+    .nativeEnum(Temperament, {
+      required_error: "Temperament value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Temperament")),
+  goodWith: z.array(z.nativeEnum(GoodWith)),
+  medical: z.array(z.nativeEnum(Medical)),
+  behavioral: z.array(z.nativeEnum(Behavioral)),
+  houseTrained: z
+    .nativeEnum(Trained, {
+      required_error: "House trained value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "House trained")),
+  crateTrained: z
+    .nativeEnum(Trained, {
+      required_error: "Crate trained value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Crate trained")),
+  spayNeuterStatus: z
+    .nativeEnum(Trained, {
+      required_error: "Spay/neuter status value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Spay/neuter status")),
+});
+
+export type FormState = z.input<typeof formSchema>;
 
 function PostCreationModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();

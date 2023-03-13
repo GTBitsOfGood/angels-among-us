@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Button,
   Flex,
@@ -14,10 +15,6 @@ import {
   useDisclosure,
   Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useFormik } from "formik";
-import { SubmitHandler, useForm } from "react-hook-form";
 import {
   Age,
   Behavioral,
@@ -31,10 +28,8 @@ import {
   Temperament,
   Trained,
 } from "../../../utils/types/post";
-import { ArrowBackIcon } from "@chakra-ui/icons";
-import { z } from "zod";
-import { FormState, formSchema } from "../../../utils/types/post";
 import Select from "react-select";
+import { FormState } from "../PostCreationModal";
 
 const petKindOptions = [
   { value: PetKind.Dog, label: "Dog" },
