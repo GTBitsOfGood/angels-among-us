@@ -30,6 +30,12 @@ export default function PermissionSelector(props: PropertyType) {
   let c = role === Role.ContentCreator;
   let v = role === Role.Volunteer;
 
+  let textStyle = {
+    lineHeight: "19px",
+    fontSize: "16px",
+    fontWeight: "400",
+  };
+
   return (
     <ButtonGroup size="sm" isAttached variant="outline">
       <Button
@@ -38,7 +44,12 @@ export default function PermissionSelector(props: PropertyType) {
         borderRadius="12px 0px 0px 12px"
         border="1px solid black"
       >
-        <Text color={a ? textSelected.color : textUnselected.color}>
+        <Text
+          lineHeight={textStyle.lineHeight}
+          fontSize={textStyle.fontSize}
+          fontWeight={textStyle.fontWeight}
+          color={a ? textSelected.color : textUnselected.color}
+        >
           Administrator
         </Text>
       </Button>
@@ -47,7 +58,12 @@ export default function PermissionSelector(props: PropertyType) {
         onClick={() => setRole(Role.ContentCreator)}
         border="1px solid black"
       >
-        <Text color={c ? textSelected.color : textUnselected.color}>
+        <Text
+          lineHeight={textStyle.lineHeight}
+          fontSize={textStyle.fontSize}
+          fontWeight={textStyle.fontWeight}
+          color={c ? textSelected.color : textUnselected.color}
+        >
           Content Creator
         </Text>
       </Button>
@@ -57,7 +73,12 @@ export default function PermissionSelector(props: PropertyType) {
         borderRadius="0px 12px 12px 0px"
         border="1px solid black"
       >
-        <Text color={v ? textSelected.color : textUnselected.color}>
+        <Text
+          lineHeight={textStyle.lineHeight}
+          fontSize={textStyle.fontSize}
+          fontWeight={textStyle.fontWeight}
+          color={v ? textSelected.color : textUnselected.color}
+        >
           Volunteer
         </Text>
       </Button>

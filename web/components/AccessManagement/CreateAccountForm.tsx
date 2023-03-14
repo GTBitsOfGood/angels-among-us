@@ -12,7 +12,6 @@ import {
   Flex,
   SimpleGrid,
   Box,
-  Divider,
   FormControl,
   Alert,
   AlertIcon,
@@ -29,6 +28,7 @@ export default function CreateAccountForm(props: PropertyType) {
   const [emailField, setEmailField] = useState("");
   const [role, setRole] = useState(Role.Volunteer);
   const [displayError, setDisplayError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const mutation = trpc.account.add.useMutation();
 
@@ -42,18 +42,22 @@ export default function CreateAccountForm(props: PropertyType) {
     return result.success;
   }
 
-  //TODO add a DB call here with trpc
   function updateState() {
     const isValid = validateEmail({ emailField });
-    if (isValid) {
-      setDisplayError(false);
+    if (!isValid) {
+      setDisplayError(true);
+      setErrorMessage("Invalid email address");
+    } else {
       const newAccount = {
         email: emailField,
         role: role,
       };
-
       mutation.mutate(newAccount);
-      if (mutation.data) {
+      if (mutation.error) {
+        setDisplayError(true);
+        setErrorMessage(mutation.error.message);
+      } else {
+        setDisplayError(false);
         const temp = [...accountList];
         temp.unshift(newAccount);
         updateAccountList(temp);
@@ -61,95 +65,95 @@ export default function CreateAccountForm(props: PropertyType) {
         setRole(Role.Volunteer);
         setDisplayError(false);
       }
-    } else {
-      setDisplayError(true);
     }
   }
 
   return (
-    <Flex
-      direction="column"
-      bgColor="#FFFFFF"
-      border="solid"
-      borderRadius="30px"
-      borderWidth="2px"
-      borderColor="#BBBBBB"
-      alignItems="center"
-      paddingX={6}
-      paddingTop={4}
-      paddingBottom={4}
-      margin={{ sm: "12px", lg: "40px" }}
-      marginTop={{ sm: "6px", lg: "20px" }}
-      onClick={() => {
-        updateSelectItems(false);
-      }}
-    >
-      <Text fontSize="md" fontWeight="regular" lineHeight="24px">
-        Add New Account
-      </Text>
-      <Divider
-        color="#000000"
-        orientation="horizontal"
-        height=".5px"
-        marginBottom={3}
-        marginTop={3}
-      />
-      <SimpleGrid columns={{ sm: 1, md: 2 }} gap={4} width="inherit">
-        <FormControl>
-          {displayError ? (
-            <div>
+    <>
+      <Flex
+        direction="column"
+        bgColor="#FFFFFF"
+        border="solid"
+        borderRadius="30px"
+        borderWidth="2px"
+        borderColor="#BBBBBB"
+        alignItems="center"
+        paddingX={6}
+        paddingTop={4}
+        paddingBottom={4}
+        margin={{ sm: "12px", lg: "40px" }}
+        marginTop={{ sm: "6px", lg: "20px" }}
+        onClick={() => {
+          updateSelectItems(false);
+        }}
+      >
+        <Text
+          fontSize="20"
+          fontWeight="500"
+          lineHeight="24px"
+          paddingBottom={4}
+        >
+          Add New Account
+        </Text>
+        <SimpleGrid columns={{ sm: 1, md: 1, lg: 2 }} gap={4} width="inherit">
+          <FormControl>
+            {displayError ? (
+              <div>
+                <Input
+                  isInvalid
+                  errorBorderColor="crimson"
+                  placeholder="Email"
+                  value={emailField}
+                  onChange={handleChange}
+                  borderRadius="16px"
+                  bgColor="#D9D9D9"
+                  height="36px"
+                />
+                <Alert status="error">
+                  <AlertIcon />
+                  {errorMessage}
+                </Alert>
+              </div>
+            ) : (
               <Input
-                isInvalid
-                errorBorderColor="crimson"
+                variant="filled"
+                type="text"
                 placeholder="Email"
+                bgColor="#D9D9D9"
                 value={emailField}
                 onChange={handleChange}
                 borderRadius="16px"
-                bgColor="#D9D9D9"
                 height="36px"
               />
-              <Alert status="error">
-                <AlertIcon />
-                Invalid Email Address
-              </Alert>
-            </div>
-          ) : (
-            <Input
-              variant="filled"
-              type="text"
-              placeholder="Email"
-              bgColor="#D9D9D9"
-              value={emailField}
-              onChange={handleChange}
+            )}
+          </FormControl>
+          <Flex flexDirection="column" alignItems="flex-end" gap={4}>
+            <Flex direction={"row"} gap={2} alignItems="center" flexWrap="wrap">
+              <Text lineHeight="22px" fontSize="18px" fontWeight="400">
+                Add Permission:
+              </Text>
+              <AddPermissionSelector
+                role={role}
+                setRole={setRole}
+              ></AddPermissionSelector>
+            </Flex>
+            <Box
+              as={"button"}
+              width={"133px"}
+              height="35px"
+              bgColor="#B0B0B0"
+              boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
               borderRadius="16px"
-              height="36px"
-            />
-          )}
-        </FormControl>
-        <Flex flexDirection="column" alignItems="flex-end" gap={4}>
-          <Flex direction={"row"} gap={2} alignItems="center" flexWrap="wrap">
-            <Text lineHeight="22px" fontSize="md" fontWeight="400">
-              Add Permission:
-            </Text>
-            <AddPermissionSelector
-              role={role}
-              setRole={setRole}
-            ></AddPermissionSelector>
+              onClick={updateState}
+              disabled={mutation.isLoading}
+            >
+              <Text fontWeight="500" fontSize={"16px"} lineHeight={"19px"}>
+                Add Account
+              </Text>
+            </Box>
           </Flex>
-          <Box
-            as={"button"}
-            width={{ sm: "130px", lg: "248px" }}
-            height="35px"
-            bgColor="#B0B0B0"
-            boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-            borderRadius="16px"
-            onClick={updateState}
-            disabled={mutation.isLoading}
-          >
-            Add Account
-          </Box>
-        </Flex>
-      </SimpleGrid>
-    </Flex>
+        </SimpleGrid>
+      </Flex>
+    </>
   );
 }

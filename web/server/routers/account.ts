@@ -5,6 +5,7 @@ import {
   updateAccount,
   addAccount,
   findAccount,
+  findAll,
 } from "../../db/actions/Account";
 import { updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
@@ -174,6 +175,33 @@ export const accountRouter = router({
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred",
+          });
+      }
+    }),
+
+  getAll: protectedProcedure
+    // .output(
+    //   z.array(
+    //     z.object({
+    //       email: z.string().email(),
+    //       role: z.nativeEnum(Role),
+    //     })
+    //   )
+    // )
+    .query(async ({ ctx }) => {
+      const session = await Account.startSession();
+      session.startTransaction();
+      try {
+        console.log("LOG B4 FIND ALL CALLED");
+        const accounts = await findAll(session);
+        console.log(accounts);
+        return accounts;
+      } catch (e) {
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occured",
           });
       }
     }),

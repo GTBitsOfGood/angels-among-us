@@ -29,7 +29,7 @@ function RoleSelector(props: PropertyType) {
 
   const ops = [
     { label: "Admin", role: Role.Admin },
-    { label: "Content Creator", role: Role.ContentCreator },
+    { label: "Creator", role: Role.ContentCreator },
     { label: "Volunteer", role: Role.Volunteer },
   ];
 
@@ -50,25 +50,27 @@ function RoleSelector(props: PropertyType) {
       onOpen={onOpen}
       onClose={onClose}
       placement="bottom"
-      gutter={0.5}
+      offset={[50, 0]}
     >
       <PopoverTrigger>
         <Box
           as="button"
           bgColor="#CECCCC"
           borderRadius="8px"
-          width="147px"
-          height="36px"
+          width={"97px"}
+          height={"27px"}
+          alignItems={"center"}
+          justifyContent={"center"}
         >
           {createLabel(accountList[idx].role)}
         </Box>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent padding={2} maxW="210px">
+        <PopoverContent padding={2} maxW="200px">
           <Flex
             flexDirection="column"
             gap={2}
-            alignItems="center"
+            alignItems="left"
             onClick={onClose}
           >
             {ops
@@ -81,8 +83,10 @@ function RoleSelector(props: PropertyType) {
                     as="button"
                     bgColor="#CECCCC"
                     borderRadius="8px"
-                    width="147px"
-                    height="36px"
+                    width={"97px"}
+                    height={"27px"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
                   >
                     {option.label}
                   </Box>

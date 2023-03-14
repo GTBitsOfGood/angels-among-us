@@ -1,7 +1,7 @@
 import { useState, SetStateAction, Dispatch, useEffect } from "react";
 import { IAccount } from "../../utils/types/account";
 import AccountCard from "./AccountCard";
-import { SimpleGrid, Stack } from "@chakra-ui/react";
+import { Stack, SimpleGrid } from "@chakra-ui/react";
 import TableHeader from "./TableHeader";
 
 interface PropertyType {
@@ -32,11 +32,11 @@ function AccountTable(props: PropertyType) {
         accountList={accountList}
         updateAccountList={updateAccountList}
       ></TableHeader>
+
       <SimpleGrid
-        spacing={4}
-        columns={{ sm: 1, md: 1, lg: 2 }}
+        columns={{ sm: 1, md: 2 }}
+        gap={"15px"}
         padding={{ sm: "15px", md: "20px" }}
-        bgColor="#FFFFFF"
       >
         {accountList.map((e: IAccount) => {
           return (
@@ -53,6 +53,7 @@ function AccountTable(props: PropertyType) {
           );
         })}
       </SimpleGrid>
+      {/* </Flex> */}
     </Stack>
   );
 }

@@ -7,6 +7,7 @@ import {
   AlertDialogBody,
   Box,
   Flex,
+  Text,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useRef } from "react";
 import { IAccount } from "../../utils/types/account";
@@ -51,7 +52,9 @@ function DeletePopup(props: PropertyType) {
         minWidth="170px"
         height="36px"
       >
-        Delete Selected Items
+        <Text fontSize="16" fontWeight="400" lineHeight="19px">
+          Delete Selected Items
+        </Text>
       </Box>
       <AlertDialog
         motionPreset="slideInBottom"

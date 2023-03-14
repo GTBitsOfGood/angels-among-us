@@ -1,65 +1,42 @@
 import CreateAccountForm from "../components/AccessManagement/CreateAccountForm";
 import AccountTable from "../components/AccessManagement/AccountTable";
 import { useEffect, useState } from "react";
-import { Text, Box, Flex } from "@chakra-ui/react";
+import { Text, Box, Flex, Center, Spinner } from "@chakra-ui/react";
 import { IAccount } from "../utils/types/account";
-import { Role } from "../utils/types/account";
 import { trpc } from "../utils/trpc";
 
 export default function Access() {
-  //TODO - initial state of accountlist needs to query from DB
-
-  const [accountList, updateAccountList] = useState<IAccount[]>([
-    {
-      email: "exmpleaddress1@domainname.com",
-      role: Role.Admin,
-    },
-    {
-      email: "exmpleaddress2@domainname.com",
-      role: Role.Volunteer,
-    },
-    {
-      email: "exmpleaddress3@domainname.com",
-      role: Role.ContentCreator,
-    },
-    {
-      email: "exmpleaddress4@domainname.com",
-      role: Role.Admin,
-    },
-    {
-      email: "exmpleaddress5@domainname.com",
-      role: Role.Volunteer,
-    },
-  ]);
+  const accounts = trpc.account.getAll.useQuery();
+  const [accountList, updateAccountList] = useState<IAccount[]>([]);
   const [selectItems, updateSelectItems] = useState<boolean>(false);
 
   return (
-    <Flex bgColor="#EEEEEE">
+    <Flex
+      bgColor="#EEEEEE"
+      flexDir="column"
+      alignItems={"center"}
+      height={"100vh"}
+    >
       <Flex
         flexDir="column"
         alignItems="center"
-        display={["none", "flex"]}
+        display={["flex"]}
         marginX={{ base: "none", md: "100px", lg: "170px" }}
-        marginTop={{ base: "10px", md: "50px", lg: "100px" }}
+        marginTop={"95px"}
+        height={"100%"}
       >
-        <Box
-          position="absolute"
-          width="100%"
-          height="56px"
-          left="0px"
-          top="0px"
-          bgColor="#B6B6B6"
-        ></Box>
         <Box>
           <Flex
             bgColor="#FFFFFF"
             direction="column"
             width="100%"
             alignItems="center"
-            justifyContent="center"
+            justifyContent={"flex-start"}
             paddingTop={6}
+            minHeight={"80vh"}
+            borderRadius={"6px"}
           >
-            <Text fontSize="lg" fontWeight="semibold" lineHeight="24px">
+            <Text fontSize="24px" fontWeight="600" lineHeight="24px">
               Accounts List
             </Text>
             <CreateAccountForm

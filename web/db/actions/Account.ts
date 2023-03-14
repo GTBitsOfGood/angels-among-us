@@ -35,4 +35,12 @@ async function addAccount(inputData: IAccount, session?: ClientSession) {
   }
 }
 
-export { findAccount, addAccount, removeAccount, updateAccount };
+async function findAll(session?: ClientSession) {
+  try {
+    return await Account.find();
+  } catch (e) {
+    return null;
+  }
+}
+
+export { findAccount, addAccount, removeAccount, updateAccount, findAll };

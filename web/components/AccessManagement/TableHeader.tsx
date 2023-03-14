@@ -1,4 +1,4 @@
-import { Flex, Input, Box } from "@chakra-ui/react";
+import { Flex, Input, Box, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import { IAccount } from "../../utils/types/account";
 import DeletePopup from "./DeletePopup";
@@ -57,7 +57,9 @@ function TableHeader(props: PropertyType) {
             height="36px"
             onClick={toggleSelect}
           >
-            Cancel
+            <Text fontSize="16" fontWeight="400" lineHeight="19px">
+              Cancel
+            </Text>
           </Box>
           <DeletePopup
             accountList={accountList}
@@ -77,7 +79,9 @@ function TableHeader(props: PropertyType) {
           height="36px"
           onClick={toggleSelect}
         >
-          Select Items
+          <Text fontSize="16" fontWeight="400" lineHeight="19px">
+            Select Items
+          </Text>
         </Box>
       )}
     </Flex>
