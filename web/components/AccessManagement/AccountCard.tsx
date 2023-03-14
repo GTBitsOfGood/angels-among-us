@@ -75,7 +75,7 @@ function AccountCard(props: PropertyType) {
       borderRadius="12px"
       bgColor="#EEEEEE"
       border={cardStyle.border}
-      width={{ sm: "90%", md: "90%", lg: "532px" }}
+      width={{ sm: "90%", md: "90%", lg: "515px" }}
     >
       <HStack justifyContent={"space-between"} minH={"43px"} padding="12px">
         <Flex

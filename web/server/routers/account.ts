@@ -11,7 +11,7 @@ import {
 } from "../../db/actions/Account";
 import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
-import { Role } from "../../utils/types/account";
+import { IAccount, Role } from "../../utils/types/account";
 import { router, protectedProcedure } from "../trpc";
 
 const emailInput = {
@@ -187,22 +187,23 @@ export const accountRouter = router({
     }),
 
   getAll: protectedProcedure
-    // .output(
-    //   z.array(
-    //     z.object({
-    //       email: z.string().email(),
-    //       role: z.nativeEnum(Role),
-    //     })
-    //   )
-    // )
+    .output(
+      z
+        .array(
+          z.object({
+            email: z.string().email(),
+            role: z.nativeEnum(Role),
+          })
+        )
+        .nullable()
+    )
     .query(async ({ ctx }) => {
       const session = await Account.startSession();
       session.startTransaction();
       try {
-        console.log("LOG B4 FIND ALL CALLED");
         const accounts = await findAll(session);
         console.log(accounts);
-        return accounts;
+        return accounts as IAccount[];
       } catch (e) {
         if (e instanceof TRPCError) throw e;
         else

@@ -34,6 +34,7 @@ function TableHeader(props: PropertyType) {
       bgColor="#D9D9D9"
       padding={4}
       gap={2}
+      width={"inherit"}
     >
       <Input
         variant="filled"

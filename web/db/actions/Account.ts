@@ -51,7 +51,7 @@ async function findAll(session?: ClientSession) {
   try {
     return await Account.find();
   } catch (e) {
-    return null;
+    return [];
   }
 }
 

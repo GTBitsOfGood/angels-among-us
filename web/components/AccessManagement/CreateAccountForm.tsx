@@ -42,33 +42,63 @@ export default function CreateAccountForm(props: PropertyType) {
     return result.success;
   }
 
-  function updateState() {
-    setDisplayError(false);
+  const updateAccountsHandler = async () => {
     const isValid = validateEmail({ emailField });
     if (!isValid) {
       setDisplayError(true);
       setErrorMessage("Invalid email address");
-    } else {
-      const newAccount = {
-        email: emailField,
-        role: role,
-      };
-      mutation.mutate(newAccount);
-      console.log(mutation);
-      if (mutation.error) {
-        setDisplayError(true);
-        setErrorMessage(mutation.error.message);
-      } else {
-        setDisplayError(false);
-        const temp = [...accountList];
-        temp.unshift(newAccount);
-        updateAccountList(temp);
-        setEmailField("");
-        setRole(Role.Volunteer);
-        setDisplayError(false);
-      }
+      return;
     }
-  }
+    const newAccount = {
+      email: emailField,
+      role: role,
+    };
+    updateDB(newAccount);
+    if (!mutation.error) {
+      setDisplayError(false);
+      const temp = [...accountList];
+      temp.unshift(newAccount);
+      updateAccountList(temp);
+      setEmailField("");
+      setRole(Role.Volunteer);
+      setDisplayError(false);
+    }
+    if (mutation.error) {
+      setDisplayError(true);
+      setErrorMessage(mutation.error.message);
+    }
+  };
+
+  const updateDB = (newAccount: IAccount) => {
+    mutation.mutate(newAccount);
+  };
+
+  //   async function updateState() {
+  //     const isValid = validateEmail({ emailField });
+  //     if (!isValid) {
+  //       setDisplayError(true);
+  //       setErrorMessage("Invalid email address");
+  //       return;
+  //     }
+  //     const newAccount = {
+  //       email: emailField,
+  //       role: role,
+  //     };
+  //     mutation.mutate(newAccount);
+  //     if (!mutation.error) {
+  //       setDisplayError(false);
+  //       const temp = [...accountList];
+  //       temp.unshift(newAccount);
+  //       updateAccountList(temp);
+  //       setEmailField("");
+  //       setRole(Role.Volunteer);
+  //       setDisplayError(false);
+  //     }
+  //     if (mutation.error) {
+  //       setDisplayError(true);
+  //       setErrorMessage(mutation.error.message);
+  //     }
+  //   }
 
   return (
     <>
@@ -146,7 +176,7 @@ export default function CreateAccountForm(props: PropertyType) {
               bgColor="#B0B0B0"
               boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
               borderRadius="16px"
-              onClick={updateState}
+              onClick={updateAccountsHandler}
               disabled={mutation.isLoading}
             >
               <Text fontWeight="500" fontSize={"16px"} lineHeight={"19px"}>

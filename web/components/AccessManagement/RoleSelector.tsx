@@ -33,17 +33,25 @@ function RoleSelector(props: PropertyType) {
     { label: "Volunteer", role: Role.Volunteer },
   ];
 
-  function changeRole(r: Role) {
-    var temp = {
-      email: account.email,
-      role: r,
-    };
-    mutation.mutate({ role: r, email: account.email });
-    var tempList = [...accountList];
-    tempList[idx] = temp;
-    updateAccountList(tempList);
-  }
+  const changeRole = async (r: Role) => {
+    updateDB({ role: r, email: account.email });
+    if (!mutation.error) {
+      var temp = {
+        email: account.email,
+        role: r,
+      };
+      var tempList = [...accountList];
+      tempList[idx] = temp;
+      updateAccountList(tempList);
+    }
+    if (mutation.error) {
+      console.log(mutation.error.message);
+    }
+  };
 
+  const updateDB = (item: IAccount) => {
+    mutation.mutate({ role: item.role, email: account.email });
+  };
   return (
     <Popover
       isOpen={isOpen}
@@ -61,6 +69,7 @@ function RoleSelector(props: PropertyType) {
           height={"27px"}
           alignItems={"center"}
           justifyContent={"center"}
+          disabled={mutation.isLoading}
         >
           {createLabel(accountList[idx].role)}
         </Box>

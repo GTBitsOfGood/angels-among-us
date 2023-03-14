@@ -9,7 +9,7 @@ import {
   Flex,
   Text,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { IAccount } from "../../utils/types/account";
 import { trpc } from "../../utils/trpc";
 
@@ -34,21 +34,25 @@ function DeletePopup(props: PropertyType) {
 
   const mutation = trpc.account.remove.useMutation();
 
-  function handleDelete() {
-    var temp = accountList.filter(
+  const handleDelete = async () => {
+    var newArr = accountList.filter(
       (e) => itemsToDelete.indexOf(accountList.indexOf(e)) < 0
     );
-    console.log(temp);
-    var emails = temp.map((e) => e.email);
-    console.log(emails);
-    mutation.mutate(emails);
-    console.log(mutation);
-    if (!mutation.error) {
-      updateAccountList(temp);
+    var removeArr = accountList.filter(
+      (e) => itemsToDelete.indexOf(accountList.indexOf(e)) > -1
+    );
+    var emails = removeArr.map((e) => e.email);
+
+    updateDB(emails);
+    if (!mutation.error && !mutation.isLoading) {
+      updateAccountList(newArr);
       updateSelectItems(false);
       updateItemsToDelete([]);
     }
-  }
+  };
+  const updateDB = async (emails: string[]) => {
+    mutation.mutate(emails);
+  };
 
   return (
     <>
