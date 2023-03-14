@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   removeAccount,
@@ -6,8 +7,9 @@ import {
   addAccount,
   findAccount,
   findAll,
+  removeAllAccounts,
 } from "../../db/actions/Account";
-import { updateUserByEmail } from "../../db/actions/User";
+import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { Role } from "../../utils/types/account";
 import { router, protectedProcedure } from "../trpc";
@@ -15,6 +17,8 @@ import { router, protectedProcedure } from "../trpc";
 const emailInput = {
   email: z.string().email("Invalid email provided"),
 };
+
+const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
 export const accountRouter = router({
   modify: protectedProcedure
@@ -64,10 +68,14 @@ export const accountRouter = router({
       }
     }),
   remove: protectedProcedure
-    .input(z.object(emailInput))
+    .input(z.array(z.string().email()))
     .mutation(async ({ ctx, input }) => {
-      const email = input.email;
-      if (ctx.session?.email === email)
+      if (!ctx.session?.email)
+        throw new TRPCError({
+          message: "Unauthorized - Caller has no email",
+          code: "UNAUTHORIZED",
+        });
+      if (input.includes(ctx.session.email))
         throw new TRPCError({
           message: "Unauthorized - Cannot remove own account",
           code: "UNAUTHORIZED",
@@ -77,9 +85,8 @@ export const accountRouter = router({
       session.startTransaction();
 
       try {
-        await removeAccount(email, session);
-        await updateUserByEmail(email, { disabled: true }, session);
-
+        await removeAllAccounts(input, session);
+        await updateAllUsers(input, { disabled: true }, session);
         session.commitTransaction();
 
         return { success: true };

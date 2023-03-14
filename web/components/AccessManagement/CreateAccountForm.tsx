@@ -43,6 +43,7 @@ export default function CreateAccountForm(props: PropertyType) {
   }
 
   function updateState() {
+    setDisplayError(false);
     const isValid = validateEmail({ emailField });
     if (!isValid) {
       setDisplayError(true);
@@ -53,6 +54,7 @@ export default function CreateAccountForm(props: PropertyType) {
         role: role,
       };
       mutation.mutate(newAccount);
+      console.log(mutation);
       if (mutation.error) {
         setDisplayError(true);
         setErrorMessage(mutation.error.message);

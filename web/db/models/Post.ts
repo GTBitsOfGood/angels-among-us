@@ -87,6 +87,10 @@ const postSchema = new Schema<IPost>({
     type: Boolean,
     default: false,
   },
+  pending: {
+    type: Boolean,
+    default: true,
+  },
   attachments: [
     {
       type: String,

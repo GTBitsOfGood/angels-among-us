@@ -2,7 +2,7 @@ import { Flex, useBreakpointValue } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import Select from "react-select";
 import OnboardingOptionColumn from "./OnboardingOptionColumn";
-import { Answers, PossibleTypes, StoredQuestion } from "../pages/onboarding";
+import { Answers, PossibleTypes, StoredQuestion } from "../../pages/onboarding";
 import { OptionType } from "./OnboardingSlide";
 
 function OnboardingOptions(props: {

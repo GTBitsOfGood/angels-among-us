@@ -1,6 +1,6 @@
 import { Text, Checkbox, Stack, Box } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
-import { Answers, PossibleTypes, StoredQuestion } from "../pages/onboarding";
+import { Answers, PossibleTypes, StoredQuestion } from "../../pages/onboarding";
 import { OptionType } from "./OnboardingSlide";
 
 function OnboardingOptionColumn(props: {

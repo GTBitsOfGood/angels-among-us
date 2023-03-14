@@ -107,7 +107,7 @@ export enum Medical {
   ChronicCondition = "chronicCondition",
   Pregnant = "pregnant",
   Nursing = "nursing",
-  BottleFeeding = "bottleFeeding",
+  BottleFed = "bottleFed",
   Hospice = "hospice",
 }
 
@@ -131,6 +131,10 @@ export enum Status {
   No = "no",
 }
 
+export type AttachmentInfo =
+  | { type: "image"; key: string; length: number; width: number }
+  | { type: "video"; key: string };
+
 export interface IPost {
   date: Date;
   type: FosterType;
@@ -146,5 +150,10 @@ export interface IPost {
   crateTrained: Trained;
   spayNeuterStatus: Status;
   covered: boolean;
+  pending: boolean;
   attachments: string[];
 }
+
+export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
+  attachments: AttachmentInfo[];
+};

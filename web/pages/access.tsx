@@ -7,6 +7,7 @@ import { trpc } from "../utils/trpc";
 
 export default function Access() {
   const accounts = trpc.account.getAll.useQuery();
+  console.log(accounts.data);
   const [accountList, updateAccountList] = useState<IAccount[]>([]);
   const [selectItems, updateSelectItems] = useState<boolean>(false);
 
@@ -25,33 +26,32 @@ export default function Access() {
         marginTop={"95px"}
         height={"100%"}
       >
-        <Box>
-          <Flex
-            bgColor="#FFFFFF"
-            direction="column"
-            width="100%"
-            alignItems="center"
-            justifyContent={"flex-start"}
-            paddingTop={6}
-            minHeight={"80vh"}
-            borderRadius={"6px"}
-          >
-            <Text fontSize="24px" fontWeight="600" lineHeight="24px">
-              Accounts List
-            </Text>
-            <CreateAccountForm
-              accountList={accountList}
-              updateAccountList={updateAccountList}
-              updateSelectItems={updateSelectItems}
-            ></CreateAccountForm>
-            <AccountTable
-              accountList={accountList}
-              updateAccountList={updateAccountList}
-              selectItems={selectItems}
-              updateSelectItems={updateSelectItems}
-            ></AccountTable>
-          </Flex>
-        </Box>
+        <Flex
+          bgColor="#FFFFFF"
+          direction="column"
+          width="100%"
+          alignItems="center"
+          justifyContent={"flex-start"}
+          paddingTop={6}
+          gap={[4, 4, 0.05]}
+          minHeight={"80vh"}
+          borderRadius={"6px"}
+        >
+          <Text fontSize="24px" fontWeight="600" lineHeight="24px">
+            Accounts List
+          </Text>
+          <CreateAccountForm
+            accountList={accountList}
+            updateAccountList={updateAccountList}
+            updateSelectItems={updateSelectItems}
+          ></CreateAccountForm>
+          <AccountTable
+            accountList={accountList}
+            updateAccountList={updateAccountList}
+            selectItems={selectItems}
+            updateSelectItems={updateSelectItems}
+          ></AccountTable>
+        </Flex>
       </Flex>
     </Flex>
   );

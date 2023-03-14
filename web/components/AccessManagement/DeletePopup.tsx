@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useRef } from "react";
 import { IAccount } from "../../utils/types/account";
+import { trpc } from "../../utils/trpc";
 
 interface PropertyType {
   accountList: IAccount[];
@@ -31,14 +32,22 @@ function DeletePopup(props: PropertyType) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef(null);
 
+  const mutation = trpc.account.remove.useMutation();
+
   function handleDelete() {
     var temp = accountList.filter(
       (e) => itemsToDelete.indexOf(accountList.indexOf(e)) < 0
     );
-
-    updateAccountList(temp);
-    updateSelectItems(false);
-    updateItemsToDelete([]);
+    console.log(temp);
+    var emails = temp.map((e) => e.email);
+    console.log(emails);
+    mutation.mutate(emails);
+    console.log(mutation);
+    if (!mutation.error) {
+      updateAccountList(temp);
+      updateSelectItems(false);
+      updateItemsToDelete([]);
+    }
   }
 
   return (

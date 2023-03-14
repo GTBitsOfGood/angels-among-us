@@ -23,7 +23,7 @@ function AccountTable(props: PropertyType) {
   }, [selectItems]);
 
   return (
-    <Stack gap={2} width="inherit">
+    <Stack gap={2} w="100%">
       <TableHeader
         selectItems={selectItems}
         updateSelectItems={updateSelectItems}
@@ -37,6 +37,7 @@ function AccountTable(props: PropertyType) {
         columns={{ sm: 1, md: 2 }}
         gap={"15px"}
         padding={{ sm: "15px", md: "20px" }}
+        bgColor="white"
       >
         {accountList.map((e: IAccount) => {
           return (
