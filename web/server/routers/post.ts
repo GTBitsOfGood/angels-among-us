@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   createPost,
   finalizePost,
+  getAllPosts,
   updatePostDetails,
   updatePostStatus,
 } from "../../db/actions/Post";
@@ -21,7 +22,7 @@ import {
   Trained,
   Status,
 } from "../../utils/types/post";
-import { router, creatorProcedure } from "../trpc";
+import { router, creatorProcedure, protectedProcedure } from "../trpc";
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
@@ -128,4 +129,14 @@ export const postRouter = router({
         });
       }
     }),
+  getAllPosts: protectedProcedure.query(async () => {
+    try {
+      return await getAllPosts();
+    } catch (e) {
+      throw new TRPCError({
+        message: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  }),
 });

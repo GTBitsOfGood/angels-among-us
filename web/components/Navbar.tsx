@@ -240,7 +240,7 @@ export default function Navbar() {
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
-      </Stack>
+      </Flex>
     </Flex>
   );
 }

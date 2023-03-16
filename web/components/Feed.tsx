@@ -12,9 +12,227 @@ import {
   AccordionIcon,
   Card,
   Checkbox,
-  useBreakpointValue,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
+import { PossibleTypes } from "../pages/onboarding";
+import {
+  Age,
+  Behavioral,
+  Breed,
+  FosterType,
+  Gender,
+  GoodWith,
+  Size,
+  Status,
+  Temperament,
+  Trained,
+} from "../utils/types/post";
+import FeedFilterGroup from "./FeedFilterGroup";
+import FeedPostCard from "./FeedPostCard";
+
+export type FilterGroup = {
+  title: string;
+  filters: Filter[];
+};
+
+export type Filter = {
+  description: string;
+  options: { value: PossibleTypes; label: string }[];
+  dropdown: boolean;
+  singleAnswer: boolean;
+};
+
+const filterGroups: FilterGroup[] = [
+  {
+    title: "General Information",
+    filters: [
+      {
+        description: "Which types of fosters can you help with?",
+        options: [
+          { value: FosterType.Return, label: "Return" },
+          { value: FosterType.Boarding, label: "Boarding" },
+          { value: FosterType.Temporary, label: "Temporary" },
+          { value: FosterType.FosterMove, label: "Foster Move" },
+          { value: FosterType.Shelter, label: "Shelter" },
+          { value: FosterType.OwnerSurrender, label: "Owner Surrender" },
+        ],
+        dropdown: false,
+        singleAnswer: false,
+      },
+    ],
+  },
+  {
+    title: "Physical Traits",
+    filters: [
+      {
+        description: "Breed Restrictions",
+        options: [
+          { value: Breed.AmericanEskimo, label: "American Eskimo" },
+          { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
+          { value: Breed.Beagle, label: "Beagle" },
+          { value: Breed.BichonFrise, label: "Bichon Frise" },
+          { value: Breed.BorderCollie, label: "Border Collie" },
+          { value: Breed.Boxer, label: "Boxer" },
+          { value: Breed.BrusselsGriffon, label: "Brussels Griffon" },
+          { value: Breed.Bulldog, label: "Bulldog" },
+          { value: Breed.CaneCorsoMastiff, label: "Cane Corso/Mastiff" },
+          { value: Breed.CattleDogHeeler, label: "Cattle Dog/Heeler" },
+          { value: Breed.Chihuahua, label: "Chihuahua" },
+          { value: Breed.ChowChow, label: "Chow Chow" },
+          { value: Breed.Collie, label: "Collie" },
+          { value: Breed.Corgi, label: "Corgi" },
+          { value: Breed.Dachshund, label: "Dachshund" },
+          { value: Breed.Dalmatian, label: "Dalmatian" },
+          { value: Breed.DobermanPinscher, label: "Doberman Pinscher" },
+          { value: Breed.GermanShepherd, label: "German Shepherd" },
+          { value: Breed.GoldenRetriever, label: "Golden Retriever" },
+          { value: Breed.GreatDane, label: "Great Dane" },
+          { value: Breed.GreatPyrenees, label: "Great Pyrenees" },
+          { value: Breed.Greyhound, label: "Greyhound" },
+          { value: Breed.Hound, label: "Hound" },
+          { value: Breed.Husky, label: "Husky" },
+          { value: Breed.LabradorRetriever, label: "Labrador Retriever" },
+          { value: Breed.Malamute, label: "Malamute" },
+          { value: Breed.Maltese, label: "Maltese" },
+          { value: Breed.MinPin, label: "Min Pin" },
+          { value: Breed.Mix, label: "Mix" },
+          { value: Breed.Newfoundland, label: "Newfoundland" },
+          { value: Breed.Pekingese, label: "Pekingese" },
+          { value: Breed.Pitbull, label: "Pitbull" },
+          { value: Breed.Pointer, label: "Pointer" },
+          { value: Breed.Pomeranian, label: "Pomeranian" },
+          { value: Breed.Poodle, label: "Poodle" },
+          { value: Breed.Pug, label: "Pug" },
+          { value: Breed.Rottweiler, label: "Rottweiler" },
+          { value: Breed.Schnauzer, label: "Schnauzer" },
+          { value: Breed.Scottie, label: "Scottie" },
+          { value: Breed.Setter, label: "Setter" },
+          { value: Breed.Sharpei, label: "Sharpei" },
+          { value: Breed.Sheepdog, label: "Sheepdog" },
+          { value: Breed.Shepherd, label: "Shepherd" },
+          { value: Breed.ShihTzu, label: "Shih Tzu" },
+          { value: Breed.Spaniel, label: "Spaniel" },
+          { value: Breed.StBernard, label: "St. Bernard" },
+          { value: Breed.TerrierMedLarge, label: "Terrier (Med-Large)" },
+          { value: Breed.TerrierSmall, label: "Terrier (Small)" },
+          { value: Breed.Weimaraner, label: "Weimaraner" },
+          { value: Breed.Whippet, label: "Whippet" },
+        ],
+        dropdown: true,
+        singleAnswer: false,
+      },
+      {
+        description: "Age Capability",
+        options: [
+          { value: Age.Puppy, label: "Puppy" },
+          { value: Age.Young, label: "Young" },
+          { value: Age.Adult, label: "Adult" },
+          { value: Age.Senior, label: "Senior" },
+          { value: Age.MomAndPuppies, label: "Mom & Puppies" },
+        ],
+        dropdown: false,
+        singleAnswer: false,
+      },
+      {
+        description: "Dog Size Capability",
+        options: [
+          { value: Size.XS, label: "Extra Small" },
+          { value: Size.S, label: "Small" },
+          { value: Size.M, label: "Medium" },
+          { value: Size.L, label: "Large" },
+          { value: Size.XL, label: "Extra Large" },
+        ],
+        dropdown: false,
+        singleAnswer: false,
+      },
+      {
+        description: "Gender Capability",
+        options: [
+          { value: Gender.Male, label: "Male" },
+          { value: Gender.Female, label: "Female" },
+          { value: Gender.Litter, label: "Litter" },
+        ],
+        dropdown: false,
+        singleAnswer: false,
+      },
+    ],
+  },
+  {
+    title: "Behavioral Traits",
+    filters: [
+      {
+        description: "Able to foster dogs NOT good with:",
+        options: [
+          { value: GoodWith.Men, label: "Men" },
+          { value: GoodWith.Women, label: "Women" },
+          { value: GoodWith.OlderChildren, label: "Older Children" },
+          { value: GoodWith.YoungChildren, label: "Young Children" },
+          { value: GoodWith.LargeDogs, label: "Large Dogs" },
+          { value: GoodWith.SmallDogs, label: "Small Dogs" },
+          { value: GoodWith.Cats, label: "Cats" },
+        ],
+        dropdown: false,
+        singleAnswer: false,
+      },
+      {
+        description: "Able to foster dogs with:",
+        options: [
+          { value: Behavioral.SeparationAnxiety, label: "Separation Anxiety" },
+          { value: Behavioral.Barking, label: "Barking" },
+          { value: Behavioral.Jumping, label: "Jumping" },
+          { value: Behavioral.BiteRisk, label: "Bite Risk" },
+          { value: Behavioral.PullsOnLeash, label: "Pulls on Leash" },
+          { value: Behavioral.FlightRisk, label: "Flight Risk" },
+        ],
+        dropdown: false,
+        singleAnswer: false,
+      },
+      {
+        description: "Able to foster dogs with these temperaments:",
+        options: [
+          { value: Temperament.Friendly, label: "Friendly" },
+          { value: Temperament.Scared, label: "Scared" },
+          { value: Temperament.Active, label: "Active" },
+          { value: Temperament.Calm, label: "Calm" },
+        ],
+        dropdown: false,
+        singleAnswer: false,
+      },
+    ],
+  },
+  {
+    title: "Medical Information",
+    filters: [
+      {
+        description: "Able to foster dogs not house trained...",
+        options: [
+          { value: Trained.Yes, label: "Yes" },
+          { value: Trained.No, label: "No" },
+        ],
+        dropdown: false,
+        singleAnswer: true,
+      },
+      {
+        description: "Able to foster dogs not crate trained...",
+        options: [
+          { value: Trained.Yes, label: "Yes" },
+          { value: Trained.No, label: "No" },
+        ],
+        dropdown: false,
+        singleAnswer: true,
+      },
+      {
+        description: "Able to foster dogs not spayed or neutered...",
+        options: [
+          { value: Status.Yes, label: "Yes" },
+          { value: Status.No, label: "No" },
+        ],
+        dropdown: false,
+        singleAnswer: true,
+      },
+    ],
+  },
+];
 
 function Feed(props: {
   filterDisplayed: boolean;
@@ -92,35 +310,9 @@ function Feed(props: {
               Use My Preferences
             </Button>
           </Flex>
-          <Accordion allowMultiple={true}>
-            <AccordionItem>
-              <AccordionButton>
-                <Box as="span" flex="1" textAlign="left">
-                  <Text fontWeight="semibold">General Information</Text>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4} marginRight="40px">
-                <Text>Which types of fosters can you help with?</Text>
-                <Flex
-                  direction="column"
-                  borderWidth="2px"
-                  borderColor="#D9D9D9"
-                  borderRadius="6px"
-                  gap="10px"
-                  padding="16px"
-                  marginTop="16px"
-                >
-                  <Checkbox>Return</Checkbox>
-                  <Checkbox>Boarding</Checkbox>
-                  <Checkbox>Temporary</Checkbox>
-                  <Checkbox>Foster Move</Checkbox>
-                  <Checkbox>Shelter</Checkbox>
-                  <Checkbox>Owner Surrender</Checkbox>
-                </Flex>
-              </AccordionPanel>
-            </AccordionItem>
-          </Accordion>
+          {filterGroups.map((val) => {
+            return <FeedFilterGroup filterGroup={val} />;
+          })}
         </Flex>
         <Flex
           width={{ base: "100%", lg: "70%" }}
@@ -135,58 +327,14 @@ function Feed(props: {
           <Text fontWeight="bold" fontSize="18px">
             Latest Posts
           </Text>
-          <Card
-            margin="20px"
-            marginBottom="0px"
-            width="95%"
-            paddingX={{ base: "12px", lg: "16px" }}
-            paddingY={{ base: "16px", lg: "20px" }}
-            borderRadius="14px"
-          >
-            <Flex gap={{ base: "15px", lg: "20px" }}>
-              <Image
-                minWidth={{ base: "120px", lg: "150px" }}
-                width={{ base: "120px", lg: "150px" }}
-                height={{ base: "120px", lg: "150px" }}
-                backgroundColor="#D9D9D9"
-                borderRadius="14px"
-              ></Image>
-              <Flex
-                direction="column"
-                width="80%"
-                marginTop={{ base: "0px", lg: "8px" }}
-                marginRight="20px"
-              >
-                <Text fontSize="14px">MM/DD/YYYY XX:XX PM</Text>
-                <Text
-                  margin="0px"
-                  paddingY="0px"
-                  fontWeight="bold"
-                  fontSize="18px"
-                >
-                  Pet Name
-                </Text>
-                <Text
-                  margin="0px"
-                  backgroundColor="#C6E3F9"
-                  width="fit-content"
-                  paddingX="16px"
-                  paddingY="4px"
-                  borderRadius="20px"
-                  marginTop="5px"
-                  marginBottom="10px"
-                  fontSize="14px"
-                  fontWeight="semibold"
-                >
-                  Foster Move
-                </Text>
-                <Text fontSize="14px" lineHeight="18px" color="#656565">
-                  Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit
-                  amet consectetur. Lorem ipsum dolor sit amet consectetur.
-                </Text>
-              </Flex>
-            </Flex>
-          </Card>
+          <FeedPostCard
+            date={"MM/DD/YYYY XX:XX PM"}
+            title={"Pet Name"}
+            tags={["Foster Move"]}
+            body={
+              "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
+            }
+          />
         </Flex>
       </Stack>
     </Flex>

@@ -28,17 +28,6 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  Box,
-  AccordionPanel,
-  AccordionIcon,
-  Card,
-  CardHeader,
-  Checkbox,
-  CardBody,
-  VStack,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";

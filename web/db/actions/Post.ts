@@ -116,4 +116,15 @@ async function updatePostStatus(oid: ObjectId, session?: ClientSession) {
     { session: session }
   );
 }
-export { createPost, updatePostDetails, updatePostStatus, finalizePost };
+
+async function getAllPosts() {
+  return await Post.find().sort({ date: -1 });
+}
+
+export {
+  createPost,
+  updatePostDetails,
+  updatePostStatus,
+  finalizePost,
+  getAllPosts,
+};
