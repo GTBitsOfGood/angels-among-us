@@ -1,18 +1,4 @@
-import {
-  Button,
-  Flex,
-  Stack,
-  Text,
-  Image,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  Box,
-  AccordionPanel,
-  AccordionIcon,
-  Card,
-  Checkbox,
-} from "@chakra-ui/react";
+import { Button, Flex, Stack, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useState } from "react";
 import { PossibleTypes } from "../pages/onboarding";
 import {
@@ -40,11 +26,11 @@ export type Filter = {
   description: string;
   options: { value: PossibleTypes; label: string }[];
   dropdown: boolean;
-  singleAnswer: boolean;
+  allSelected: boolean;
 };
 
 export type SelectedFilters<T extends Filter> = {
-  [key in T["key"]]: PossibleTypes[];
+  [key in T["key"]]: { value: PossibleTypes; label: string }[];
 };
 
 const filterGroups: FilterGroup[] = [
@@ -63,7 +49,7 @@ const filterGroups: FilterGroup[] = [
           { value: FosterType.OwnerSurrender, label: "Owner Surrender" },
         ],
         dropdown: false,
-        singleAnswer: false,
+        allSelected: true,
       },
     ],
   },
@@ -126,11 +112,11 @@ const filterGroups: FilterGroup[] = [
           { value: Breed.Whippet, label: "Whippet" },
         ],
         dropdown: true,
-        singleAnswer: false,
+        allSelected: true,
       },
       {
         key: "age",
-        description: "Age Capability",
+        description: "Age",
         options: [
           { value: Age.Puppy, label: "Puppy" },
           { value: Age.Young, label: "Young" },
@@ -139,11 +125,11 @@ const filterGroups: FilterGroup[] = [
           { value: Age.MomAndPuppies, label: "Mom & Puppies" },
         ],
         dropdown: false,
-        singleAnswer: false,
+        allSelected: true,
       },
       {
         key: "size",
-        description: "Dog Size Capability",
+        description: "Size",
         options: [
           { value: Size.XS, label: "Extra Small" },
           { value: Size.S, label: "Small" },
@@ -152,18 +138,18 @@ const filterGroups: FilterGroup[] = [
           { value: Size.XL, label: "Extra Large" },
         ],
         dropdown: false,
-        singleAnswer: false,
+        allSelected: true,
       },
       {
         key: "gender",
-        description: "Gender Capability",
+        description: "Gender",
         options: [
           { value: Gender.Male, label: "Male" },
           { value: Gender.Female, label: "Female" },
           { value: Gender.Litter, label: "Litter" },
         ],
         dropdown: false,
-        singleAnswer: false,
+        allSelected: true,
       },
     ],
   },
@@ -172,7 +158,7 @@ const filterGroups: FilterGroup[] = [
     filters: [
       {
         key: "goodWith",
-        description: "Able to foster dogs NOT good with:",
+        description: "Dogs known to be good with:",
         options: [
           { value: GoodWith.Men, label: "Men" },
           { value: GoodWith.Women, label: "Women" },
@@ -183,7 +169,7 @@ const filterGroups: FilterGroup[] = [
           { value: GoodWith.Cats, label: "Cats" },
         ],
         dropdown: false,
-        singleAnswer: false,
+        allSelected: false,
       },
       {
         key: "behavioral",
@@ -197,11 +183,11 @@ const filterGroups: FilterGroup[] = [
           { value: Behavioral.FlightRisk, label: "Flight Risk" },
         ],
         dropdown: false,
-        singleAnswer: false,
+        allSelected: true,
       },
       {
         key: "temperament",
-        description: "Able to foster dogs with these temperaments:",
+        description: "Temperaments",
         options: [
           { value: Temperament.Friendly, label: "Friendly" },
           { value: Temperament.Scared, label: "Scared" },
@@ -209,7 +195,7 @@ const filterGroups: FilterGroup[] = [
           { value: Temperament.Calm, label: "Calm" },
         ],
         dropdown: false,
-        singleAnswer: false,
+        allSelected: true,
       },
     ],
   },
@@ -217,38 +203,20 @@ const filterGroups: FilterGroup[] = [
     title: "Medical Information",
     filters: [
       {
-        key: "houseTrained",
-        description: "Able to foster dogs not house trained...",
+        key: "medicalInfo",
+        description: "Dogs that are:",
         options: [
-          { value: Trained.Yes, label: "Yes" },
-          { value: Trained.No, label: "No" },
+          { value: Trained.Yes, label: "House Trained" },
+          { value: Trained.Yes, label: "Crate Trained" },
+          { value: Status.Yes, label: "Spayed/Neutered" },
         ],
         dropdown: false,
-        singleAnswer: true,
-      },
-      {
-        key: "crateTrained",
-        description: "Able to foster dogs not crate trained...",
-        options: [
-          { value: Trained.Yes, label: "Yes" },
-          { value: Trained.No, label: "No" },
-        ],
-        dropdown: false,
-        singleAnswer: true,
-      },
-      {
-        key: "spayNeuterStatus",
-        description: "Able to foster dogs not spayed or neutered...",
-        options: [
-          { value: Status.Yes, label: "Yes" },
-          { value: Status.No, label: "No" },
-        ],
-        dropdown: false,
-        singleAnswer: true,
+        allSelected: false,
       },
     ],
   },
 ];
+
 function Feed(props: {
   filterDisplayed: boolean;
   setFilterDisplayed: Dispatch<SetStateAction<boolean>>;
@@ -258,9 +226,8 @@ function Feed(props: {
   function getInitialFilters() {
     return filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
-        if (c.singleAnswer) return { ...a, [c.key]: [c.options[0].value] };
-        if (c.dropdown) return { ...a, [c.key]: [] };
-        return { ...a, [c.key]: c.options.map((val) => val.value) };
+        if (c.allSelected) return { ...a, [c.key]: [...c.options] };
+        return { ...a, [c.key]: [] };
       }, {});
       return {
         ...acc,
@@ -274,7 +241,7 @@ function Feed(props: {
   const mainContent = (
     <Flex
       className="feed"
-      backgroundColor="#DFDFDF"
+      backgroundColor="#C3E6F9"
       justifyContent="center"
       height="fit-content"
       minHeight="100vh"
@@ -301,7 +268,7 @@ function Feed(props: {
               setFilterDisplayed(!filterDisplayed);
               console.log(filterDisplayed);
             }}
-            backgroundColor="#8F9294"
+            backgroundColor="#529FD4"
             color="#FFFFFF"
             fontWeight="normal"
             height="36px"
@@ -336,7 +303,7 @@ function Feed(props: {
               Clear All
             </Button>
             <Button
-              backgroundColor="#8F9294"
+              backgroundColor="#529FD4"
               fontWeight="normal"
               color="#FFFFFF"
               borderRadius="12px"
@@ -359,7 +326,7 @@ function Feed(props: {
           width={{ base: "100%", lg: "70%" }}
           minHeight="full"
           borderRadius={{ base: "0px", lg: "10px" }}
-          backgroundColor="#C1C1C1"
+          backgroundColor={{ base: "#C6E3F9", lg: "#F9F8F8" }}
           direction="column"
           alignItems="center"
           height="fit-content"
@@ -369,6 +336,20 @@ function Feed(props: {
             Latest Posts
           </Text>
           <FeedPostCard
+            image={
+              "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
+            }
+            date={"MM/DD/YYYY XX:XX PM"}
+            title={"Pet Name"}
+            tags={["Foster Move"]}
+            body={
+              "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
+            }
+          />
+          <FeedPostCard
+            image={
+              "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
+            }
             date={"MM/DD/YYYY XX:XX PM"}
             title={"Pet Name"}
             tags={["Foster Move"]}
@@ -402,7 +383,6 @@ function Feed(props: {
         <Button
           onClick={() => {
             setFilterDisplayed(!filterDisplayed);
-            console.log(filterDisplayed);
           }}
           backgroundColor="#FFFFFF"
           color="#7D7E82"
@@ -438,11 +418,14 @@ function Feed(props: {
             borderWidth="1px"
             borderColor="#7D7E82"
             borderRadius="12px"
+            onClick={() => {
+              setSelectedFilters(getInitialFilters());
+            }}
           >
             Clear All
           </Button>
           <Button
-            backgroundColor="#8F9294"
+            backgroundColor="#529FD4"
             fontWeight="normal"
             color="#FFFFFF"
             borderRadius="12px"
@@ -450,35 +433,18 @@ function Feed(props: {
             Use My Preferences
           </Button>
         </Flex>
-        <Accordion allowMultiple={true}>
-          <AccordionItem>
-            <AccordionButton>
-              <Box as="span" flex="1" textAlign="left">
-                <Text fontWeight="semibold">General Information</Text>
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-            <AccordionPanel pb={4} marginRight="40px">
-              <Text>Which types of fosters can you help with?</Text>
-              <Flex
-                direction="column"
-                borderWidth="2px"
-                borderColor="#D9D9D9"
-                borderRadius="6px"
-                gap="10px"
-                padding="16px"
-                marginTop="16px"
-              >
-                <Checkbox>Return</Checkbox>
-                <Checkbox>Boarding</Checkbox>
-                <Checkbox>Temporary</Checkbox>
-                <Checkbox>Foster Move</Checkbox>
-                <Checkbox>Shelter</Checkbox>
-                <Checkbox>Owner Surrender</Checkbox>
-              </Flex>
-            </AccordionPanel>
-          </AccordionItem>
-        </Accordion>
+        <Flex direction="column">
+          {filterGroups.map((val) => {
+            return (
+              <FeedFilterGroup
+                key={val.title}
+                filterGroup={val}
+                selectedFilters={selectedFilters}
+                setSelectedFilters={setSelectedFilters}
+              />
+            );
+          })}
+        </Flex>
       </Flex>
     </Flex>
   );
