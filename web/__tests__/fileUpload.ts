@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import b2Client from "../db/b2connect";
+import storageClient from "../db/storageConnect";
 import { consts } from "../utils/consts";
 
 const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
@@ -111,8 +111,8 @@ describe("File Upload - Integration Test", () => {
       },
     };
 
-    const objectInfo = await b2Client.listObjectsV2({
-      Bucket: consts.b2Bucket,
+    const objectInfo = await storageClient.listObjectsV2({
+      Bucket: consts.storageBucket,
       Prefix: oid,
     });
 

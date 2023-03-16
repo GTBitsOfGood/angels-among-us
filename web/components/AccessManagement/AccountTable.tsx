@@ -17,7 +17,7 @@ function AccountTable(props: PropertyType) {
   const [itemsToDelete, updateItemsToDelete] = useState<Number[]>([]);
 
   return (
-    <Stack gap={2} width="inherit">
+    <Stack gap={2} w="100%">
       <TableHeader
         selectItems={selectItems}
         updateSelectItems={updateSelectItems}
@@ -30,7 +30,7 @@ function AccountTable(props: PropertyType) {
         spacing={4}
         columns={{ sm: 1, md: 1, lg: 2 }}
         padding={{ sm: "15px", md: "20px" }}
-        bgColor="#FFFFFF"
+        bgColor="white"
       >
         {accountList.map((e: IAccount) => {
           return (

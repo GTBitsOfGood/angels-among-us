@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   createPost,
   finalizePost,
+  getPost,
   updatePostDetails,
   updatePostStatus,
 } from "../../db/actions/Post";
@@ -21,7 +22,7 @@ import {
   Trained,
   Status,
 } from "../../utils/types/post";
-import { router, creatorProcedure } from "../trpc";
+import { router, creatorProcedure, publicProcedure } from "../trpc";
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
@@ -55,6 +56,15 @@ const postSchema = z.object({
 });
 
 export const postRouter = router({
+  get: publicProcedure
+    .input(
+      z.object({
+        _id: zodOidType,
+      })
+    )
+    .query(async ({ input }) => {
+      return getPost(input._id);
+    }),
   create: creatorProcedure.input(postSchema).mutation(async ({ input }) => {
     const session = await Post.startSession();
     session.startTransaction();
