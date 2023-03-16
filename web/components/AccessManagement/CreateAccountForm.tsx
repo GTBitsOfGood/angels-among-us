@@ -145,7 +145,7 @@ export default function CreateAccountForm(props: PropertyType) {
             </Flex>
             <Box
               as={"button"}
-              width={"133px"}
+              width={{ sm: "133px", lg: "250px" }}
               height="35px"
               bgColor="#B0B0B0"
               boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"

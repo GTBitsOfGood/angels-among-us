@@ -3,8 +3,6 @@ import {
   AlertDialog,
   AlertDialogOverlay,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
   Box,
   Flex,
   Text,

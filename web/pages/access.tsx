@@ -1,6 +1,6 @@
 import CreateAccountForm from "../components/AccessManagement/CreateAccountForm";
 import AccountTable from "../components/AccessManagement/AccountTable";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text, Flex, Spinner } from "@chakra-ui/react";
 import { IAccount } from "../utils/types/account";
 import { trpc } from "../utils/trpc";
