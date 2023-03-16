@@ -152,6 +152,7 @@ export const accountRouter = router({
         }
       }
     }),
+
   get: protectedProcedure
     .input(
       z.object({
@@ -188,23 +189,21 @@ export const accountRouter = router({
 
   getAll: protectedProcedure
     .output(
-      z
-        .array(
-          z.object({
-            email: z.string().email(),
-            role: z.nativeEnum(Role),
-          })
-        )
-        .nullable()
+      z.array(
+        z.object({
+          email: z.string().email(),
+          role: z.nativeEnum(Role),
+        })
+      )
     )
     .query(async ({ ctx }) => {
       const session = await Account.startSession();
       session.startTransaction();
       try {
         const accounts = await findAll(session);
-        console.log(accounts);
         return accounts as IAccount[];
       } catch (e) {
+        session.abortTransaction();
         if (e instanceof TRPCError) throw e;
         else
           throw new TRPCError({

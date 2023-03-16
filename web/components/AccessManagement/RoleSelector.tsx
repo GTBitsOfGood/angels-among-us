@@ -35,30 +35,32 @@ function RoleSelector(props: PropertyType) {
 
   const changeRole = async (r: Role) => {
     updateDB({ role: r, email: account.email });
-    if (!mutation.error) {
-      var temp = {
-        email: account.email,
-        role: r,
-      };
-      var tempList = [...accountList];
-      tempList[idx] = temp;
-      updateAccountList(tempList);
-    }
-    if (mutation.error) {
-      console.log(mutation.error.message);
-    }
   };
 
   const updateDB = (item: IAccount) => {
-    mutation.mutate({ role: item.role, email: account.email });
+    mutation.mutate(
+      { role: item.role, email: account.email },
+      {
+        onSuccess() {
+          var temp = {
+            email: account.email,
+            role: item.role,
+          };
+          var tempList = [...accountList];
+          tempList[idx] = temp;
+          updateAccountList(tempList);
+        },
+      }
+    );
   };
+
   return (
     <Popover
       isOpen={isOpen}
       onOpen={onOpen}
       onClose={onClose}
       placement="bottom"
-      offset={[50, 0]}
+      offset={[42, 0]}
     >
       <PopoverTrigger>
         <Box
@@ -75,7 +77,7 @@ function RoleSelector(props: PropertyType) {
         </Box>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent padding={2} maxW="200px">
+        <PopoverContent padding={2} maxW="200px" borderRadius="0px 0px 8px 8px">
           <Flex
             flexDirection="column"
             gap={2}

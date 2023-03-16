@@ -49,9 +49,9 @@ async function addAccount(inputData: IAccount, session?: ClientSession) {
 
 async function findAll(session?: ClientSession) {
   try {
-    return await Account.find();
+    return (await Account.find()) as IAccount[];
   } catch (e) {
-    return [];
+    return [] as IAccount[];
   }
 }
 

@@ -42,63 +42,35 @@ export default function CreateAccountForm(props: PropertyType) {
     return result.success;
   }
 
-  const updateAccountsHandler = async () => {
+  const updateAccountsHandler = () => {
     const isValid = validateEmail({ emailField });
     if (!isValid) {
       setDisplayError(true);
       setErrorMessage("Invalid email address");
       return;
     }
+
     const newAccount = {
       email: emailField,
       role: role,
     };
-    updateDB(newAccount);
-    if (!mutation.error) {
-      setDisplayError(false);
-      const temp = [...accountList];
-      temp.unshift(newAccount);
-      updateAccountList(temp);
-      setEmailField("");
-      setRole(Role.Volunteer);
-      setDisplayError(false);
-    }
-    if (mutation.error) {
-      setDisplayError(true);
-      setErrorMessage(mutation.error.message);
-    }
-  };
 
-  const updateDB = (newAccount: IAccount) => {
-    mutation.mutate(newAccount);
+    mutation.mutate(newAccount, {
+      onSuccess: () => {
+        setDisplayError(false);
+        const temp = [...accountList];
+        temp.unshift(newAccount);
+        updateAccountList(temp);
+        setEmailField("");
+        setRole(Role.Volunteer);
+        setDisplayError(false);
+      },
+      onError: (error) => {
+        setDisplayError(true);
+        setErrorMessage(error.message);
+      },
+    });
   };
-
-  //   async function updateState() {
-  //     const isValid = validateEmail({ emailField });
-  //     if (!isValid) {
-  //       setDisplayError(true);
-  //       setErrorMessage("Invalid email address");
-  //       return;
-  //     }
-  //     const newAccount = {
-  //       email: emailField,
-  //       role: role,
-  //     };
-  //     mutation.mutate(newAccount);
-  //     if (!mutation.error) {
-  //       setDisplayError(false);
-  //       const temp = [...accountList];
-  //       temp.unshift(newAccount);
-  //       updateAccountList(temp);
-  //       setEmailField("");
-  //       setRole(Role.Volunteer);
-  //       setDisplayError(false);
-  //     }
-  //     if (mutation.error) {
-  //       setDisplayError(true);
-  //       setErrorMessage(mutation.error.message);
-  //     }
-  //   }
 
   return (
     <>
@@ -140,6 +112,7 @@ export default function CreateAccountForm(props: PropertyType) {
                   borderRadius="16px"
                   bgColor="#D9D9D9"
                   height="36px"
+                  maxW={"379px"}
                 />
                 <Alert status="error">
                   <AlertIcon />
@@ -156,6 +129,7 @@ export default function CreateAccountForm(props: PropertyType) {
                 onChange={handleChange}
                 borderRadius="16px"
                 height="36px"
+                maxW={"379px"}
               />
             )}
           </FormControl>

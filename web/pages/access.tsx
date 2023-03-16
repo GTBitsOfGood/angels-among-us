@@ -6,17 +6,18 @@ import { IAccount } from "../utils/types/account";
 import { trpc } from "../utils/trpc";
 
 export default function Access() {
-  const accounts = trpc.account.getAll.useQuery();
-  console.log("ACCOUNTS");
-  console.log(accounts);
-
   const [accountList, updateAccountList] = useState<IAccount[]>([]);
-  const [selectItems, updateSelectItems] = useState<boolean>(false);
 
-  //   useEffect(() => {
-  //     var temp = accounts.data as IAccount[];
-  //     updateAccountList(accounts.data)
-  //   }, [accounts])
+  const accounts = trpc.account.getAll.useQuery(undefined, {
+    onSuccess: () => {
+      if (accounts.data) {
+        updateAccountList(accounts.data);
+      }
+    },
+    retry: 1,
+  });
+
+  const [selectItems, updateSelectItems] = useState<boolean>(false);
 
   return (
     <Flex
@@ -50,7 +51,7 @@ export default function Access() {
             updateAccountList={updateAccountList}
             updateSelectItems={updateSelectItems}
           ></CreateAccountForm>
-          {accountList != null ? (
+          {!(accountList.length === 0) ? (
             <AccountTable
               accountList={accountList}
               updateAccountList={updateAccountList}
