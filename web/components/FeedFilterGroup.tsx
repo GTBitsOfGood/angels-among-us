@@ -9,11 +9,35 @@ import {
   Flex,
   Text,
 } from "@chakra-ui/react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Select from "react-select";
-import { FilterGroup } from "./Feed";
+import { PossibleTypes } from "../pages/onboarding";
+import { Filter, FilterGroup, SelectedFilters } from "./Feed";
 
-function FeedFilterGroup(props: { filterGroup: FilterGroup }) {
-  const { filterGroup } = props;
+function FeedFilterGroup(props: {
+  key: string;
+  filterGroup: FilterGroup;
+  selectedFilters: SelectedFilters<Filter>;
+  setSelectedFilters: Dispatch<SetStateAction<SelectedFilters<Filter>>>;
+}) {
+  const { filterGroup, selectedFilters, setSelectedFilters } = props;
+
+  function updateFilters(filter: Filter, ind: number) {
+    let tempState = { ...selectedFilters };
+    if (filter.singleAnswer && tempState[filter.key].length == 1) {
+      tempState[filter.key] = [];
+    }
+    if (tempState[filter.key].includes(filter.options[ind].value)) {
+      tempState[filter.key].splice(
+        tempState[filter.key].indexOf(filter.options[ind].value),
+        1
+      );
+    } else {
+      tempState[filter.key].push(filter.options[ind].value);
+    }
+    setSelectedFilters(tempState);
+    console.log(selectedFilters);
+  }
 
   return (
     <Accordion allowMultiple={true}>
@@ -24,9 +48,9 @@ function FeedFilterGroup(props: { filterGroup: FilterGroup }) {
           </Box>
           <AccordionIcon />
         </AccordionButton>
-        {filterGroup.filters.map((f) => {
+        {filterGroup.filters.map((f, groupInd) => {
           return (
-            <AccordionPanel marginRight="40px">
+            <AccordionPanel key={f.description} marginRight="40px">
               <Text>{f.description}</Text>
               <Flex
                 direction="column"
@@ -36,12 +60,11 @@ function FeedFilterGroup(props: { filterGroup: FilterGroup }) {
                 gap="10px"
                 padding="16px"
                 marginTop="6px"
-                minHeight={f.dropdown ? "300px" : "0px"}
+                paddingBottom={f.dropdown ? "320px" : "16px"}
               >
                 {f.dropdown ? (
                   <Select
                     className="dropdown"
-                    maxMenuHeight={200}
                     placeholder="Type here..."
                     styles={{
                       control: (baseStyles: any) => ({
@@ -56,12 +79,41 @@ function FeedFilterGroup(props: { filterGroup: FilterGroup }) {
                       }),
                     }}
                     options={f.options}
+                    value={f.options.reduce(
+                      (arr: { value: PossibleTypes; label: string }[], val) => {
+                        if (selectedFilters[f.key].includes(val.value)) {
+                          arr.push(val);
+                        }
+                        return arr;
+                      },
+                      []
+                    )}
                     isMulti
                     closeMenuOnSelect={false}
+                    onChange={(event: any) => {
+                      let tempState = { ...selectedFilters };
+                      tempState[f.key] = [];
+                      event.forEach((o: any) => {
+                        tempState[f.key].push(o.value);
+                      });
+                      setSelectedFilters(tempState);
+                    }}
                   />
                 ) : (
-                  f.options.map((val) => {
-                    return <Checkbox>{val.label}</Checkbox>;
+                  f.options.map((val, ind) => {
+                    return (
+                      <Checkbox
+                        key={val.label}
+                        isChecked={selectedFilters[f.key].includes(
+                          f.options[ind].value
+                        )}
+                        onChange={() => {
+                          updateFilters(f, ind);
+                        }}
+                      >
+                        {val.label}
+                      </Checkbox>
+                    );
                   })
                 )}
               </Flex>

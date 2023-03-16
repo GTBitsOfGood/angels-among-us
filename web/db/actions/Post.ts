@@ -130,6 +130,7 @@ async function getAllPosts() {
 }
 
 export {
+  getPost,
   createPost,
   updatePostDetails,
   updatePostStatus,

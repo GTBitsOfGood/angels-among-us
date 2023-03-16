@@ -13,7 +13,7 @@ import {
   Card,
   Checkbox,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { PossibleTypes } from "../pages/onboarding";
 import {
   Age,
@@ -36,10 +36,15 @@ export type FilterGroup = {
 };
 
 export type Filter = {
+  key: string;
   description: string;
   options: { value: PossibleTypes; label: string }[];
   dropdown: boolean;
   singleAnswer: boolean;
+};
+
+export type SelectedFilters<T extends Filter> = {
+  [key in T["key"]]: PossibleTypes[];
 };
 
 const filterGroups: FilterGroup[] = [
@@ -47,6 +52,7 @@ const filterGroups: FilterGroup[] = [
     title: "General Information",
     filters: [
       {
+        key: "type",
         description: "Which types of fosters can you help with?",
         options: [
           { value: FosterType.Return, label: "Return" },
@@ -65,6 +71,7 @@ const filterGroups: FilterGroup[] = [
     title: "Physical Traits",
     filters: [
       {
+        key: "breed",
         description: "Breed Restrictions",
         options: [
           { value: Breed.AmericanEskimo, label: "American Eskimo" },
@@ -122,6 +129,7 @@ const filterGroups: FilterGroup[] = [
         singleAnswer: false,
       },
       {
+        key: "age",
         description: "Age Capability",
         options: [
           { value: Age.Puppy, label: "Puppy" },
@@ -134,6 +142,7 @@ const filterGroups: FilterGroup[] = [
         singleAnswer: false,
       },
       {
+        key: "size",
         description: "Dog Size Capability",
         options: [
           { value: Size.XS, label: "Extra Small" },
@@ -146,6 +155,7 @@ const filterGroups: FilterGroup[] = [
         singleAnswer: false,
       },
       {
+        key: "gender",
         description: "Gender Capability",
         options: [
           { value: Gender.Male, label: "Male" },
@@ -161,6 +171,7 @@ const filterGroups: FilterGroup[] = [
     title: "Behavioral Traits",
     filters: [
       {
+        key: "goodWith",
         description: "Able to foster dogs NOT good with:",
         options: [
           { value: GoodWith.Men, label: "Men" },
@@ -175,6 +186,7 @@ const filterGroups: FilterGroup[] = [
         singleAnswer: false,
       },
       {
+        key: "behavioral",
         description: "Able to foster dogs with:",
         options: [
           { value: Behavioral.SeparationAnxiety, label: "Separation Anxiety" },
@@ -188,6 +200,7 @@ const filterGroups: FilterGroup[] = [
         singleAnswer: false,
       },
       {
+        key: "temperament",
         description: "Able to foster dogs with these temperaments:",
         options: [
           { value: Temperament.Friendly, label: "Friendly" },
@@ -204,6 +217,7 @@ const filterGroups: FilterGroup[] = [
     title: "Medical Information",
     filters: [
       {
+        key: "houseTrained",
         description: "Able to foster dogs not house trained...",
         options: [
           { value: Trained.Yes, label: "Yes" },
@@ -213,6 +227,7 @@ const filterGroups: FilterGroup[] = [
         singleAnswer: true,
       },
       {
+        key: "crateTrained",
         description: "Able to foster dogs not crate trained...",
         options: [
           { value: Trained.Yes, label: "Yes" },
@@ -222,6 +237,7 @@ const filterGroups: FilterGroup[] = [
         singleAnswer: true,
       },
       {
+        key: "spayNeuterStatus",
         description: "Able to foster dogs not spayed or neutered...",
         options: [
           { value: Status.Yes, label: "Yes" },
@@ -233,12 +249,27 @@ const filterGroups: FilterGroup[] = [
     ],
   },
 ];
-
 function Feed(props: {
   filterDisplayed: boolean;
   setFilterDisplayed: Dispatch<SetStateAction<boolean>>;
 }) {
   let { filterDisplayed, setFilterDisplayed } = props;
+
+  function getInitialFilters() {
+    return filterGroups.reduce((acc, curr) => {
+      const group = curr.filters.reduce((a, c) => {
+        if (c.singleAnswer) return { ...a, [c.key]: [c.options[0].value] };
+        if (c.dropdown) return { ...a, [c.key]: [] };
+        return { ...a, [c.key]: c.options.map((val) => val.value) };
+      }, {});
+      return {
+        ...acc,
+        ...group,
+      };
+    }, {});
+  }
+
+  const [selectedFilters, setSelectedFilters] = useState(getInitialFilters());
 
   const mainContent = (
     <Flex
@@ -298,6 +329,9 @@ function Feed(props: {
               borderWidth="1px"
               borderColor="#7D7E82"
               borderRadius="12px"
+              onClick={() => {
+                setSelectedFilters(getInitialFilters());
+              }}
             >
               Clear All
             </Button>
@@ -311,7 +345,14 @@ function Feed(props: {
             </Button>
           </Flex>
           {filterGroups.map((val) => {
-            return <FeedFilterGroup filterGroup={val} />;
+            return (
+              <FeedFilterGroup
+                key={val.title}
+                filterGroup={val}
+                selectedFilters={selectedFilters}
+                setSelectedFilters={setSelectedFilters}
+              />
+            );
           })}
         </Flex>
         <Flex
