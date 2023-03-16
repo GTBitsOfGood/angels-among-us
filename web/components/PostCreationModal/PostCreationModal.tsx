@@ -10,6 +10,21 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { trpc } from "../../utils/trpc";
+import {
+  Age,
+  AttachmentInfo,
+  Behavioral,
+  Breed,
+  FosterType,
+  Gender,
+  GoodWith,
+  Medical,
+  Size,
+  Status,
+  Temperament,
+  Trained,
+} from "../../utils/types/post";
 import FileUploadSlide from "./FileUploadSlide";
 
 const PostCreationModal: React.FC<{
@@ -34,6 +49,86 @@ const PostCreationModal: React.FC<{
     console.log(selectedFiles);
   }, [selectedFiles]);
 
+  const postCreate = trpc.post.create.useMutation();
+  const postFinalize = trpc.post.finalize.useMutation();
+
+  const createPost = async () => {
+    const files: AttachmentInfo[] = await Promise.all(
+      selectedFiles.map(async (file) => {
+        const key = file.name;
+        if (file.type.includes("img/")) {
+          const url = URL.createObjectURL(file);
+          return new Promise((resolve, _) => {
+            const image = new Image();
+            image.onload = () => {
+              URL.revokeObjectURL(url);
+              resolve({
+                type: "image",
+                key,
+                length: image.height,
+                width: image.width,
+              });
+            };
+            image.src = url;
+          });
+        } else {
+          return {
+            type: "video",
+            key,
+          };
+        }
+      })
+    );
+    console.log(`${JSON.stringify(files)}`);
+    try {
+      const creationInfo = await postCreate.mutateAsync({
+        type: FosterType.Shelter,
+        size: Size.S,
+        breed: Breed.Mix,
+        gender: Gender.Male,
+        age: Age.Puppy,
+        temperament: Temperament.Calm,
+        goodWith: [GoodWith.Men],
+        medical: [Medical.Parvo],
+        behavioral: [Behavioral.Barking],
+        houseTrained: Trained.Yes,
+        crateTrained: Trained.Yes,
+        spayNeuterStatus: Status.Yes,
+        attachments: files,
+      });
+      const oid = creationInfo._id;
+      const uploadInfo = creationInfo.attachments;
+
+      console.log(`creation: ${JSON.stringify(creationInfo)}`);
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
+      }
+
+      const postInfo = await postFinalize.mutateAsync({
+        _id: oid,
+      });
+
+      console.log(JSON.stringify(postInfo));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const uploadFile = async (url: string, file: File) => {
+    const uploadResp = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "content-length": `${file.size}`,
+      },
+      body: await file.arrayBuffer(),
+    });
+    if (uploadResp.status == 500) {
+      // TODO retry logic
+    }
+  };
+
   let postButtonStyle = {
     color: "#8C8C8C",
     bgColor: "#FFFFFF",
@@ -53,12 +148,13 @@ const PostCreationModal: React.FC<{
   return (
     <Modal onClose={onClose} isOpen={isOpen} closeOnOverlayClick={false}>
       <ModalOverlay />
-      <ModalContent minW={"850px"} minH={"790px"}>
+      <ModalContent minW={"850px"} maxH={"600px"} minH={"600px"}>
         <Stack
           paddingLeft={"75px"}
           paddingRight={"75px"}
           paddingTop={"40px"}
           paddingBottom={"40px"}
+          overflowY="auto"
         >
           <Flex
             direction={"row"}
@@ -73,7 +169,7 @@ const PostCreationModal: React.FC<{
               <Text>Back to New Pet content</Text>
             )}
           </Flex>
-          <Text fontSize={"5xl"} fontWeight={"bold"} lineHeight={"56px"}>
+          <Text fontSize={"48px"} fontWeight={"bold"} lineHeight={"55px"}>
             Add A New Pet
           </Text>
           {isContentView ? (
@@ -88,20 +184,22 @@ const PostCreationModal: React.FC<{
               </Text>
             </Flex>
           )}
-          {isContentView ? (
-            //TODO: Add new pet content slide component here.
-            <></>
-          ) : (
-            <FileUploadSlide
-              fileArr={fileArr}
-              selectedFiles={selectedFiles}
-              setSelectedFiles={setSelectedFiles}
-              setFileArr={setFileArr}
-              numFiles={numFiles}
-              showAlert={showAlert}
-              setShowAlert={setShowAlert}
-            ></FileUploadSlide>
-          )}
+          <Stack overflowY="auto">
+            {isContentView ? (
+              //TODO: Add new pet content slide component here.
+              <></>
+            ) : (
+              <FileUploadSlide
+                fileArr={fileArr}
+                selectedFiles={selectedFiles}
+                setSelectedFiles={setSelectedFiles}
+                setFileArr={setFileArr}
+                numFiles={numFiles}
+                showAlert={showAlert}
+                setShowAlert={setShowAlert}
+              ></FileUploadSlide>
+            )}
+          </Stack>
           <ModalFooter>
             {isContentView ? (
               <Button
@@ -119,7 +217,10 @@ const PostCreationModal: React.FC<{
             ) : (
               <Button
                 //TODO: On click, query database to create post.
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  createPost();
+                }}
                 color={postButtonStyle.color}
                 bgColor={postButtonStyle.bgColor}
                 borderRadius={postButtonStyle.borderRadius}
