@@ -145,7 +145,7 @@ const medicalOptions = [
   { value: Medical.ChronicCondition, label: "ChronicCondition" },
   { value: Medical.Pregnant, label: "Pregnant" },
   { value: Medical.Nursing, label: "Nursing" },
-  { value: Medical.BottleFeeding, label: "Bottle Feeding" },
+  { value: Medical.BottleFed, label: "Bottle Feeding" },
 ];
 
 const behavioralOptions = [

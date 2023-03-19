@@ -102,8 +102,17 @@ const formSchema = z.object({
 
 export type FormState = z.input<typeof formSchema>;
 
-function PostCreationModal() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+interface PostCreationModalProps {
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+}
+function PostCreationModal({
+  isOpen,
+  onOpen,
+  onClose,
+}: PostCreationModalProps) {
+  // const { isOpen, onOpen, onClose } = useDisclosure();
   const [isContentView, setIsContentView] = useState(true);
   const [numFiles, setNumFiles] = useState<number>(0);
   const [showAlert, setShowAlert] = useState<boolean>(false);
