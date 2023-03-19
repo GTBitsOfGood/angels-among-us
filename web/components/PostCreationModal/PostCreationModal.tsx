@@ -8,6 +8,7 @@ import {
   ModalOverlay,
   Text,
   Flex,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -25,6 +26,7 @@ import {
   Size,
   Temperament,
   Trained,
+  Status,
 } from "../../utils/types/post";
 import FileUploadSlide from "./FileUpload/FileUploadSlide";
 import { FormSlide } from "./Form/FormSlide";
@@ -281,12 +283,14 @@ function PostCreationModal() {
             <Text fontSize={"5xl"} fontWeight={"bold"} lineHeight={"56px"}>
               Add A New Pet
             </Text>
-            {isFormSlideView ? (
+            {isContentView ? (
               <Text>
                 Fill out the following fields to add a new pet to the Angels
                 Among Us Foster Feed!
               </Text>
-              
+            ) : (
+              <></>
+            )}
           </Flex>
           <Text fontSize={"48px"} fontWeight={"bold"} lineHeight={"55px"}>
             Add A New Pet
@@ -401,6 +405,6 @@ function PostCreationModal() {
       </ModalContent>
     </Modal>
   );
-};
+}
 
 export default PostCreationModal;
