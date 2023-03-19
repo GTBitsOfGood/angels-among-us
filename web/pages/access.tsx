@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Text, Box, Flex, Center } from "@chakra-ui/react";
 import { IAccount } from "../utils/types/account";
 import { Role } from "../utils/types/account";
-
-export default function Access() {
+import { pageAccessHOC } from "../utils/access";
+function Access() {
   const [accountList, updateAccountList] = useState<IAccount[]>([
     {
       email: "exmpleaddress1@domainname.com",
@@ -64,3 +64,5 @@ export default function Access() {
     </Flex>
   );
 }
+
+export default pageAccessHOC(Access);
