@@ -34,7 +34,7 @@ import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
 
-export default function Home() {
+function Home() {
   const { loading, authorized } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -283,3 +283,5 @@ export default function Home() {
     </Flex>
   );
 }
+
+export default Home;

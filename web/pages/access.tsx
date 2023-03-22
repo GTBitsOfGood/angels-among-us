@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Text, Box, Flex, Center } from "@chakra-ui/react";
 import { IAccount } from "../utils/types/account";
 import { Role } from "../utils/types/account";
-import { pageAccessHOC } from "../utils/access";
+import pageAccessHOC from "../components/HOC/PageAccess";
+
 function Access() {
   const [accountList, updateAccountList] = useState<IAccount[]>([
     {

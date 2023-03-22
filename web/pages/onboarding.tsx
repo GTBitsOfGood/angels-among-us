@@ -16,7 +16,7 @@ import {
   Breed,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
-import { pageAccessHOC } from "../utils/access";
+import pageAccessHOC from "../components/HOC/PageAccess";
 
 export enum QType {
   Intro,
