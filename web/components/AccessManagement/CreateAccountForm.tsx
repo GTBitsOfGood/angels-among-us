@@ -16,10 +16,11 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
+import { HydratedDocument } from "mongoose";
 
 interface PropertyType {
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -53,7 +54,7 @@ export default function CreateAccountForm(props: PropertyType) {
     const newAccount = {
       email: emailField,
       role: role,
-    };
+    } as HydratedDocument<IAccount>;
 
     mutation.mutate(newAccount, {
       onSuccess: () => {

@@ -187,29 +187,20 @@ export const accountRouter = router({
       }
     }),
 
-  getAll: protectedProcedure
-    .output(
-      z.array(
-        z.object({
-          email: z.string().email(),
-          role: z.nativeEnum(Role),
-        })
-      )
-    )
-    .query(async ({ ctx }) => {
-      const session = await Account.startSession();
-      session.startTransaction();
-      try {
-        const accounts = await findAll(session);
-        return accounts as IAccount[];
-      } catch (e) {
-        session.abortTransaction();
-        if (e instanceof TRPCError) throw e;
-        else
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "An unexpected error occured",
-          });
-      }
-    }),
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const session = await Account.startSession();
+    session.startTransaction();
+    try {
+      const accounts = await findAll(session);
+      return accounts as IAccount[];
+    } catch (e) {
+      session.abortTransaction();
+      if (e instanceof TRPCError) throw e;
+      else
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occured",
+        });
+    }
+  }),
 });

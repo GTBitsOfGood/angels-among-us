@@ -11,11 +11,12 @@ import {
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IAccount } from "../../utils/types/account";
+import { HydratedDocument } from "mongoose";
 import { trpc } from "../../utils/trpc";
 
 interface PropertyType {
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   itemsToDelete: Number[];
   updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
@@ -36,13 +37,11 @@ function DeletePopup(props: PropertyType) {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleDelete = () => {
-    var newArr = accountList.filter(
-      (e) => itemsToDelete.indexOf(accountList.indexOf(e)) < 0
-    );
-    var removeArr = accountList.filter(
-      (e) => itemsToDelete.indexOf(accountList.indexOf(e)) > -1
-    );
-    var emails = removeArr.map((e) => e.email);
+    const newArr = accountList.filter(
+      (e, i) => !itemsToDelete.includes(i)
+    ) as HydratedDocument<IAccount>[];
+    const removeArr = accountList.filter((e, i) => itemsToDelete.includes(i));
+    const emails = removeArr.map((e) => e.email);
     mutation.mutate(emails, {
       onSuccess: () => {
         setShowError(false);

@@ -47,11 +47,13 @@ async function addAccount(inputData: IAccount, session?: ClientSession) {
   }
 }
 
-async function findAll(session?: ClientSession) {
+async function findAll(
+  session?: ClientSession
+): Promise<HydratedDocument<IAccount>[]> {
   try {
-    return (await Account.find()) as IAccount[];
+    return await Account.find();
   } catch (e) {
-    return [] as IAccount[];
+    return [];
   }
 }
 

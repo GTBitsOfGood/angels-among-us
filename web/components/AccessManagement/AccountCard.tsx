@@ -1,20 +1,21 @@
 import { IAccount, Role } from "../../utils/types/account";
+import { HydratedDocument } from "mongoose";
 import RoleSelector from "./RoleSelector";
 import { Box, Flex, HStack, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 
 interface PropertyType {
-  account: IAccount;
+  account: HydratedDocument<IAccount>;
   idx: Number;
   selectItems: boolean;
   itemsToDelete: Number[];
   updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
 }
 
 function createLabel(r: Role) {
-  var labelText = "";
+  let labelText = "";
   if (r === Role.Admin) {
     labelText = "Admin";
   } else if (r === Role.Volunteer) {
@@ -61,10 +62,10 @@ function AccountCard(props: PropertyType) {
 
   function updateSelections() {
     if (itemsToDelete.indexOf(idx) > -1) {
-      var temp = itemsToDelete.filter((e) => e != idx);
+      const temp = itemsToDelete.filter((e) => e != idx);
       updateItemsToDelete(temp);
     } else {
-      var temp = [...itemsToDelete];
+      const temp = [...itemsToDelete];
       temp.push(idx);
       updateItemsToDelete(temp);
     }

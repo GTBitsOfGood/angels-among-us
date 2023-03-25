@@ -1,11 +1,12 @@
 import { Flex, Input, Box, Text } from "@chakra-ui/react";
+import { HydratedDocument } from "mongoose";
 import { Dispatch, SetStateAction } from "react";
 import { IAccount } from "../../utils/types/account";
 import DeletePopup from "./DeletePopup";
 
 interface PropertyType {
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
   itemsToDelete: Number[];

@@ -3,10 +3,11 @@ import { IAccount } from "../../utils/types/account";
 import AccountCard from "./AccountCard";
 import { Stack, SimpleGrid, Grid, GridItem, Center } from "@chakra-ui/react";
 import TableHeader from "./TableHeader";
+import { HydratedDocument } from "mongoose";
 
 interface PropertyType {
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
@@ -47,7 +48,7 @@ function AccountTable(props: PropertyType) {
         gap={"20px"}
         width={"inherit"}
       >
-        {accountList.map((e: IAccount) => {
+        {accountList.map((e: HydratedDocument<IAccount>) => {
           return (
             <GridItem
               colSpan={{ sm: 1, md: 1, lg: 2 }}
