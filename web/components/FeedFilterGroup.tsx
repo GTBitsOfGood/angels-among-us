@@ -10,32 +10,22 @@ import {
   Flex,
   Text,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch } from "react";
 import Select from "react-select";
-import { PossibleTypes } from "../pages/onboarding";
-import { Filter, FilterGroup, SelectedFilters } from "./Feed";
+import { Filter, FilterGroup, Option, SelectedFilters } from "./Feed";
 
 function FeedFilterGroup(props: {
   key: string;
   filterGroup: FilterGroup;
   selectedFilters: SelectedFilters<Filter>;
-  setSelectedFilters: Dispatch<SetStateAction<SelectedFilters<Filter>>>;
+  setSelectedFilters: Dispatch<{
+    type: string;
+    filter: Filter;
+    ind: number;
+    event: Option[];
+  }>;
 }) {
   const { filterGroup, selectedFilters, setSelectedFilters } = props;
-
-  function updateFilters(filter: Filter, ind: number) {
-    let tempState = { ...selectedFilters };
-    if (tempState[filter.key].includes(filter.options[ind])) {
-      tempState[filter.key].splice(
-        tempState[filter.key].indexOf(filter.options[ind]),
-        1
-      );
-    } else {
-      tempState[filter.key].push(filter.options[ind]);
-    }
-    setSelectedFilters(tempState);
-    console.log(selectedFilters);
-  }
 
   return (
     <Accordion allowMultiple={true}>
@@ -68,7 +58,7 @@ function FeedFilterGroup(props: {
                       placeholder="Type here..."
                       maxMenuHeight={180}
                       styles={{
-                        control: (baseStyles: any) => ({
+                        control: (baseStyles) => ({
                           ...baseStyles,
                           minWidth: 200,
                           border: "1px solid #D9D9D9",
@@ -79,27 +69,21 @@ function FeedFilterGroup(props: {
                         }),
                       }}
                       options={f.options}
-                      value={f.options.reduce(
-                        (
-                          arr: { value: PossibleTypes; label: string }[],
-                          val
-                        ) => {
-                          if (selectedFilters[f.key].includes(val)) {
-                            arr.push(val);
-                          }
-                          return arr;
-                        },
-                        []
-                      )}
+                      value={f.options.reduce((arr: Option[], val) => {
+                        if (selectedFilters[f.key].includes(val)) {
+                          arr.push(val);
+                        }
+                        return arr;
+                      }, [])}
                       isMulti
                       closeMenuOnSelect={false}
                       onChange={(event: any) => {
-                        let tempState = { ...selectedFilters };
-                        tempState[f.key] = [];
-                        event.forEach((o: any) => {
-                          tempState[f.key].push(o);
+                        setSelectedFilters({
+                          type: "dropdown",
+                          filter: f,
+                          ind: 0,
+                          event: event,
                         });
-                        setSelectedFilters(tempState);
                       }}
                     />
                   </Flex>
@@ -109,11 +93,18 @@ function FeedFilterGroup(props: {
                       <Checkbox
                         key={val.label}
                         color="#3F3F3F"
-                        isChecked={selectedFilters[f.key].includes(
-                          f.options[ind]
+                        isChecked={selectedFilters[f.key].some(
+                          (e: Option) =>
+                            e.value == f.options[ind].value &&
+                            e.label == f.options[ind].label
                         )}
                         onChange={() => {
-                          updateFilters(f, ind);
+                          setSelectedFilters({
+                            type: "checkbox",
+                            filter: f,
+                            ind: ind,
+                            event: [],
+                          });
                         }}
                       >
                         {val.label}
@@ -137,9 +128,12 @@ function FeedFilterGroup(props: {
                   borderColor="#D9D9D9"
                   borderRadius="4px"
                   onClick={() => {
-                    let tempState = { ...selectedFilters };
-                    tempState[f.key] = [];
-                    setSelectedFilters(tempState);
+                    setSelectedFilters({
+                      type: "dropdown",
+                      filter: f,
+                      ind: 0,
+                      event: [],
+                    });
                   }}
                 >
                   Deselect All
@@ -152,9 +146,12 @@ function FeedFilterGroup(props: {
                   borderColor="#D9D9D9"
                   borderRadius="4px"
                   onClick={() => {
-                    let tempState = { ...selectedFilters };
-                    tempState[f.key] = f.options.map((val) => val);
-                    setSelectedFilters(tempState);
+                    setSelectedFilters({
+                      type: "dropdown",
+                      filter: f,
+                      ind: 0,
+                      event: f.options.map((val) => val),
+                    });
                   }}
                 >
                   Select All

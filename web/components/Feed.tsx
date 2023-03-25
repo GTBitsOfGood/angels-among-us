@@ -1,5 +1,5 @@
 import { Button, Flex, Stack, Text } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { PossibleTypes } from "../pages/onboarding";
 import {
   Age,
@@ -29,8 +29,13 @@ export type Filter = {
   allSelected: boolean;
 };
 
+export type Option = {
+  value: PossibleTypes;
+  label: string;
+};
+
 export type SelectedFilters<T extends Filter> = {
-  [key in T["key"]]: { value: PossibleTypes; label: string }[];
+  [key in T["key"]]: Option[];
 };
 
 const filterGroups: FilterGroup[] = [
@@ -236,7 +241,52 @@ function Feed(props: {
     }, {});
   }
 
-  const [selectedFilters, setSelectedFilters] = useState(getInitialFilters());
+  function filterReducer(
+    state: SelectedFilters<Filter>,
+    action: {
+      type: string;
+      filter: Filter;
+      ind: number;
+      event: Option[];
+    }
+  ) {
+    let tempState = JSON.parse(JSON.stringify(state));
+    switch (action.type) {
+      case "reset":
+        return getInitialFilters();
+      case "dropdown":
+        tempState[action.filter.key] = action.event;
+        return tempState;
+      case "checkbox":
+        const filt = action.filter;
+        const ind = action.ind;
+        const option = filt.options[ind];
+        console.log(option);
+        if (
+          tempState[filt.key].some(
+            (e: Option) => e.value == option.value && e.label == option.label
+          )
+        ) {
+          tempState[filt.key].splice(
+            tempState[filt.key].findIndex(
+              (e: Option) => e.value == option.value && e.label == option.label
+            ),
+            1
+          );
+        } else {
+          tempState[filt.key].push(filt.options[ind]);
+        }
+        console.log(tempState);
+        return tempState;
+      default:
+        return state;
+    }
+  }
+
+  const [selectedFilters, setSelectedFilters] = useReducer(
+    filterReducer,
+    getInitialFilters()
+  );
 
   const mainContent = (
     <Flex
@@ -266,7 +316,6 @@ function Feed(props: {
           <Button
             onClick={() => {
               setFilterDisplayed(!filterDisplayed);
-              console.log(filterDisplayed);
             }}
             backgroundColor="#529FD4"
             color="#FFFFFF"
@@ -297,7 +346,12 @@ function Feed(props: {
               borderColor="#7D7E82"
               borderRadius="12px"
               onClick={() => {
-                setSelectedFilters(getInitialFilters());
+                setSelectedFilters({
+                  type: "reset",
+                  filter: filterGroups[0].filters[0],
+                  ind: 0,
+                  event: [],
+                });
               }}
             >
               Clear All
@@ -419,7 +473,12 @@ function Feed(props: {
             borderColor="#7D7E82"
             borderRadius="12px"
             onClick={() => {
-              setSelectedFilters(getInitialFilters());
+              setSelectedFilters({
+                type: "reset",
+                filter: filterGroups[0].filters[0],
+                ind: 0,
+                event: [],
+              });
             }}
           >
             Clear All
