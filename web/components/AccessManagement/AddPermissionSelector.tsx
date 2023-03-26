@@ -10,27 +10,27 @@ interface PropertyType {
 export default function PermissionSelector(props: PropertyType) {
   const { role, setRole } = props;
 
-  let buttonSelected = {
+  const buttonSelected = {
     bgColor: "#a9a8a8",
   };
 
-  let buttonUnselected = {
+  const buttonUnselected = {
     bgColor: "#ffffff",
   };
 
-  let textSelected = {
+  const textSelected = {
     color: "#ffffff",
   };
 
-  let textUnselected = {
+  const textUnselected = {
     color: "#000000",
   };
 
-  let a = role === Role.Admin;
-  let c = role === Role.ContentCreator;
-  let v = role === Role.Volunteer;
+  const a = role === Role.Admin;
+  const c = role === Role.ContentCreator;
+  const v = role === Role.Volunteer;
 
-  let textStyle = {
+  const textStyle = {
     lineHeight: "19px",
     fontSize: "16px",
     fontWeight: "400",
