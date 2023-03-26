@@ -25,9 +25,9 @@ import {
   Temperament,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
-import { colors } from "react-select/dist/declarations/src/theme";
+import pageAccessHOC from "../components/HOC/PageAccess";
 
-export default function Profile() {
+function Profile() {
   const { user, loading, userData, authorized } = useAuth();
   const [editing, setEditing] = React.useState(false);
 
@@ -586,3 +586,5 @@ export default function Profile() {
     </>
   );
 }
+
+export default pageAccessHOC(Profile);
