@@ -62,7 +62,7 @@ const PetPostModal: React.FC<{
                 </Text>
                 <Text>
                   I am a foster move dog. My previous foster parents
-                  weren`&apos;`t able to care for me anymore.
+                  weren&apos;t able to care for me anymore.
                 </Text>
               </Stack>
               <Stack direction="column" width="50%" spacing={6}>
@@ -217,7 +217,7 @@ const PetPostModal: React.FC<{
                 </Stack>
                 <Stack direction="column">
                   <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
-                    I`&apos;`m comfortable with
+                    I&apos;m comfortable with
                   </Text>
                   <Wrap>
                     <WrapItem>
@@ -254,7 +254,7 @@ const PetPostModal: React.FC<{
                 </Stack>
                 <Stack direction="column">
                   <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
-                    I`&apos;`m not comfortable with
+                    I&apos;m not comfortable with
                   </Text>
                   <Wrap>
                     <WrapItem>
