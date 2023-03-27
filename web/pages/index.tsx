@@ -33,10 +33,25 @@ import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
+import PetPostModal from "../components/PetPostModal/PetPostModal";
 
 export default function Home() {
   const { loading, authorized } = useAuth();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isPostCreateOpen,
+    onOpen: onPostCreateOpen,
+    onClose: onPostCreateClose,
+  } = useDisclosure();
+  const {
+    isOpen: isPetPostOpen,
+    onOpen: onPetPostOpen,
+    onClose: onPetPostClose,
+  } = useDisclosure();
+  const {
+    isOpen: isToolOpen,
+    onOpen: onToolOpen,
+    onClose: onToolClose,
+  } = useDisclosure();
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
@@ -59,6 +74,13 @@ export default function Home() {
     return (
       <Flex height="100vh">
         <Flex width="100%" justifyContent="center" alignItems="center">
+          <Button onClick={onPetPostOpen}>Open Pet Post</Button>
+          <PetPostModal
+            isOpen={isPetPostOpen}
+            onOpen={onPetPostOpen}
+            onClose={onPetPostClose}
+          />
+
           <Button
             cursor={["default", "pointer"]}
             bgColor="#D9D9D9"
@@ -66,11 +88,11 @@ export default function Home() {
           >
             Logout
           </Button>
-          <Button onClick={onOpen}>Open Post Creation Modal</Button>
+          <Button onClick={onPostCreateOpen}>Open Post Creation Modal</Button>
           <PostCreationModal
-            isOpen={isOpen}
-            onOpen={onOpen}
-            onClose={onClose}
+            isOpen={isPostCreateOpen}
+            onOpen={onPostCreateOpen}
+            onClose={onPostCreateClose}
           />
         </Flex>
       </Flex>
@@ -232,11 +254,11 @@ export default function Home() {
                   aria-label="info"
                   cursor="default"
                   icon={<QuestionOutlineIcon />}
-                  onClick={onOpen}
+                  onClick={onToolOpen}
                 ></IconButton>
               </Stack>
 
-              <Modal isOpen={isOpen} onClose={onClose} isCentered>
+              <Modal isOpen={isToolOpen} onClose={onToolClose} isCentered>
                 <ModalOverlay />
                 <ModalContent width="80%" bgColor="#D9D9D9">
                   <ModalBody>
