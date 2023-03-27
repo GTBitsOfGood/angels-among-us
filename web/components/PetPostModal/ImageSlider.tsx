@@ -41,7 +41,7 @@ const ImageSlider = () => {
             left={0}
             p={3}
             alignItems="center"
-            maxHeight="75vh"
+            maxHeight={["50vh", "75vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <FaArrowCircleLeft size={30} />
@@ -60,7 +60,7 @@ const ImageSlider = () => {
             right={0}
             p={3}
             alignItems="center"
-            maxHeight="75vh"
+            maxHeight={["50vh", "75vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <FaArrowCircleRight size={30} />
@@ -78,7 +78,7 @@ const ImageSlider = () => {
             objectFit="cover"
             width="full"
             height="full"
-            maxHeight="75vh"
+            maxHeight={["50vh", "75vh"]}
             alt=""
           />
         );
