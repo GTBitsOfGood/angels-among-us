@@ -88,11 +88,11 @@ export default function Navbar() {
               borderRadius="0%"
             >
               <Stack direction="row" alignItems="center">
-
                 <Image
                   borderRadius="100%"
                   boxSize={10}
                   src={user?.photoURL ?? undefined}
+                  alt="User photo"
                 ></Image>
 
                 <ChevronDownIcon />
@@ -107,11 +107,11 @@ export default function Navbar() {
                 spacing={5}
               >
                 <Stack direction="row">
-
                   <Image
                     borderRadius="100%"
                     boxSize={10}
                     src={user?.photoURL ?? undefined}
+                    alt="User photo"
                   />
 
                   <Stack direction="column">

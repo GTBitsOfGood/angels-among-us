@@ -214,11 +214,11 @@ export default function Profile() {
                   spacing={10}
                   alignItems="center"
                 >
-
                   <Image
                     borderRadius="100%"
                     boxSize={36}
                     src={user?.photoURL ?? undefined}
+                    alt="User photo"
                   ></Image>
 
                   <Stack direction="column" width="85%" spacing={5}>

@@ -72,12 +72,14 @@ const ImageSlider = () => {
       {SlideData.map((slide) => {
         return (
           <Image
+            key={slide.image}
             src={slide.image}
             borderRadius="15px"
             objectFit="cover"
             width="full"
             height="full"
             maxHeight="75vh"
+            alt=""
           />
         );
       })}
