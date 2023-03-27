@@ -35,7 +35,7 @@ import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
 import PetPostModal from "../components/PetPostModal/PetPostModal";
 
-export default function Home() {
+function Home() {
   const { loading, authorized } = useAuth();
   const {
     isOpen: isPostCreateOpen,
@@ -305,3 +305,5 @@ export default function Home() {
     </Flex>
   );
 }
+
+export default Home;

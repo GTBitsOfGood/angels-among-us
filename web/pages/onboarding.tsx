@@ -16,6 +16,7 @@ import {
   Breed,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
+import pageAccessHOC from "../components/HOC/PageAccess";
 
 export enum QType {
   Intro,
@@ -61,7 +62,7 @@ export type Answers<T extends StoredQuestion<PossibleTypes>> = {
   [key in T["key"]]: PossibleTypes[];
 };
 
-export default function Onboarding() {
+function Onboarding() {
   const { user } = useAuth();
 
   const questionData: IQuestion[] = [
@@ -457,3 +458,5 @@ export default function Onboarding() {
     </Flex>
   );
 }
+
+export default pageAccessHOC(Onboarding);
