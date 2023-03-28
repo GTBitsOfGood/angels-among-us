@@ -1,6 +1,6 @@
-import { Button, Flex, Stack, Text } from "@chakra-ui/react";
+import { Button, Flex, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useReducer, useState } from "react";
-import { PossibleTypes } from "../pages/onboarding";
+import { PossibleTypes } from "../../pages/onboarding";
 import {
   Age,
   Behavioral,
@@ -12,7 +12,8 @@ import {
   Status,
   Temperament,
   Trained,
-} from "../utils/types/post";
+} from "../../utils/types/post";
+import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
 
@@ -228,6 +229,8 @@ function Feed(props: {
 }) {
   let { filterDisplayed, setFilterDisplayed } = props;
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   function getInitialFilters() {
     return filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
@@ -389,6 +392,7 @@ function Feed(props: {
           <Text fontWeight="bold" fontSize="18px">
             Latest Posts
           </Text>
+
           <FeedPostCard
             image={
               "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
@@ -508,7 +512,13 @@ function Feed(props: {
     </Flex>
   );
 
-  return filterDisplayed ? filter : mainContent;
+  return (
+    <>
+      {filterDisplayed ? filter : mainContent}
+      <Button onClick={onOpen}>Post creation</Button>
+      <PostCreationModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+    </>
+  );
 }
 
 export default Feed;

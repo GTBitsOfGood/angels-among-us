@@ -23,6 +23,8 @@ import { Role } from "../utils/types/account";
 import { useRouter } from "next/router";
 import { navbarVisiblity } from "../utils/visibility";
 import { Pages } from "../utils/consts";
+import { signOut } from "firebase/auth";
+import { auth } from "../utils/firebase/firebaseClient";
 
 export default function Navbar() {
   const router = useRouter();
@@ -130,6 +132,15 @@ export default function Navbar() {
                   </Stack>
                 </Stack>
                 <Stack direction="row" justifyContent="flex-end">
+                  <Button
+                    variant="outline"
+                    textColor="gray"
+                    size="sm"
+                    fontWeight={400}
+                    onClick={() => signOut(auth)}
+                  >
+                    Logout
+                  </Button>
                   <Link
                     as={NextLink}
                     href={Pages.PROFILE}

@@ -28,12 +28,13 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
+  Box,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
-import Feed from "../components/Feed";
+import Feed from "../components/Feed/Feed";
 
 function Home() {
   const { loading, authorized } = useAuth();
@@ -60,26 +61,6 @@ function Home() {
   }
 
   if (authorized) {
-    /*return (
-      <Flex height="100vh">
-        <Flex width="100%" justifyContent="center" alignItems="center">
-          <Button
-            cursor={["default", "pointer"]}
-            bgColor="#D9D9D9"
-            onClick={() => signOut(auth)}
-          >
-            Logout
-          </Button>
-          <Button onClick={onOpen}>Open Post Creation Modal</Button>
-          <PostCreationModal
-            isOpen={isOpen}
-            onOpen={onOpen}
-            onClose={onClose}
-          />
-        </Flex>
-      </Flex>
-    );*/
-
     return (
       <Feed
         filterDisplayed={filterDisplayed}
