@@ -39,8 +39,16 @@ export default function Navbar() {
     return <></>;
   }
   return (
-    <Flex bgColor="white" width="100%" minH="64px" position="absolute" top={0}>
-      <Stack
+    <Flex
+      id="navbar"
+      bgColor="white"
+      width="100%"
+      minH="64px"
+      position="absolute"
+      top={0}
+      zIndex="1"
+    >
+      <Flex
         direction="row"
         alignItems="center"
         justifyContent="space-between"
@@ -243,7 +251,7 @@ export default function Navbar() {
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
-      </Stack>
+      </Flex>
     </Flex>
   );
 }

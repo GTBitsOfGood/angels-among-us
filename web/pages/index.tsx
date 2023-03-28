@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -33,6 +33,7 @@ import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
+import Feed from "../components/Feed";
 
 function Home() {
   const { loading, authorized } = useAuth();
@@ -47,6 +48,9 @@ function Home() {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   }
+
+  const [filterDisplayed, setFilterDisplayed] = useState<boolean>(false);
+
   if (loading) {
     return (
       <Center w="100vw" h="100vh">
@@ -56,7 +60,7 @@ function Home() {
   }
 
   if (authorized) {
-    return (
+    /*return (
       <Flex height="100vh">
         <Flex width="100%" justifyContent="center" alignItems="center">
           <Button
@@ -74,6 +78,13 @@ function Home() {
           />
         </Flex>
       </Flex>
+    );*/
+
+    return (
+      <Feed
+        filterDisplayed={filterDisplayed}
+        setFilterDisplayed={setFilterDisplayed}
+      />
     );
   }
 
