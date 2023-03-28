@@ -10,25 +10,31 @@ interface PropertyType {
 export default function PermissionSelector(props: PropertyType) {
   const { role, setRole } = props;
 
-  let buttonSelected = {
+  const buttonSelected = {
     bgColor: "#a9a8a8",
   };
 
-  let buttonUnselected = {
+  const buttonUnselected = {
     bgColor: "#ffffff",
   };
 
-  let textSelected = {
+  const textSelected = {
     color: "#ffffff",
   };
 
-  let textUnselected = {
+  const textUnselected = {
     color: "#000000",
   };
 
-  let a = role === Role.Admin;
-  let c = role === Role.ContentCreator;
-  let v = role === Role.Volunteer;
+  const a = role === Role.Admin;
+  const c = role === Role.ContentCreator;
+  const v = role === Role.Volunteer;
+
+  const textStyle = {
+    lineHeight: "19px",
+    fontSize: "16px",
+    fontWeight: "400",
+  };
 
   return (
     <ButtonGroup size="sm" isAttached variant="outline">
@@ -38,7 +44,12 @@ export default function PermissionSelector(props: PropertyType) {
         borderRadius="12px 0px 0px 12px"
         border="1px solid black"
       >
-        <Text color={a ? textSelected.color : textUnselected.color}>
+        <Text
+          lineHeight={textStyle.lineHeight}
+          fontSize={textStyle.fontSize}
+          fontWeight={textStyle.fontWeight}
+          color={a ? textSelected.color : textUnselected.color}
+        >
           Administrator
         </Text>
       </Button>
@@ -47,7 +58,12 @@ export default function PermissionSelector(props: PropertyType) {
         onClick={() => setRole(Role.ContentCreator)}
         border="1px solid black"
       >
-        <Text color={c ? textSelected.color : textUnselected.color}>
+        <Text
+          lineHeight={textStyle.lineHeight}
+          fontSize={textStyle.fontSize}
+          fontWeight={textStyle.fontWeight}
+          color={c ? textSelected.color : textUnselected.color}
+        >
           Content Creator
         </Text>
       </Button>
@@ -57,7 +73,12 @@ export default function PermissionSelector(props: PropertyType) {
         borderRadius="0px 12px 12px 0px"
         border="1px solid black"
       >
-        <Text color={v ? textSelected.color : textUnselected.color}>
+        <Text
+          lineHeight={textStyle.lineHeight}
+          fontSize={textStyle.fontSize}
+          fontWeight={textStyle.fontWeight}
+          color={v ? textSelected.color : textUnselected.color}
+        >
           Volunteer
         </Text>
       </Button>
