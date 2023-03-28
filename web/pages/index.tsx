@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -28,12 +28,13 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
+  Box,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
-import PetPostModal from "../components/PetPostModal/PetPostModal";
+import Feed from "../components/Feed/Feed";
 
 function Home() {
   const { loading, authorized } = useAuth();
@@ -62,6 +63,9 @@ function Home() {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   }
+
+  const [filterDisplayed, setFilterDisplayed] = useState<boolean>(false);
+
   if (loading) {
     return (
       <Center w="100vw" h="100vh">
@@ -72,30 +76,10 @@ function Home() {
 
   if (authorized) {
     return (
-      <Flex height="100vh">
-        <Flex width="100%" justifyContent="center" alignItems="center">
-          <Button onClick={onPetPostOpen}>Open Pet Post</Button>
-          <PetPostModal
-            isOpen={isPetPostOpen}
-            onOpen={onPetPostOpen}
-            onClose={onPetPostClose}
-          />
-
-          <Button
-            cursor={["default", "pointer"]}
-            bgColor="#D9D9D9"
-            onClick={() => signOut(auth)}
-          >
-            Logout
-          </Button>
-          <Button onClick={onPostCreateOpen}>Open Post Creation Modal</Button>
-          <PostCreationModal
-            isOpen={isPostCreateOpen}
-            onOpen={onPostCreateOpen}
-            onClose={onPostCreateClose}
-          />
-        </Flex>
-      </Flex>
+      <Feed
+        filterDisplayed={filterDisplayed}
+        setFilterDisplayed={setFilterDisplayed}
+      />
     );
   }
 

@@ -1,12 +1,13 @@
-import { useState, SetStateAction, Dispatch } from "react";
+import { useState, SetStateAction, Dispatch, useEffect } from "react";
 import { IAccount } from "../../utils/types/account";
 import AccountCard from "./AccountCard";
-import { SimpleGrid, Stack } from "@chakra-ui/react";
+import { Stack, SimpleGrid, Grid, GridItem, Center } from "@chakra-ui/react";
 import TableHeader from "./TableHeader";
+import { HydratedDocument } from "mongoose";
 
 interface PropertyType {
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
@@ -16,8 +17,19 @@ function AccountTable(props: PropertyType) {
     props;
   const [itemsToDelete, updateItemsToDelete] = useState<Number[]>([]);
 
+  useEffect(() => {
+    if (!selectItems) {
+      updateItemsToDelete([]);
+    }
+  }, [selectItems]);
+
   return (
-    <Stack gap={2} w="100%">
+    <Stack
+      gap={"15px"}
+      width="100%"
+      alignItems={"center"}
+      paddingBottom={"20px"}
+    >
       <TableHeader
         selectItems={selectItems}
         updateSelectItems={updateSelectItems}
@@ -26,27 +38,37 @@ function AccountTable(props: PropertyType) {
         accountList={accountList}
         updateAccountList={updateAccountList}
       ></TableHeader>
-      <SimpleGrid
-        spacing={4}
-        columns={{ sm: 1, md: 1, lg: 2 }}
-        padding={{ sm: "15px", md: "20px" }}
-        bgColor="white"
+      <Grid
+        paddingX={"20px"}
+        templateColumns={{
+          sm: "repeat(2, 1fr)",
+          md: "repeat(2, 1fr)",
+          lg: "repeat(4, 1fr)",
+        }}
+        gap={"20px"}
+        width={"inherit"}
       >
-        {accountList.map((e: IAccount) => {
+        {accountList.map((e: HydratedDocument<IAccount>) => {
           return (
-            <AccountCard
-              account={e}
-              idx={accountList.indexOf(e)}
+            <GridItem
+              colSpan={{ sm: 1, md: 1, lg: 2 }}
+              alignItems={"center"}
               key={accountList.indexOf(e)}
-              selectItems={selectItems}
-              itemsToDelete={itemsToDelete}
-              updateItemsToDelete={updateItemsToDelete}
-              accountList={accountList}
-              updateAccountList={updateAccountList}
-            ></AccountCard>
+            >
+              <AccountCard
+                account={e}
+                idx={accountList.indexOf(e)}
+                key={accountList.indexOf(e)}
+                selectItems={selectItems}
+                itemsToDelete={itemsToDelete}
+                updateItemsToDelete={updateItemsToDelete}
+                accountList={accountList}
+                updateAccountList={updateAccountList}
+              ></AccountCard>
+            </GridItem>
           );
         })}
-      </SimpleGrid>
+      </Grid>
     </Stack>
   );
 }

@@ -47,10 +47,21 @@ async function addAccount(inputData: IAccount, session?: ClientSession) {
   }
 }
 
+async function findAll(
+  session?: ClientSession
+): Promise<HydratedDocument<IAccount>[]> {
+  try {
+    return await Account.find();
+  } catch (e) {
+    return [];
+  }
+}
+
 export {
   findAccount,
   addAccount,
   removeAccount,
   removeAllAccounts,
   updateAccount,
+  findAll,
 };

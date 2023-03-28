@@ -6,11 +6,12 @@ import {
   updateAccount,
   addAccount,
   findAccount,
+  findAll,
   removeAllAccounts,
 } from "../../db/actions/Account";
 import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
-import { Role } from "../../utils/types/account";
+import { IAccount, Role } from "../../utils/types/account";
 import { router, protectedProcedure } from "../trpc";
 
 const emailInput = {
@@ -151,6 +152,7 @@ export const accountRouter = router({
         }
       }
     }),
+
   get: protectedProcedure
     .input(
       z.object({
@@ -184,4 +186,21 @@ export const accountRouter = router({
           });
       }
     }),
+
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    const session = await Account.startSession();
+    session.startTransaction();
+    try {
+      const accounts = await findAll(session);
+      return accounts as IAccount[];
+    } catch (e) {
+      session.abortTransaction();
+      if (e instanceof TRPCError) throw e;
+      else
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occured",
+        });
+    }
+  }),
 });
