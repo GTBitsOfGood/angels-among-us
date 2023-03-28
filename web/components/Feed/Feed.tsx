@@ -515,7 +515,7 @@ function Feed(props: {
   return (
     <>
       {filterDisplayed ? filter : mainContent}
-      <Button onClick={onOpen}>Post creation</Button>
+      <Button onClick={onOpen}>Post creation modal</Button>
       <PostCreationModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
     </>
   );
