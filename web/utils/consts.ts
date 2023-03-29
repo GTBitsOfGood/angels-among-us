@@ -29,6 +29,6 @@ const consts = {
   storageS3Endpoint: process.env.STORAGE_S3_ENDPOINT,
   storageS3Region: process.env.STORAGE_S3_REGION,
   storageBucketURL: process.env.STORAGE_BUCKET_URL,
-};
+} as const;
 
 export { Pages, consts };
