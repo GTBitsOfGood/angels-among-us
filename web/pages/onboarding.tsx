@@ -54,7 +54,7 @@ export interface StoredQuestion<T extends PossibleTypes> extends IQuestion {
   options: { value: T; label: string }[];
   singleAnswer: boolean;
   dropdown: boolean;
-  tooltip: string;
+  popover: string;
   allSelected: boolean;
 }
 
@@ -71,13 +71,12 @@ function Onboarding() {
         "Hello, " +
         (user?.displayName == undefined ? "new foster" : user?.displayName) +
         "!",
-      description: `Let's start by walking through building your foster profile! This will help us connect you with the best foster dog for your situation to ensure a positive experience for you and the foster.\n\nPlease answer the following questions with all possible animals you would be willing to foster in mind. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.`,
+      description: `Let's start by walking through building your foster profile! This will allow you to choose which dogs you would like to see.  You may have specific requirements for your home or you may be open to any dog in need.\n\nPlease answer the following questions based on which dogs you could potentially foster. Keep in mind that once your profile is complete, you will still be able to edit these answers in the future.`,
       qtype: QType.Intro,
     },
     {
       key: "type",
-      title:
-        "Are you comfortable with fostering the following types of foster dogs?",
+      title: "Are you able to foster the following types of foster dogs?",
       description: "",
       options: [
         { value: FosterType.Return, label: "Return" },
@@ -90,8 +89,8 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip:
-        "<b>Return Foster</b> <br> A dog that was adopted but then returned to AAU by the adopter. <br><br> <b> Boarding </b> <br> A foster parent or other dogs' owner goes on vacation or other hiatus and needs someone to take their dog for a little <br><br> <b> Temporary </b> <br> During holidays, vacations, and emergencies until permanent fosters can be found or return. <br><br> <b> Shelter </b> <br> A dog that comes from or is currently in a shelter and in need of a home. <br><br> <b> Owner Surrender </b> <br> A dog that has been handed over from their previous owner and now needs a home. <br><br> <b> Foster Move </b> <br> A dog whose previous foster parents can't care for the foster dog any more.",
+      popover:
+        "<b>Return Foster</b> <br> A dog that was adopted but then returned to AAU by the adopter. <br><br> <b> Boarding </b> <br> A foster parent or other dogs' owner goes on vacation or other hiatus and needs someone to take their dog for a little while. <br><br> <b> Temporary </b> <br> During holidays, vacations, and emergencies until permanent fosters can be found or return. <br><br> <b> Shelter </b> <br> A dog that comes from or is currently in a shelter and in need of a home. <br><br> <b> Owner Surrender </b> <br> A dog that has been handed over from their previous owner and now needs a home. <br><br> <b> Foster Move </b> <br> A dog whose previous foster parents can't care for the foster dog any more.",
       allSelected: true,
     } as StoredQuestion<FosterType>,
     {
@@ -108,13 +107,13 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip: "",
+      popover: "",
       allSelected: true,
     } as StoredQuestion<Size>,
-
     {
-      key: "breed",
-      title: "Are there any breeds that you are NOT comfortable fostering?",
+      key: "restrictedBreeds",
+      title:
+        "Are there any breeds that you are restricted from having in your home?",
       description: "Leave blank if none",
       options: [
         { value: Breed.AmericanEskimo, label: "American Eskimo" },
@@ -171,13 +170,75 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: true,
-      tooltip: "",
+      popover: "",
+      allSelected: false,
+    } as StoredQuestion<Breed>,
+    {
+      key: "preferredBreeds",
+      title: "Are there breeds that you especially enjoy fostering?",
+      description: "Leave blank if none",
+      options: [
+        { value: Breed.AmericanEskimo, label: "American Eskimo" },
+        { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
+        { value: Breed.Beagle, label: "Beagle" },
+        { value: Breed.BichonFrise, label: "Bichon Frise" },
+        { value: Breed.BorderCollie, label: "Border Collie" },
+        { value: Breed.Boxer, label: "Boxer" },
+        { value: Breed.BrusselsGriffon, label: "Brussels Griffon" },
+        { value: Breed.Bulldog, label: "Bulldog" },
+        { value: Breed.CaneCorsoMastiff, label: "Cane Corso/Mastiff" },
+        { value: Breed.CattleDogHeeler, label: "Cattle Dog/Heeler" },
+        { value: Breed.Chihuahua, label: "Chihuahua" },
+        { value: Breed.ChowChow, label: "Chow Chow" },
+        { value: Breed.Collie, label: "Collie" },
+        { value: Breed.Corgi, label: "Corgi" },
+        { value: Breed.Dachshund, label: "Dachshund" },
+        { value: Breed.Dalmatian, label: "Dalmatian" },
+        { value: Breed.DobermanPinscher, label: "Doberman Pinscher" },
+        { value: Breed.GermanShepherd, label: "German Shepherd" },
+        { value: Breed.GoldenRetriever, label: "Golden Retriever" },
+        { value: Breed.GreatDane, label: "Great Dane" },
+        { value: Breed.GreatPyrenees, label: "Great Pyrenees" },
+        { value: Breed.Greyhound, label: "Greyhound" },
+        { value: Breed.Hound, label: "Hound" },
+        { value: Breed.Husky, label: "Husky" },
+        { value: Breed.LabradorRetriever, label: "Labrador Retriever" },
+        { value: Breed.Malamute, label: "Malamute" },
+        { value: Breed.Maltese, label: "Maltese" },
+        { value: Breed.MinPin, label: "Min Pin" },
+        { value: Breed.Mix, label: "Mix" },
+        { value: Breed.Newfoundland, label: "Newfoundland" },
+        { value: Breed.Pekingese, label: "Pekingese" },
+        { value: Breed.Pitbull, label: "Pitbull" },
+        { value: Breed.Pointer, label: "Pointer" },
+        { value: Breed.Pomeranian, label: "Pomeranian" },
+        { value: Breed.Poodle, label: "Poodle" },
+        { value: Breed.Pug, label: "Pug" },
+        { value: Breed.Rottweiler, label: "Rottweiler" },
+        { value: Breed.Schnauzer, label: "Schnauzer" },
+        { value: Breed.Scottie, label: "Scottie" },
+        { value: Breed.Setter, label: "Setter" },
+        { value: Breed.Sharpei, label: "Sharpei" },
+        { value: Breed.Sheepdog, label: "Sheepdog" },
+        { value: Breed.Shepherd, label: "Shepherd" },
+        { value: Breed.ShihTzu, label: "Shih Tzu" },
+        { value: Breed.Spaniel, label: "Spaniel" },
+        { value: Breed.StBernard, label: "St. Bernard" },
+        { value: Breed.TerrierMedLarge, label: "Terrier (Med-Large)" },
+        { value: Breed.TerrierSmall, label: "Terrier (Small)" },
+        { value: Breed.Weimaraner, label: "Weimaraner" },
+        { value: Breed.Whippet, label: "Whippet" },
+      ],
+      qtype: QType.Question,
+      singleAnswer: false,
+      dropdown: true,
+      popover: "",
       allSelected: false,
     } as StoredQuestion<Breed>,
     {
       key: "gender",
       title:
-        "Are you okay with both male and female dogs? How about a litter of puppies?",
+        "Are you able to foster both male and female dogs? How about a litter of puppies?",
       description: "",
       options: [
         { value: Gender.Male, label: "Male" },
@@ -187,12 +248,12 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip: "",
+      popover: "",
       allSelected: true,
     } as StoredQuestion<Gender>,
     {
       key: "age",
-      title: "What age of dogs are you willing to foster?",
+      title: "What ages of dogs are you willing to foster?",
       description: "",
       options: [
         { value: Age.Puppy, label: "Puppy" },
@@ -204,12 +265,13 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip: "",
+      popover: "",
       allSelected: true,
     } as StoredQuestion<Age>,
     {
       key: "temperament",
-      title: "What temperament can you foster?",
+      title:
+        "Which of the following dog temperaments are you comfortable with?",
       description: "",
       options: [
         { value: Temperament.Friendly, label: "Friendly" },
@@ -220,12 +282,12 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip: "",
+      popover: "",
       allSelected: true,
     } as StoredQuestion<Temperament>,
     {
       key: "goodWith",
-      title: "Are you able to foster dogs that do NOT get along with:",
+      title: "Are you able to foster dogs that DO NOT do well with:",
       description: "",
       options: [
         { value: GoodWith.Men, label: "Men" },
@@ -239,12 +301,13 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip: "",
+      popover: "",
       allSelected: true,
     } as StoredQuestion<GoodWith>,
     {
       key: "medical",
-      title: "Are you able to foster dogs that have or are:",
+      title:
+        "Which of the following medical conditions are you able to take on?",
       description: "",
       options: [
         { value: Medical.Illness, label: "Illness" },
@@ -260,13 +323,13 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip:
+      popover:
         "<b>Heartworms</b> <br> Lorem ipsum <br><br> <b>Chronic Condition</b> <br> Lorem ipsum <br><br> <b> Parvo </b> <br> Lorem ipsum <br><br> <b> Hospice </b> <br> Lorem ipsum",
       allSelected: true,
     } as StoredQuestion<Medical>,
     {
       key: "behavioral",
-      title: "Are you able to foster dogs that have or will:",
+      title: "Are you able to manage these potential behavioral issues:",
       description: "",
       options: [
         { value: Behavioral.SeparationAnxiety, label: "Separation Anxiety" },
@@ -279,13 +342,14 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: false,
       dropdown: false,
-      tooltip: "",
+      popover: "",
       allSelected: true,
     } as StoredQuestion<Behavioral>,
     {
       key: "houseTrained",
       title: "Are you able to foster a dog who is NOT house trained?",
-      description: "",
+      description:
+        "(Note: We often do not know if a dog is house trained until they are in a foster home.)",
       options: [
         { value: Trained.Yes, label: "Yes" },
         { value: Trained.No, label: "No" },
@@ -293,25 +357,13 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: true,
       dropdown: false,
-      tooltip: "",
-    } as StoredQuestion<Trained>,
-    {
-      key: "crateTrained",
-      title: "Are you able to foster a dog who is NOT crate trained?",
-      description: "",
-      options: [
-        { value: Trained.Yes, label: "Yes" },
-        { value: Trained.No, label: "No" },
-      ],
-      qtype: QType.Question,
-      singleAnswer: true,
-      dropdown: false,
-      tooltip: "",
+      popover: "",
     } as StoredQuestion<Trained>,
     {
       key: "spayNeuterStatus",
       title: "Are you able to foster a dog who is NOT spayed/neutered?",
-      description: "",
+      description:
+        "(Note: New intakes are rarely altered but an appointment can be scheduled.) ",
       options: [
         { value: Status.Yes, label: "Yes" },
         { value: Status.No, label: "No" },
@@ -319,7 +371,7 @@ function Onboarding() {
       qtype: QType.Question,
       singleAnswer: true,
       dropdown: false,
-      tooltip: "",
+      popover: "",
     } as StoredQuestion<Status>,
     {
       title: "🎉\nThanks for completing your profile!",

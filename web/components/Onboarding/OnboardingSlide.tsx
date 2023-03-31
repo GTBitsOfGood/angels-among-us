@@ -10,6 +10,12 @@ import {
   IconButton,
   useDisclosure,
   ModalCloseButton,
+  Popover,
+  PopoverTrigger,
+  Button,
+  PopoverArrow,
+  PopoverContent,
+  PopoverBody,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import OnboardingOptions from "./OnboardingOptions";
@@ -88,9 +94,9 @@ function OnboardingSlide(props: {
         qKey={("key" in question ? question.key : "") as string}
       ></OnboardingOptions>
       <Flex
-        className="tooltip"
+        className="popover"
         display={
-          "tooltip" in question && question.tooltip != "" ? "initial" : "none"
+          "popover" in question && question.popover != "" ? "initial" : "none"
         }
       >
         <Stack
@@ -99,36 +105,48 @@ function OnboardingSlide(props: {
           alignItems="center"
           display={{ base: "none", md: "none", lg: "flex" }}
         >
-          <Tooltip
-            placement="top-start"
-            bgColor="#CCCCCC"
-            padding="16px"
-            label={
-              <Text
-                color="#000000"
-                dangerouslySetInnerHTML={{
-                  __html: ("tooltip" in question
-                    ? question.tooltip
-                    : "") as string,
-                }}
-              ></Text>
-            }
-          >
-            <QuestionOutlineIcon />
-          </Tooltip>
-          <Text color="#6D6D6D" fontSize="small" align="left" lineHeight="16px">
-            what does this mean?
-          </Text>
+          <Popover trigger="hover" placement="top">
+            <PopoverTrigger>
+              <Button
+                backgroundColor="#FFFFFF"
+                paddingX="0px"
+                _hover={{ background: "#FFFFFF" }}
+              >
+                <QuestionOutlineIcon />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent backgroundColor="#D9D9D9">
+              <PopoverArrow bgColor="#D9D9D9" />
+              <PopoverBody>
+                <Text
+                  color="black"
+                  maxHeight="400px"
+                  overflowY="auto"
+                  align="left"
+                  padding="20px"
+                  paddingRight="30px"
+                  dangerouslySetInnerHTML={{
+                    __html: ("popover" in question
+                      ? question.popover
+                      : "") as string,
+                  }}
+                ></Text>
+              </PopoverBody>
+            </PopoverContent>
+            <Text color="#6D6D6D" fontSize="sm">
+              what does this mean?
+            </Text>
+          </Popover>
         </Stack>
         <Stack
-          className="mobileTooltip"
+          className="mobilePopover"
           direction="row"
           display={{ base: "flex", md: "flex", lg: "none" }}
           marginTop={{ base: "16px", md: "30px" }}
           align="center"
         >
           <IconButton
-            className="tooltipIcon"
+            className="popoverIcon"
             bgColor="white"
             aria-label="info"
             icon={<QuestionOutlineIcon />}
@@ -136,7 +154,7 @@ function OnboardingSlide(props: {
             marginRight="-8px"
           ></IconButton>
           <Text
-            className="tooltipIconText"
+            className="popoverIconText"
             color="#6D6D6D"
             fontSize="small"
             align="left"
@@ -153,12 +171,12 @@ function OnboardingSlide(props: {
             <ModalOverlay />
             <ModalContent width="80%" bgColor="#EEEEEE" maxHeight="60%">
               <ModalCloseButton />
-              <ModalBody className="tooltipDisplayText" padding="30px">
+              <ModalBody className="popoverDisplayText" padding="30px">
                 <Text
                   fontSize={{ base: "15px", md: "22px" }}
                   dangerouslySetInnerHTML={{
-                    __html: ("tooltip" in question
-                      ? question.tooltip
+                    __html: ("popover" in question
+                      ? question.popover
                       : "") as string,
                   }}
                 ></Text>
