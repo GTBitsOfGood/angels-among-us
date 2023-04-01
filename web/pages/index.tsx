@@ -3,7 +3,6 @@ import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut,
 } from "firebase/auth";
 import {
   Heading,
@@ -28,7 +27,10 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
-  Box,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
@@ -37,30 +39,38 @@ import PostCreationModal from "../components/PostCreationModal/PostCreationModal
 import Feed from "../components/Feed/Feed";
 
 function Home() {
-  const { loading, authorized } = useAuth();
+  let { loading, authorized } = useAuth();
+
+  const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [alertDisplayed, setAlertDisplayed] = useState(false);
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
-    await signInWithPopup(auth, provider);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (e) {
+      setIsLoading(false);
+      setAlertDisplayed(true);
+    }
   }
 
   async function handleLoginGoogle() {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (e) {
+      setIsLoading(false);
+      setAlertDisplayed(true);
+    }
   }
 
   const [filterDisplayed, setFilterDisplayed] = useState<boolean>(false);
 
-  if (loading) {
-    return (
-      <Center w="100vw" h="100vh">
-        <Spinner size="xl" />
-      </Center>
-    );
-  }
-
   if (authorized) {
+    if (isLoading) setIsLoading(false);
+    if (alertDisplayed) setAlertDisplayed(false);
     return (
       <Feed
         filterDisplayed={filterDisplayed}
@@ -69,8 +79,26 @@ function Home() {
     );
   }
 
+  if (isLoading) {
+    return (
+      <Center w="100vw" h="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
   return (
     <Flex height="100vh">
+      <Alert
+        id="loginErrorAlert"
+        display={alertDisplayed ? "flex" : "none"}
+        status="error"
+        position="fixed"
+      >
+        <AlertIcon />
+        <AlertTitle>Login failed!</AlertTitle>
+        <AlertDescription>Please try again.</AlertDescription>
+      </Alert>
       <Stack direction="row" width="100%" height="100%">
         <Flex bgColor="#D9D9D9" width={["0%", "50%"]}></Flex>
         <Link
@@ -127,7 +155,10 @@ function Home() {
                 width="100%"
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
-                onClick={() => handleLoginFacebook()}
+                onClick={() => {
+                  setIsLoading(true);
+                  handleLoginFacebook();
+                }}
               >
                 continue with facebook
               </Button>
@@ -141,7 +172,10 @@ function Home() {
                 width="100%"
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
-                onClick={handleLoginGoogle}
+                onClick={() => {
+                  setIsLoading(true);
+                  handleLoginGoogle();
+                }}
               >
                 continue with Google
               </Button>
