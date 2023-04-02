@@ -35,7 +35,7 @@ const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 const postSchema = z.object({
   type: z.nativeEnum(FosterType),
   size: z.nativeEnum(Size),
-  breed: z.nativeEnum(Breed),
+  breed: z.array(z.nativeEnum(Breed)),
   gender: z.nativeEnum(Gender),
   age: z.nativeEnum(Age),
   temperament: z.nativeEnum(Temperament),
