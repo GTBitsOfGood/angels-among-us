@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -33,25 +33,11 @@ import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
-import PetPostModal from "../components/PetPostModal/PetPostModal";
+import Feed from "../components/Feed/Feed";
 
 function Home() {
   const { loading, authorized } = useAuth();
-  const {
-    isOpen: isPostCreateOpen,
-    onOpen: onPostCreateOpen,
-    onClose: onPostCreateClose,
-  } = useDisclosure();
-  const {
-    isOpen: isPetPostOpen,
-    onOpen: onPetPostOpen,
-    onClose: onPetPostClose,
-  } = useDisclosure();
-  const {
-    isOpen: isToolOpen,
-    onOpen: onToolOpen,
-    onClose: onToolClose,
-  } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
@@ -62,6 +48,9 @@ function Home() {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
   }
+
+  const [filterDisplayed, setFilterDisplayed] = useState<boolean>(false);
+
   if (loading) {
     return (
       <Center w="100vw" h="100vh">
@@ -71,16 +60,9 @@ function Home() {
   }
 
   if (authorized) {
-    return (
+    /*return (
       <Flex height="100vh">
         <Flex width="100%" justifyContent="center" alignItems="center">
-          <Button onClick={onPetPostOpen}>Open Pet Post</Button>
-          <PetPostModal
-            isOpen={isPetPostOpen}
-            onOpen={onPetPostOpen}
-            onClose={onPetPostClose}
-          />
-
           <Button
             cursor={["default", "pointer"]}
             bgColor="#D9D9D9"
@@ -88,14 +70,21 @@ function Home() {
           >
             Logout
           </Button>
-          <Button onClick={onPostCreateOpen}>Open Post Creation Modal</Button>
+          <Button onClick={onOpen}>Open Post Creation Modal</Button>
           <PostCreationModal
-            isOpen={isPostCreateOpen}
-            onOpen={onPostCreateOpen}
-            onClose={onPostCreateClose}
+            isOpen={isOpen}
+            onOpen={onOpen}
+            onClose={onClose}
           />
         </Flex>
       </Flex>
+    );*/
+
+    return (
+      <Feed
+        filterDisplayed={filterDisplayed}
+        setFilterDisplayed={setFilterDisplayed}
+      />
     );
   }
 
@@ -254,11 +243,11 @@ function Home() {
                   aria-label="info"
                   cursor="default"
                   icon={<QuestionOutlineIcon />}
-                  onClick={onToolOpen}
+                  onClick={onOpen}
                 ></IconButton>
               </Stack>
 
-              <Modal isOpen={isToolOpen} onClose={onToolClose} isCentered>
+              <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
                 <ModalContent width="80%" bgColor="#D9D9D9">
                   <ModalBody>
