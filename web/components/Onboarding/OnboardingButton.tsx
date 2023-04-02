@@ -1,4 +1,6 @@
 import { Button } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useAuth } from "../../context/auth";
 import {
   QType,
   ButtonType,
@@ -7,6 +9,8 @@ import {
   StoredQuestion,
   PossibleTypes,
 } from "../../pages/onboarding";
+import { Pages } from "../../utils/consts";
+import { trpc } from "../../utils/trpc";
 
 function OnboardingButton(props: {
   onClickFunc: (arg: void) => void;
@@ -63,12 +67,25 @@ function OnboardingButton(props: {
     paddingX = { base: "100px", md: "36px", lg: "36px" };
   }
 
+  const mutation = trpc.user.updateUserPreferences.useMutation();
+  const { user } = useAuth();
+
   return (
     <Button
       className="onboardingButton"
       onClick={() => {
         onClickFunc();
         if (print) printAnswers();
+        if (qNum == questionData.length - 1) {
+          mutation.mutate(
+            { uid: user!.uid, updateFields: answers },
+            {
+              onSuccess: () => {
+                window.location.href = Pages.FEED;
+              },
+            }
+          );
+        }
       }}
       borderWidth="1px"
       borderColor={buttonAppearance.borderColor}

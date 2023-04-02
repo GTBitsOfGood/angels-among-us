@@ -7,6 +7,33 @@ import {
 } from "../../db/actions/User";
 import { TRPCError } from "@trpc/server";
 import { Role } from "../../utils/types/account";
+import {
+  FosterType,
+  Size,
+  Breed,
+  Gender,
+  Age,
+  Temperament,
+  GoodWith,
+  Medical,
+  Behavioral,
+  Trained,
+  Status,
+} from "../../utils/types/post";
+
+const userSchema = z.object({
+  type: z.array(z.nativeEnum(FosterType)),
+  size: z.array(z.nativeEnum(Size)),
+  breed: z.array(z.nativeEnum(Breed)),
+  gender: z.array(z.nativeEnum(Gender)),
+  age: z.array(z.nativeEnum(Age)),
+  temperament: z.array(z.nativeEnum(Temperament)),
+  goodWith: z.array(z.nativeEnum(GoodWith)),
+  medical: z.array(z.nativeEnum(Medical)),
+  behavioral: z.array(z.nativeEnum(Behavioral)),
+  houseTrained: z.array(z.nativeEnum(Trained)),
+  spayNeuterStatus: z.array(z.nativeEnum(Status)),
+});
 
 export const userRouter = router({
   add: publicProcedure
@@ -87,6 +114,24 @@ export const userRouter = router({
     .mutation(async ({ ctx, input }) => {
       try {
         await updateUserByUid(input.uid, { role: input.role, disabled: false });
+        return { success: true };
+      } catch (e) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    }),
+  updateUserPreferences: publicProcedure
+    .input(
+      z.object({
+        uid: z.string(),
+        updateFields: userSchema.partial(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        await updateUserByUid(input.uid, input.updateFields);
         return { success: true };
       } catch (e) {
         throw new TRPCError({
