@@ -8,6 +8,7 @@ import {
   getAllPosts,
   updatePostDetails,
   updatePostStatus,
+  getFilteredPosts,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -59,6 +60,19 @@ const postSchema = z.object({
       }),
     ])
   ),
+});
+
+const postFilterSchema = z.object({
+  type: z.array(z.nativeEnum(FosterType)),
+  breed: z.array(z.nativeEnum(Breed)),
+  age: z.array(z.nativeEnum(Age)),
+  size: z.array(z.nativeEnum(Size)),
+  gender: z.array(z.nativeEnum(Gender)),
+  goodWith: z.array(z.nativeEnum(GoodWith)),
+  behavioral: z.array(z.nativeEnum(Behavioral)),
+  houseTrained: z.nativeEnum(Trained).optional(),
+  crateTrained: z.nativeEnum(Trained).optional(),
+  spayNeuterStatus: z.nativeEnum(Status).optional(),
 });
 
 export const postRouter = router({
@@ -154,4 +168,39 @@ export const postRouter = router({
       });
     }
   }),
+  getFilteredPosts: protectedProcedure
+    .input(postFilterSchema)
+    .query(async ({ input }) => {
+      const houseTrained = input.houseTrained
+        ? [input.houseTrained]
+        : Object.values(Trained);
+      const crateTrained = input.crateTrained
+        ? [input.crateTrained]
+        : Object.values(Trained);
+      const spayNeuterStatus = input.spayNeuterStatus
+        ? [input.spayNeuterStatus]
+        : Object.values(Status);
+      const notAllowedBehavioral = Object.values(Behavioral).filter(
+        (obj) => !input.behavioral.includes(obj)
+      );
+      const notGoodWith =
+        input.goodWith.length == 0
+          ? []
+          : Object.values(GoodWith).filter(
+              (obj) => !input.goodWith.includes(obj)
+            );
+      let completeFilter = {
+        breed: { $in: input.breed },
+        type: { $in: input.type },
+        age: { $in: input.age },
+        size: { $in: input.size },
+        gender: { $in: input.gender },
+        behavioral: { $nin: notAllowedBehavioral },
+        goodWith: { $nin: notGoodWith },
+        houseTrained: { $in: houseTrained },
+        crateTrained: { $in: crateTrained },
+        spayNeuterStatus: { $in: spayNeuterStatus },
+      };
+      return await getFilteredPosts(completeFilter);
+    }),
 });
