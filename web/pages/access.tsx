@@ -12,7 +12,7 @@ function Access() {
   const [accountList, updateAccountList] = useState<
     HydratedDocument<IAccount>[]
   >([]);
-  
+
   const [selectItems, updateSelectItems] = useState<boolean>(false);
 
   const accounts = trpc.account.getAll.useQuery(undefined, {

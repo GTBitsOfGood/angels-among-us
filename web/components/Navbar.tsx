@@ -102,6 +102,7 @@ export default function Navbar() {
                   borderRadius="100%"
                   boxSize={10}
                   src={user?.photoURL ?? undefined}
+                  alt="User photo"
                 ></Image>
 
                 <ChevronDownIcon />
@@ -120,6 +121,7 @@ export default function Navbar() {
                     borderRadius="100%"
                     boxSize={10}
                     src={user?.photoURL ?? undefined}
+                    alt="User photo"
                   />
 
                   <Stack direction="column">
