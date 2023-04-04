@@ -3,7 +3,6 @@ import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut,
 } from "firebase/auth";
 import {
   Heading,
@@ -28,6 +27,7 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
+  useToast,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
@@ -36,28 +36,45 @@ import PostCreationModal from "../components/PostCreationModal/PostCreationModal
 import Feed from "../components/Feed/Feed";
 
 function Home() {
-  const { loading, authorized } = useAuth();
+  const { loading, setLoading, authorized } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
-    await signInWithPopup(auth, provider);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error: any) {
+      setLoading!(false);
+      toast({
+        title: error.code,
+        description: error.message,
+        status: "error",
+        duration: 30000,
+        isClosable: true,
+        position: "top",
+      });
+    }
   }
 
   async function handleLoginGoogle() {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error: any) {
+      setLoading!(false);
+      toast({
+        title: error.code,
+        description: error.message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
+    }
   }
 
   const [filterDisplayed, setFilterDisplayed] = useState<boolean>(false);
-
-  if (loading) {
-    return (
-      <Center w="100vw" h="100vh">
-        <Spinner size="xl" />
-      </Center>
-    );
-  }
 
   if (authorized) {
     /*return (
@@ -80,11 +97,20 @@ function Home() {
       </Flex>
     );*/
 
+    if (loading) setLoading!(false);
     return (
       <Feed
         filterDisplayed={filterDisplayed}
         setFilterDisplayed={setFilterDisplayed}
       />
+    );
+  }
+
+  if (loading) {
+    return (
+      <Center w="100vw" h="100vh">
+        <Spinner size="xl" />
+      </Center>
     );
   }
 
@@ -146,7 +172,10 @@ function Home() {
                 width="100%"
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
-                onClick={() => handleLoginFacebook()}
+                onClick={() => {
+                  setLoading!(true);
+                  handleLoginFacebook();
+                }}
               >
                 continue with facebook
               </Button>
@@ -160,7 +189,10 @@ function Home() {
                 width="100%"
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
-                onClick={handleLoginGoogle}
+                onClick={() => {
+                  setLoading!(true);
+                  handleLoginGoogle();
+                }}
               >
                 continue with Google
               </Button>
