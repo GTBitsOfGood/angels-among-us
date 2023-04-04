@@ -34,6 +34,7 @@ import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
 import Feed from "../components/Feed/Feed";
+import backgroundImage from "../public/backgroundImage.png";
 
 function Home() {
   const { loading, authorized } = useAuth();
@@ -89,208 +90,219 @@ function Home() {
   }
 
   return (
-    <Flex height="100vh">
-      <Stack direction="row" width="100%" height="100%">
-        <Flex bgColor="#D9D9D9" width={["0%", "50%"]}></Flex>
-        <Link
-          href="https://www.netlify.com"
-          position="absolute"
-          left="10px"
-          bottom="0px"
-          display={{ base: "none", lg: "initial" }}
+    <Flex height="100vh" bgColor="black">
+      <Flex
+        display={["flex", "none"]}
+        position="absolute"
+        height="50%"
+        bottom={0}
+      >
+        <Image src={backgroundImage.src} objectFit="cover" />
+      </Flex>
+      <Flex display={["none", "flex"]}>
+        <Image src={backgroundImage.src} />
+      </Flex>
+
+      <Link
+        href="https://www.netlify.com"
+        position="absolute"
+        left="10px"
+        bottom="0px"
+        display={{ base: "none", lg: "initial" }}
+      >
+        <Image
+          boxSize={{ base: "50px", lg: "80px" }}
+          src="https://www.netlify.com/v3/img/components/netlify-dark.svg"
+          alt="Deploys by Netlify"
+        />
+      </Link>
+      <Flex
+        bgColor={["none", "black"]}
+        justifyContent={["center", "flex-start"]}
+        alignItems="center"
+        height="100%"
+        position="absolute"
+        right={0}
+        width={["100%", "50%"]}
+      >
+        <Stack
+          direction="column"
+          alignItems={["center", "center"]}
+          width={["80%", "60%"]}
+          spacing="6"
         >
           <Image
-            boxSize={{ base: "50px", lg: "80px" }}
-            src="https://www.netlify.com/v3/img/components/netlify-dark.svg"
-            alt="Deploys by Netlify"
+            display={["flex", "none"]}
+            src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
+            alt="logo"
+            boxSize={16}
           />
-        </Link>
-        <Flex bgColor="#FFFFFF" width={["100%", "50%"]} justifyContent="center">
-          <Stack direction="column" width="100%" alignItems="center">
-            <Stack
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="center"
-              width="100%"
-              padding="2%"
-              marginBottom={["50%", "15%"]}
-            >
-              <Image
-                position="absolute"
-                right={["165px", "30px"]}
-                top={["120px", "20px"]}
-                src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
-                alt="logo"
-              ></Image>
-            </Stack>
-            <Stack
-              direction="column"
-              alignItems={["center", "flex-start"]}
-              width={["75%", "35%"]}
-              spacing="10"
-            >
-              <Heading size="xl" lineHeight="10" textAlign={["center", "left"]}>
-                Welcome to the page message!
-              </Heading>
-              <Text
-                color="#000000"
-                fontWeight="semibold"
-                fontSize={["sm", "lg"]}
-                textAlign={["center", "left"]}
-                paddingBottom={["100px", "0px"]}
-              >
-                Subtitle and further description of the site.
-              </Text>
-              <Button
-                bgColor="#D9D9D9"
-                width="100%"
-                borderRadius={["6px", "16px"]}
-                cursor={["default", "pointer"]}
-                onClick={() => handleLoginFacebook()}
-              >
-                continue with facebook
-              </Button>
-              <Stack direction="row" width="100%" alignItems="center">
-                <Divider width="45%" border="1px solid black"></Divider>
-                <Text>or</Text>
-                <Divider width="45%" border="1px solid black"></Divider>
-              </Stack>
-              <Button
-                bgColor="#D9D9D9"
-                width="100%"
-                borderRadius={["6px", "16px"]}
-                cursor={["default", "pointer"]}
-                onClick={handleLoginGoogle}
-              >
-                continue with Google
-              </Button>
-            </Stack>
-            <Stack
-              direction="row"
-              width="48%"
-              position="fixed"
-              bottom="30px"
-              right="20px"
-              alignItems="center"
-              justifyContent="flex-end"
-              display={["none", "flex"]}
-            >
-              <Popover trigger="hover">
-                <Text color="#6D6D6D" fontSize="sm">
-                  what is this site?
+          <Heading
+            size="xl"
+            lineHeight="10"
+            textAlign={["center", "left"]}
+            color="white"
+          >
+            Welcome to the Angels Among Us Pet Rescue Placements Platform
+          </Heading>
+          <Text
+            color="white"
+            fontWeight="semibold"
+            fontSize={["sm", "lg"]}
+            textAlign={["center", "left"]}
+            paddingBottom={["140px", "0px"]}
+          >
+            The goal is for all fosters to see the dogs that are the most likely
+            to be a fit for their home without having to look through dozens of
+            Facebook posts. We hope this will make it easier for you to choose
+            your foster dogs.
+          </Text>
+          <Button
+            bgColor="#529FD4"
+            width="100%"
+            padding={5}
+            color="white"
+            borderRadius={["6px", "10px"]}
+            cursor={["default", "pointer"]}
+            onClick={() => handleLoginFacebook()}
+          >
+            continue with facebook
+          </Button>
+          <Stack
+            direction="row"
+            width="100%"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Divider width="45%" border="1px solid white"></Divider>
+            <Text color="white">or</Text>
+            <Divider width="45%" border="1px solid white"></Divider>
+          </Stack>
+          <Button
+            bgColor="#529FD4"
+            width="100%"
+            padding={5}
+            color="white"
+            borderRadius={["6px", "10px"]}
+            cursor={["default", "pointer"]}
+            onClick={handleLoginGoogle}
+          >
+            continue with Google
+          </Button>
+        </Stack>
+        <Stack
+          direction="row"
+          width="48%"
+          position="fixed"
+          bottom="30px"
+          right="20px"
+          alignItems="center"
+          justifyContent="flex-end"
+          display={["none", "flex"]}
+        >
+          <Popover trigger="hover">
+            <Text color="#BBBBBB" fontSize="sm">
+              what is this tool?
+            </Text>
+            <PopoverTrigger>
+              <Flex bgColor="#D9D9D9" borderRadius="100%">
+                <QuestionOutlineIcon boxSize={5} />
+              </Flex>
+            </PopoverTrigger>
+            <PopoverContent backgroundColor="#D9D9D9">
+              <PopoverArrow bgColor="#D9D9D9" />
+              <PopoverCloseButton />
+              <PopoverBody>
+                <Text color="black">
+                  If it has been awhile since you fostered, please email{" "}
+                  <Link>
+                    <Text as="span" color="#0085FF">
+                      rechecks@angelsrescue.org
+                    </Text>
+                  </Link>
+                  {
+                    " to find out what you need to do to get current. Then, when you find your match, you'll be ready!"
+                  }
                 </Text>
-                <PopoverTrigger>
-                  <Button
-                    backgroundColor="#FFFFFF"
-                    _hover={{ background: "#FFFFFF" }}
-                  >
-                    <QuestionOutlineIcon />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent backgroundColor="#D9D9D9">
-                  <PopoverArrow bgColor="#D9D9D9" />
-                  <PopoverCloseButton />
-                  <PopoverBody>
-                    <Text color="black">
-                      The purpose of this site is to provide a space for
-                      confirmed Angels Among Us fosters to get matched with pets
-                      in need.
-                    </Text>
-                    <Text color="black">
-                      If you have not yet applied to become a foster, fill out{" "}
-                      <Link>
-                        <Text as="span" color="#0085FF">
-                          {" "}
-                          this application{" "}
-                        </Text>
-                      </Link>
-                      to apply.
-                    </Text>
-                    <Text color="black">
-                      For any other questions or concerns please email{" "}
-                      <Link>
-                        <Text as="span" color="#0085FF">
-                          person@aau.com.
-                        </Text>
-                      </Link>
-                    </Text>
-                    <Text color="black">Thanks!</Text>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-            </Stack>
-            <Flex
-              direction="row"
-              display={["flex", "none"]}
-              width="80%"
-              justifyContent="space-between"
-              paddingTop="20px"
-              paddingBottom="20px"
-            >
-              <Link href="https://www.netlify.com" alignSelf="flex-start">
-                <Image
-                  boxSize={{ base: "50px", lg: "80px" }}
-                  src="https://www.netlify.com/v3/img/components/netlify-dark.svg"
-                  alt="Deploys by Netlify"
-                />
-              </Link>
-              <Stack direction="row" alignItems="center">
-                <Text color="#6D6D6D" fontSize="small">
-                  what is this site?
-                </Text>
-                <IconButton
-                  bgColor="white"
-                  aria-label="info"
-                  cursor="default"
-                  icon={<QuestionOutlineIcon />}
-                  onClick={onOpen}
-                ></IconButton>
-              </Stack>
 
-              <Modal isOpen={isOpen} onClose={onClose} isCentered>
-                <ModalOverlay />
-                <ModalContent width="80%" bgColor="#D9D9D9">
-                  <ModalBody>
-                    <Stack
-                      direction="column"
-                      paddingRight={2}
-                      paddingLeft={2}
-                      paddingTop={5}
-                      paddingBottom={5}
-                      bgColor="#D9D9D9"
-                    >
-                      <Text color="black">
-                        The purpose of this site is to provide a space for
-                        confirmed Angels Among Us fosters to get matched with
-                        pets in need.
-                      </Text>
-                      <Text color="black">
-                        If you have not yet applied to become a foster, fill out{" "}
-                        <Link>
-                          <Text as="span" color="#0085FF" cursor="default">
-                            {" "}
-                            this application{" "}
-                          </Text>
-                        </Link>
-                        to apply.
-                      </Text>
-                      <Text color="black">
-                        For any other questions or concerns please email{" "}
-                        <Link>
-                          <Text as="span" color="#0085FF" cursor="default">
-                            person@aau.com.
-                          </Text>
-                        </Link>
-                      </Text>
-                      <Text color="black">Thanks!</Text>
-                    </Stack>
-                  </ModalBody>
-                </ModalContent>
-              </Modal>
+                <Text color="black">
+                  For questions about fostering, email The Foster Team at{" "}
+                  <Link>
+                    <Text as="span" color="#0085FF">
+                      foster@angelsrescue.org.
+                    </Text>
+                  </Link>
+                </Text>
+                <Text color="black">Thanks!</Text>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        </Stack>
+        <Flex
+          direction="row"
+          display={["flex", "none"]}
+          width="90%"
+          justifyContent="space-between"
+          position="absolute"
+          bottom={0}
+          paddingTop="20px"
+          paddingBottom="20px"
+        >
+          <Link href="https://www.netlify.com" alignSelf="flex-start">
+            <Image
+              boxSize={{ base: "50px", lg: "80px" }}
+              src="https://www.netlify.com/v3/img/components/netlify-dark.svg"
+              alt="Deploys by Netlify"
+            />
+          </Link>
+          <Stack direction="row" alignItems="center">
+            <Text color="#BBBBBB" fontSize="small">
+              what is this tool?
+            </Text>
+            <Flex bgColor="#D9D9D9" borderRadius="100%" onClick={onOpen}>
+              <QuestionOutlineIcon boxSize={5} />
             </Flex>
           </Stack>
+
+          <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent width="80%" bgColor="#D9D9D9">
+              <ModalBody>
+                <Stack
+                  direction="column"
+                  paddingRight={2}
+                  paddingLeft={2}
+                  paddingTop={5}
+                  paddingBottom={5}
+                  bgColor="#D9D9D9"
+                >
+                  <Text color="black">
+                    If it has been awhile since you fostered, please email{" "}
+                    <Link>
+                      <Text as="span" color="#0085FF">
+                        rechecks@angelsrescue.org
+                      </Text>
+                    </Link>
+                    {
+                      " to find out what you need to do to get current. Then, when you find your match, you'll be ready!"
+                    }
+                  </Text>
+                  <Text color="black">
+                    For questions about fostering, email The Foster Team at{" "}
+                    <Link>
+                      <Text as="span" color="#0085FF">
+                        foster@angelsrescue.org.
+                      </Text>
+                    </Link>
+                  </Text>
+
+                  <Text color="black">Thanks!</Text>
+                </Stack>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         </Flex>
-      </Stack>
+      </Flex>
     </Flex>
   );
 }
