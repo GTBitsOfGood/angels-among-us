@@ -142,7 +142,7 @@ function Profile() {
       <Flex
         display={["none", "flex"]}
         minHeight="180vh"
-        bgColor="angelsGray.100"
+        bgColor="lighterBlue.100"
         justifyContent="center"
       >
         <Flex
@@ -170,7 +170,8 @@ function Profile() {
               </Text>
               {!editing ? (
                 <Button
-                  bgColor="angelsGray.100"
+                  bgColor="angelsBlue.100"
+                  color="white"
                   width="6%"
                   borderRadius="16px"
                   onClick={() => setEditing(true)}
@@ -180,7 +181,9 @@ function Profile() {
               ) : (
                 <Stack direction="row">
                   <Button
-                    bgColor="angelsGray.100"
+                    border="1px solid gray"
+                    bgColor="white"
+                    color="gray"
                     borderRadius="16px"
                     onClick={() => setEditing(false)}
                   >
@@ -188,7 +191,8 @@ function Profile() {
                   </Button>
 
                   <Button
-                    bgColor="angelsGray.100"
+                    bgColor="angelsBlue.100"
+                    color="white"
                     borderRadius="16px"
                     onClick={() => setEditing(false)}
                   >
@@ -207,7 +211,7 @@ function Profile() {
                 )}
               </Stack>
 
-              <Flex border="1px solid black" padding={10}>
+              <Flex border="1px solid black" padding={10} borderRadius="12px">
                 <Stack
                   width="100%"
                   direction="row"
@@ -261,6 +265,7 @@ function Profile() {
             <Stack direction="column">
               <Text fontWeight="semibold">Physical Traits</Text>
               <Flex
+                borderRadius="12px"
                 border="1px solid black"
                 justifyContent="center"
                 padding={5}
@@ -272,19 +277,26 @@ function Profile() {
                       <Select isDisabled={!editing} isMulti options={breeds} />
                     </Stack>
                     <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Age Preferences</Text>
-                      <Select isDisabled={!editing} isMulti options={ages} />
+                      <Text fontWeight="medium">Breed Preferences</Text>
+                      <Select isDisabled={!editing} isMulti options={breeds} />
                     </Stack>
                   </Stack>
                   <Stack direction="row" spacing={5}>
                     <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Dog Size Preference</Text>
-                      <Select isDisabled={!editing} isMulti options={sizes} />
+                      <Text fontWeight="medium">Age Capability</Text>
+                      <Select isDisabled={!editing} isMulti options={ages} />
                     </Stack>
                     <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Gender Preference</Text>
+                      <Text fontWeight="medium">Dog Size Capability</Text>
+                      <Select isDisabled={!editing} isMulti options={sizes} />
+                    </Stack>
+                  </Stack>
+                  <Stack direction="row" spacing={5}>
+                    <Stack direction="column" width="50%">
+                      <Text fontWeight="medium">Gender Capability</Text>
                       <Select isDisabled={!editing} isMulti options={genders} />
                     </Stack>
+                    <Stack direction="column" width="50%"></Stack>
                   </Stack>
                 </Stack>
               </Flex>
@@ -293,6 +305,7 @@ function Profile() {
               <Text fontWeight="semibold">Behavioral Traits</Text>
               <Flex
                 border="1px solid black"
+                borderRadius="12px"
                 justifyContent="center"
                 padding={5}
               >
@@ -335,6 +348,7 @@ function Profile() {
             <Stack direction="column">
               <Text fontWeight="semibold">Medical Information</Text>
               <Flex
+                borderRadius="12px"
                 border="1px solid black"
                 justifyContent="center"
                 padding={5}
@@ -408,7 +422,9 @@ function Profile() {
               <Stack direction="row">
                 <Button
                   cursor="default"
-                  bgColor="angelsGray.100"
+                  border="1px solid gray"
+                  color="gray"
+                  bgColor="white"
                   borderRadius="16px"
                   onClick={() => setEditing(false)}
                 >
@@ -417,7 +433,8 @@ function Profile() {
 
                 <Button
                   cursor="default"
-                  bgColor="angelsGray.100"
+                  bgColor="angelsBlue.100"
+                  color="white"
                   borderRadius="16px"
                   onClick={() => setEditing(false)}
                 >
@@ -427,7 +444,8 @@ function Profile() {
             ) : (
               <Button
                 cursor="default"
-                bgColor="angelsGray.100"
+                bgColor="angelsBlue.100"
+                color="white"
                 borderRadius="16px"
                 onClick={() => setEditing(true)}
               >
@@ -435,7 +453,12 @@ function Profile() {
               </Button>
             )}
           </Stack>
-          <Box bgColor="angelsGray.100" borderRadius="100%" boxSize={20}></Box>
+          <Image
+            borderRadius="100%"
+            boxSize={36}
+            src={user?.photoURL ?? undefined}
+            alt="User photo"
+          ></Image>
           {editing && (
             <IconButton
               icon={<EditIcon />}
@@ -454,13 +477,13 @@ function Profile() {
                 <Input
                   placeholder={user?.displayName ?? undefined}
                   disabled={true}
-                  border="1px solid angelsGray.100"
+                  border="1px solid gray"
                 ></Input>
               </Stack>
               <Stack direction="column">
                 <Text fontWeight="medium">Email</Text>
                 <Input
-                  border="1px solid angelsGray.100"
+                  border="1px solid gray"
                   placeholder={user?.email ?? undefined}
                   disabled={true}
                 ></Input>
@@ -468,14 +491,14 @@ function Profile() {
               <Stack direction="column">
                 <Text fontWeight="medium">Preferred Email</Text>
                 <Input
-                  border="1px solid angelsGray.100"
+                  border="1px solid gray"
                   placeholder={""}
                   disabled={!editing}
                 ></Input>
               </Stack>
               <Stack direction="column">
                 <Text fontWeight="medium">
-                  Which types of fosters can you NOT help with?
+                  Which types of fosters can you help with?
                 </Text>
                 <Select isDisabled={!editing} isMulti options={fosterTypes} />
               </Stack>
@@ -489,15 +512,19 @@ function Profile() {
                 <Select isDisabled={!editing} isMulti options={breeds} />
               </Stack>
               <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Dog Sizes you do NOT Prefer</Text>
-                <Select isDisabled={!editing} isMulti options={sizes} />
+                <Text fontWeight="medium">Breed Preferences</Text>
+                <Select isDisabled={!editing} isMulti options={breeds} />
               </Stack>
               <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Ages NOT Preferred</Text>
+                <Text fontWeight="medium">Ages Capability</Text>
                 <Select isDisabled={!editing} isMulti options={ages} />
               </Stack>
               <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Genders you do NOT Prefer</Text>
+                <Text fontWeight="medium">Dog Size Capability</Text>
+                <Select isDisabled={!editing} isMulti options={sizes} />
+              </Stack>
+              <Stack direction="column" width="100%">
+                <Text fontWeight="medium">Gender Capability</Text>
                 <Select isDisabled={!editing} isMulti options={genders} />
               </Stack>
             </Stack>
@@ -516,14 +543,14 @@ function Profile() {
                 />
               </Stack>
               <Stack direction="column" width="100%">
+                <Text fontWeight="medium">Able to foster dogs with:</Text>
+                <Select isDisabled={!editing} isMulti options={behaviors} />
+              </Stack>
+              <Stack direction="column" width="100%">
                 <Text fontWeight="medium">
                   Able to foster dogs with these temperaments:
                 </Text>
                 <Select isDisabled={!editing} isMulti options={temperaments} />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Able to foster dogs with:</Text>
-                <Select isDisabled={!editing} isMulti options={behaviors} />
               </Stack>
             </Stack>
             <Text fontSize="lg" fontWeight="bold">
@@ -554,7 +581,9 @@ function Profile() {
                 <>
                   <Button
                     cursor="default"
-                    bgColor={"angelsGray.100"}
+                    border="1px solid gray"
+                    color="gray"
+                    bgColor="white"
                     borderRadius="16px"
                     onClick={() => setEditing(false)}
                   >
@@ -563,7 +592,8 @@ function Profile() {
 
                   <Button
                     cursor="default"
-                    bgColor="angelsGray.100"
+                    color="white"
+                    bgColor="angelsBlue.100"
                     borderRadius="16px"
                     onClick={() => setEditing(false)}
                   >
@@ -572,7 +602,8 @@ function Profile() {
                 </>
               ) : (
                 <Button
-                  bgColor="angelsGray.100"
+                  bgColor="angelsBlue.100"
+                  color="white"
                   cursor="default"
                   borderRadius="16px"
                   onClick={() => setEditing(true)}
