@@ -27,10 +27,7 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
+  useToast,
 } from "@chakra-ui/react";
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
@@ -39,20 +36,24 @@ import PostCreationModal from "../components/PostCreationModal/PostCreationModal
 import Feed from "../components/Feed/Feed";
 
 function Home() {
-  let { loading, authorized } = useAuth();
-
-  const [isLoading, setIsLoading] = useState(false);
+  let { loading, setLoading, authorized } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const [alertDisplayed, setAlertDisplayed] = useState(false);
+  const toast = useToast();
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-    } catch (e) {
-      setIsLoading(false);
-      setAlertDisplayed(true);
+    } catch (error: any) {
+      setLoading!(false);
+      toast({
+        title: error.code,
+        description: error.message,
+        status: "error",
+        duration: 30000,
+        isClosable: true,
+        position: "top",
+      });
     }
   }
 
@@ -60,9 +61,16 @@ function Home() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-    } catch (e) {
-      setIsLoading(false);
-      setAlertDisplayed(true);
+    } catch (error: any) {
+      setLoading!(false);
+      toast({
+        title: error.code,
+        description: error.message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
     }
   }
 
@@ -89,8 +97,7 @@ function Home() {
       </Flex>
     );*/
 
-    if (isLoading) setIsLoading(false);
-    if (alertDisplayed) setAlertDisplayed(false);
+    if (loading) setLoading!(false);
     return (
       <Feed
         filterDisplayed={filterDisplayed}
@@ -99,7 +106,7 @@ function Home() {
     );
   }
 
-  if (isLoading) {
+  if (loading) {
     return (
       <Center w="100vw" h="100vh">
         <Spinner size="xl" />
@@ -109,16 +116,6 @@ function Home() {
 
   return (
     <Flex height="100vh">
-      <Alert
-        id="loginErrorAlert"
-        display={alertDisplayed ? "flex" : "none"}
-        status="error"
-        position="fixed"
-      >
-        <AlertIcon />
-        <AlertTitle>Login failed!</AlertTitle>
-        <AlertDescription>Please try again.</AlertDescription>
-      </Alert>
       <Stack direction="row" width="100%" height="100%">
         <Flex bgColor="#D9D9D9" width={["0%", "50%"]}></Flex>
         <Link
@@ -176,7 +173,7 @@ function Home() {
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
                 onClick={() => {
-                  setIsLoading(true);
+                  setLoading!(true);
                   handleLoginFacebook();
                 }}
               >
@@ -193,7 +190,7 @@ function Home() {
                 borderRadius={["6px", "16px"]}
                 cursor={["default", "pointer"]}
                 onClick={() => {
-                  setIsLoading(true);
+                  setLoading!(true);
                   handleLoginGoogle();
                 }}
               >
