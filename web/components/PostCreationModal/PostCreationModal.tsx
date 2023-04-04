@@ -84,7 +84,7 @@ const PostCreationModal: React.FC<{
       const creationInfo = await postCreate.mutateAsync({
         type: FosterType.Shelter,
         size: Size.S,
-        breed: Breed.Mix,
+        breed: [Breed.Mix],
         gender: Gender.Male,
         age: Age.Puppy,
         temperament: Temperament.Calm,

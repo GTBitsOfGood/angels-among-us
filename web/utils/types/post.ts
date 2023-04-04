@@ -139,7 +139,7 @@ export interface IPost {
   date: Date;
   type: FosterType;
   size: Size;
-  breed: Breed;
+  breed: Breed[];
   gender: Gender;
   age: Age;
   temperament: Temperament;
