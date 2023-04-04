@@ -56,10 +56,10 @@ function OnboardingSlide(props: {
       <Flex className="questionText" flexDir="column">
         <Text
           className="questionTitle"
-          fontSize={{ base: "22px", md: "32px", lg: "42px" }}
+          fontSize={{ base: "22px", md: "30px", lg: "36px" }}
           marginX={{ base: "10px", md: "50px", lg: "150px" }}
-          marginBottom={{ base: "24px", md: "30px", lg: "30px" }}
-          lineHeight={{ base: "28px", md: "42px", lg: "52px" }}
+          marginBottom={{ base: "24px", md: "30px", lg: "36px" }}
+          lineHeight={{ base: "28px", md: "42px", lg: "46px" }}
           fontWeight="bold"
           whiteSpace="pre-wrap"
         >
@@ -67,9 +67,9 @@ function OnboardingSlide(props: {
         </Text>
         <Text
           className="questionDescription"
-          fontSize={{ base: "16px", md: "22px", lg: "25px" }}
+          fontSize={{ base: "16px", md: "22px", lg: "28px" }}
           marginBottom={{ base: "24px", md: "30px", lg: "30px" }}
-          lineHeight={{ lg: "32px" }}
+          lineHeight={{ lg: "36px" }}
           color="#696969"
           whiteSpace="pre-wrap"
           textAlign={question.qtype == QType.Question ? "center" : "left"}
@@ -112,11 +112,11 @@ function OnboardingSlide(props: {
                 paddingX="0px"
                 _hover={{ background: "#FFFFFF" }}
               >
-                <QuestionOutlineIcon />
+                <QuestionOutlineIcon color="angelsBlue.100" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent backgroundColor="#D9D9D9">
-              <PopoverArrow bgColor="#D9D9D9" />
+            <PopoverContent backgroundColor="#FFFFFF">
+              <PopoverArrow bgColor="#FFFFFF" />
               <PopoverBody>
                 <Text
                   color="black"
@@ -133,7 +133,7 @@ function OnboardingSlide(props: {
                 ></Text>
               </PopoverBody>
             </PopoverContent>
-            <Text color="#6D6D6D" fontSize="sm">
+            <Text color="angelsBlue.100" fontSize="sm">
               what does this mean?
             </Text>
           </Popover>
@@ -149,13 +149,13 @@ function OnboardingSlide(props: {
             className="popoverIcon"
             bgColor="white"
             aria-label="info"
-            icon={<QuestionOutlineIcon />}
+            icon={<QuestionOutlineIcon color="angelsBlue.100" />}
             onClick={onOpen}
             marginRight="-8px"
           ></IconButton>
           <Text
             className="popoverIconText"
-            color="#6D6D6D"
+            color="angelsBlue.100"
             fontSize="small"
             align="left"
             lineHeight="16px"
@@ -169,7 +169,7 @@ function OnboardingSlide(props: {
             scrollBehavior="inside"
           >
             <ModalOverlay />
-            <ModalContent width="80%" bgColor="#EEEEEE" maxHeight="60%">
+            <ModalContent width="80%" bgColor="#FFFFFF" maxHeight="60%">
               <ModalCloseButton />
               <ModalBody className="popoverDisplayText" padding="30px">
                 <Text

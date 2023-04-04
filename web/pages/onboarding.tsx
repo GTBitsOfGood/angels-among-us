@@ -477,14 +477,12 @@ function Onboarding() {
             value={(100 * Math.max(0, qNum - numIntros + 1)) / numQuestions}
             borderRadius="10px"
             height={{ base: "10px", md: "20px", lg: "20px" }}
-            colorScheme="blackAlpha"
-            backgroundColor="#D9D9D9"
             marginRight={{ base: "16px", md: "20px", lg: "25px" }}
           ></Progress>
           <Text
             className="progressBarText"
             fontWeight="semibold"
-            textColor="#3D3D3D"
+            textColor="angelsBlue.100"
             fontSize={{ base: "10px", md: "16px", lg: "20px" }}
           >
             {Math.max(0, qNum - numIntros + 1) + " of " + numQuestions}
