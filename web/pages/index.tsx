@@ -36,7 +36,7 @@ import PostCreationModal from "../components/PostCreationModal/PostCreationModal
 import Feed from "../components/Feed/Feed";
 
 function Home() {
-  let { loading, setLoading, authorized } = useAuth();
+  const { loading, setLoading, authorized } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
