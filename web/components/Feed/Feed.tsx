@@ -14,6 +14,7 @@ import {
   Trained,
 } from "../../utils/types/post";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
+import PetPostModal from "../PetPostModal/PetPostModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
 
@@ -229,7 +230,16 @@ function Feed(props: {
 }) {
   let { filterDisplayed, setFilterDisplayed } = props;
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isPostCreationOpen,
+    onOpen: onPostCreationOpen,
+    onClose: onPostCreationClose,
+  } = useDisclosure();
+  const {
+    isOpen: isPostViewOpen,
+    onOpen: onPostViewOpen,
+    onClose: onPostViewClose,
+  } = useDisclosure();
 
   function getInitialFilters() {
     return filterGroups.reduce((acc, curr) => {
@@ -515,8 +525,18 @@ function Feed(props: {
   return (
     <>
       {filterDisplayed ? filter : mainContent}
-      <Button onClick={onOpen}>Post creation modal</Button>
-      <PostCreationModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+      <Button onClick={onPostCreationOpen}>Post creation modal</Button>
+      <Button onClick={onPostViewOpen}>Open Pet Post</Button>
+      <PostCreationModal
+        isOpen={isPostCreationOpen}
+        onOpen={onPostCreationOpen}
+        onClose={onPostCreationClose}
+      />
+      <PetPostModal
+        isOpen={isPostViewOpen}
+        onOpen={onPostViewOpen}
+        onClose={onPostViewClose}
+      />
     </>
   );
 }

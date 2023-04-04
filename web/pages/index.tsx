@@ -69,6 +69,26 @@ function Home() {
   const [filterDisplayed, setFilterDisplayed] = useState<boolean>(false);
 
   if (authorized) {
+    /*return (
+      <Flex height="100vh">
+        <Flex width="100%" justifyContent="center" alignItems="center">
+          <Button
+            cursor={["default", "pointer"]}
+            bgColor="#D9D9D9"
+            onClick={() => signOut(auth)}
+          >
+            Logout
+          </Button>
+          <Button onClick={onOpen}>Open Post Creation Modal</Button>
+          <PostCreationModal
+            isOpen={isOpen}
+            onOpen={onOpen}
+            onClose={onClose}
+          />
+        </Flex>
+      </Flex>
+    );*/
+
     if (isLoading) setIsLoading(false);
     if (alertDisplayed) setAlertDisplayed(false);
     return (

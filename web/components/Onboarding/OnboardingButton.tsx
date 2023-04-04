@@ -1,4 +1,6 @@
 import { Button } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useAuth } from "../../context/auth";
 import {
   QType,
   ButtonType,
@@ -7,6 +9,8 @@ import {
   StoredQuestion,
   PossibleTypes,
 } from "../../pages/onboarding";
+import { Pages } from "../../utils/consts";
+import { trpc } from "../../utils/trpc";
 
 function OnboardingButton(props: {
   onClickFunc: (arg: void) => void;
@@ -24,7 +28,7 @@ function OnboardingButton(props: {
 
   let text;
   if (btnType == ButtonType.Back) {
-    text = " <Back";
+    text = "< Back";
   } else if (btnType == ButtonType.Next) {
     text = "Next >";
   } else if (btnType == ButtonType.Singular) {
@@ -41,16 +45,16 @@ function OnboardingButton(props: {
   }
 
   let buttonAppearance = {
-    borderColor: "#000000",
+    borderColor: "#7D7E82",
     backgroundColor: "#FFFFFF",
-    textColor: "#000000",
+    textColor: "#7D7E82",
     cursor: "pointer",
   };
 
   if (btnType != ButtonType.Back) {
     buttonAppearance = {
-      borderColor: "#000000",
-      backgroundColor: "#000000",
+      borderColor: "#angelsBlue.100",
+      backgroundColor: "angelsBlue.100",
       textColor: "#FFFFFF",
       cursor: "pointer",
     };
@@ -63,12 +67,25 @@ function OnboardingButton(props: {
     paddingX = { base: "100px", md: "36px", lg: "36px" };
   }
 
+  const mutation = trpc.user.updateUserPreferences.useMutation();
+  const { user } = useAuth();
+
   return (
     <Button
       className="onboardingButton"
       onClick={() => {
         onClickFunc();
         if (print) printAnswers();
+        if (qNum == questionData.length - 1) {
+          mutation.mutate(
+            { uid: user!.uid, updateFields: answers },
+            {
+              onSuccess: () => {
+                window.location.href = Pages.FEED;
+              },
+            }
+          );
+        }
       }}
       borderWidth="1px"
       borderColor={buttonAppearance.borderColor}
