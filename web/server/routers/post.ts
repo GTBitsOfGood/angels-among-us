@@ -71,7 +71,6 @@ const postFilterSchema = z.object({
   goodWith: z.array(z.nativeEnum(GoodWith)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
   houseTrained: z.nativeEnum(Trained).optional(),
-  crateTrained: z.nativeEnum(Trained).optional(),
   spayNeuterStatus: z.nativeEnum(Status).optional(),
 });
 
@@ -174,9 +173,6 @@ export const postRouter = router({
       const houseTrained = input.houseTrained
         ? [input.houseTrained]
         : Object.values(Trained);
-      const crateTrained = input.crateTrained
-        ? [input.crateTrained]
-        : Object.values(Trained);
       const spayNeuterStatus = input.spayNeuterStatus
         ? [input.spayNeuterStatus]
         : Object.values(Status);
@@ -198,7 +194,6 @@ export const postRouter = router({
         behavioral: { $nin: notAllowedBehavioral },
         goodWith: { $nin: notGoodWith },
         houseTrained: { $in: houseTrained },
-        crateTrained: { $in: crateTrained },
         spayNeuterStatus: { $in: spayNeuterStatus },
       };
       return await getFilteredPosts(completeFilter);
