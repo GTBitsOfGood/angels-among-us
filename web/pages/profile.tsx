@@ -435,7 +435,12 @@ function Profile() {
               </Button>
             )}
           </Stack>
-          <Box bgColor="angelsGray.100" borderRadius="100%" boxSize={20}></Box>
+          <Image
+            borderRadius="100%"
+            boxSize={20}
+            src={user?.photoURL ?? undefined}
+            alt="User photo"
+          ></Image>
           {editing && (
             <IconButton
               icon={<EditIcon />}

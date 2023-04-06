@@ -75,17 +75,11 @@ export default function Navbar() {
           spacing={10}
         >
           {role === Role.Admin && (
-            <Link
-              as={NextLink}
-              href={Pages.ACCESS_MANAGEMENT}
-              _hover={{
-                textDecor: "none",
-              }}
-            >
+            <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
               <Text>Access Management</Text>
             </Link>
           )}
-          <Link _hover={{ textDecor: "none" }}>
+          <Link>
             <Text>Resources</Text>
           </Link>
           <Menu>
@@ -208,13 +202,13 @@ export default function Navbar() {
               <Stack direction="column">
                 <Stack direction="column">
                   <Link>
-                    <Text cursor="default">Resources</Text>
+                    <Text>Resources</Text>
                   </Link>
                   <Divider border="1px solid angelsGray.100" />
                   {role === Role.Admin && (
                     <>
                       <Link>
-                        <Text cursor="default">Access Management</Text>
+                        <Text>Access Management</Text>
                       </Link>
                       <Divider border="1px solid angelsGray.100" />
                     </>
@@ -231,11 +225,12 @@ export default function Navbar() {
                   border="1px solid angels.Gray"
                 >
                   <Stack direction="row">
-                    <Box
-                      bgColor="angelsBlue.100"
+                    <Image
                       borderRadius="100%"
                       boxSize={10}
-                    ></Box>
+                      src={user?.photoURL ?? undefined}
+                      alt="User photo"
+                    />
                     <Stack direction="column">
                       <Text fontWeight="bold" color="gray">
                         {user?.displayName}
@@ -247,15 +242,29 @@ export default function Navbar() {
                   </Stack>
                   <Stack direction="row" justifyContent="flex-end">
                     <Button
-                      bgColor="angelsBlue.100"
-                      cursor="default"
-                      borderRadius="16px"
-                      color="white"
+                      variant="outline"
+                      textColor="gray"
                       size="sm"
-                      _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
+                      fontWeight={400}
+                      onClick={() => signOut(auth)}
                     >
-                      View Profile
+                      Logout
                     </Button>
+                    <Link
+                      as={NextLink}
+                      href={Pages.PROFILE}
+                      style={{ textDecoration: "none" }}
+                    >
+                      <Button
+                        bgColor="angelsBlue.100"
+                        borderRadius="16px"
+                        color="white"
+                        size="sm"
+                        _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
+                      >
+                        View Profile
+                      </Button>
+                    </Link>
                   </Stack>
                 </Stack>
               </Stack>
