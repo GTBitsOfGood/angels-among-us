@@ -27,11 +27,13 @@ const postSchema = new Schema<IPost>({
     required: true,
     enum: Object.values(Size),
   },
-  breed: {
-    type: String,
-    required: true,
-    enum: Object.values(Breed),
-  },
+  breed: [
+    {
+      type: String,
+      required: true,
+      enum: Object.values(Breed),
+    },
+  ],
   gender: {
     type: String,
     required: true,

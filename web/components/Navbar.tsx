@@ -23,6 +23,8 @@ import { Role } from "../utils/types/account";
 import { useRouter } from "next/router";
 import { navbarVisiblity } from "../utils/visibility";
 import { Pages } from "../utils/consts";
+import { signOut } from "firebase/auth";
+import { auth } from "../utils/firebase/firebaseClient";
 
 export default function Navbar() {
   const router = useRouter();
@@ -39,8 +41,16 @@ export default function Navbar() {
     return <></>;
   }
   return (
-    <Flex bgColor="white" width="100%" minH="64px" position="absolute" top={0}>
-      <Stack
+    <Flex
+      id="navbar"
+      bgColor="white"
+      width="100%"
+      minH="64px"
+      position="absolute"
+      top={0}
+      zIndex="1"
+    >
+      <Flex
         direction="row"
         alignItems="center"
         justifyContent="space-between"
@@ -88,11 +98,11 @@ export default function Navbar() {
               borderRadius="0%"
             >
               <Stack direction="row" alignItems="center">
-
                 <Image
                   borderRadius="100%"
                   boxSize={10}
                   src={user?.photoURL ?? undefined}
+                  alt="User photo"
                 ></Image>
 
                 <ChevronDownIcon />
@@ -107,11 +117,11 @@ export default function Navbar() {
                 spacing={5}
               >
                 <Stack direction="row">
-
                   <Image
                     borderRadius="100%"
                     boxSize={10}
                     src={user?.photoURL ?? undefined}
+                    alt="User photo"
                   />
 
                   <Stack direction="column">
@@ -124,6 +134,15 @@ export default function Navbar() {
                   </Stack>
                 </Stack>
                 <Stack direction="row" justifyContent="flex-end">
+                  <Button
+                    variant="outline"
+                    textColor="gray"
+                    size="sm"
+                    fontWeight={400}
+                    onClick={() => signOut(auth)}
+                  >
+                    Logout
+                  </Button>
                   <Link
                     as={NextLink}
                     href={Pages.PROFILE}
@@ -243,7 +262,7 @@ export default function Navbar() {
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
-      </Stack>
+      </Flex>
     </Flex>
   );
 }

@@ -62,6 +62,25 @@ function OnboardingOptions(props: {
               border: "1px solid gray",
             },
           }),
+          multiValue: (styles) => ({
+            ...styles,
+            border: "2px solid #57A0D5",
+            borderRadius: "8px",
+            backgroundColor: "#FFFFFF",
+            fontSize: "20px",
+          }),
+          multiValueLabel: (styles) => ({
+            ...styles,
+            color: "#57A0D5",
+          }),
+          multiValueRemove: (styles) => ({
+            ...styles,
+            color: "#57A0D5",
+            ":hover": {
+              backgroundColor: "#57A0D5",
+              color: "white",
+            },
+          }),
         }}
         options={options}
         isMulti

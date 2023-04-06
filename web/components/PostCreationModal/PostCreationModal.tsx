@@ -9,6 +9,7 @@ import {
   Text,
   Flex,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -185,7 +186,7 @@ function PostCreationModal({
       const creationInfo = await postCreate.mutateAsync({
         type: FosterType.Shelter,
         size: Size.S,
-        breed: Breed.Mix,
+        breed: [Breed.Mix],
         gender: Gender.Male,
         age: Age.Puppy,
         temperament: Temperament.Calm,
@@ -272,9 +273,8 @@ function PostCreationModal({
           paddingBottom={"40px"}
           overflowY="auto"
         >
-          <Flex
-            direction={"row"}
-            alignItems={"center"}
+          <VStack
+            alignItems={"left"}
             columnGap={2}
             onClick={isContentView ? onClose : () => setIsContentView(true)}
           >
@@ -300,10 +300,10 @@ function PostCreationModal({
             ) : (
               <></>
             )}
-          </Flex>
-          <Text fontSize={"48px"} fontWeight={"bold"} lineHeight={"55px"}>
+          </VStack>
+          {/* <Text fontSize={"48px"} fontWeight={"bold"} lineHeight={"55px"}>
             Add A New Pet
-          </Text>
+          </Text> */}
           {isContentView ? (
             <></>
           ) : (

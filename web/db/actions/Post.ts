@@ -1,4 +1,4 @@
-import { ClientSession, ObjectId, UpdateQuery } from "mongoose";
+import { ClientSession, FilterQuery, ObjectId, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
 import { IPendingPost, IPost } from "../../utils/types/post";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
@@ -124,10 +124,21 @@ async function updatePostStatus(oid: ObjectId, session?: ClientSession) {
     { session: session }
   );
 }
+
+async function getAllPosts() {
+  return await Post.find().sort({ date: -1 });
+}
+
+async function getFilteredPosts(filter: FilterQuery<IPost>) {
+  return await Post.find(filter).sort({ date: -1 });
+}
+
 export {
-  createPost,
   getPost,
+  createPost,
   updatePostDetails,
   updatePostStatus,
   finalizePost,
+  getAllPosts,
+  getFilteredPosts,
 };

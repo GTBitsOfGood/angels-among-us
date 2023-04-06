@@ -16,6 +16,15 @@ const theme = extendTheme({
     lighterBlue: { 100: "#C6E3F9" },
     outlineGray: { 100: "#BBBBBB" },
   },
+  components: {
+    Progress: {
+      baseStyle: {
+        filledTrack: {
+          bg: "angelsBlue.100",
+        },
+      },
+    },
+  },
 });
 
 const App = ({ Component, pageProps }: AppProps) => {

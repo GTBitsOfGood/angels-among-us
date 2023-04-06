@@ -5,8 +5,10 @@ import {
   createPost,
   finalizePost,
   getPost,
+  getAllPosts,
   updatePostDetails,
   updatePostStatus,
+  getFilteredPosts,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -22,14 +24,19 @@ import {
   Trained,
   Status,
 } from "../../utils/types/post";
-import { router, creatorProcedure, publicProcedure } from "../trpc";
+import {
+  router,
+  creatorProcedure,
+  publicProcedure,
+  protectedProcedure,
+} from "../trpc";
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
 const postSchema = z.object({
   type: z.nativeEnum(FosterType),
   size: z.nativeEnum(Size),
-  breed: z.nativeEnum(Breed),
+  breed: z.array(z.nativeEnum(Breed)),
   gender: z.nativeEnum(Gender),
   age: z.nativeEnum(Age),
   temperament: z.nativeEnum(Temperament),
@@ -53,6 +60,18 @@ const postSchema = z.object({
       }),
     ])
   ),
+});
+
+const postFilterSchema = z.object({
+  type: z.array(z.nativeEnum(FosterType)),
+  breed: z.array(z.nativeEnum(Breed)),
+  age: z.array(z.nativeEnum(Age)),
+  size: z.array(z.nativeEnum(Size)),
+  gender: z.array(z.nativeEnum(Gender)),
+  goodWith: z.array(z.nativeEnum(GoodWith)),
+  behavioral: z.array(z.nativeEnum(Behavioral)),
+  houseTrained: z.nativeEnum(Trained).optional(),
+  spayNeuterStatus: z.nativeEnum(Status).optional(),
 });
 
 export const postRouter = router({
@@ -137,5 +156,46 @@ export const postRouter = router({
           code: "INTERNAL_SERVER_ERROR",
         });
       }
+    }),
+  getAllPosts: protectedProcedure.query(async () => {
+    try {
+      return await getAllPosts();
+    } catch (e) {
+      throw new TRPCError({
+        message: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  }),
+  getFilteredPosts: protectedProcedure
+    .input(postFilterSchema)
+    .query(async ({ input }) => {
+      const houseTrained = input.houseTrained
+        ? [input.houseTrained]
+        : Object.values(Trained);
+      const spayNeuterStatus = input.spayNeuterStatus
+        ? [input.spayNeuterStatus]
+        : Object.values(Status);
+      const notAllowedBehavioral = Object.values(Behavioral).filter(
+        (obj) => !input.behavioral.includes(obj)
+      );
+      const notGoodWith =
+        input.goodWith.length == 0
+          ? []
+          : Object.values(GoodWith).filter(
+              (obj) => !input.goodWith.includes(obj)
+            );
+      let completeFilter = {
+        breed: { $in: input.breed },
+        type: { $in: input.type },
+        age: { $in: input.age },
+        size: { $in: input.size },
+        gender: { $in: input.gender },
+        behavioral: { $nin: notAllowedBehavioral },
+        goodWith: { $nin: notGoodWith },
+        houseTrained: { $in: houseTrained },
+        spayNeuterStatus: { $in: spayNeuterStatus },
+      };
+      return await getFilteredPosts(completeFilter);
     }),
 });

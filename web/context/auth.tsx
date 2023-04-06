@@ -4,6 +4,8 @@ import React, {
   useContext,
   createContext,
   PropsWithChildren,
+  Dispatch,
+  SetStateAction,
 } from "react";
 import nookies from "nookies";
 import { auth } from "../utils/firebase/firebaseClient";
@@ -15,11 +17,13 @@ const AuthContext = createContext<{
   authorized: boolean;
   user: typeof auth.currentUser;
   loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>> | null;
   userData: HydratedDocument<IUser> | null;
 }>({
   authorized: false,
   user: null,
   loading: true,
+  setLoading: null,
   userData: null,
 });
 
@@ -121,7 +125,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, authorized, userData }}>
+    <AuthContext.Provider
+      value={{ user, loading, setLoading, authorized, userData }}
+    >
       {children}
     </AuthContext.Provider>
   );
