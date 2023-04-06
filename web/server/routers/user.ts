@@ -1,7 +1,8 @@
-import { router, publicProcedure } from "../trpc";
-import { boolean, z } from "zod";
+import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { z } from "zod";
 import {
   createUser,
+  filterUsers,
   findUserByUid,
   updateUserByUid,
 } from "../../db/actions/User";
@@ -139,5 +140,15 @@ export const userRouter = router({
           code: "INTERNAL_SERVER_ERROR",
         });
       }
+    }),
+  filter: protectedProcedure
+    .input(
+      z.object({
+        roles: z.array(z.nativeEnum(Role)),
+        query: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return filterUsers(input.roles, input.query);
     }),
 });
