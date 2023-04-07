@@ -47,27 +47,34 @@ async function updateUserByUid(
 }
 
 async function filterUsers(roles: Role[], emailQuery: string) {
+  const role = {
+    must: [
+      {
+        text: {
+          query: roles,
+          path: "role",
+        },
+      },
+    ],
+  };
+
+  const email = {
+    filter: [
+      {
+        text: {
+          query: emailQuery,
+          path: "email",
+        },
+      },
+    ],
+  };
+
+  const compound = emailQuery.length != 0 ? { ...role, ...email } : { ...role };
+
   return await User.aggregate([
     {
       $search: {
-        compound: {
-          must: [
-            {
-              text: {
-                query: roles,
-                path: "role",
-              },
-            },
-          ],
-          filter: [
-            {
-              text: {
-                query: emailQuery,
-                path: "email",
-              },
-            },
-          ],
-        },
+        compound,
       },
     },
   ]);

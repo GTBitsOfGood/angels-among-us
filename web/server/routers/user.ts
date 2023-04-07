@@ -144,11 +144,14 @@ export const userRouter = router({
   filter: protectedProcedure
     .input(
       z.object({
-        roles: z.array(z.nativeEnum(Role)),
-        query: z.string(),
+        roles: z
+          .array(z.nativeEnum(Role))
+          .optional()
+          .default(Object.values(Role)),
+        query: z.string().optional().default(""),
       })
     )
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       return filterUsers(input.roles, input.query);
     }),
 });
