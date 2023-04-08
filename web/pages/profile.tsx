@@ -367,18 +367,6 @@ function Profile() {
                     </Stack>
                     <Stack direction="column" width="50%">
                       <Text fontWeight="medium">
-                        Able to foster dogs not crate trained...
-                      </Text>
-                      <Select
-                        isDisabled={!editing}
-                        isMulti
-                        options={statuses}
-                      />
-                    </Stack>
-                  </Stack>
-                  <Stack direction="row">
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">
                         Able to foster dogs not spayed or neutered...
                       </Text>
                       <Select
@@ -566,12 +554,6 @@ function Profile() {
               <Stack direction="column" width="100%">
                 <Text fontWeight="medium">
                   Able to foster dogs not spayed or neutered...
-                </Text>
-                <Select isDisabled={!editing} isMulti options={statuses} />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">
-                  Able to foster dogs not crate trained...
                 </Text>
                 <Select isDisabled={!editing} isMulti options={statuses} />
               </Stack>

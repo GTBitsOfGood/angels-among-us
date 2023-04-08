@@ -138,8 +138,8 @@ function Home() {
             boxSize={16}
           />
           <Heading
-            size="xl"
-            lineHeight="10"
+            size="lg"
+            lineHeight="8"
             textAlign={["center", "left"]}
             color="white"
           >
@@ -157,38 +157,40 @@ function Home() {
             Facebook posts. We hope this will make it easier for you to choose
             your foster dogs.
           </Text>
-          <Button
-            bgColor="#529FD4"
-            width="100%"
-            padding={5}
-            color="white"
-            borderRadius={["6px", "10px"]}
-            cursor={["default", "pointer"]}
-            onClick={() => handleLoginFacebook()}
-          >
-            continue with facebook
-          </Button>
-          <Stack
-            direction="row"
-            width="100%"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Divider width="45%" border="1px solid white"></Divider>
-            <Text color="white">or</Text>
-            <Divider width="45%" border="1px solid white"></Divider>
+          <Stack width="100%">
+            <Button
+              bgColor="#529FD4"
+              width="100%"
+              padding={5}
+              color="white"
+              borderRadius={["6px", "10px"]}
+              cursor={["default", "pointer"]}
+              onClick={() => handleLoginFacebook()}
+            >
+              continue with facebook
+            </Button>
+            <Stack
+              direction="row"
+              width="100%"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Divider width="45%" border="1px solid white"></Divider>
+              <Text color="white">or</Text>
+              <Divider width="45%" border="1px solid white"></Divider>
+            </Stack>
+            <Button
+              bgColor="#529FD4"
+              width="100%"
+              padding={5}
+              color="white"
+              borderRadius={["6px", "10px"]}
+              cursor={["default", "pointer"]}
+              onClick={handleLoginGoogle}
+            >
+              continue with Google
+            </Button>
           </Stack>
-          <Button
-            bgColor="#529FD4"
-            width="100%"
-            padding={5}
-            color="white"
-            borderRadius={["6px", "10px"]}
-            cursor={["default", "pointer"]}
-            onClick={handleLoginGoogle}
-          >
-            continue with Google
-          </Button>
         </Stack>
         <Stack
           direction="row"
@@ -245,8 +247,8 @@ function Home() {
           justifyContent="space-between"
           position="absolute"
           bottom={0}
-          paddingTop="20px"
           paddingBottom="20px"
+          marginTop={10}
         >
           <Link href="https://www.netlify.com" alignSelf="flex-start">
             <Image
