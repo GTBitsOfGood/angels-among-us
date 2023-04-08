@@ -10,6 +10,12 @@ import {
   IconButton,
   useDisclosure,
   ModalCloseButton,
+  Popover,
+  PopoverTrigger,
+  Button,
+  PopoverArrow,
+  PopoverContent,
+  PopoverBody,
 } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import OnboardingOptions from "./OnboardingOptions";
@@ -50,10 +56,10 @@ function OnboardingSlide(props: {
       <Flex className="questionText" flexDir="column">
         <Text
           className="questionTitle"
-          fontSize={{ base: "22px", md: "32px", lg: "42px" }}
+          fontSize={{ base: "22px", md: "30px", lg: "36px" }}
           marginX={{ base: "10px", md: "50px", lg: "150px" }}
-          marginBottom={{ base: "24px", md: "30px", lg: "30px" }}
-          lineHeight={{ base: "28px", md: "42px", lg: "52px" }}
+          marginBottom={{ base: "24px", md: "30px", lg: "36px" }}
+          lineHeight={{ base: "28px", md: "42px", lg: "46px" }}
           fontWeight="bold"
           whiteSpace="pre-wrap"
         >
@@ -61,9 +67,9 @@ function OnboardingSlide(props: {
         </Text>
         <Text
           className="questionDescription"
-          fontSize={{ base: "16px", md: "22px", lg: "25px" }}
+          fontSize={{ base: "16px", md: "22px", lg: "28px" }}
           marginBottom={{ base: "24px", md: "30px", lg: "30px" }}
-          lineHeight={{ lg: "32px" }}
+          lineHeight={{ lg: "36px" }}
           color="#696969"
           whiteSpace="pre-wrap"
           textAlign={question.qtype == QType.Question ? "center" : "left"}
@@ -88,9 +94,9 @@ function OnboardingSlide(props: {
         qKey={("key" in question ? question.key : "") as string}
       ></OnboardingOptions>
       <Flex
-        className="tooltip"
+        className="popover"
         display={
-          "tooltip" in question && question.tooltip != "" ? "initial" : "none"
+          "popover" in question && question.popover != "" ? "initial" : "none"
         }
       >
         <Stack
@@ -99,45 +105,57 @@ function OnboardingSlide(props: {
           alignItems="center"
           display={{ base: "none", md: "none", lg: "flex" }}
         >
-          <Tooltip
-            placement="top-start"
-            bgColor="#CCCCCC"
-            padding="16px"
-            label={
-              <Text
-                color="#000000"
-                dangerouslySetInnerHTML={{
-                  __html: ("tooltip" in question
-                    ? question.tooltip
-                    : "") as string,
-                }}
-              ></Text>
-            }
-          >
-            <QuestionOutlineIcon />
-          </Tooltip>
-          <Text color="#6D6D6D" fontSize="small" align="left" lineHeight="16px">
-            what does this mean?
-          </Text>
+          <Popover trigger="hover" placement="top">
+            <PopoverTrigger>
+              <Button
+                backgroundColor="#FFFFFF"
+                paddingX="0px"
+                _hover={{ background: "#FFFFFF" }}
+              >
+                <QuestionOutlineIcon color="angelsBlue.100" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent backgroundColor="#FFFFFF">
+              <PopoverArrow bgColor="#FFFFFF" />
+              <PopoverBody>
+                <Text
+                  color="black"
+                  maxHeight="400px"
+                  overflowY="auto"
+                  align="left"
+                  padding="20px"
+                  paddingRight="30px"
+                  dangerouslySetInnerHTML={{
+                    __html: ("popover" in question
+                      ? question.popover
+                      : "") as string,
+                  }}
+                ></Text>
+              </PopoverBody>
+            </PopoverContent>
+            <Text color="angelsBlue.100" fontSize="sm">
+              what does this mean?
+            </Text>
+          </Popover>
         </Stack>
         <Stack
-          className="mobileTooltip"
+          className="mobilePopover"
           direction="row"
           display={{ base: "flex", md: "flex", lg: "none" }}
           marginTop={{ base: "16px", md: "30px" }}
           align="center"
         >
           <IconButton
-            className="tooltipIcon"
+            className="popoverIcon"
             bgColor="white"
             aria-label="info"
-            icon={<QuestionOutlineIcon />}
+            icon={<QuestionOutlineIcon color="angelsBlue.100" />}
             onClick={onOpen}
             marginRight="-8px"
           ></IconButton>
           <Text
-            className="tooltipIconText"
-            color="#6D6D6D"
+            className="popoverIconText"
+            color="angelsBlue.100"
             fontSize="small"
             align="left"
             lineHeight="16px"
@@ -151,14 +169,14 @@ function OnboardingSlide(props: {
             scrollBehavior="inside"
           >
             <ModalOverlay />
-            <ModalContent width="80%" bgColor="#EEEEEE" maxHeight="60%">
+            <ModalContent width="80%" bgColor="#FFFFFF" maxHeight="60%">
               <ModalCloseButton />
-              <ModalBody className="tooltipDisplayText" padding="30px">
+              <ModalBody className="popoverDisplayText" padding="30px">
                 <Text
                   fontSize={{ base: "15px", md: "22px" }}
                   dangerouslySetInnerHTML={{
-                    __html: ("tooltip" in question
-                      ? question.tooltip
+                    __html: ("popover" in question
+                      ? question.popover
                       : "") as string,
                   }}
                 ></Text>

@@ -1,4 +1,9 @@
-import { ClientSession, HydratedDocument, UpdateQuery } from "mongoose";
+import {
+  ClientSession,
+  HydratedDocument,
+  ObjectId,
+  UpdateQuery,
+} from "mongoose";
 import User from "../models/User";
 import { IUser } from "../../utils/types/user";
 
