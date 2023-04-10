@@ -4,7 +4,6 @@ import {
   Modal,
   Stack,
   ModalContent,
-  ModalFooter,
   ModalOverlay,
   Text,
   Flex,
@@ -130,17 +129,17 @@ const PostCreationModal: React.FC<{
   };
 
   let postButtonStyle = {
-    color: "#8C8C8C",
+    color: "#57A0D5",
     bgColor: "#FFFFFF",
-    borderColor: "#8C8C8C",
+    borderColor: "#57A0D5",
     borderRadius: "20px",
   };
 
   if (selectedFiles.length > 0) {
     postButtonStyle = {
       color: "#FFFFFF",
-      bgColor: "#000000",
-      borderColor: "000000",
+      bgColor: "#57A0D5",
+      borderColor: "#57A0D5",
       borderRadius: "20px",
     };
   }
@@ -148,38 +147,64 @@ const PostCreationModal: React.FC<{
   return (
     <Modal onClose={onClose} isOpen={isOpen} closeOnOverlayClick={false}>
       <ModalOverlay />
-      <ModalContent minW={"850px"} maxH={"600px"} minH={"600px"}>
+      <ModalContent
+        minW={"800px"}
+        maxH={"770px"}
+        minH={"770px"}
+        alignItems={"center"}
+      >
         <Stack
-          paddingLeft={"75px"}
-          paddingRight={"75px"}
-          paddingTop={"40px"}
-          paddingBottom={"40px"}
-          overflowY="auto"
+          paddingTop={"30px"}
+          paddingBottom={"20px"}
+          paddingRight={"50px"}
+          paddingLeft={"50px"}
+          minW={"790px"}
+          minH={"760px"}
         >
           <Flex
+            onClick={isContentView ? onClose : () => setIsContentView(true)}
+            _hover={{
+              cursor: "pointer",
+            }}
             direction={"row"}
             alignItems={"center"}
-            columnGap={2}
-            onClick={isContentView ? onClose : () => setIsContentView(true)}
+            justifyContent={"flex-start"}
+            height={"28px"}
+            maxW={isContentView ? "140px" : "220px"}
+            paddingLeft={"5px"}
+            borderRadius={"9px"}
+            color={"#57A0D5"}
+            columnGap={"5px"}
+            bgColor={"#C6E3F9"}
+            marginBottom={"20px"}
           >
-            <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
+            <ArrowBackIcon boxSize={"23px"}></ArrowBackIcon>
             {isContentView ? (
-              <Text>Back to feed</Text>
+              <Text fontSize={"l"} textStyle={"semibold"}>
+                Back to feed
+              </Text>
             ) : (
-              <Text>Back to New Pet content</Text>
+              <Text fontSize={"l"} textStyle={"semibold"}>
+                Back to New Pet content
+              </Text>
             )}
           </Flex>
-          <Text fontSize={"48px"} fontWeight={"bold"} lineHeight={"55px"}>
+          <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
             Add A New Pet
           </Text>
           {isContentView ? (
             <></>
           ) : (
-            <Flex direction={"row"} justifyContent={"space-between"}>
-              <Text size={"xl"} textStyle={"semibold"} color={"#000000"}>
+            <Flex
+              direction={"row"}
+              justifyContent={"space-between"}
+              maxW={"688px"}
+              paddingBottom={"20px"}
+            >
+              <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
                 Select up to 6 photos or video of the pet (one video limit)
               </Text>
-              <Text size={"xl"} textStyle={"semibold"} color={"#8C8C8C"}>
+              <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
                 {numFiles}/6
               </Text>
             </Flex>
@@ -200,45 +225,34 @@ const PostCreationModal: React.FC<{
               ></FileUploadSlide>
             )}
           </Stack>
-          <ModalFooter>
-            {isContentView ? (
-              <Button
-                onClick={() => setIsContentView(false)}
-                color={postButtonStyle.color}
-                bgColor={postButtonStyle.bgColor}
-                borderRadius={postButtonStyle.borderRadius}
-                borderColor={postButtonStyle.borderColor}
-                width={"150px"}
-                height={"56px"}
-                border={"1px solid"}
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                //TODO: On click, query database to create post.
-                onClick={() => {
-                  onClose();
-                  createPost();
-                }}
-                color={postButtonStyle.color}
-                bgColor={postButtonStyle.bgColor}
-                borderRadius={postButtonStyle.borderRadius}
-                borderColor={postButtonStyle.borderColor}
-                width={"150px"}
-                height={"56px"}
-                border={"1px solid"}
-              >
-                <Text
-                  lineHeight={"28px"}
-                  fontWeight={"semibold"}
-                  fontSize={"lg"}
-                >
-                  Post
-                </Text>
-              </Button>
-            )}
-          </ModalFooter>
+          <Flex
+            width={"688px"}
+            direction={"row"}
+            justifyContent={"flex-end"}
+            paddingTop={"20px"}
+          >
+            <Button
+              onClick={
+                isContentView
+                  ? () => setIsContentView(false)
+                  : () => {
+                      onClose();
+                      createPost();
+                    }
+              }
+              color={postButtonStyle.color}
+              bgColor={postButtonStyle.bgColor}
+              borderRadius={postButtonStyle.borderRadius}
+              borderColor={postButtonStyle.borderColor}
+              width={"125px"}
+              height={"50px"}
+              border={"1px solid"}
+            >
+              <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
+                {isContentView ? "Next" : "Post"}
+              </Text>
+            </Button>
+          </Flex>
         </Stack>
       </ModalContent>
     </Modal>

@@ -45,8 +45,8 @@ function FileDropZone(props: PropsType) {
     onDrop,
     maxFiles: 6 - numFiles,
     accept: {
-      "image/*": [".jpg", ".png"],
-      "video/*": [".mp4"],
+      "image/*": [".jpg", ".jpeg", ".png"],
+      "video/*": [".mp4", ".mov"],
     },
   });
 
@@ -58,8 +58,8 @@ function FileDropZone(props: PropsType) {
   };
 
   if (numFiles > 0) {
-    dropZoneStyle.width = "200px";
-    dropZoneStyle.height = "215px";
+    dropZoneStyle.width = "211px";
+    dropZoneStyle.height = "211px";
   }
 
   return (
@@ -72,6 +72,9 @@ function FileDropZone(props: PropsType) {
       alignItems={"center"}
       justifyContent={"center"}
       {...getRootProps()}
+      _hover={{
+        cursor: "pointer",
+      }}
     >
       <input {...getInputProps()} />
       {numFiles <= 0 ? (
@@ -90,16 +93,12 @@ function FileDropZone(props: PropsType) {
             >
               Click to upload photo
             </Text>
-            <Text fontSize={"2xl"} lineHeight={"28px"} fontWeight={"semibold"}>
+            <Text fontSize={"2xl"} lineHeight={"28px"} fontWeight={"regular"}>
               or drag and drop photos
             </Text>
           </Flex>
-          <Text
-            fontSize={"xl"}
-            color={"rgba(0, 0, 0, 0.5)"}
-            lineHeight={"21px"}
-          >
-            JPG and PNG images - MP4 video
+          <Text fontSize={"l"} color={"rgba(0, 0, 0, 0.5)"} lineHeight={"22px"}>
+            JPG and PNG images - MP4 and MOV video
           </Text>
         </Flex>
       ) : (

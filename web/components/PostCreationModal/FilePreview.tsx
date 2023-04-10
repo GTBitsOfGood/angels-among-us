@@ -39,11 +39,16 @@ function FilePreview(props: PropsType) {
   }
 
   return (
-    <Box position={"relative"}>
+    <Box
+      position={"relative"}
+      _hover={{
+        cursor: "pointer",
+      }}
+    >
       {fileArr[idx].type === "video/mp4" ? (
         <Box
-          width={"200px"}
-          height={"215px"}
+          width={"211px"}
+          height={"211px"}
           borderRadius={"5.82474px"}
           bgColor={"#000000"}
           style={
@@ -53,10 +58,10 @@ function FilePreview(props: PropsType) {
           }
           onClick={updateSelections}
         >
-          <AspectRatio maxW={"200px"} ratio={1}>
+          <AspectRatio maxW={"211px"} ratio={1}>
             <iframe src={URL.createObjectURL(fileArr[idx])} />
           </AspectRatio>
-          <Box position={"absolute"} top={1} right={16}>
+          <Box position={"absolute"} top={1} right={14}>
             <Button onClick={updateSelections} colorScheme={"blackAlpha"}>
               {selectedFiles.indexOf(fileArr[idx]) > -1 ? (
                 <MinusIcon></MinusIcon>
@@ -69,8 +74,8 @@ function FilePreview(props: PropsType) {
       ) : (
         <Image
           objectFit={"cover"}
-          width={"200px"}
-          height={"215px"}
+          width={"211px"}
+          height={"211px"}
           borderRadius={"5.82474px"}
           style={
             selectedFiles.indexOf(fileArr[idx]) > -1
@@ -83,7 +88,7 @@ function FilePreview(props: PropsType) {
         ></Image>
       )}
 
-      <Box position={"absolute"} top={1} right={5}>
+      <Box position={"absolute"} top={1} right={2}>
         <Button onClick={removeFile} colorScheme={"blackAlpha"}>
           <CloseIcon></CloseIcon>
         </Button>
