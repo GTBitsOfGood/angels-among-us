@@ -231,11 +231,12 @@ export default function Navbar() {
                   border="1px solid angels.Gray"
                 >
                   <Stack direction="row">
-                    <Box
-                      bgColor="angelsBlue.100"
+                    <Image
                       borderRadius="100%"
                       boxSize={10}
-                    ></Box>
+                      src={user?.photoURL ?? undefined}
+                      alt="User photo"
+                    ></Image>
                     <Stack direction="column">
                       <Text fontWeight="bold" color="gray">
                         {user?.displayName}
