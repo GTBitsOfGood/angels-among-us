@@ -7,8 +7,10 @@ import {
   ModalOverlay,
   Text,
   Flex,
+  Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import {
   Age,
@@ -19,12 +21,77 @@ import {
   Gender,
   GoodWith,
   Medical,
+  PetKind,
   Size,
   Status,
   Temperament,
   Trained,
 } from "../../utils/types/post";
-import FileUploadSlide from "./FileUploadSlide";
+import FileUploadSlide from "./FileUpload/FileUploadSlide";
+import { FormSlide } from "./Form/FormSlide";
+
+function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
+  if (val === null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${field} value required.`,
+    });
+    return z.NEVER;
+  }
+  return val;
+}
+
+const formSchema = z.object({
+  name: z.string({ required_error: "Name required." }),
+  description: z.string({ required_error: "Description required." }),
+  petKind: z
+    .nativeEnum(PetKind, { required_error: "Pet kind value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Pet kind")),
+  gender: z
+    .nativeEnum(Gender, { required_error: "Gender value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Gender")),
+  age: z
+    .nativeEnum(Age, { required_error: "Age value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Age")),
+  fosterType: z
+    .nativeEnum(FosterType, {
+      required_error: "Foster type value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Foster type")),
+  size: z
+    .nativeEnum(Size, { required_error: "Size value required." })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Size")),
+  breed: z.array(z.nativeEnum(Breed)),
+  temperament: z.array(z.nativeEnum(Temperament)),
+  goodWith: z.array(z.nativeEnum(GoodWith)),
+  medical: z.array(z.nativeEnum(Medical)),
+  behavioral: z.array(z.nativeEnum(Behavioral)),
+  houseTrained: z
+    .nativeEnum(Trained, {
+      required_error: "House trained value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "House trained")),
+  crateTrained: z
+    .nativeEnum(Trained, {
+      required_error: "Crate trained value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Crate trained")),
+  spayNeuterStatus: z
+    .nativeEnum(Trained, {
+      required_error: "Spay/neuter status value required.",
+    })
+    .nullable()
+    .transform((val, ctx) => nullValidation(val, ctx, "Spay/neuter status")),
+});
+
+export type FormState = z.input<typeof formSchema>;
 
 const PostCreationModal: React.FC<{
   isOpen: boolean;
@@ -36,6 +103,25 @@ const PostCreationModal: React.FC<{
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
+
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
+  const [formState, setFormState] = useState<FormState>({
+    name: "",
+    description: "",
+    petKind: null,
+    gender: null,
+    age: null,
+    fosterType: null,
+    size: null,
+    breed: [],
+    temperament: [],
+    goodWith: [],
+    medical: [],
+    behavioral: [],
+    houseTrained: null,
+    crateTrained: null,
+    spayNeuterStatus: null,
+  });
 
   useEffect(() => {
     console.log("FILE ARRAY");
@@ -53,9 +139,9 @@ const PostCreationModal: React.FC<{
 
   const createPost = async () => {
     const files: AttachmentInfo[] = await Promise.all(
-      selectedFiles.map(async (file) => {
+      fileArr.map(async (file) => {
         const key = file.name;
-        if (file.type.includes("img/")) {
+        if (file.type.includes("image/")) {
           const url = URL.createObjectURL(file);
           return new Promise((resolve, _) => {
             const image = new Image();
@@ -180,11 +266,11 @@ const PostCreationModal: React.FC<{
           >
             <ArrowBackIcon boxSize={"23px"}></ArrowBackIcon>
             {isContentView ? (
-              <Text fontSize={"l"} textStyle={"semibold"}>
+              <Text fontSize="l" textStyle="semibold">
                 Back to feed
               </Text>
             ) : (
-              <Text fontSize={"l"} textStyle={"semibold"}>
+              <Text fontSize="l" textStyle="semibold">
                 Back to New Pet content
               </Text>
             )}
@@ -192,27 +278,36 @@ const PostCreationModal: React.FC<{
           <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
             Add A New Pet
           </Text>
-          {isContentView ? (
-            <></>
-          ) : (
-            <Flex
-              direction={"row"}
-              justifyContent={"space-between"}
-              maxW={"688px"}
-              paddingBottom={"20px"}
-            >
-              <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
-                Select up to 6 photos or video of the pet (one video limit)
+          <Box paddingBottom={5}>
+            {isContentView ? (
+              <Text>
+                Fill out the following fields to add a new pet to the Angels
+                Among Us Foster Feed!
               </Text>
-              <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
-                {numFiles}/6
-              </Text>
-            </Flex>
-          )}
+            ) : (
+              <Flex
+                direction={"row"}
+                justifyContent={"space-between"}
+                maxW={"688px"}
+                paddingBottom={"20px"}
+              >
+                <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
+                  Select up to 6 photos or video of the pet (one video limit)
+                </Text>
+                <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
+                  {numFiles}/6
+                </Text>
+              </Flex>
+            )}
+          </Box>
           <Stack overflowY="auto">
             {isContentView ? (
               //TODO: Add new pet content slide component here.
-              <></>
+              <FormSlide
+                setIsFormValid={setIsFormValid}
+                setFormState={setFormState}
+                formState={formState}
+              />
             ) : (
               <FileUploadSlide
                 fileArr={fileArr}
@@ -236,7 +331,7 @@ const PostCreationModal: React.FC<{
                 isContentView
                   ? () => setIsContentView(false)
                   : () => {
-                      onClose();
+                      // onClose();
                       createPost();
                     }
               }

@@ -1,5 +1,12 @@
-import { Button, Flex, Stack, Text, useDisclosure } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useReducer, useState } from "react";
+import {
+  Box,
+  Button,
+  Flex,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { Dispatch, SetStateAction, useReducer } from "react";
 import { PossibleTypes } from "../../pages/onboarding";
 import {
   Age,
@@ -17,6 +24,9 @@ import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import PetPostModal from "../PetPostModal/PetPostModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
+import { AddIcon } from "@chakra-ui/icons";
+import { useAuth } from "../../context/auth";
+import { Role } from "../../utils/types/account";
 
 export type FilterGroup = {
   title: string;
@@ -241,6 +251,8 @@ function Feed(props: {
     onClose: onPostViewClose,
   } = useDisclosure();
 
+  const { userData } = useAuth();
+
   function getInitialFilters() {
     return filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
@@ -397,34 +409,60 @@ function Feed(props: {
           direction="column"
           alignItems="center"
           height="fit-content"
-          paddingY="20px"
+          padding="20px"
+          // padding="px"
         >
-          <Text fontWeight="bold" fontSize="18px">
-            Latest Posts
-          </Text>
-
-          <FeedPostCard
-            image={
-              "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-            }
-            date={"MM/DD/YYYY XX:XX PM"}
-            title={"Pet Name"}
-            tags={["Foster Move"]}
-            body={
-              "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
-            }
-          />
-          <FeedPostCard
-            image={
-              "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-            }
-            date={"MM/DD/YYYY XX:XX PM"}
-            title={"Pet Name"}
-            tags={["Foster Move"]}
-            body={
-              "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
-            }
-          />
+          <Flex
+            w="100%"
+            mb="20px"
+            dir="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Text fontWeight="bold" fontSize="18px" ml="8px">
+              Latest Posts
+            </Text>
+            {userData?.role !== Role.Volunteer && (
+              <Button
+                leftIcon={<AddIcon />}
+                bg="angelsBlue.100"
+                color="white"
+                variant="solid"
+                borderRadius={12}
+                onClick={onPostCreationOpen}
+              >
+                Add new post
+              </Button>
+            )}
+          </Flex>
+          <Stack spacing={5}>
+            <Box onClick={onPostViewOpen} _hover={{ cursor: "pointer" }}>
+              <FeedPostCard
+                image={
+                  "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
+                }
+                date={"MM/DD/YYYY XX:XX PM"}
+                title={"Pet Name"}
+                tags={["Foster Move"]}
+                body={
+                  "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
+                }
+              />
+            </Box>
+            <Box onClick={onPostViewOpen} _hover={{ cursor: "pointer" }}>
+              <FeedPostCard
+                image={
+                  "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
+                }
+                date={"MM/DD/YYYY XX:XX PM"}
+                title={"Pet Name"}
+                tags={["Foster Move"]}
+                body={
+                  "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
+                }
+              />
+            </Box>
+          </Stack>
         </Flex>
       </Stack>
     </Flex>
@@ -525,8 +563,6 @@ function Feed(props: {
   return (
     <>
       {filterDisplayed ? filter : mainContent}
-      <Button onClick={onPostCreationOpen}>Post creation modal</Button>
-      <Button onClick={onPostViewOpen}>Open Pet Post</Button>
       <PostCreationModal
         isOpen={isPostCreationOpen}
         onOpen={onPostCreationOpen}

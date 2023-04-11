@@ -11,9 +11,7 @@ function FeedPostCard(props: {
 
   return (
     <Card
-      margin="20px"
       marginBottom="0px"
-      width="95%"
       paddingX={{ base: "12px", lg: "16px" }}
       paddingY={{ base: "16px", lg: "20px" }}
       borderRadius="14px"

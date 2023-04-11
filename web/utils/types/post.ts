@@ -1,3 +1,10 @@
+import { z } from "zod";
+
+export enum PetKind {
+  Dog = "dog",
+  Cat = "cat",
+}
+
 export enum FosterType {
   Return = "return",
   Boarding = "boarding",
