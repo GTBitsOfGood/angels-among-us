@@ -43,90 +43,126 @@ const userSchema = new Schema<IUser>({
     required: true,
     default: false,
   },
-  type: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(FosterType),
-    },
-  ],
-  size: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Size),
-    },
-  ],
-  restrictedBreed: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Breed),
-    },
-  ],
-  preferredBreed: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Breed),
-    },
-  ],
-  gender: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Gender),
-    },
-  ],
-  age: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Age),
-    },
-  ],
-  temperament: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Temperament),
-    },
-  ],
-  goodWith: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(GoodWith),
-    },
-  ],
-  medical: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Medical),
-    },
-  ],
-  behavioral: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Behavioral),
-    },
-  ],
-  houseTrained: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Trained),
-    },
-  ],
-  spayNeuterStatus: [
-    {
-      type: String,
-      required: false,
-      enum: Object.values(Status),
-    },
-  ],
+  type: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(FosterType),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  size: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Size),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  restrictedBreeds: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Breed),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  preferredBreeds: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Breed),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  gender: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Gender),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  age: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Age),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  temperament: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Temperament),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  dogsNotGoodWith: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(GoodWith),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  medical: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Medical),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  behavioral: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Behavioral),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  houseTrained: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Trained),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
+  spayNeuterStatus: {
+    type: [
+      {
+        type: String,
+        enum: Object.values(Status),
+      },
+    ],
+    default: undefined,
+    required: false,
+  },
 });
 
 export default mongoose.models.User || mongoose.model("User", userSchema);

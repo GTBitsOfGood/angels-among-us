@@ -193,7 +193,7 @@ function Home() {
               cursor={["default", "pointer"]}
               onClick={() => handleLoginFacebook()}
             >
-              continue with facebook
+              Continue with Facebook
             </Button>
 
             <Stack
@@ -215,7 +215,7 @@ function Home() {
               cursor={["default", "pointer"]}
               onClick={handleLoginGoogle}
             >
-              continue with Google
+              Continue with Google
             </Button>
           </Stack>
         </Stack>

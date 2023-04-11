@@ -174,7 +174,7 @@ const filterGroups: FilterGroup[] = [
     title: "Behavioral Traits",
     filters: [
       {
-        key: "goodWith",
+        key: "dogsNotGoodWith",
         description: "Dogs known to be good with:",
         options: [
           { value: GoodWith.Men, label: "Men" },
@@ -316,7 +316,7 @@ function Feed(props: {
   const mainContent = (
     <Flex
       className="feed"
-      backgroundColor="#C3E6F9"
+      backgroundColor="#D7E4EE"
       justifyContent="center"
       height="fit-content"
       minHeight="100vh"

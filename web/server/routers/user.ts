@@ -28,7 +28,7 @@ const userSchema = z.object({
   gender: z.array(z.nativeEnum(Gender)),
   age: z.array(z.nativeEnum(Age)),
   temperament: z.array(z.nativeEnum(Temperament)),
-  goodWith: z.array(z.nativeEnum(GoodWith)),
+  dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
   houseTrained: z.array(z.nativeEnum(Trained)),

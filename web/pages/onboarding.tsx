@@ -286,7 +286,7 @@ function Onboarding() {
       allSelected: true,
     } as StoredQuestion<Temperament>,
     {
-      key: "goodWith",
+      key: "dogsNotGoodWith",
       title: "Are you able to foster dogs that DO NOT do well with:",
       description: "",
       options: [
@@ -324,7 +324,7 @@ function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       popover:
-        "<b>Heartworms</b> <br> Lorem ipsum <br><br> <b>Chronic Condition</b> <br> Lorem ipsum <br><br> <b> Parvo </b> <br> Lorem ipsum <br><br> <b> Hospice </b> <br> Lorem ipsum",
+        "<b>Illness</b> <br> A treatable illness.  May require additional vet appointments before cleared for adoption. <br><br> <b>Injury</b> <br> May require additional vet visits, bandage changes, and/or surgery. <br><br> <b> Pregnant </b> <br> Will have babies in your home. Puppies can be adopted or split into multiple fosters at 8 weeks. <br><br> <b> Nursing </b> <br> Puppies already born but will need monitoring and to stay with mom until 8 weeks of age. <br><br> <b> Bottle Fed </b> <br> Needs round the clock bottle feedings until able to eat solid food. <br><br> <b> Heartworms </b> <br> Dogs need to be kept calm during heartworm treatment.  In some cases, AAUPR will cover treatment after adoption. <br><br> <b> Chronic Condition </b> <br> May need ongoing medication or follow ups.  May be adopted once diagnosed and an adopter is fully informed. <br><br> <b> Parvo </b><br>A virus that affects puppies.  Since parvo stays in the home for a period of time, if a foster has parvo puppies, they cannot take healthy puppies for 6 months to a year. <br><br> <b> Hospice </b> <br> A dog that is not available for adoption but will be made comfortable for as long as possible in their foster home.",
       allSelected: true,
     } as StoredQuestion<Medical>,
     {
@@ -375,7 +375,7 @@ function Onboarding() {
     } as StoredQuestion<Status>,
     {
       title: "🎉\nThanks for completing your profile!",
-      description: `We're super excited that you're interested in helping our dogs in need by providing them with a kind home!\n\nLorem ipsum dolor sit amet consectetur. Purus vehicula eget pharetra vitae. Varius id libero id aliquam in.`,
+      description: `We're super excited that you're interested in helping our dogs in need by providing them with a kind home!\n\nYou may change any of these preferences on the profile page.`,
       qtype: QType.Completion,
     },
   ];

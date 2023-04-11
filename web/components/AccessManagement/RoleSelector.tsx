@@ -66,7 +66,7 @@ function RoleSelector(props: PropertyType) {
       <PopoverTrigger>
         <Box
           as="button"
-          bgColor="#CECCCC"
+          bgColor="#C6E3F9"
           borderRadius="8px"
           width={"97px"}
           height={"27px"}
@@ -93,7 +93,7 @@ function RoleSelector(props: PropertyType) {
                     key={ops.indexOf(option)}
                     onClick={() => changeRole(option.role)}
                     as="button"
-                    bgColor="#CECCCC"
+                    bgColor="#C6E3F9"
                     borderRadius="8px"
                     width={"97px"}
                     height={"27px"}
