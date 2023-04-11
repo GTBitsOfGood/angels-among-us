@@ -174,7 +174,7 @@ const filterGroups: FilterGroup[] = [
     title: "Behavioral Traits",
     filters: [
       {
-        key: "goodWith",
+        key: "dogsNotGoodWith",
         description: "Dogs known to be good with:",
         options: [
           { value: GoodWith.Men, label: "Men" },

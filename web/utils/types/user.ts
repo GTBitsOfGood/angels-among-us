@@ -21,12 +21,12 @@ export interface IUser {
   disabled: boolean;
   type?: FosterType[];
   size?: Size[];
-  restrictedBreed?: Breed[];
-  preferredBreed?: Breed[];
+  restrictedBreeds?: Breed[];
+  preferredBreeds?: Breed[];
   gender?: Gender[];
   age?: Age[];
   temperament?: Temperament[];
-  goodWith?: GoodWith[];
+  dogsNotGoodWith?: GoodWith[];
   medical?: Medical[];
   behavioral?: Behavioral[];
   houseTrained?: Trained[];

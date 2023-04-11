@@ -286,7 +286,7 @@ function Onboarding() {
       allSelected: true,
     } as StoredQuestion<Temperament>,
     {
-      key: "goodWith",
+      key: "dogsNotGoodWith",
       title: "Are you able to foster dogs that DO NOT do well with:",
       description: "",
       options: [
@@ -375,7 +375,7 @@ function Onboarding() {
     } as StoredQuestion<Status>,
     {
       title: "🎉\nThanks for completing your profile!",
-      description: `We're super excited that you're interested in helping our dogs in need by providing them with a kind home!\n\nLorem ipsum dolor sit amet consectetur. Purus vehicula eget pharetra vitae. Varius id libero id aliquam in.`,
+      description: `We're super excited that you're interested in helping our dogs in need by providing them with a kind home!\n\nYou may change any of these preferences on the profile page.`,
       qtype: QType.Completion,
     },
   ];

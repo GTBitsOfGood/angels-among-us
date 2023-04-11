@@ -1,3 +1,4 @@
+import React, { useMemo, useReducer, useState } from "react";
 import {
   Button,
   Flex,
@@ -11,593 +12,549 @@ import {
 
 import { EditIcon } from "@chakra-ui/icons";
 
-import React from "react";
 import Select from "react-select";
 import {
   Age,
+  ageLabels,
   Behavioral,
+  behavioralLabels,
   Breed,
+  breedLabels,
   FosterType,
+  fosterTypeLabels,
   Gender,
+  genderLabels,
   GoodWith,
+  goodWithLabels,
   Size,
+  sizeLabels,
   Status,
+  statusLabels,
   Temperament,
+  temperamentLabels,
+  Trained,
+  trainedLabels,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
 import pageAccessHOC from "../components/HOC/PageAccess";
+import { IUser } from "../utils/types/user";
+import { trpc } from "../utils/trpc";
 
 function Profile() {
-  const { user, loading, userData, authorized } = useAuth();
-  const [editing, setEditing] = React.useState(false);
+  const { user, userData } = useAuth();
+  const [editing, setEditing] = useState(false);
 
-  const fosterTypes = [
-    { value: FosterType.Return, label: "Return" },
-    { value: FosterType.Boarding, label: "Boarding" },
-    { value: FosterType.Temporary, label: "Temporary" },
-    { value: FosterType.FosterMove, label: "Foster Move" },
-    { value: FosterType.OwnerSurrender, label: "Owner Surrender" },
-    { value: FosterType.Shelter, label: "Shelter" },
-  ];
-  const breeds = [
-    { value: Breed.AmericanEskimo, label: "American Eskimo" },
-    { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
-    { value: Breed.Beagle, label: "Beagle" },
-    { value: Breed.BichonFrise, label: "Bichon Frise" },
-    { value: Breed.BorderCollie, label: "Border Collie" },
-    { value: Breed.Boxer, label: "Boxer" },
-    { value: Breed.BrusselsGriffon, label: "Brussels Griffon" },
-    { value: Breed.Bulldog, label: "Bulldog" },
-    { value: Breed.CaneCorsoMastiff, label: "Cane Corso/Mastiff" },
-    { value: Breed.CattleDogHeeler, label: "Cattle Dog/Heeler" },
-    { value: Breed.Chihuahua, label: "Chihuahua" },
-    { value: Breed.ChowChow, label: "Chow Chow" },
-    { value: Breed.Collie, label: "Collie" },
-    { value: Breed.Corgi, label: "Corgi" },
-    { value: Breed.Dachshund, label: "Dachshund" },
-    { value: Breed.Dalmatian, label: "Dalmatian" },
-    { value: Breed.DobermanPinscher, label: "Doberman Pinscher" },
-    { value: Breed.GermanShepherd, label: "German Shepherd" },
-    { value: Breed.GoldenRetriever, label: "Golden Retriever" },
-    { value: Breed.GreatDane, label: "Great Dane" },
-    { value: Breed.GreatPyrenees, label: "Great Pyrenees" },
-    { value: Breed.Greyhound, label: "Greyhound" },
-    { value: Breed.Hound, label: "Hound" },
-    { value: Breed.Husky, label: "Husky" },
-    { value: Breed.LabradorRetriever, label: "Labrador Retriever" },
-    { value: Breed.Malamute, label: "Malamute" },
-    { value: Breed.Maltese, label: "Maltese" },
-    { value: Breed.MinPin, label: "Min Pin" },
-    { value: Breed.Mix, label: "Mix" },
-    { value: Breed.Newfoundland, label: "Newfoundland" },
-    { value: Breed.Pekingese, label: "Pekingese" },
-    { value: Breed.Pitbull, label: "Pitbull" },
-    { value: Breed.Pointer, label: "Pointer" },
-    { value: Breed.Pomeranian, label: "Pomeranian" },
-    { value: Breed.Poodle, label: "Poodle" },
-    { value: Breed.Pug, label: "Pug" },
-    { value: Breed.Rottweiler, label: "Rottweiler" },
-    { value: Breed.Schnauzer, label: "Schnauzer" },
-    { value: Breed.Scottie, label: "Scottie" },
-    { value: Breed.Setter, label: "Setter" },
-    { value: Breed.Sharpei, label: "Sharpei" },
-    { value: Breed.Sheepdog, label: "Sheepdog" },
-    { value: Breed.Shepherd, label: "Shepherd" },
-    { value: Breed.ShihTzu, label: "Shih Tzu" },
-    { value: Breed.Spaniel, label: "Spaniel" },
-    { value: Breed.StBernard, label: "St. Bernard" },
-    { value: Breed.TerrierMedLarge, label: "Terrier (Med-Large)" },
-    { value: Breed.TerrierSmall, label: "Terrier (Small)" },
-    { value: Breed.Weimaraner, label: "Weimaraner" },
-    { value: Breed.Whippet, label: "Whippet" },
-  ];
-  const ages = [
-    { value: Age.Puppy, label: "Puppy" },
-    { value: Age.Young, label: "Young Adult" },
-    { value: Age.Adult, label: "Adult" },
-    { value: Age.Senior, label: "Senior" },
-    { value: Age.MomAndPuppies, label: "Mom & Puppies" },
-  ];
-  const sizes = [
-    { value: Size.XS, label: "XS" },
-    { value: Size.S, label: "S" },
-    { value: Size.M, label: "M" },
-    { value: Size.L, label: "L" },
-    { value: Size.XL, label: "XL" },
-  ];
-  const genders = [
-    { value: Gender.Male, label: "Male" },
-    { value: Gender.Female, label: "Female" },
-    { value: Gender.Litter, label: "Litter" },
-  ];
-  const compatibilities = [
-    { value: GoodWith.Men, label: "Men" },
-    { value: GoodWith, label: "Women" },
-    { value: GoodWith.OlderChildren, label: "Older Children" },
-    { value: GoodWith.YoungChildren, label: "Young Children" },
-    { value: GoodWith.LargeDogs, label: "Large Dogs" },
-    { value: GoodWith.SmallDogs, label: "Small Dogs" },
-    { value: GoodWith.Cats, label: "Cats" },
-  ];
-  const behaviors = [
-    { value: Behavioral.SeparationAnxiety, label: "Separation Anxiety" },
-    { value: Behavioral.Barking, label: "Barking" },
-    { value: Behavioral.Jumping, label: "Jumping" },
-    { value: Behavioral.FlightRisk, label: "Flight Risk" },
-    { value: Behavioral.BiteRisk, label: "Bite Risk" },
-    { value: Behavioral.PullsOnLeash, label: "Pulls on Leash" },
-  ];
-  const temperaments = [
-    { value: Temperament.Friendly, label: "Friendly" },
-    { value: Temperament.Scared, label: "Scared" },
-    { value: Temperament.Active, label: "Active" },
-    { value: Temperament.Calm, label: "Calm" },
-  ];
-  const statuses = [
-    { value: Status.Yes, label: "Yes" },
-    { value: Status.No, label: "No" },
-  ];
+  function pruneUserData(
+    data: NonNullable<typeof userData>
+  ): Omit<NonNullable<IUser>, "email" | "name" | "uid" | "role" | "disabled"> {
+    const { __v, _id, email, name, uid, role, disabled, ...initialState } =
+      data;
+    return initialState;
+  }
+
+  const initialFormState = userData ? pruneUserData(userData) : {};
+
+  type Action<
+    K extends keyof ReturnType<typeof pruneUserData>,
+    V extends ReturnType<typeof pruneUserData>[K]
+  > = { type: "setField" | "clear"; key?: K; data?: V };
+
+  function reducer<
+    K extends keyof ReturnType<typeof pruneUserData>,
+    V extends ReturnType<typeof pruneUserData>[K]
+  >(state: ReturnType<typeof pruneUserData>, action: Action<K, V>) {
+    switch (action.type) {
+      case "setField":
+        return {
+          ...state,
+          [action.key!]: action.data!,
+        };
+      case "clear":
+        return initialFormState;
+      default:
+        throw Error("Unknown action.");
+    }
+  }
+
+  const [preferences, dispatch] = useReducer(reducer, initialFormState);
+
+  const updatePreferences = trpc.user.updateUserPreferences.useMutation();
+
   return (
-    <>
+    <Flex
+      display={["none", "flex"]}
+      minHeight="180vh"
+      bgColor="lighterBlue.100"
+      justifyContent="center"
+    >
       <Flex
-        display={["none", "flex"]}
-        minHeight="180vh"
-        bgColor="lighterBlue.100"
+        width="93%"
+        marginTop="7%"
         justifyContent="center"
+        alignItems="center"
+        bgColor="white"
       >
-        <Flex
-          width="93%"
-          marginTop="7%"
-          justifyContent="center"
-          alignItems="center"
-          bgColor="white"
-        >
-          <Stack
-            direction="column"
-            position="absolute"
-            top="170px"
-            width="80%"
-            spacing={5}
-          >
-            <Stack
-              width="100%"
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Text fontSize="2xl" fontWeight="semibold">
-                Profile
-              </Text>
-              {!editing ? (
-                <Button
-                  bgColor="angelsBlue.100"
-                  color="white"
-                  width="6%"
-                  borderRadius="16px"
-                  onClick={() => setEditing(true)}
-                >
-                  Edit
-                </Button>
-              ) : (
-                <Stack direction="row">
-                  <Button
-                    border="1px solid gray"
-                    bgColor="white"
-                    color="gray"
-                    borderRadius="16px"
-                    onClick={() => setEditing(false)}
-                  >
-                    Cancel
-                  </Button>
-
-                  <Button
-                    bgColor="angelsBlue.100"
-                    color="white"
-                    borderRadius="16px"
-                    onClick={() => setEditing(false)}
-                  >
-                    Save
-                  </Button>
-                </Stack>
-              )}
-            </Stack>
-            <Stack direction="column">
-              <Stack direction="row">
-                <Text fontWeight="semibold">General Information</Text>
-                {editing && (
-                  <Text fontSize="larger" color="red" fontWeight="bold">
-                    *
-                  </Text>
-                )}
-              </Stack>
-
-              <Flex border="1px solid black" padding={10} borderRadius="12px">
-                <Stack
-                  width="100%"
-                  direction="row"
-                  spacing={10}
-                  alignItems="center"
-                >
-                  <Image
-                    borderRadius="100%"
-                    boxSize={36}
-                    src={user?.photoURL ?? undefined}
-                    alt="User photo"
-                  ></Image>
-
-                  <Stack direction="column" width="85%" spacing={5}>
-                    <Stack direction="row" spacing={5}>
-                      <Stack direction="column" width="50%">
-                        <Text fontWeight="medium">Name</Text>
-                        <Input
-                          placeholder={user?.displayName ?? undefined}
-                          disabled={true}
-                        ></Input>
-                      </Stack>
-                      <Stack direction="column" width="50%">
-                        <Text fontWeight="medium">Preferred Email</Text>
-                        <Input placeholder={""} disabled={!editing}></Input>
-                      </Stack>
-                    </Stack>
-                    <Stack direction="row" spacing={5}>
-                      <Stack direction="column" width="50%">
-                        <Text fontWeight="medium">Email</Text>
-                        <Input
-                          placeholder={user?.email ?? undefined}
-                          disabled={true}
-                        ></Input>
-                      </Stack>
-                      <Stack direction="column" width="50%">
-                        <Text fontWeight="medium">
-                          Which types of fosters can you help with?
-                        </Text>
-                        <Select
-                          isDisabled={!editing}
-                          isMulti
-                          options={fosterTypes}
-                        />
-                      </Stack>
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Flex>
-            </Stack>
-            <Stack direction="column">
-              <Text fontWeight="semibold">Physical Traits</Text>
-              <Flex
-                borderRadius="12px"
-                border="1px solid black"
-                justifyContent="center"
-                padding={5}
-              >
-                <Stack direction="column" width="90%" spacing={5}>
-                  <Stack direction="row" spacing={5}>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Breed Restrictions</Text>
-                      <Select isDisabled={!editing} isMulti options={breeds} />
-                    </Stack>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Breed Preferences</Text>
-                      <Select isDisabled={!editing} isMulti options={breeds} />
-                    </Stack>
-                  </Stack>
-                  <Stack direction="row" spacing={5}>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Age Capability</Text>
-                      <Select isDisabled={!editing} isMulti options={ages} />
-                    </Stack>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Dog Size Capability</Text>
-                      <Select isDisabled={!editing} isMulti options={sizes} />
-                    </Stack>
-                  </Stack>
-                  <Stack direction="row" spacing={5}>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Gender Capability</Text>
-                      <Select isDisabled={!editing} isMulti options={genders} />
-                    </Stack>
-                    <Stack direction="column" width="50%"></Stack>
-                  </Stack>
-                </Stack>
-              </Flex>
-            </Stack>
-            <Stack direction="column">
-              <Text fontWeight="semibold">Behavioral Traits</Text>
-              <Flex
-                border="1px solid black"
-                borderRadius="12px"
-                justifyContent="center"
-                padding={5}
-              >
-                <Stack direction="column" width="90%" spacing={5}>
-                  <Stack direction="row" spacing={5}>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">
-                        Able to foster dogs NOT good with:
-                      </Text>
-                      <Select
-                        isDisabled={!editing}
-                        isMulti
-                        options={compatibilities}
-                      />
-                    </Stack>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">Able to foster dogs with:</Text>
-                      <Select
-                        isDisabled={!editing}
-                        isMulti
-                        options={behaviors}
-                      />
-                    </Stack>
-                  </Stack>
-                  <Stack direction="row">
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">
-                        Able to foster dogs with these temperaments:
-                      </Text>
-                      <Select
-                        isDisabled={!editing}
-                        isMulti
-                        options={temperaments}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Flex>
-            </Stack>
-            <Stack direction="column">
-              <Text fontWeight="semibold">Medical Information</Text>
-              <Flex
-                borderRadius="12px"
-                border="1px solid black"
-                justifyContent="center"
-                padding={5}
-              >
-                <Stack direction="column" width="90%" spacing={5}>
-                  <Stack direction="row" spacing={5}>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">
-                        Able to foster dogs not house trained...
-                      </Text>
-                      <Select
-                        isDisabled={!editing}
-                        isMulti
-                        options={statuses}
-                      />
-                    </Stack>
-                    <Stack direction="column" width="50%">
-                      <Text fontWeight="medium">
-                        Able to foster dogs not spayed or neutered...
-                      </Text>
-                      <Select
-                        isDisabled={!editing}
-                        isMulti
-                        options={statuses}
-                      />
-                    </Stack>
-                  </Stack>
-                </Stack>
-              </Flex>
-            </Stack>
-          </Stack>
-        </Flex>
-      </Flex>
-      <Flex height="100vh" display={["flex", "none"]} justifyContent="center">
         <Stack
           direction="column"
           position="absolute"
-          top="100px"
-          alignItems="center"
+          top="170px"
+          width="80%"
           spacing={5}
         >
-          <Stack direction="row" justifyContent="space-between" width="100%">
-            <Stack direction="column">
-              <Text fontWeight="bold" fontSize="2xl">
-                Profile
-              </Text>
-              <Stack direction="row">
-                <Text fontWeight="bold" fontSize="lg">
-                  General Information
-                </Text>
-                {editing && (
-                  <Text fontWeight="bold" fontSize="lg" color="red">
-                    *
-                  </Text>
-                )}
-              </Stack>
-            </Stack>
-            {editing ? (
-              <Stack direction="row">
-                <Button
-                  cursor="default"
-                  border="1px solid gray"
-                  color="gray"
-                  bgColor="white"
-                  borderRadius="16px"
-                  onClick={() => setEditing(false)}
-                >
-                  Cancel
-                </Button>
-
-                <Button
-                  cursor="default"
-                  bgColor="angelsBlue.100"
-                  color="white"
-                  borderRadius="16px"
-                  onClick={() => setEditing(false)}
-                >
-                  Save
-                </Button>
-              </Stack>
-            ) : (
+          <Stack
+            width="100%"
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Text fontSize="2xl" fontWeight="semibold">
+              Profile
+            </Text>
+            {!editing ? (
               <Button
-                cursor="default"
                 bgColor="angelsBlue.100"
                 color="white"
+                width="6%"
                 borderRadius="16px"
                 onClick={() => setEditing(true)}
               >
                 Edit
               </Button>
-            )}
-          </Stack>
-          <Image
-            borderRadius="100%"
-            boxSize={36}
-            src={user?.photoURL ?? undefined}
-            alt="User photo"
-          ></Image>
-          {editing && (
-            <IconButton
-              icon={<EditIcon />}
-              aria-label={""}
-              bgColor="white"
-              borderRadius="100%"
-              position="absolute"
-              top="120px"
-              left="170px"
-            />
-          )}
-          <Stack direction="column" spacing={7}>
-            <Stack direction="column" spacing={4}>
-              <Stack direction="column">
-                <Text fontWeight="medium">Name</Text>
-                <Input
-                  placeholder={user?.displayName ?? undefined}
-                  disabled={true}
+            ) : (
+              <Stack direction="row">
+                <Button
                   border="1px solid gray"
-                ></Input>
-              </Stack>
-              <Stack direction="column">
-                <Text fontWeight="medium">Email</Text>
-                <Input
-                  border="1px solid gray"
-                  placeholder={user?.email ?? undefined}
-                  disabled={true}
-                ></Input>
-              </Stack>
-              <Stack direction="column">
-                <Text fontWeight="medium">Preferred Email</Text>
-                <Input
-                  border="1px solid gray"
-                  placeholder={""}
-                  disabled={!editing}
-                ></Input>
-              </Stack>
-              <Stack direction="column">
-                <Text fontWeight="medium">
-                  Which types of fosters can you help with?
-                </Text>
-                <Select isDisabled={!editing} isMulti options={fosterTypes} />
-              </Stack>
-            </Stack>
-            <Text fontSize="lg" fontWeight="bold">
-              Physical Traits
-            </Text>
-            <Stack direction="column" spacing={4}>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Breed Restrictions</Text>
-                <Select isDisabled={!editing} isMulti options={breeds} />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Breed Preferences</Text>
-                <Select isDisabled={!editing} isMulti options={breeds} />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Ages Capability</Text>
-                <Select isDisabled={!editing} isMulti options={ages} />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Dog Size Capability</Text>
-                <Select isDisabled={!editing} isMulti options={sizes} />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Gender Capability</Text>
-                <Select isDisabled={!editing} isMulti options={genders} />
-              </Stack>
-            </Stack>
-            <Text fontSize="lg" fontWeight="bold">
-              Behavioral Traits
-            </Text>
-            <Stack direction="column" spacing={4}>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">
-                  Able to foster dogs NOT good with:
-                </Text>
-                <Select
-                  isDisabled={!editing}
-                  isMulti
-                  options={compatibilities}
-                />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">Able to foster dogs with:</Text>
-                <Select isDisabled={!editing} isMulti options={behaviors} />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">
-                  Able to foster dogs with these temperaments:
-                </Text>
-                <Select isDisabled={!editing} isMulti options={temperaments} />
-              </Stack>
-            </Stack>
-            <Text fontSize="lg" fontWeight="bold">
-              Medical Information
-            </Text>
-            <Stack direction="column" spacing={4}>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">
-                  Able to foster dogs not house trained...
-                </Text>
-                <Select isDisabled={!editing} isMulti options={statuses} />
-              </Stack>
-              <Stack direction="column" width="100%">
-                <Text fontWeight="medium">
-                  Able to foster dogs not spayed or neutered...
-                </Text>
-                <Select isDisabled={!editing} isMulti options={statuses} />
-              </Stack>
-            </Stack>
-            <Stack direction="row" justifyContent="flex-end" paddingBottom={10}>
-              {editing ? (
-                <>
-                  <Button
-                    cursor="default"
-                    border="1px solid gray"
-                    color="gray"
-                    bgColor="white"
-                    borderRadius="16px"
-                    onClick={() => setEditing(false)}
-                  >
-                    Cancel
-                  </Button>
+                  bgColor="white"
+                  color="gray"
+                  borderRadius="16px"
+                  onClick={() => {
+                    dispatch({ type: "clear" });
+                    setEditing(false);
+                  }}
+                >
+                  Cancel
+                </Button>
 
-                  <Button
-                    cursor="default"
-                    color="white"
-                    bgColor="angelsBlue.100"
-                    borderRadius="16px"
-                    onClick={() => setEditing(false)}
-                  >
-                    Save
-                  </Button>
-                </>
-              ) : (
                 <Button
                   bgColor="angelsBlue.100"
                   color="white"
-                  cursor="default"
                   borderRadius="16px"
-                  onClick={() => setEditing(true)}
+                  onClick={async () => {
+                    const req = await updatePreferences.mutateAsync({
+                      uid: userData!.uid,
+                      updateFields: preferences,
+                    });
+                    if (req.success) {
+                      setEditing(false);
+                    }
+                  }}
                 >
-                  Edit
+                  Save
                 </Button>
+              </Stack>
+            )}
+          </Stack>
+          <Stack direction="column">
+            <Stack direction="row">
+              <Text fontWeight="semibold">General Information</Text>
+              {editing && (
+                <Text fontSize="larger" color="red" fontWeight="bold">
+                  *
+                </Text>
               )}
             </Stack>
+
+            <Flex border="1px solid black" padding={10} borderRadius="12px">
+              <Stack
+                width="100%"
+                direction="row"
+                spacing={10}
+                alignItems="center"
+              >
+                <Image
+                  borderRadius="100%"
+                  boxSize={36}
+                  src={user?.photoURL ?? undefined}
+                  alt="User photo"
+                ></Image>
+
+                <Stack direction="column" width="85%" spacing={5}>
+                  <Stack direction="row" spacing={5}>
+                    <Stack direction="column" width="50%">
+                      <Text fontWeight="medium">Name</Text>
+                      <Input
+                        placeholder={user?.displayName ?? undefined}
+                        disabled={true}
+                      ></Input>
+                    </Stack>
+                    <Stack direction="column" width="50%">
+                      <Text fontWeight="medium">Preferred Email</Text>
+                      <Input placeholder={""} disabled={!editing}></Input>
+                    </Stack>
+                  </Stack>
+                  <Stack direction="row" spacing={5}>
+                    <Stack direction="column" width="50%">
+                      <Text fontWeight="medium">Email</Text>
+                      <Input
+                        placeholder={user?.email ?? undefined}
+                        disabled={true}
+                      ></Input>
+                    </Stack>
+                    <Stack direction="column" width="50%">
+                      <Text fontWeight="medium">
+                        Which types of fosters can you help with?
+                      </Text>
+                      <Select
+                        onChange={(newVals) =>
+                          dispatch({
+                            type: "setField",
+                            key: "type",
+                            data: (
+                              newVals as {
+                                value: FosterType;
+                                label: string;
+                              }[]
+                            ).map(({ value }) => value),
+                          })
+                        }
+                        value={preferences?.type?.map((type) => ({
+                          value: type as string,
+                          label: fosterTypeLabels[type],
+                        }))}
+                        isDisabled={!editing}
+                        isMulti
+                        options={Object.entries(fosterTypeLabels).map(
+                          ([key, val]) => ({ value: key, label: val })
+                        )}
+                      />
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Flex>
+          </Stack>
+          <Stack direction="column">
+            <Text fontWeight="semibold">Physical Traits</Text>
+            <Flex
+              borderRadius="12px"
+              border="1px solid black"
+              justifyContent="center"
+              padding={5}
+            >
+              <Stack direction="column" width="90%" spacing={5}>
+                <Stack direction="row" spacing={5}>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">Breed Restrictions</Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "restrictedBreeds",
+                          data: (
+                            newVals as {
+                              value: Breed;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.restrictedBreeds?.map((breed) => ({
+                        value: breed as string,
+                        label: breedLabels[breed],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(breedLabels).map(
+                        ([key, val]) => ({ value: key, label: val })
+                      )}
+                    />
+                  </Stack>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">Breed Preferences</Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "preferredBreeds",
+                          data: (
+                            newVals as {
+                              value: Breed;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.preferredBreeds?.map((breed) => ({
+                        value: breed as string,
+                        label: breedLabels[breed],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(breedLabels).map(
+                        ([key, val]) => ({ value: key, label: val })
+                      )}
+                    />
+                  </Stack>
+                </Stack>
+                <Stack direction="row" spacing={5}>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">Age Capability</Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "age",
+                          data: (
+                            newVals as {
+                              value: Age;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.age?.map((age) => ({
+                        value: age as string,
+                        label: ageLabels[age],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(ageLabels).map(([key, val]) => ({
+                        value: key,
+                        label: val,
+                      }))}
+                    />
+                  </Stack>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">Dog Size Capability</Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "size",
+                          data: (
+                            newVals as {
+                              value: Size;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.size?.map((size) => ({
+                        value: size as string,
+                        label: sizeLabels[size],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(sizeLabels).map(([key, val]) => ({
+                        value: key,
+                        label: val,
+                      }))}
+                    />
+                  </Stack>
+                </Stack>
+                <Stack direction="row" spacing={5}>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">Gender Capability</Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "gender",
+                          data: (
+                            newVals as {
+                              value: Gender;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.gender?.map((gender) => ({
+                        value: gender as string,
+                        label: genderLabels[gender],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(genderLabels).map(
+                        ([key, val]) => ({ value: key, label: val })
+                      )}
+                    />
+                  </Stack>
+                  <Stack direction="column" width="50%"></Stack>
+                </Stack>
+              </Stack>
+            </Flex>
+          </Stack>
+          <Stack direction="column">
+            <Text fontWeight="semibold">Behavioral Traits</Text>
+            <Flex
+              border="1px solid black"
+              borderRadius="12px"
+              justifyContent="center"
+              padding={5}
+            >
+              <Stack direction="column" width="90%" spacing={5}>
+                <Stack direction="row" spacing={5}>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">
+                      Able to foster dogs NOT good with:
+                    </Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "dogsNotGoodWith",
+                          data: (
+                            newVals as {
+                              value: GoodWith;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.dogsNotGoodWith?.map((goodWith) => ({
+                        value: goodWith as string,
+                        label: goodWithLabels[goodWith],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(goodWithLabels).map(
+                        ([key, val]) => ({ value: key, label: val })
+                      )}
+                    />
+                  </Stack>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">Able to foster dogs with:</Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "behavioral",
+                          data: (
+                            newVals as {
+                              value: Behavioral;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.behavioral?.map((behavior) => ({
+                        value: behavior as string,
+                        label: behavioralLabels[behavior],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(behavioralLabels).map(
+                        ([key, val]) => ({ value: key, label: val })
+                      )}
+                    />
+                  </Stack>
+                </Stack>
+                <Stack direction="row">
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">
+                      Able to foster dogs with these temperaments:
+                    </Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "temperament",
+                          data: (
+                            newVals as {
+                              value: Temperament;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.temperament?.map((temperament) => ({
+                        value: temperament as string,
+                        label: temperamentLabels[temperament],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(temperamentLabels).map(
+                        ([key, val]) => ({ value: key, label: val })
+                      )}
+                    />
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Flex>
+          </Stack>
+          <Stack direction="column">
+            <Text fontWeight="semibold">Medical Information</Text>
+            <Flex
+              borderRadius="12px"
+              border="1px solid black"
+              justifyContent="center"
+              padding={5}
+            >
+              <Stack direction="column" width="90%" spacing={5}>
+                <Stack direction="row" spacing={5}>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">
+                      Able to foster dogs not house trained...
+                    </Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "houseTrained",
+                          data: (
+                            newVals as {
+                              value: Status;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.houseTrained?.map((trained) => ({
+                        value: trained as string,
+                        label: trainedLabels[trained],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(statusLabels).map(
+                        ([key, val]) => ({ value: key, label: val })
+                      )}
+                    />
+                  </Stack>
+                  <Stack direction="column" width="50%">
+                    <Text fontWeight="medium">
+                      Able to foster dogs not spayed or neutered...
+                    </Text>
+                    <Select
+                      onChange={(newVals) =>
+                        dispatch({
+                          type: "setField",
+                          key: "spayNeuterStatus",
+                          data: (
+                            newVals as {
+                              value: Status;
+                              label: string;
+                            }[]
+                          ).map(({ value }) => value),
+                        })
+                      }
+                      value={preferences?.spayNeuterStatus?.map((status) => ({
+                        value: status as string,
+                        label: statusLabels[status],
+                      }))}
+                      isDisabled={!editing}
+                      isMulti
+                      options={Object.entries(statusLabels).map(
+                        ([key, val]) => ({ value: key, label: val })
+                      )}
+                    />
+                  </Stack>
+                </Stack>
+              </Stack>
+            </Flex>
           </Stack>
         </Stack>
       </Flex>
-    </>
+    </Flex>
   );
 }
 
