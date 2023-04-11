@@ -443,7 +443,7 @@ function Profile() {
           </Stack>
           <Image
             borderRadius="100%"
-            boxSize={36}
+            boxSize={20}
             src={user?.photoURL ?? undefined}
             alt="User photo"
           ></Image>
