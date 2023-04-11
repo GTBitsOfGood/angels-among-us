@@ -1,16 +1,5 @@
-import React, { useMemo, useReducer, useState } from "react";
-import {
-  Button,
-  Flex,
-  Stack,
-  Text,
-  IconButton,
-  Input,
-  Image,
-  Box,
-} from "@chakra-ui/react";
-
-import { EditIcon } from "@chakra-ui/icons";
+import React, { useReducer, useState } from "react";
+import { Button, Flex, Stack, Text, Input, Image } from "@chakra-ui/react";
 
 import Select from "react-select";
 import {
@@ -32,7 +21,6 @@ import {
   statusLabels,
   Temperament,
   temperamentLabels,
-  Trained,
   trainedLabels,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
