@@ -62,6 +62,7 @@ function FeedFilterGroup(props: {
                       hideSelectedOptions={false}
                       isClearable={false}
                       maxMenuHeight={180}
+                      menuPortalTarget={document.body}
                       styles={{
                         menu: (provided) => ({
                           ...provided,
