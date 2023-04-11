@@ -133,7 +133,10 @@ export default function Navbar() {
                     textColor="gray"
                     size="sm"
                     fontWeight={400}
-                    onClick={() => signOut(auth)}
+                    onClick={() => {
+                      router.push(Pages.FEED);
+                      signOut(auth);
+                    }}
                   >
                     Logout
                   </Button>
@@ -246,7 +249,10 @@ export default function Navbar() {
                       textColor="gray"
                       size="sm"
                       fontWeight={400}
-                      onClick={() => signOut(auth)}
+                      onClick={() => {
+                        router.push(Pages.FEED);
+                        signOut(auth);
+                      }}
                     >
                       Logout
                     </Button>
