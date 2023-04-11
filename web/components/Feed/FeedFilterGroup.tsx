@@ -55,11 +55,22 @@ function FeedFilterGroup(props: {
                   <Flex>
                     <Select
                       className="dropdown"
-                      hideSelectedOptions={false}
                       controlShouldRenderValue={false}
-                      placeholder="Type here..." //TODO: Display # of breeds selected
+                      placeholder={`${
+                        selectedFilters[f.key].length
+                      } breeds selected`} //TODO: Display # of breeds selected
+                      hideSelectedOptions={false}
+                      isClearable={false}
                       maxMenuHeight={180}
                       styles={{
+                        menu: (provided) => ({
+                          ...provided,
+                          zIndex: 9999,
+                        }),
+                        menuPortal: (provided) => ({
+                          ...provided,
+                          zIndex: 9999,
+                        }),
                         control: (baseStyles) => ({
                           ...baseStyles,
                           minWidth: 200,
