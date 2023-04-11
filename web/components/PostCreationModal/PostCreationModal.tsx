@@ -186,8 +186,8 @@ const PostCreationModal: React.FC<{
 
       console.log(`creation: ${JSON.stringify(creationInfo)}`);
 
-      for (let i = 0; i < selectedFiles.length; i++) {
-        const file = selectedFiles[i];
+      for (let i = 0; i < fileArr.length; i++) {
+        const file = fileArr[i];
         await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
       }
 
@@ -331,8 +331,11 @@ const PostCreationModal: React.FC<{
                 isContentView
                   ? () => setIsContentView(false)
                   : () => {
-                      // onClose();
+                      //TODO: Wait for success to close.
+                      onClose();
                       createPost();
+                      setFileArr([]);
+                      setIsContentView(true);
                     }
               }
               color={postButtonStyle.color}
