@@ -8,6 +8,7 @@ import {
   Text,
   Alert,
   AlertIcon,
+  Button,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IAccount } from "../../utils/types/account";
@@ -58,19 +59,21 @@ function DeletePopup(props: PropertyType) {
 
   return (
     <>
-      <Box
+      <Button
         onClick={onOpen}
-        as="button"
-        bgColor="#BCBCBC"
-        borderRadius="16px"
+        variant="outline"
+        fontWeight="semibold"
+        textColor="white"
+        h="36px"
         maxWidth="208px"
         minWidth="170px"
-        height="36px"
+        borderRadius={12}
+        _hover={{
+          bg: "#75B2DD",
+        }}
       >
-        <Text fontSize="16" fontWeight="400" lineHeight="19px">
-          Delete Selected Items
-        </Text>
-      </Box>
+        Delete Selected Items
+      </Button>
       <AlertDialog
         motionPreset="slideInBottom"
         leastDestructiveRef={cancelRef}
@@ -90,10 +93,15 @@ function DeletePopup(props: PropertyType) {
             alignItems="center"
             rowGap={"20px"}
           >
-            <Text fontWeight={"semibold"} fontSize={"lg"} textAlign={"center"}>
+            <Text
+              fontWeight={"semibold"}
+              fontSize={"lg"}
+              textAlign={"center"}
+              textColor="#7D7E82"
+            >
               Are you sure you want to delete the items selected?
             </Text>
-            <Text fontWeight={"normal"} fontSize={"md"}>
+            <Text fontWeight={"normal"} fontSize={"md"} textColor="#7D7E82">
               This cannot be undone.
             </Text>
             <Flex
@@ -101,30 +109,36 @@ function DeletePopup(props: PropertyType) {
               justifyContent="center"
               alignItems="center"
             >
-              <Box
-                as="button"
+              <Button
                 maxW="150px"
                 minW="120px"
                 height="35px"
-                borderRadius="16px"
-                bgColor="#CACACA"
+                borderRadius="12px"
+                borderColor="#7D7E82"
+                borderWidth={1}
                 onClick={onClose}
+                variant="outline"
+                fontWeight="normal"
+                textColor="#7D7E82"
               >
                 Cancel
-              </Box>
+              </Button>
               <Box
                 as="button"
-                maxW="150px"
-                minW="120px"
+                maxW="180px"
+                minW="180px"
                 height="35px"
-                borderRadius="16px"
-                bgColor="#8E8E8E"
-                textColor="FFFFFF"
+                borderRadius="12px"
+                bgColor="#57A0D5"
+                textColor="white"
                 onClick={handleDelete}
                 ref={cancelRef}
                 ml={3}
+                _hover={{
+                  bg: "#75B2DD",
+                }}
               >
-                Yes
+                Yes, delete items.
               </Box>
             </Flex>
             {showError ? (

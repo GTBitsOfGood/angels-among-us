@@ -230,7 +230,7 @@ export const medicalLabels: Record<Medical, string> = {
   [Medical.ChronicCondition]: "Chronic condition",
   [Medical.Pregnant]: "Pregnant",
   [Medical.Nursing]: "Nursing",
-  [Medical.BottleFed]: "Bottle-fed",
+  [Medical.BottleFed]: "Bottle fed",
   [Medical.Hospice]: "Hospice",
 };
 

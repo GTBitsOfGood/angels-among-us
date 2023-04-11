@@ -49,13 +49,15 @@ function FeedFilterGroup(props: {
                 gap="10px"
                 padding="16px"
                 marginTop="6px"
-                paddingBottom={f.dropdown ? "200px" : "16px"}
+                paddingBottom="16px"
               >
                 {f.dropdown ? (
                   <Flex>
                     <Select
                       className="dropdown"
-                      placeholder="Type here..."
+                      hideSelectedOptions={false}
+                      controlShouldRenderValue={false}
+                      placeholder="Type here..." //TODO: Display # of breeds selected
                       maxMenuHeight={180}
                       styles={{
                         control: (baseStyles) => ({

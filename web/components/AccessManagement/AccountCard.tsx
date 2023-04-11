@@ -42,21 +42,18 @@ function AccountCard(props: PropertyType) {
   };
 
   let selectButtonStyle = {
-    bgColor: "#EEEEEE",
     border: "solid",
-    borderColor: "#000000",
+    borderColor: "#BBBBBB",
     borderWidth: "1px",
+    bgColor: "white",
   };
 
   if (itemsToDelete.indexOf(idx) > -1) {
-    cardStyle = {
-      border: "1.5px solid #000000",
-    };
     selectButtonStyle = {
-      bgColor: "#838282",
+      bgColor: "#529FD4",
       border: "solid",
-      borderColor: "#ffffff",
-      borderWidth: "5px",
+      borderColor: "#BBBBBB",
+      borderWidth: "1",
     };
   }
 
@@ -74,8 +71,8 @@ function AccountCard(props: PropertyType) {
   return (
     <Box
       borderRadius="12px"
-      bgColor="#EEEEEE"
-      border={cardStyle.border}
+      borderWidth={1}
+      borderColor="#BBBBBB"
       width={{ sm: "90%", md: "90%", lg: "100%" }}
     >
       <HStack justifyContent={"space-between"} minH={"43px"} padding="12px">
@@ -96,7 +93,7 @@ function AccountCard(props: PropertyType) {
           {selectItems ? (
             <Box
               as="button"
-              bgColor="#CECCCC"
+              bgColor="#C6E3F9"
               borderRadius="8px"
               width={"97px"}
               height={"27px"}

@@ -72,7 +72,7 @@ function Profile() {
     <Flex
       display={["none", "flex"]}
       minHeight="180vh"
-      bgColor="lighterBlue.100"
+      bgColor="#D7E4EE"
       justifyContent="center"
     >
       <Flex
@@ -193,6 +193,7 @@ function Profile() {
                         Which types of fosters can you help with?
                       </Text>
                       <Select
+                        closeMenuOnSelect={false}
                         onChange={(newVals) =>
                           dispatch({
                             type: "setField",
@@ -234,6 +235,7 @@ function Profile() {
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Breed Restrictions</Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -260,6 +262,7 @@ function Profile() {
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Breed Preferences</Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -288,6 +291,7 @@ function Profile() {
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Age Capability</Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -315,6 +319,7 @@ function Profile() {
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Dog Size Capability</Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -344,6 +349,7 @@ function Profile() {
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Gender Capability</Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -387,6 +393,7 @@ function Profile() {
                       Able to foster dogs NOT good with:
                     </Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -413,6 +420,7 @@ function Profile() {
                   <Stack direction="column" width="50%">
                     <Text fontWeight="medium">Able to foster dogs with:</Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -443,6 +451,7 @@ function Profile() {
                       Able to foster dogs with these temperaments:
                     </Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -485,6 +494,7 @@ function Profile() {
                       Able to foster dogs not house trained...
                     </Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",
@@ -513,6 +523,7 @@ function Profile() {
                       Able to foster dogs not spayed or neutered...
                     </Text>
                     <Select
+                      closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
                           type: "setField",

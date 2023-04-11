@@ -316,7 +316,7 @@ function Feed(props: {
   const mainContent = (
     <Flex
       className="feed"
-      backgroundColor="#C3E6F9"
+      backgroundColor="#D7E4EE"
       justifyContent="center"
       height="fit-content"
       minHeight="100vh"

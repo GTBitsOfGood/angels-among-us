@@ -15,6 +15,7 @@ import {
   FormControl,
   Alert,
   AlertIcon,
+  Button,
 } from "@chakra-ui/react";
 import { HydratedDocument } from "mongoose";
 
@@ -74,93 +75,88 @@ export default function CreateAccountForm(props: PropertyType) {
   };
 
   return (
-    <>
-      <Flex
-        direction="column"
-        bgColor="#FFFFFF"
-        border="solid"
-        borderRadius="30px"
-        borderWidth="2px"
-        borderColor="#BBBBBB"
-        alignItems="center"
-        paddingX={6}
-        paddingTop={4}
+    <Flex
+      direction="column"
+      bgColor="#FFFFFF"
+      border="solid"
+      borderRadius={12}
+      borderWidth="2px"
+      borderColor="#BBBBBB"
+      paddingX={6}
+      paddingTop={4}
+      paddingBottom={4}
+      margin={{ sm: "12px", lg: "40px" }}
+      marginTop={{ sm: "6px", lg: "20px" }}
+      onClick={() => {
+        updateSelectItems(false);
+      }}
+    >
+      <Text
+        fontSize={20}
+        fontWeight="medium"
+        lineHeight="24px"
         paddingBottom={4}
-        margin={{ sm: "12px", lg: "40px" }}
-        marginTop={{ sm: "6px", lg: "20px" }}
-        onClick={() => {
-          updateSelectItems(false);
-        }}
       >
-        <Text
-          fontSize="20"
-          fontWeight="500"
-          lineHeight="24px"
-          paddingBottom={4}
-        >
-          Add New Account
-        </Text>
-        <SimpleGrid columns={{ sm: 1, md: 1, lg: 2 }} gap={4} width="inherit">
-          <FormControl>
-            {displayError ? (
-              <div>
-                <Input
-                  isInvalid
-                  errorBorderColor="crimson"
-                  placeholder="Email"
-                  value={emailField}
-                  onChange={handleChange}
-                  borderRadius="16px"
-                  bgColor="#D9D9D9"
-                  height="36px"
-                  maxW={"379px"}
-                />
-                <Alert status="error">
-                  <AlertIcon />
-                  {errorMessage}
-                </Alert>
-              </div>
-            ) : (
+        Add New Account
+      </Text>
+      <SimpleGrid columns={{ sm: 1, md: 1, lg: 2 }} gap={4} width="inherit">
+        <FormControl>
+          {displayError ? (
+            <div>
               <Input
-                variant="filled"
-                type="text"
+                isInvalid
+                errorBorderColor="crimson"
                 placeholder="Email"
-                bgColor="#D9D9D9"
                 value={emailField}
                 onChange={handleChange}
                 borderRadius="16px"
+                bgColor="#D9D9D9"
                 height="36px"
                 maxW={"379px"}
               />
-            )}
-          </FormControl>
-          <Flex flexDirection="column" alignItems="flex-end" gap={4}>
-            <Flex direction={"row"} gap={2} alignItems="center" flexWrap="wrap">
-              <Text lineHeight="22px" fontSize="18px" fontWeight="400">
-                Add Permission:
-              </Text>
-              <AddPermissionSelector
-                role={role}
-                setRole={setRole}
-              ></AddPermissionSelector>
-            </Flex>
-            <Box
-              as={"button"}
-              width={{ sm: "133px", lg: "250px" }}
-              height="35px"
-              bgColor="#B0B0B0"
-              boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-              borderRadius="16px"
-              onClick={updateAccountsHandler}
-              disabled={mutation.isLoading}
-            >
-              <Text fontWeight="500" fontSize={"16px"} lineHeight={"19px"}>
-                Add Account
-              </Text>
-            </Box>
+              <Alert status="error">
+                <AlertIcon />
+                {errorMessage}
+              </Alert>
+            </div>
+          ) : (
+            <Input
+              type="text"
+              placeholder="Email"
+              value={emailField}
+              onChange={handleChange}
+              borderRadius="12px"
+              borderColor="#BCBCBC"
+              height="36px"
+              maxW={"379px"}
+            />
+          )}
+        </FormControl>
+        <Flex flexDirection="column" alignItems="flex-end" gap={4}>
+          <Flex direction={"row"} gap={2} alignItems="center" flexWrap="wrap">
+            <Text lineHeight="22px" fontSize="18px" fontWeight="400">
+              Add Permission:
+            </Text>
+            <AddPermissionSelector
+              role={role}
+              setRole={setRole}
+            ></AddPermissionSelector>
           </Flex>
-        </SimpleGrid>
-      </Flex>
-    </>
+          <Button
+            color="white"
+            bg="#529FD4"
+            borderRadius={12}
+            onClick={updateAccountsHandler}
+            disabled={mutation.isLoading}
+            w={{ sm: "133px" }}
+            _hover={{
+              bg: "#75B2DD",
+            }}
+          >
+            Add Account
+          </Button>
+        </Flex>
+      </SimpleGrid>
+    </Flex>
   );
 }
