@@ -4,12 +4,10 @@ import {
   Modal,
   Stack,
   ModalContent,
-  ModalFooter,
   ModalOverlay,
   Text,
   Flex,
-  useDisclosure,
-  VStack,
+  Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -25,9 +23,9 @@ import {
   Medical,
   PetKind,
   Size,
+  Status,
   Temperament,
   Trained,
-  Status,
 } from "../../utils/types/post";
 import FileUploadSlide from "./FileUpload/FileUploadSlide";
 import { FormSlide } from "./Form/FormSlide";
@@ -68,16 +66,8 @@ const formSchema = z.object({
     .nativeEnum(Size, { required_error: "Size value required." })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Size")),
-  breed: z
-    .nativeEnum(Breed, { required_error: "Breed value required." })
-    .nullable()
-    .transform((val, ctx) => nullValidation(val, ctx, "Breed")),
-  temperament: z
-    .nativeEnum(Temperament, {
-      required_error: "Temperament value required.",
-    })
-    .nullable()
-    .transform((val, ctx) => nullValidation(val, ctx, "Temperament")),
+  breed: z.array(z.nativeEnum(Breed)),
+  temperament: z.array(z.nativeEnum(Temperament)),
   goodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
@@ -103,25 +93,18 @@ const formSchema = z.object({
 
 export type FormState = z.input<typeof formSchema>;
 
-interface PostCreationModalProps {
+const PostCreationModal: React.FC<{
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-}
-function PostCreationModal({
-  isOpen,
-  onOpen,
-  onClose,
-}: PostCreationModalProps) {
-  // const { isOpen, onOpen, onClose } = useDisclosure();
+}> = ({ isOpen, onOpen, onClose }) => {
   const [isContentView, setIsContentView] = useState(true);
   const [numFiles, setNumFiles] = useState<number>(0);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
-  const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
-  //since the z are nullable, these will still pass if values are null.
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [formState, setFormState] = useState<FormState>({
     name: "",
     description: "",
@@ -130,8 +113,8 @@ function PostCreationModal({
     age: null,
     fosterType: null,
     size: null,
-    breed: null,
-    temperament: null,
+    breed: [],
+    temperament: [],
     goodWith: [],
     medical: [],
     behavioral: [],
@@ -156,9 +139,9 @@ function PostCreationModal({
 
   const createPost = async () => {
     const files: AttachmentInfo[] = await Promise.all(
-      selectedFiles.map(async (file) => {
+      fileArr.map(async (file) => {
         const key = file.name;
-        if (file.type.includes("img/")) {
+        if (file.type.includes("image/")) {
           const url = URL.createObjectURL(file);
           return new Promise((resolve, _) => {
             const image = new Image();
@@ -232,92 +215,94 @@ function PostCreationModal({
   };
 
   let postButtonStyle = {
-    color: "#8C8C8C",
+    color: "#57A0D5",
     bgColor: "#FFFFFF",
-    borderColor: "#8C8C8C",
+    borderColor: "#57A0D5",
     borderRadius: "20px",
   };
 
   if (selectedFiles.length > 0) {
     postButtonStyle = {
       color: "#FFFFFF",
-      bgColor: "#000000",
-      borderColor: "000000",
+      bgColor: "#57A0D5",
+      borderColor: "#57A0D5",
       borderRadius: "20px",
     };
   }
 
-  const handleNextButton = () => {
-    console.log("next button click", formState);
-    try {
-      formSchema.safeParse(formState);
-      console.log("formSchema", formSchema);
-      console.log("safepasrse");
-      setIsContentView(false);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.log("zood error");
-        return;
-      }
-    }
-  };
-
   return (
     <Modal onClose={onClose} isOpen={isOpen} closeOnOverlayClick={false}>
       <ModalOverlay />
-      <ModalContent minW={"850px"} maxH={"600px"} minH={"600px"}>
+      <ModalContent
+        minW={"800px"}
+        maxH={"770px"}
+        minH={"770px"}
+        alignItems={"center"}
+      >
         <Stack
-          paddingLeft={"75px"}
-          paddingRight={"75px"}
-          paddingTop={"40px"}
-          paddingBottom={"40px"}
-          overflowY="auto"
+          paddingTop={"30px"}
+          paddingBottom={"20px"}
+          paddingRight={"50px"}
+          paddingLeft={"50px"}
+          minW={"790px"}
+          minH={"760px"}
         >
-          <VStack
-            alignItems={"left"}
-            columnGap={2}
+          <Flex
             onClick={isContentView ? onClose : () => setIsContentView(true)}
+            _hover={{
+              cursor: "pointer",
+            }}
+            direction={"row"}
+            alignItems={"center"}
+            justifyContent={"flex-start"}
+            height={"28px"}
+            maxW={isContentView ? "140px" : "220px"}
+            paddingLeft={"5px"}
+            borderRadius={"9px"}
+            color={"#57A0D5"}
+            columnGap={"5px"}
+            bgColor={"#C6E3F9"}
+            marginBottom={"20px"}
           >
-            <Flex
-              direction={"row"}
-              alignItems={"center"}
-              columnGap={2}
-              onClick={isContentView ? onClose : () => setIsContentView(true)}
-            >
-              <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
-              <Text>
-                {isContentView ? "Back to feed" : "Back to New Pet content"}
+            <ArrowBackIcon boxSize={"23px"}></ArrowBackIcon>
+            {isContentView ? (
+              <Text fontSize="l" textStyle="semibold">
+                Back to feed
               </Text>
-            </Flex>
-            <Text fontSize={"5xl"} fontWeight={"bold"} lineHeight={"56px"}>
-              Add A New Pet
-            </Text>
+            ) : (
+              <Text fontSize="l" textStyle="semibold">
+                Back to New Pet content
+              </Text>
+            )}
+          </Flex>
+          <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
+            Add A New Pet
+          </Text>
+          <Box paddingBottom={5}>
             {isContentView ? (
               <Text>
                 Fill out the following fields to add a new pet to the Angels
                 Among Us Foster Feed!
               </Text>
             ) : (
-              <></>
+              <Flex
+                direction={"row"}
+                justifyContent={"space-between"}
+                maxW={"688px"}
+                paddingBottom={"20px"}
+              >
+                <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
+                  Select up to 6 photos or video of the pet (one video limit)
+                </Text>
+                <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
+                  {numFiles}/6
+                </Text>
+              </Flex>
             )}
-          </VStack>
-          {/* <Text fontSize={"48px"} fontWeight={"bold"} lineHeight={"55px"}>
-            Add A New Pet
-          </Text> */}
-          {isContentView ? (
-            <></>
-          ) : (
-            <Flex direction={"row"} justifyContent={"space-between"}>
-              <Text size={"xl"} textStyle={"semibold"} color={"#000000"}>
-                Select up to 6 photos or video of the pet (one video limit)
-              </Text>
-              <Text size={"xl"} textStyle={"semibold"} color={"#8C8C8C"}>
-                {numFiles}/6
-              </Text>
-            </Flex>
-          )}
+          </Box>
           <Stack overflowY="auto">
             {isContentView ? (
+              //TODO: Add new pet content slide component here.
               <FormSlide
                 setIsFormValid={setIsFormValid}
                 setFormState={setFormState}
@@ -334,86 +319,39 @@ function PostCreationModal({
                 setShowAlert={setShowAlert}
               ></FileUploadSlide>
             )}
-            <ModalFooter>
-              {isContentView ? (
-                <Button
-                  onClick={handleNextButton}
-                  color={postButtonStyle.color}
-                  bgColor={postButtonStyle.bgColor}
-                  borderRadius={postButtonStyle.borderRadius}
-                  borderColor={postButtonStyle.borderColor}
-                  width={"150px"}
-                  height={"56px"}
-                  border={"1px solid"}
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  //TODO: On click, query database to create post.
-                  onClick={onClose}
-                  color={postButtonStyle.color}
-                  bgColor={postButtonStyle.bgColor}
-                  borderRadius={postButtonStyle.borderRadius}
-                  borderColor={postButtonStyle.borderColor}
-                  width={"150px"}
-                  height={"56px"}
-                  border={"1px solid"}
-                >
-                  <Text
-                    lineHeight={"28px"}
-                    fontWeight={"semibold"}
-                    fontSize={"lg"}
-                  >
-                    Post
-                  </Text>
-                </Button>
-              )}
-            </ModalFooter>
           </Stack>
-          <ModalFooter>
-            {isContentView ? (
-              <Button
-                onClick={() => setIsContentView(false)}
-                color={postButtonStyle.color}
-                bgColor={postButtonStyle.bgColor}
-                borderRadius={postButtonStyle.borderRadius}
-                borderColor={postButtonStyle.borderColor}
-                width={"150px"}
-                height={"56px"}
-                border={"1px solid"}
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                //TODO: On click, query database to create post.
-                onClick={() => {
-                  onClose();
-                  createPost();
-                }}
-                color={postButtonStyle.color}
-                bgColor={postButtonStyle.bgColor}
-                borderRadius={postButtonStyle.borderRadius}
-                borderColor={postButtonStyle.borderColor}
-                width={"150px"}
-                height={"56px"}
-                border={"1px solid"}
-              >
-                <Text
-                  lineHeight={"28px"}
-                  fontWeight={"semibold"}
-                  fontSize={"lg"}
-                >
-                  Post
-                </Text>
-              </Button>
-            )}
-          </ModalFooter>
+          <Flex
+            width={"688px"}
+            direction={"row"}
+            justifyContent={"flex-end"}
+            paddingTop={"20px"}
+          >
+            <Button
+              onClick={
+                isContentView
+                  ? () => setIsContentView(false)
+                  : () => {
+                      // onClose();
+                      createPost();
+                    }
+              }
+              color={postButtonStyle.color}
+              bgColor={postButtonStyle.bgColor}
+              borderRadius={postButtonStyle.borderRadius}
+              borderColor={postButtonStyle.borderColor}
+              width={"125px"}
+              height={"50px"}
+              border={"1px solid"}
+            >
+              <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
+                {isContentView ? "Next" : "Post"}
+              </Text>
+            </Button>
+          </Flex>
         </Stack>
       </ModalContent>
     </Modal>
   );
-}
+};
 
 export default PostCreationModal;

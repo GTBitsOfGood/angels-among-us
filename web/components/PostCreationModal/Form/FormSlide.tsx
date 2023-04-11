@@ -14,6 +14,12 @@ import {
   Stack,
   useDisclosure,
   Text,
+  Slider,
+  SliderMark,
+  SliderFilledTrack,
+  SliderTrack,
+  SliderThumb,
+  Box,
 } from "@chakra-ui/react";
 import {
   Age,
@@ -30,6 +36,7 @@ import {
 } from "../../../utils/types/post";
 import Select from "react-select";
 import { FormState } from "../PostCreationModal";
+import Picker from "./Picker";
 
 const petKindOptions = [
   { value: PetKind.Dog, label: "Dog" },
@@ -54,7 +61,7 @@ const fosterTypeOptions = [
   { value: FosterType.Return, label: "Return" },
   { value: FosterType.Boarding, label: "Boarding" },
   { value: FosterType.Temporary, label: "Temporary" },
-  { value: FosterType.FosterMove, label: "FosterMove" },
+  { value: FosterType.FosterMove, label: "Foster Move" },
   { value: FosterType.Shelter, label: "Shelter" },
   { value: FosterType.OwnerSurrender, label: "Owner Surrender" },
 ];
@@ -120,7 +127,7 @@ const breedOptions = [
   { value: Breed.Whippet, label: "Whippet" },
 ];
 
-const tempermentOptions = [
+const temperamentOptions = [
   { value: Temperament.Friendly, label: "Friendly" },
   { value: Temperament.Scared, label: "Scared" },
   { value: Temperament.Active, label: "Active" },
@@ -142,7 +149,7 @@ const medicalOptions = [
   { value: Medical.Injury, label: "Injury" },
   { value: Medical.Heartworms, label: "Heartworms" },
   { value: Medical.Parvo, label: "Parvo" },
-  { value: Medical.ChronicCondition, label: "ChronicCondition" },
+  { value: Medical.ChronicCondition, label: "Chronic Condition" },
   { value: Medical.Pregnant, label: "Pregnant" },
   { value: Medical.Nursing, label: "Nursing" },
   { value: Medical.BottleFed, label: "Bottle Feeding" },
@@ -171,7 +178,7 @@ export const FormSlide: React.FC<{
   return (
     <>
       {/* if it doesnt get fixed then just bring formik into return :  onSubmit={formik.handleSubmit}*/}
-      <Stack>
+      <Stack dir="col" spacing={5}>
         <FormControl>
           <FormLabel>Name of the Pet</FormLabel>
           <Input
@@ -196,6 +203,7 @@ export const FormSlide: React.FC<{
           <FormControl className="petKindForm" maxW="450px">
             <FormLabel>What kind of pet?</FormLabel>
             <Select
+              styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
               options={petKindOptions}
               onChange={(e) => {
                 setFormState({ ...formState, petKind: e!.value });
@@ -206,6 +214,7 @@ export const FormSlide: React.FC<{
           <FormControl className="genderForm" maxW="450px">
             <FormLabel>Gender</FormLabel>
             <Select
+              styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
               options={genderOptions}
               onChange={(e) => {
                 setFormState({ ...formState, gender: e!.value });
@@ -217,6 +226,7 @@ export const FormSlide: React.FC<{
           <FormControl className="ageForm" maxW="450px">
             <FormLabel>Age</FormLabel>
             <Select
+              styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
               options={ageOptions}
               onChange={(e) => {
                 setFormState({ ...formState, age: e!.value });
@@ -226,6 +236,7 @@ export const FormSlide: React.FC<{
           <FormControl className="fosterTypeForm" maxW="450px">
             <FormLabel>Types of Foster</FormLabel>
             <Select
+              styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
               options={fosterTypeOptions}
               onChange={(e) => {
                 setFormState({ ...formState, fosterType: e!.value });
@@ -233,50 +244,88 @@ export const FormSlide: React.FC<{
             />
           </FormControl>
         </Stack>
-        <FormControl className="sizeForm" maxW="450px">
-          <FormLabel>Size</FormLabel>
-          <Select
-            options={sizeOptions}
-            onChange={(e) => {
-              setFormState({ ...formState, size: e!.value });
-            }}
-          />
-        </FormControl>
+        <Stack direction={"row"} spacing={10}>
+          <FormControl className="sizeForm" maxW="450px">
+            <FormLabel>Size</FormLabel>
+            <Select
+              styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+              options={sizeOptions}
+              onChange={(e) => {
+                setFormState({ ...formState, size: e!.value });
+              }}
+            />
+          </FormControl>
+          <FormControl className="temperamentForm" maxW="450px">
+            <FormLabel>Temperament</FormLabel>
+            <Select
+              styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+              options={temperamentOptions}
+              onChange={(e) => {
+                // setFormState({ ...formState, temperament: e!.value });
+              }}
+            />
+          </FormControl>
+        </Stack>
         <FormControl className="breedForm">
           <FormLabel>Breed</FormLabel>
           <Select
+            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
             options={breedOptions}
             onChange={(e) => {
-              setFormState({ ...formState, breed: e!.value });
+              // setFormState({ ...formState, breed: e!.value });
             }}
           />
         </FormControl>
+        <Stack dir="col" spacing={10}>
+          <Stack direction="row" spacing={10}>
+            <Box flex={1}>
+              <Text>House Trained</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+            <Box flex={1}>
+              <Text>Crate Trained</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+            <Box flex={1}>
+              <Text>Spay/Neuter Status</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+          </Stack>
+          <Stack direction="row" spacing={10}>
+            <Box flex={1}>
+              <Text>Gets along with men</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+            <Box flex={1}>
+              <Text>Gets along with women</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+            <Box flex={1}>
+              <Text>Gets along with older kids</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+          </Stack>
+          <Stack direction="row" spacing={10}>
+            <Box flex={1}>
+              <Text>Gets along with young kids</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+            <Box flex={1}>
+              <Text>Gets along with large dogs</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+            <Box flex={1}>
+              <Text>Gets along with small dogs</Text>
+              <Picker setVal={setFormState} />
+            </Box>
+          </Stack>
+          <Box w="12.7rem">
+            <Text>Gets along with cats</Text>
+            <Picker setVal={setFormState} />
+          </Box>
+        </Stack>
       </Stack>
-      <Stack direction={"row"} spacing={10}>
-        <FormControl className="temperamentForm" maxW="450px">
-          <FormLabel>Temperament</FormLabel>
-          <Select
-            options={tempermentOptions}
-            onChange={(e) => {
-              setFormState({ ...formState, temperament: e!.value });
-            }}
-          />
-        </FormControl>
-        <FormControl className="goodWithForm" maxW="450px">
-          <FormLabel>Good with...</FormLabel>
-          <Select
-            options={goodWithOptions}
-            isMulti
-            onChange={(e) => {
-              setFormState({
-                ...formState,
-                goodWith: e.map((option) => option.value),
-              });
-            }}
-          />
-        </FormControl>
-      </Stack>
-      <Stack direction={"row"} spacing={10}>
+      {/* <Stack direction={"row"} spacing={10}>
         <FormControl className="medicalForm" maxW="450px">
           <FormLabel>Medical (Optional)</FormLabel>
           <Select
@@ -333,7 +382,7 @@ export const FormSlide: React.FC<{
             }}
           />
         </FormControl>
-      </Stack>
+      </Stack> */}
     </>
   );
 };

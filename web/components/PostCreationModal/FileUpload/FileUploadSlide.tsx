@@ -25,7 +25,7 @@ function FileUploadSlide(props: PropsType) {
   } = props;
 
   return (
-    <Stack paddingTop={6}>
+    <Stack overflow={"hidden"} alignItems={"center"} minHeight={"444px"}>
       {numFiles <= 0 ? (
         <FileDropZone
           fileArr={fileArr}
@@ -36,7 +36,7 @@ function FileUploadSlide(props: PropsType) {
       ) : (
         <></>
       )}
-      <Grid templateColumns="repeat(3, 1fr)" gap={6}>
+      <Grid templateColumns="repeat(3, 1fr)" columnGap={"22px"} rowGap={"22px"}>
         {fileArr.map((file) => (
           <FilePreview
             key={fileArr.indexOf(file)}
