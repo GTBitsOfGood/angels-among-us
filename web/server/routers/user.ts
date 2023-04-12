@@ -24,7 +24,8 @@ import {
 const userSchema = z.object({
   type: z.array(z.nativeEnum(FosterType)),
   size: z.array(z.nativeEnum(Size)),
-  breed: z.array(z.nativeEnum(Breed)),
+  preferredBreeds: z.array(z.nativeEnum(Breed)),
+  restrictedBreeds: z.array(z.nativeEnum(Breed)),
   gender: z.array(z.nativeEnum(Gender)),
   age: z.array(z.nativeEnum(Age)),
   temperament: z.array(z.nativeEnum(Temperament)),
