@@ -46,8 +46,7 @@ function Home() {
     provider.addScope("email");
     provider.addScope("public_profile");
     try {
-      const test = await signInWithPopup(auth, provider);
-      console.log(test);
+      await signInWithPopup(auth, provider);
     } catch (error: any) {
       setLoading!(false);
       toast({
