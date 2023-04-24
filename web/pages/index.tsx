@@ -43,6 +43,8 @@ function Home() {
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
+    provider.addScope("email");
+    provider.addScope("public_profile");
     try {
       await signInWithPopup(auth, provider);
     } catch (error: any) {
