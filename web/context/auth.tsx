@@ -75,9 +75,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       (window as any).nookies = nookies;
     }
     return auth.onIdTokenChanged(async (user) => {
-      console.log(`token changed!`);
+      // Token changed
       if (!user) {
-        console.log(`no token found...`);
+        // No token found
         setUser(null);
         nookies.destroy(null, "token");
         nookies.set(null, "token", "", { path: "/" });
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         return;
       }
 
-      console.log(`updating token...`);
+      // Updating token
       const token = await user.getIdToken();
       setUser(user);
       nookies.destroy(null, "token");
@@ -98,6 +98,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (accountIsLoading || userIsLoading) return;
     if (accountIsError || userIsError) {
       signOut(auth);
+      setLoading(false);
       return;
     }
     if (userData !== null) {
@@ -134,7 +135,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const handle = setInterval(async () => {
       setLoading(true);
-      console.log(`refreshing token...`);
+      // Refreshing token
       const user = auth.currentUser;
       if (user) await user.getIdToken(true);
       setLoading(false);
