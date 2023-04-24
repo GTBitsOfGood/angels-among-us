@@ -12,6 +12,7 @@ import { auth } from "../utils/firebase/firebaseClient";
 import { trpc } from "../utils/trpc";
 import { IUser } from "../utils/types/user";
 import { HydratedDocument } from "mongoose";
+import { signOut } from "firebase/auth";
 
 const AuthContext = createContext<{
   authorized: boolean;
@@ -82,8 +83,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
-    if (accountIsLoading || userIsLoading || accountIsError || userIsError)
+    if (accountIsLoading || userIsLoading) return;
+    if (accountIsError || userIsError) {
+      signOut(auth);
       return;
+    }
     if (userData !== null) {
       if (accountData.role !== null) {
         // Subsequent signin, authorized account
