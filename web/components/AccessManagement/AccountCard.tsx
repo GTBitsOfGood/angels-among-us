@@ -1,26 +1,27 @@
 import { IAccount, Role } from "../../utils/types/account";
+import { HydratedDocument } from "mongoose";
 import RoleSelector from "./RoleSelector";
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, HStack, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 
 interface PropertyType {
-  account: IAccount;
+  account: HydratedDocument<IAccount>;
   idx: Number;
   selectItems: boolean;
   itemsToDelete: Number[];
   updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
 }
 
 function createLabel(r: Role) {
-  var labelText = "";
+  let labelText = "";
   if (r === Role.Admin) {
     labelText = "Admin";
   } else if (r === Role.Volunteer) {
     labelText = "Volunteer";
   } else {
-    labelText = "Content Creator";
+    labelText = "Creator";
   }
   return labelText;
 }
@@ -41,30 +42,27 @@ function AccountCard(props: PropertyType) {
   };
 
   let selectButtonStyle = {
-    bgColor: "#EEEEEE",
     border: "solid",
-    borderColor: "#000000",
+    borderColor: "#BBBBBB",
     borderWidth: "1px",
+    bgColor: "white",
   };
 
   if (itemsToDelete.indexOf(idx) > -1) {
-    cardStyle = {
-      border: "1.5px solid #000000",
-    };
     selectButtonStyle = {
-      bgColor: "#838282",
+      bgColor: "#529FD4",
       border: "solid",
-      borderColor: "#ffffff",
-      borderWidth: "5px",
+      borderColor: "#BBBBBB",
+      borderWidth: "1",
     };
   }
 
   function updateSelections() {
     if (itemsToDelete.indexOf(idx) > -1) {
-      var temp = itemsToDelete.filter((e) => e != idx);
+      const temp = itemsToDelete.filter((e) => e != idx);
       updateItemsToDelete(temp);
     } else {
-      var temp = [...itemsToDelete];
+      const temp = [...itemsToDelete];
       temp.push(idx);
       updateItemsToDelete(temp);
     }
@@ -73,52 +71,46 @@ function AccountCard(props: PropertyType) {
   return (
     <Box
       borderRadius="12px"
-      bgColor="#EEEEEE"
-      padding={3}
-      border={cardStyle.border}
-      maxW={"530px"}
+      borderWidth={1}
+      borderColor="#BBBBBB"
+      width={{ sm: "90%", md: "90%", lg: "100%" }}
     >
-      <Flex
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Flex direction={"row"} flexWrap={"wrap"} alignItems="center">
-          <Box
-            minWidth={"270px"}
-            marginRight={{ sm: "40px", md: "0px", lg: "0px" }}
+      <HStack justifyContent={"space-between"} minH={"43px"} padding="12px">
+        <Flex
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          width={"80%"}
+          flexWrap={"wrap"}
+        >
+          <Text
+            fontWeight={"400"}
+            fontSize={"16px"}
+            lineHeight={"19px"}
+            maxWidth={"60%"}
           >
-            <Text fontWeight="bold">Fname Lname</Text>
-            <Text>{account.email}</Text>
-          </Box>
-
-          <Flex
-            direction={"row"}
-            alignItems={"center"}
-            justifyContent={{ sm: "flex-start", md: "center", lg: "center" }}
-            margin={2}
-          >
-            {selectItems ? (
-              <Box
-                as="button"
-                bgColor="#CECCCC"
-                borderRadius="8px"
-                width="147px"
-                height="36px"
-              >
-                {createLabel(account.role)}
-              </Box>
-            ) : (
-              <RoleSelector
-                account={account}
-                accountList={accountList}
-                updateAccountList={updateAccountList}
-                createLabel={createLabel}
-              ></RoleSelector>
-            )}
-          </Flex>
+            {account.email}
+          </Text>
+          {selectItems ? (
+            <Box
+              as="button"
+              bgColor="#C6E3F9"
+              borderRadius="8px"
+              width={"97px"}
+              height={"27px"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              {createLabel(account.role)}
+            </Box>
+          ) : (
+            <RoleSelector
+              account={account}
+              accountList={accountList}
+              updateAccountList={updateAccountList}
+              createLabel={createLabel}
+            ></RoleSelector>
+          )}
         </Flex>
-
         {selectItems ? (
           <Box
             border={selectButtonStyle.border}
@@ -131,9 +123,9 @@ function AccountCard(props: PropertyType) {
             onClick={updateSelections}
           ></Box>
         ) : (
-          <></>
+          <Box minWidth="30px" minHeight="30px"></Box>
         )}
-      </Flex>
+      </HStack>
     </Box>
   );
 }

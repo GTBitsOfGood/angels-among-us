@@ -38,7 +38,7 @@ function OnboardingOptionColumn(props: {
             width={{ base: "125px", md: "175px", lg: "175px" }}
             height={{ base: "60px", md: "70px", lg: "70px" }}
             display="flex"
-            borderWidth={{ base: "2px", md: "2.5px", lg: "2.5px" }}
+            borderWidth={{ base: "2px", md: "2px", lg: "2px" }}
             borderColor={
               singleAnswer &&
               !answers[qKey].includes(options[ind].value) &&
@@ -48,7 +48,7 @@ function OnboardingOptionColumn(props: {
             }
             textAlign="left"
             borderRadius={{ base: "5px", md: "8px", lg: "8px" }}
-            backgroundColor="#EDEDED"
+            backgroundColor="lighterBlue.100"
             paddingY={{ base: "10px", md: "15px", lg: "15px" }}
             paddingX={{ base: "10px", md: "15px", lg: "15px" }}
             cursor="pointer"
@@ -78,7 +78,8 @@ function OnboardingOptionColumn(props: {
               <Text
                 className="optionText"
                 fontSize={{ base: "15px", md: "20px", lg: "20px" }}
-                fontWeight={{ base: "normal", md: "normal", lg: "semibold" }}
+                fontWeight={{ base: "normal", md: "normal", lg: "normal" }}
+                lineHeight={{ base: "18px", md: "22px", lg: "22px" }}
                 color={
                   singleAnswer &&
                   !answers[qKey].includes(options[ind].value) &&

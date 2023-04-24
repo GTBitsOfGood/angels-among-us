@@ -10,54 +10,38 @@ interface PropertyType {
 export default function PermissionSelector(props: PropertyType) {
   const { role, setRole } = props;
 
-  let buttonSelected = {
-    bgColor: "#a9a8a8",
-  };
-
-  let buttonUnselected = {
-    bgColor: "#ffffff",
-  };
-
-  let textSelected = {
-    color: "#ffffff",
-  };
-
-  let textUnselected = {
-    color: "#000000",
-  };
-
-  let a = role === Role.Admin;
-  let c = role === Role.ContentCreator;
-  let v = role === Role.Volunteer;
+  const a = role === Role.Admin;
+  const c = role === Role.ContentCreator;
+  const v = role === Role.Volunteer;
 
   return (
     <ButtonGroup size="sm" isAttached variant="outline">
       <Button
-        bgColor={a ? buttonSelected.bgColor : buttonUnselected.bgColor}
+        bgColor={a ? "#529FD4" : "white"}
         onClick={() => setRole(Role.Admin)}
         borderRadius="12px 0px 0px 12px"
-        border="1px solid black"
+        border="1px solid #BBBBBB"
       >
-        <Text color={a ? textSelected.color : textUnselected.color}>
+        <Text fontSize={16} fontWeight={400} color={a ? "white" : "black"}>
           Administrator
         </Text>
       </Button>
       <Button
-        bgColor={c ? buttonSelected.bgColor : buttonUnselected.bgColor}
+        bgColor={c ? "#529FD4" : "white"}
         onClick={() => setRole(Role.ContentCreator)}
-        border="1px solid black"
+        border="1px solid #BBBBBB"
       >
-        <Text color={c ? textSelected.color : textUnselected.color}>
+        <Text fontSize={16} fontWeight={400} color={c ? "white" : "black"}>
           Content Creator
         </Text>
       </Button>
       <Button
-        bgColor={v ? buttonSelected.bgColor : buttonUnselected.bgColor}
+        bgColor={v ? "#529FD4" : "white"}
         onClick={() => setRole(Role.Volunteer)}
         borderRadius="0px 12px 12px 0px"
-        border="1px solid black"
+        border="1px solid #BBBBBB"
       >
-        <Text color={v ? textSelected.color : textUnselected.color}>
+        <Text fontSize={16} fontWeight={400} color={v ? "white" : "black"}>
           Volunteer
         </Text>
       </Button>

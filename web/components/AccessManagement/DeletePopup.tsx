@@ -3,17 +3,21 @@ import {
   AlertDialog,
   AlertDialogOverlay,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
   Box,
   Flex,
+  Text,
+  Alert,
+  AlertIcon,
+  Button,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IAccount } from "../../utils/types/account";
+import { HydratedDocument } from "mongoose";
+import { trpc } from "../../utils/trpc";
 
 interface PropertyType {
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   itemsToDelete: Number[];
   updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
@@ -29,30 +33,47 @@ function DeletePopup(props: PropertyType) {
   } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef(null);
+  const mutation = trpc.account.remove.useMutation();
+  const [showError, setShowError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  function handleDelete() {
-    var temp = accountList.filter(
-      (e) => itemsToDelete.indexOf(accountList.indexOf(e)) < 0
-    );
-
-    updateAccountList(temp);
-    updateSelectItems(false);
-    updateItemsToDelete([]);
-  }
+  const handleDelete = () => {
+    const newArr = accountList.filter(
+      (e, i) => !itemsToDelete.includes(i)
+    ) as HydratedDocument<IAccount>[];
+    const removeArr = accountList.filter((e, i) => itemsToDelete.includes(i));
+    const emails = removeArr.map((e) => e.email);
+    mutation.mutate(emails, {
+      onSuccess: () => {
+        setShowError(false);
+        updateAccountList(newArr);
+        updateSelectItems(false);
+        updateItemsToDelete([]);
+      },
+      onError: (error) => {
+        setShowError(true);
+        setErrorMessage(error.message);
+      },
+    });
+  };
 
   return (
     <>
-      <Box
+      <Button
         onClick={onOpen}
-        as="button"
-        bgColor="#BCBCBC"
-        borderRadius="16px"
+        variant="outline"
+        fontWeight="semibold"
+        textColor="white"
+        h="36px"
         maxWidth="208px"
         minWidth="170px"
-        height="36px"
+        borderRadius={12}
+        _hover={{
+          bg: "#75B2DD",
+        }}
       >
         Delete Selected Items
-      </Box>
+      </Button>
       <AlertDialog
         motionPreset="slideInBottom"
         leastDestructiveRef={cancelRef}
@@ -61,37 +82,73 @@ function DeletePopup(props: PropertyType) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent borderRadius="30px" padding={5}>
-          <AlertDialogHeader alignItems="center">
-            Are you sure you want to delete the items selected?
-          </AlertDialogHeader>
-          <AlertDialogBody>This cannot be undone.</AlertDialogBody>
-          <Flex flexDirection="row" justifyContent="center" alignItems="center">
-            <Box
-              as="button"
-              maxW="150px"
-              minW="120px"
-              height="35px"
-              borderRadius="16px"
-              bgColor="#CACACA"
-              onClick={onClose}
+        <AlertDialogContent
+          borderRadius="30px"
+          padding={5}
+          maxW={{ sm: "80%", md: "50%", lg: "500px" }}
+        >
+          <Flex
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            rowGap={"20px"}
+          >
+            <Text
+              fontWeight={"semibold"}
+              fontSize={"lg"}
+              textAlign={"center"}
+              textColor="#7D7E82"
             >
-              Cancel
-            </Box>
-            <Box
-              as="button"
-              maxW="150px"
-              minW="120px"
-              height="35px"
-              borderRadius="16px"
-              bgColor="#8E8E8E"
-              textColor="FFFFFF"
-              onClick={handleDelete}
-              ref={cancelRef}
-              ml={3}
+              Are you sure you want to delete the items selected?
+            </Text>
+            <Text fontWeight={"normal"} fontSize={"md"} textColor="#7D7E82">
+              This cannot be undone.
+            </Text>
+            <Flex
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
             >
-              Yes
-            </Box>
+              <Button
+                maxW="150px"
+                minW="120px"
+                height="35px"
+                borderRadius="12px"
+                borderColor="#7D7E82"
+                borderWidth={1}
+                onClick={onClose}
+                variant="outline"
+                fontWeight="normal"
+                textColor="#7D7E82"
+              >
+                Cancel
+              </Button>
+              <Box
+                as="button"
+                maxW="180px"
+                minW="180px"
+                height="35px"
+                borderRadius="12px"
+                bgColor="#57A0D5"
+                textColor="white"
+                onClick={handleDelete}
+                ref={cancelRef}
+                ml={3}
+                _hover={{
+                  bg: "#75B2DD",
+                }}
+              >
+                Yes, delete items.
+              </Box>
+            </Flex>
+            {showError ? (
+              <Alert status={"error"}>
+                <AlertIcon></AlertIcon>
+                {errorMessage}
+              </Alert>
+            ) : (
+              <></>
+            )}
           </Flex>
         </AlertDialogContent>
       </AlertDialog>

@@ -4,29 +4,35 @@ import AddPermissionSelector from "./AddPermissionSelector";
 import { ChangeEvent } from "react";
 import { Role } from "../../utils/types/account";
 import { IAccount } from "../../utils/types/account";
+import { trpc } from "../../utils/trpc";
+
 import {
   Input,
   Text,
   Flex,
   SimpleGrid,
   Box,
-  Divider,
   FormControl,
   Alert,
   AlertIcon,
+  Button,
 } from "@chakra-ui/react";
+import { HydratedDocument } from "mongoose";
 
 interface PropertyType {
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
 
-const CreateAccountForm = (props: PropertyType) => {
+export default function CreateAccountForm(props: PropertyType) {
   const { accountList, updateAccountList, updateSelectItems } = props;
   const [emailField, setEmailField] = useState("");
   const [role, setRole] = useState(Role.Volunteer);
   const [displayError, setDisplayError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const mutation = trpc.account.add.useMutation();
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setEmailField(event.target.value);
@@ -38,52 +44,62 @@ const CreateAccountForm = (props: PropertyType) => {
     return result.success;
   }
 
-  function updateState() {
+  const updateAccountsHandler = () => {
     const isValid = validateEmail({ emailField });
-    if (isValid) {
-      setDisplayError(false);
-      const newAccount = {
-        email: emailField,
-        role: role,
-      };
-      const temp = [...accountList];
-      temp.unshift(newAccount);
-      updateAccountList(temp);
-      setEmailField("");
-      setRole(Role.Volunteer);
-      setDisplayError(false);
-    } else {
+    if (!isValid) {
       setDisplayError(true);
+      setErrorMessage("Invalid email address");
+      return;
     }
-  }
+
+    const newAccount = {
+      email: emailField,
+      role: role,
+    } as HydratedDocument<IAccount>;
+
+    mutation.mutate(newAccount, {
+      onSuccess: () => {
+        setDisplayError(false);
+        const temp = [...accountList];
+        temp.unshift(newAccount);
+        updateAccountList(temp);
+        setEmailField("");
+        setRole(Role.Volunteer);
+        setDisplayError(false);
+      },
+      onError: (error) => {
+        setDisplayError(true);
+        setErrorMessage(error.message);
+      },
+    });
+  };
 
   return (
     <Flex
       direction="column"
       bgColor="#FFFFFF"
       border="solid"
-      borderRadius="30px"
+      borderRadius={12}
       borderWidth="2px"
       borderColor="#BBBBBB"
-      alignItems="center"
       paddingX={6}
       paddingTop={4}
       paddingBottom={4}
       margin={{ sm: "12px", lg: "40px" }}
       marginTop={{ sm: "6px", lg: "20px" }}
-      onClick={() => updateSelectItems(false)}
+      onClick={() => {
+        updateSelectItems(false);
+      }}
     >
-      <Text fontSize="md" fontWeight="regular" lineHeight="24px">
+      <Text
+        fontSize={20}
+        fontWeight="medium"
+        lineHeight="24px"
+        paddingBottom={4}
+      >
         Add New Account
       </Text>
-      <Divider
-        color="#000000"
-        orientation="horizontal"
-        height=".5px"
-        marginBottom={3}
-        marginTop={3}
-      />
-      <SimpleGrid columns={{ sm: 1, md: 2 }} gap={4} width="inherit">
+      <SimpleGrid columns={{ sm: 1, md: 1, lg: 2 }} gap={4} width="inherit">
         <FormControl>
           {displayError ? (
             <div>
@@ -96,28 +112,29 @@ const CreateAccountForm = (props: PropertyType) => {
                 borderRadius="16px"
                 bgColor="#D9D9D9"
                 height="36px"
+                maxW={"379px"}
               />
               <Alert status="error">
                 <AlertIcon />
-                Invalid Email Address
+                {errorMessage}
               </Alert>
             </div>
           ) : (
             <Input
-              variant="filled"
               type="text"
               placeholder="Email"
-              bgColor="#D9D9D9"
               value={emailField}
               onChange={handleChange}
-              borderRadius="16px"
+              borderRadius="12px"
+              borderColor="#BCBCBC"
               height="36px"
+              maxW={"379px"}
             />
           )}
         </FormControl>
         <Flex flexDirection="column" alignItems="flex-end" gap={4}>
           <Flex direction={"row"} gap={2} alignItems="center" flexWrap="wrap">
-            <Text lineHeight="22px" fontSize="md" fontWeight="400">
+            <Text lineHeight="22px" fontSize="18px" fontWeight="400">
               Add Permission:
             </Text>
             <AddPermissionSelector
@@ -125,21 +142,21 @@ const CreateAccountForm = (props: PropertyType) => {
               setRole={setRole}
             ></AddPermissionSelector>
           </Flex>
-          <Box
-            as={"button"}
-            width={{ sm: "130px", lg: "248px" }}
-            height="35px"
-            bgColor="#B0B0B0"
-            boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
-            borderRadius="16px"
-            onClick={updateState}
+          <Button
+            color="white"
+            bg="#529FD4"
+            borderRadius={12}
+            onClick={updateAccountsHandler}
+            disabled={mutation.isLoading}
+            w={{ sm: "133px" }}
+            _hover={{
+              bg: "#75B2DD",
+            }}
           >
             Add Account
-          </Box>
+          </Button>
         </Flex>
       </SimpleGrid>
     </Flex>
   );
-};
-
-export default CreateAccountForm;
+}

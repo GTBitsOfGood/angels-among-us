@@ -10,14 +10,31 @@ const theme = extendTheme({
     heading: `'Roboto', sans-serif`,
     body: `'Roboto', sans-serif`,
   },
+  colors: {
+    angelsGray: { 100: "#C9C9C9" },
+    angelsBlue: { 100: "#57A0D5" },
+    lighterBlue: { 100: "#C6E3F9" },
+    outlineGray: { 100: "#BBBBBB" },
+  },
+  components: {
+    Progress: {
+      baseStyle: {
+        filledTrack: {
+          bg: "angelsBlue.100",
+        },
+      },
+    },
+  },
 });
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ChakraProvider theme={theme}>
       <AuthProvider>
-        <Navbar />
-        <Component {...pageProps} />
+        <Box h="100vh" w="100vw">
+          <Navbar />
+          <Component {...pageProps} />
+        </Box>
       </AuthProvider>
     </ChakraProvider>
   );

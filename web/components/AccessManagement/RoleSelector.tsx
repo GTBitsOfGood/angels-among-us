@@ -1,5 +1,7 @@
 import { IAccount } from "../../utils/types/account";
 import { Role } from "../../utils/types/account";
+import { trpc } from "../../utils/trpc";
+
 import {
   Popover,
   PopoverTrigger,
@@ -10,34 +12,48 @@ import {
   Portal,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
+import { HydratedDocument } from "mongoose";
 
 interface PropertyType {
-  account: IAccount;
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  account: HydratedDocument<IAccount>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   createLabel: CallableFunction;
 }
 
 function RoleSelector(props: PropertyType) {
   const { account, accountList, updateAccountList, createLabel } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  var idx = accountList.indexOf(account);
+  const idx = accountList.indexOf(account);
+
+  const mutation = trpc.account.modify.useMutation();
 
   const ops = [
     { label: "Admin", role: Role.Admin },
-    { label: "Content Creator", role: Role.ContentCreator },
+    { label: "Creator", role: Role.ContentCreator },
     { label: "Volunteer", role: Role.Volunteer },
   ];
 
-  function changeRole(r: Role) {
-    var temp = {
-      email: account.email,
-      role: r,
-    };
-    var tempList = [...accountList];
-    tempList[idx] = temp;
-    updateAccountList(tempList);
-  }
+  const changeRole = async (r: Role) => {
+    updateDB({ role: r, email: account.email });
+  };
+
+  const updateDB = (item: IAccount) => {
+    mutation.mutate(
+      { role: item.role, email: account.email },
+      {
+        onSuccess() {
+          const temp = {
+            email: account.email,
+            role: item.role,
+          } as HydratedDocument<IAccount>;
+          const tempList = [...accountList] as HydratedDocument<IAccount>[];
+          tempList[idx] = temp;
+          updateAccountList(tempList);
+        },
+      }
+    );
+  };
 
   return (
     <Popover
@@ -45,25 +61,28 @@ function RoleSelector(props: PropertyType) {
       onOpen={onOpen}
       onClose={onClose}
       placement="bottom"
-      gutter={0.5}
+      offset={[42, 0]}
     >
       <PopoverTrigger>
         <Box
           as="button"
-          bgColor="#CECCCC"
+          bgColor="#C6E3F9"
           borderRadius="8px"
-          width="147px"
-          height="36px"
+          width={"97px"}
+          height={"27px"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          disabled={mutation.isLoading}
         >
           {createLabel(accountList[idx].role)}
         </Box>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent padding={2} maxW="210px">
+        <PopoverContent padding={2} maxW="200px" borderRadius="0px 0px 8px 8px">
           <Flex
             flexDirection="column"
             gap={2}
-            alignItems="center"
+            alignItems="left"
             onClick={onClose}
           >
             {ops
@@ -74,10 +93,12 @@ function RoleSelector(props: PropertyType) {
                     key={ops.indexOf(option)}
                     onClick={() => changeRole(option.role)}
                     as="button"
-                    bgColor="#CECCCC"
+                    bgColor="#C6E3F9"
                     borderRadius="8px"
-                    width="147px"
-                    height="36px"
+                    width={"97px"}
+                    height={"27px"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
                   >
                     {option.label}
                   </Box>

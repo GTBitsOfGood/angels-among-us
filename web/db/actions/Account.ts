@@ -1,4 +1,9 @@
-import { ClientSession, HydratedDocument, UpdateQuery } from "mongoose";
+import {
+  ClientSession,
+  HydratedDocument,
+  ObjectId,
+  UpdateQuery,
+} from "mongoose";
 import Account from "../models/Account";
 import { IAccount } from "../../utils/types/account";
 
@@ -13,8 +18,15 @@ async function findAccount(
   }
 }
 
-async function removeAccount(email: string, session?: ClientSession) {
-  return await Account.findOneAndDelete({ email }, { session: session });
+async function removeAccount(id: ObjectId, session?: ClientSession) {
+  return await Account.findOneAndDelete({ _id: id }, { session: session });
+}
+
+async function removeAllAccounts(emails: string[], session?: ClientSession) {
+  return await Account.deleteMany(
+    { email: { $in: emails } },
+    { session: session }
+  );
 }
 
 async function updateAccount(
@@ -35,4 +47,21 @@ async function addAccount(inputData: IAccount, session?: ClientSession) {
   }
 }
 
-export { findAccount, addAccount, removeAccount, updateAccount };
+async function findAll(
+  session?: ClientSession
+): Promise<HydratedDocument<IAccount>[]> {
+  try {
+    return await Account.find();
+  } catch (e) {
+    return [];
+  }
+}
+
+export {
+  findAccount,
+  addAccount,
+  removeAccount,
+  removeAllAccounts,
+  updateAccount,
+  findAll,
+};

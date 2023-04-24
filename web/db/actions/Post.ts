@@ -1,13 +1,21 @@
-import { ClientSession, ObjectId, UpdateQuery } from "mongoose";
+import { ClientSession, FilterQuery, ObjectId, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
 import { IPendingPost, IPost } from "../../utils/types/post";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import b2Client from "../b2connect";
 import { consts } from "../../utils/consts";
 import { sign } from "jsonwebtoken";
+import storageClient from "../storageConnect";
 
 type UploadInfo = Record<string, string>;
+
+async function getPost(oid: ObjectId) {
+  const post = await Post.findOne({ _id: oid });
+  post.attachments = post.attachments.map((attachment: string) => {
+    return `${consts.storageBucketURL}/${attachment}`;
+  });
+  return post;
+}
 
 async function createPost(post: IPendingPost, session?: ClientSession) {
   const pending = post.attachments.length != 0;
@@ -62,9 +70,9 @@ async function getAttachmentUploadURLs(
 async function getDirectUploadUrl(uuid: string): Promise<string> {
   const command = new PutObjectCommand({
     Key: uuid,
-    Bucket: consts.b2Bucket,
+    Bucket: consts.storageBucket,
   });
-  return getSignedUrl(b2Client, command);
+  return getSignedUrl(storageClient, command);
 }
 
 async function getResizedUploadUrl(uuid: string): Promise<string> {
@@ -74,12 +82,12 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
 
 async function finalizePost(id: ObjectId, session?: ClientSession) {
   const post = await Post.findOne({ _id: id });
-  const uploadedObjects = await b2Client.listObjectsV2({
-    Bucket: consts.b2Bucket,
+  const uploadedObjects = await storageClient.listObjectsV2({
+    Bucket: consts.storageBucket,
     Prefix: `${id}`,
   });
   const attachmentKeys = post.attachments.sort();
-
+  if (post.attachments.length == 0) return post;
   if (
     !uploadedObjects.Contents ||
     uploadedObjects.KeyCount !== attachmentKeys.length
@@ -116,4 +124,21 @@ async function updatePostStatus(oid: ObjectId, session?: ClientSession) {
     { session: session }
   );
 }
-export { createPost, updatePostDetails, updatePostStatus, finalizePost };
+
+async function getAllPosts() {
+  return await Post.find().sort({ date: -1 });
+}
+
+async function getFilteredPosts(filter: FilterQuery<IPost>) {
+  return await Post.find(filter).sort({ date: -1 });
+}
+
+export {
+  getPost,
+  createPost,
+  updatePostDetails,
+  updatePostStatus,
+  finalizePost,
+  getAllPosts,
+  getFilteredPosts,
+};

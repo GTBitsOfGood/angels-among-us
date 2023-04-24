@@ -1,11 +1,12 @@
-import { Flex, Input, Box } from "@chakra-ui/react";
+import { Flex, Input, Box, Text, Button } from "@chakra-ui/react";
+import { HydratedDocument } from "mongoose";
 import { Dispatch, SetStateAction } from "react";
 import { IAccount } from "../../utils/types/account";
 import DeletePopup from "./DeletePopup";
 
 interface PropertyType {
-  accountList: IAccount[];
-  updateAccountList: Dispatch<SetStateAction<IAccount[]>>;
+  accountList: HydratedDocument<IAccount>[];
+  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
   itemsToDelete: Number[];
@@ -31,34 +32,37 @@ function TableHeader(props: PropertyType) {
       flexDirection={"row"}
       alignItems="center"
       justifyContent="space-between"
-      bgColor="#D9D9D9"
+      bgColor="#57A0D5"
       padding={4}
       gap={2}
+      width={"inherit"}
     >
       <Input
         variant="filled"
         type="text"
         placeholder="Search"
-        bgColor="#FFFFFF"
-        borderRadius="16px"
-        border=" 1px solid #BCBCBC"
+        bg="white"
+        borderRadius={12}
+        border="1px solid white"
         height="36px"
         maxWidth="400px"
         minWidth={9}
+        _focus={{ bg: "white" }}
       ></Input>
       {selectItems ? (
         <Flex flexDirection="row" gap={2}>
-          <Box
-            as="button"
-            bgColor="#F1F1F1"
-            borderRadius="16px"
+          <Button
+            bg="white"
+            textColor="#7D7E82"
+            borderRadius={12}
             maxWidth="127px"
             minWidth="70px"
-            height="36px"
+            h="36px"
+            fontWeight="normal"
             onClick={toggleSelect}
           >
             Cancel
-          </Box>
+          </Button>
           <DeletePopup
             accountList={accountList}
             updateAccountList={updateAccountList}
@@ -68,17 +72,16 @@ function TableHeader(props: PropertyType) {
           ></DeletePopup>
         </Flex>
       ) : (
-        <Box
-          as="button"
-          bgColor="#BCBCBC"
-          borderRadius="16px"
-          maxWidth="208px"
-          minWidth="170px"
-          height="36px"
+        <Button
+          variant="outline"
+          textColor="white"
+          borderColor="white"
+          borderWidth={2}
+          _hover={{ bg: "white", textColor: "#57A0D5" }}
           onClick={toggleSelect}
         >
           Select Items
-        </Box>
+        </Button>
       )}
     </Flex>
   );
