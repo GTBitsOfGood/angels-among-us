@@ -39,13 +39,19 @@ const postSchema = z.object({
   breed: z.array(z.nativeEnum(Breed)),
   gender: z.nativeEnum(Gender),
   age: z.nativeEnum(Age),
-  temperament: z.nativeEnum(Temperament),
-  goodWith: z.array(z.nativeEnum(GoodWith)),
+  temperament: z.array(z.nativeEnum(Temperament)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
   houseTrained: z.nativeEnum(Trained),
   crateTrained: z.nativeEnum(Trained),
-  spayNeuterStatus: z.nativeEnum(Status),
+  spayNeuterStatus: z.nativeEnum(Trained),
+  getsAlongWithMen: z.nativeEnum(Trained),
+  getsAlongWithWomen: z.nativeEnum(Trained),
+  getsAlongWithOlderKids: z.nativeEnum(Trained),
+  getsAlongWithYoungKids: z.nativeEnum(Trained),
+  getsAlongWithLargeDogs: z.nativeEnum(Trained),
+  getsAlongWithSmallDogs: z.nativeEnum(Trained),
+  getsAlongWithCats: z.nativeEnum(Trained),
   attachments: z.array(
     z.discriminatedUnion("type", [
       z.object({
@@ -62,6 +68,7 @@ const postSchema = z.object({
   ),
 });
 
+//TODO: Update goodWith
 const postFilterSchema = z.object({
   type: z.array(z.nativeEnum(FosterType)),
   breed: z.array(z.nativeEnum(Breed)),
@@ -100,6 +107,7 @@ export const postRouter = router({
       return post;
     } catch (e) {
       await session.abortTransaction();
+      console.error(e);
       throw new TRPCError({
         message: "Internal Server Error",
         code: "INTERNAL_SERVER_ERROR",

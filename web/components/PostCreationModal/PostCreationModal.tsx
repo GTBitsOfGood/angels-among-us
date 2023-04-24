@@ -8,8 +8,9 @@ import {
   Text,
   Flex,
   Box,
+  useToast,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import {
@@ -34,7 +35,37 @@ function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
   if (val === null) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: `${field} value required.`,
+      message: `${field} required.`,
+    });
+    return z.NEVER;
+  }
+  return val;
+}
+
+function stringEmptyValidation(
+  val: string,
+  ctx: z.RefinementCtx,
+  field: string
+) {
+  if (val.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${field} must not be empty.`,
+    });
+    return z.NEVER;
+  }
+  return val;
+}
+
+function arrayEmptyValidation<V>(
+  val: V[],
+  ctx: z.RefinementCtx,
+  field: string
+) {
+  if (val.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${field} must have at least 1 value.`,
     });
     return z.NEVER;
   }
@@ -42,85 +73,109 @@ function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
 }
 
 const formSchema = z.object({
-  name: z.string({ required_error: "Name required." }),
-  description: z.string({ required_error: "Description required." }),
+  name: z
+    .string()
+    .transform((val, ctx) => stringEmptyValidation(val, ctx, "Name")),
+  description: z
+    .string()
+    .transform((val, ctx) => stringEmptyValidation(val, ctx, "Description")),
   petKind: z
-    .nativeEnum(PetKind, { required_error: "Pet kind value required." })
+    .nativeEnum(PetKind, { required_error: "Pet kind required." })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Pet kind")),
   gender: z
-    .nativeEnum(Gender, { required_error: "Gender value required." })
+    .nativeEnum(Gender, { required_error: "Gender required." })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Gender")),
   age: z
-    .nativeEnum(Age, { required_error: "Age value required." })
+    .nativeEnum(Age, { required_error: "Age required." })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Age")),
-  fosterType: z
+  type: z
     .nativeEnum(FosterType, {
-      required_error: "Foster type value required.",
+      required_error: "Foster type required.",
     })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Foster type")),
   size: z
-    .nativeEnum(Size, { required_error: "Size value required." })
+    .nativeEnum(Size, { required_error: "Size required." })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Size")),
-  breed: z.array(z.nativeEnum(Breed)),
+  breed: z
+    .array(z.nativeEnum(Breed))
+    .transform((val, ctx) => arrayEmptyValidation(val, ctx, "Breed")),
   temperament: z.array(z.nativeEnum(Temperament)),
-  goodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z
-    .nativeEnum(Trained, {
-      required_error: "House trained value required.",
-    })
-    .nullable()
-    .transform((val, ctx) => nullValidation(val, ctx, "House trained")),
-  crateTrained: z
-    .nativeEnum(Trained, {
-      required_error: "Crate trained value required.",
-    })
-    .nullable()
-    .transform((val, ctx) => nullValidation(val, ctx, "Crate trained")),
-  spayNeuterStatus: z
-    .nativeEnum(Trained, {
-      required_error: "Spay/neuter status value required.",
-    })
-    .nullable()
-    .transform((val, ctx) => nullValidation(val, ctx, "Spay/neuter status")),
+  houseTrained: z.nativeEnum(Trained),
+  crateTrained: z.nativeEnum(Trained),
+  spayNeuterStatus: z.nativeEnum(Trained),
+  getsAlongWithMen: z.nativeEnum(Trained),
+  getsAlongWithWomen: z.nativeEnum(Trained),
+  getsAlongWithOlderKids: z.nativeEnum(Trained),
+  getsAlongWithYoungKids: z.nativeEnum(Trained),
+  getsAlongWithLargeDogs: z.nativeEnum(Trained),
+  getsAlongWithSmallDogs: z.nativeEnum(Trained),
+  getsAlongWithCats: z.nativeEnum(Trained),
 });
 
 export type FormState = z.input<typeof formSchema>;
+
+export type Action<K extends keyof FormState, V extends FormState[K]> = {
+  type: "setField";
+  key: K;
+  data: V;
+};
 
 const PostCreationModal: React.FC<{
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
 }> = ({ isOpen, onOpen, onClose }) => {
+  const toast = useToast();
   const [isContentView, setIsContentView] = useState(true);
   const [numFiles, setNumFiles] = useState<number>(0);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
 
-  const [isFormValid, setIsFormValid] = useState<boolean>(false);
-  const [formState, setFormState] = useState<FormState>({
+  function reducer<K extends keyof FormState, V extends FormState[K]>(
+    state: FormState,
+    action: Action<K, V>
+  ) {
+    switch (action.type) {
+      case "setField":
+        return {
+          ...state,
+          [action.key]: action.data,
+        };
+      default:
+        throw Error("Unknown action.");
+    }
+  }
+
+  const [formState, dispatch] = useReducer(reducer, {
     name: "",
     description: "",
     petKind: null,
     gender: null,
     age: null,
-    fosterType: null,
+    type: null,
     size: null,
     breed: [],
     temperament: [],
-    goodWith: [],
     medical: [],
     behavioral: [],
-    houseTrained: null,
-    crateTrained: null,
-    spayNeuterStatus: null,
+    houseTrained: Trained.Unknown,
+    crateTrained: Trained.Unknown,
+    spayNeuterStatus: Trained.Unknown,
+    getsAlongWithMen: Trained.Unknown,
+    getsAlongWithWomen: Trained.Unknown,
+    getsAlongWithOlderKids: Trained.Unknown,
+    getsAlongWithYoungKids: Trained.Unknown,
+    getsAlongWithLargeDogs: Trained.Unknown,
+    getsAlongWithSmallDogs: Trained.Unknown,
+    getsAlongWithCats: Trained.Unknown,
   });
 
   useEffect(() => {
@@ -167,18 +222,7 @@ const PostCreationModal: React.FC<{
     console.log(`${JSON.stringify(files)}`);
     try {
       const creationInfo = await postCreate.mutateAsync({
-        type: FosterType.Shelter,
-        size: Size.S,
-        breed: [Breed.Mix],
-        gender: Gender.Male,
-        age: Age.Puppy,
-        temperament: Temperament.Calm,
-        goodWith: [GoodWith.Men],
-        medical: [Medical.Parvo],
-        behavioral: [Behavioral.Barking],
-        houseTrained: Trained.Yes,
-        crateTrained: Trained.Yes,
-        spayNeuterStatus: Status.Yes,
+        ...(formState as z.output<typeof formSchema>),
         attachments: files,
       });
       const oid = creationInfo._id;
@@ -242,72 +286,55 @@ const PostCreationModal: React.FC<{
         <Stack
           paddingTop={"30px"}
           paddingBottom={"20px"}
-          paddingRight={"50px"}
-          paddingLeft={"50px"}
+          // paddingX="50px"
           minW={"790px"}
           minH={"760px"}
         >
-          <Flex
-            onClick={isContentView ? onClose : () => setIsContentView(true)}
-            _hover={{
-              cursor: "pointer",
-            }}
-            direction={"row"}
-            alignItems={"center"}
-            justifyContent={"flex-start"}
-            height={"28px"}
-            maxW={isContentView ? "140px" : "220px"}
-            paddingLeft={"5px"}
-            borderRadius={"9px"}
-            color={"#57A0D5"}
-            columnGap={"5px"}
-            bgColor={"#C6E3F9"}
-            marginBottom={"20px"}
-          >
-            <ArrowBackIcon boxSize={"23px"}></ArrowBackIcon>
-            {isContentView ? (
-              <Text fontSize="l" textStyle="semibold">
-                Back to feed
-              </Text>
-            ) : (
-              <Text fontSize="l" textStyle="semibold">
-                Back to New Pet content
-              </Text>
-            )}
-          </Flex>
-          <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
-            Add A New Pet
-          </Text>
-          <Box paddingBottom={5}>
-            {isContentView ? (
-              <Text>
-                Fill out the following fields to add a new pet to the Angels
-                Among Us Foster Feed!
-              </Text>
-            ) : (
-              <Flex
-                direction={"row"}
-                justifyContent={"space-between"}
-                maxW={"688px"}
-                paddingBottom={"20px"}
-              >
-                <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
-                  Select up to 6 photos or video of the pet (one video limit)
+          <Box paddingX="50px">
+            <Button
+              h={8}
+              w="fit-content"
+              leftIcon={<ArrowBackIcon />}
+              bgColor="#C6E3F9"
+              color="#57A0D5"
+              borderRadius={9}
+              _hover={{
+                bgColor: "#C6E3F9",
+              }}
+              onClick={isContentView ? onClose : () => setIsContentView(true)}
+              mb={4}
+            >
+              {isContentView ? "Back to feed" : "Back to New Post content"}
+            </Button>
+            <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
+              Add A New Post
+            </Text>
+            <Box paddingBottom={5}>
+              {isContentView ? (
+                <Text>
+                  Fill out the following fields to add a new pet to the Angels
+                  Among Us Foster Feed!
                 </Text>
-                <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
-                  {numFiles}/6
-                </Text>
-              </Flex>
-            )}
+              ) : (
+                <Flex
+                  direction={"row"}
+                  justifyContent={"space-between"}
+                  maxW={"688px"}
+                  paddingBottom={"20px"}
+                >
+                  <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
+                    Select up to 6 photos or video of the pet (one video limit)
+                  </Text>
+                  <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
+                    {numFiles}/6
+                  </Text>
+                </Flex>
+              )}
+            </Box>
           </Box>
-          <Stack overflowY="auto">
+          <Box overflowY="auto" paddingX="50px">
             {isContentView ? (
-              //TODO: Add new pet content slide component here.
-              <FormSlide
-                setIsFormValid={setIsFormValid}
-                setFormState={setFormState}
-                formState={formState}
-              />
+              <FormSlide dispatchFormState={dispatch} formState={formState} />
             ) : (
               <FileUploadSlide
                 fileArr={fileArr}
@@ -319,9 +346,9 @@ const PostCreationModal: React.FC<{
                 setShowAlert={setShowAlert}
               ></FileUploadSlide>
             )}
-          </Stack>
+          </Box>
           <Flex
-            width={"688px"}
+            paddingX="50px"
             direction={"row"}
             justifyContent={"flex-end"}
             paddingTop={"20px"}
@@ -329,7 +356,24 @@ const PostCreationModal: React.FC<{
             <Button
               onClick={
                 isContentView
-                  ? () => setIsContentView(false)
+                  ? () => {
+                      const validation = formSchema.safeParse(formState);
+                      if (validation.success) {
+                        setIsContentView(false);
+                      } else {
+                        toast({
+                          title: "Error",
+                          description: validation.error.issues
+                            .map((issue) => issue.message)
+                            .join("\r\n"),
+                          status: "error",
+                          duration: 5000,
+                          isClosable: true,
+                          position: "top",
+                          containerStyle: { whiteSpace: "pre" },
+                        });
+                      }
+                    }
                   : () => {
                       //TODO: Wait for success to close.
                       onClose();

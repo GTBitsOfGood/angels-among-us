@@ -44,29 +44,21 @@ const postSchema = new Schema<IPost>({
     required: true,
     enum: Object.values(Age),
   },
-  temperament: {
-    type: String,
-    required: true,
-    enum: Object.values(Temperament),
-  },
-  goodWith: [
+  temperament: [
     {
       type: String,
-      required: true,
-      enum: Object.values(GoodWith),
+      enum: Object.values(Temperament),
     },
   ],
   medical: [
     {
       type: String,
-      required: true,
       enum: Object.values(Medical),
     },
   ],
   behavioral: [
     {
       type: String,
-      required: true,
       enum: Object.values(Behavioral),
     },
   ],
@@ -83,7 +75,42 @@ const postSchema = new Schema<IPost>({
   spayNeuterStatus: {
     type: String,
     required: true,
-    enum: Object.values(Status),
+    enum: Object.values(Trained),
+  },
+  getsAlongWithMen: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
+  },
+  getsAlongWithWomen: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
+  },
+  getsAlongWithOlderKids: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
+  },
+  getsAlongWithYoungKids: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
+  },
+  getsAlongWithLargeDogs: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
+  },
+  getsAlongWithSmallDogs: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
+  },
+  getsAlongWithCats: {
+    type: String,
+    required: true,
+    enum: Object.values(Trained),
   },
   covered: {
     type: Boolean,

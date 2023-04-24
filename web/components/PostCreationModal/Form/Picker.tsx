@@ -6,43 +6,125 @@ import {
   SliderFilledTrack,
   SliderThumb,
   Text,
+  Box,
+  Center,
+  Circle,
 } from "@chakra-ui/react";
+import { Action, FormState } from "../PostCreationModal";
+import { Trained } from "../../../utils/types/post";
 
-interface Props<T> {
-  // val: T;
-  setVal: React.Dispatch<React.SetStateAction<T>>;
+type Props<
+  T extends Extract<
+    keyof FormState,
+    | "houseTrained"
+    | "crateTrained"
+    | "spayNeuterStatus"
+    | "getsAlongWithMen"
+    | "getsAlongWithWomen"
+    | "getsAlongWithOlderKids"
+    | "getsAlongWithYoungKids"
+    | "getsAlongWithLargeDogs"
+    | "getsAlongWithSmallDogs"
+    | "getsAlongWithCats"
+  >
+> = {
+  field: T;
+  val: FormState[T];
+  // val: Trained;
+  dispatchFormState: React.Dispatch<Action<T, FormState[T]>>;
+};
+
+function convertStep(num: number) {
+  switch (num) {
+    case 0:
+      return Trained.No;
+    case 1:
+      return Trained.Unknown;
+    case 2:
+      return Trained.Yes;
+  }
 }
 
-function Picker<T>(props: Props<T>) {
-  // const { val, setVal } = props;
-  const { setVal } = props;
+function Picker<
+  T extends Extract<
+    keyof FormState,
+    | "houseTrained"
+    | "crateTrained"
+    | "spayNeuterStatus"
+    | "getsAlongWithMen"
+    | "getsAlongWithWomen"
+    | "getsAlongWithOlderKids"
+    | "getsAlongWithYoungKids"
+    | "getsAlongWithLargeDogs"
+    | "getsAlongWithSmallDogs"
+    | "getsAlongWithCats"
+  >
+>(props: Props<T>) {
+  const { field, val, dispatchFormState } = props;
+
   return (
-    <Slider
-      defaultValue={1}
-      min={0}
-      max={2}
-      step={1}
-      onChangeEnd={(value) => {
-        setVal(value as T);
-      }}
-    >
-      <SliderMark value={0} mt="2" ml="-1" fontSize="xs">
-        {/* <Text color={val === 0 ? "black" : "gray"}>no</Text> */}
-        no
-      </SliderMark>
-      <SliderMark value={1} mt="2" ml="-1.5rem" fontSize="xs">
-        {/* <Text color={val === 1 ? "black" : "gray"}>unknown</Text> */}
-        unknown
-      </SliderMark>
-      <SliderMark value={2} mt="2" ml="-2" fontSize="xs">
-        {/* <Text color={val === 2 ? "black" : "gray"}>yes</Text> */}
-        yes
-      </SliderMark>
-      <SliderTrack bg="#D5E7F5">
-        <SliderFilledTrack bg="#D5E7F5" />
-      </SliderTrack>
-      <SliderThumb bg="#57A0D5" />
-    </Slider>
+    <Center ml={2} mr={3.5} mt={2}>
+      <Slider
+        defaultValue={1}
+        min={0}
+        max={2}
+        step={1}
+        onChange={(value) => {
+          dispatchFormState({
+            type: "setField",
+            key: field,
+            data: convertStep(value) as FormState[T],
+          });
+        }}
+      >
+        <SliderMark value={0}>
+          <Box position="absolute" top="-1.5px" left="0.5px" zIndex={2}>
+            <Circle size="3px" bg="#57A0D5" />
+            <Text
+              fontSize="xs"
+              mt={1.5}
+              position="relative"
+              left={-1}
+              color={val === Trained.No ? "black" : "gray"}
+            >
+              no
+            </Text>
+          </Box>
+        </SliderMark>
+        <SliderMark value={1}>
+          <Box position="absolute" top="-1.5px" left="-1.5px" zIndex={2}>
+            <Circle size="3px" bg="#57A0D5" />
+            <Text
+              fontSize="xs"
+              mt={1.5}
+              position="relative"
+              left={-5}
+              color={val === Trained.Unknown ? "black" : "gray"}
+            >
+              unknown
+            </Text>
+          </Box>
+        </SliderMark>
+        <SliderMark value={2}>
+          <Box position="absolute" top="-1.5px" left="-3.75px" zIndex={2}>
+            <Circle size="3px" bg="#57A0D5" />
+            <Text
+              fontSize="xs"
+              mt={1.5}
+              position="relative"
+              left={-1.5}
+              color={val === Trained.Yes ? "black" : "gray"}
+            >
+              yes
+            </Text>
+          </Box>
+        </SliderMark>
+        <SliderTrack bg="#D5E7F5" zIndex={1}>
+          <SliderFilledTrack bg="#D5E7F5" />
+        </SliderTrack>
+        <SliderThumb bg="#57A0D5" />
+      </Slider>
+    </Center>
   );
 }
 
