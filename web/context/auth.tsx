@@ -13,6 +13,7 @@ import { trpc } from "../utils/trpc";
 import { IUser } from "../utils/types/user";
 import { HydratedDocument } from "mongoose";
 import { signOut } from "firebase/auth";
+import { UseQueryResult } from "@tanstack/react-query/build/lib/types";
 
 const AuthContext = createContext<{
   authorized: boolean;
@@ -37,12 +38,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
     data: userData,
     isLoading: userIsLoading,
     isError: userIsError,
+    refetch: refetchUser,
   } = trpc.user.get.useQuery({
     uid: user?.uid ?? null,
   }) as {
     data: HydratedDocument<IUser> | null;
     isLoading: boolean;
     isError: boolean;
+    refetch: (options?: {
+      throwOnError: boolean;
+      cancelRefetch: boolean;
+    }) => Promise<UseQueryResult>;
   };
 
   const {
@@ -53,9 +59,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
     email: user?.email ?? null,
   });
 
-  const createUserMutation = trpc.user.add.useMutation();
-  const disableStatusMutation = trpc.user.disableStatus.useMutation();
-  const roleStatusMutation = trpc.user.modifyRoleEnableStatus.useMutation();
+  const createUserMutation = trpc.user.add.useMutation({
+    onSuccess: () => refetchUser(),
+  });
+  const disableStatusMutation = trpc.user.disableStatus.useMutation({
+    onSuccess: () => refetchUser(),
+  });
+  const roleStatusMutation = trpc.user.modifyRoleEnableStatus.useMutation({
+    onSuccess: () => refetchUser(),
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -111,8 +123,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
         role: accountData.role,
       });
       setAuthorized(true);
+    } else {
+      // First-time signin, unauthorized account, do nothing
+      signOut(auth);
     }
-    // First-time signin, unauthorized account, do nothing
     setLoading(false);
   }, [accountData, userData]);
 
