@@ -47,6 +47,7 @@ function Home() {
     provider.addScope("public_profile");
     try {
       await signInWithPopup(auth, provider);
+      setLoading!(true);
     } catch (error: any) {
       setLoading!(false);
       toast({
@@ -64,6 +65,7 @@ function Home() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
+      setLoading!(true);
     } catch (error: any) {
       setLoading!(false);
       toast({
