@@ -99,22 +99,15 @@ function Profile() {
               Profile
             </Text>
             {!editing ? (
-              <Button
-                bgColor="angelsBlue.100"
-                color="white"
-                width="6%"
-                borderRadius="16px"
-                onClick={() => setEditing(true)}
-              >
+              <Button variant="solid-primary" onClick={() => setEditing(true)}>
                 Edit
               </Button>
             ) : (
               <Stack direction="row">
                 <Button
-                  border="1px solid gray"
-                  bgColor="white"
-                  color="gray"
-                  borderRadius="16px"
+                  variant="outline-secondary"
+                  fontWeight="thin"
+                  borderWidth="thin"
                   onClick={() => {
                     dispatch({ type: "clear" });
                     setEditing(false);
@@ -122,11 +115,8 @@ function Profile() {
                 >
                   Cancel
                 </Button>
-
                 <Button
-                  bgColor="angelsBlue.100"
-                  color="white"
-                  borderRadius="16px"
+                  variant="solid-primary"
                   onClick={async () => {
                     const req = await updatePreferences.mutateAsync({
                       uid: userData!.uid,

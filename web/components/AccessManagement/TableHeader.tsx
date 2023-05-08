@@ -52,13 +52,10 @@ function TableHeader(props: PropertyType) {
       {selectItems ? (
         <Flex flexDirection="row" gap={2}>
           <Button
+            variant="outline-secondary"
             bg="white"
-            textColor="#7D7E82"
-            borderRadius={12}
-            maxWidth="127px"
-            minWidth="70px"
-            h="36px"
-            fontWeight="normal"
+            borderWidth="thin"
+            fontWeight="thin"
             onClick={toggleSelect}
           >
             Cancel
@@ -72,14 +69,7 @@ function TableHeader(props: PropertyType) {
           ></DeletePopup>
         </Flex>
       ) : (
-        <Button
-          variant="outline"
-          textColor="white"
-          borderColor="white"
-          borderWidth={2}
-          _hover={{ bg: "white", textColor: "#57A0D5" }}
-          onClick={toggleSelect}
-        >
+        <Button variant="outline-primary-inverted" onClick={toggleSelect}>
           Select Items
         </Button>
       )}

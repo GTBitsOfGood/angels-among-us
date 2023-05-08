@@ -122,9 +122,9 @@ const formSchema = z.object({
 export type FormState = z.input<typeof formSchema>;
 
 export type Action<K extends keyof FormState, V extends FormState[K]> = {
-  type: "setField";
-  key: K;
-  data: V;
+  type: "setField" | "clear";
+  key?: K;
+  data?: V;
 };
 
 const PostCreationModal: React.FC<{
@@ -139,22 +139,7 @@ const PostCreationModal: React.FC<{
   const [fileArr, setFileArr] = useState<Array<File>>([]);
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
 
-  function reducer<K extends keyof FormState, V extends FormState[K]>(
-    state: FormState,
-    action: Action<K, V>
-  ) {
-    switch (action.type) {
-      case "setField":
-        return {
-          ...state,
-          [action.key]: action.data,
-        };
-      default:
-        throw Error("Unknown action.");
-    }
-  }
-
-  const [formState, dispatch] = useReducer(reducer, {
+  const defaultFormState = {
     name: "",
     description: "",
     petKind: null,
@@ -176,18 +161,26 @@ const PostCreationModal: React.FC<{
     getsAlongWithLargeDogs: Trained.Unknown,
     getsAlongWithSmallDogs: Trained.Unknown,
     getsAlongWithCats: Trained.Unknown,
-  });
+  };
 
-  useEffect(() => {
-    console.log("FILE ARRAY");
-    console.log(fileArr);
-    setNumFiles(fileArr.length);
-  }, [fileArr]);
+  function reducer<K extends keyof FormState, V extends FormState[K]>(
+    state: FormState,
+    action: Action<K, V>
+  ) {
+    switch (action.type) {
+      case "setField":
+        return {
+          ...state,
+          [action.key!]: action.data,
+        };
+      case "clear":
+        return defaultFormState;
+      default:
+        throw Error("Unknown action.");
+    }
+  }
 
-  useEffect(() => {
-    console.log("SELECTED FILES");
-    console.log(selectedFiles);
-  }, [selectedFiles]);
+  const [formState, dispatch] = useReducer(reducer, defaultFormState);
 
   const postCreate = trpc.post.create.useMutation();
   const postFinalize = trpc.post.finalize.useMutation();
@@ -257,22 +250,6 @@ const PostCreationModal: React.FC<{
       // TODO retry logic
     }
   };
-
-  let postButtonStyle = {
-    color: "#57A0D5",
-    bgColor: "#FFFFFF",
-    borderColor: "#57A0D5",
-    borderRadius: "20px",
-  };
-
-  if (selectedFiles.length > 0) {
-    postButtonStyle = {
-      color: "#FFFFFF",
-      bgColor: "#57A0D5",
-      borderColor: "#57A0D5",
-      borderRadius: "20px",
-    };
-  }
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} closeOnOverlayClick={false}>
@@ -354,6 +331,7 @@ const PostCreationModal: React.FC<{
             paddingTop={"20px"}
           >
             <Button
+              variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
               onClick={
                 isContentView
                   ? () => {
@@ -361,16 +339,19 @@ const PostCreationModal: React.FC<{
                       if (validation.success) {
                         setIsContentView(false);
                       } else {
+                        toast.closeAll();
                         toast({
                           title: "Error",
                           description: validation.error.issues
                             .map((issue) => issue.message)
                             .join("\r\n"),
+                          containerStyle: {
+                            whiteSpace: "pre-line",
+                          },
                           status: "error",
                           duration: 5000,
                           isClosable: true,
                           position: "top",
-                          containerStyle: { whiteSpace: "pre" },
                         });
                       }
                     }
@@ -380,15 +361,13 @@ const PostCreationModal: React.FC<{
                       createPost();
                       setFileArr([]);
                       setIsContentView(true);
+                      dispatch({
+                        type: "clear",
+                      });
                     }
               }
-              color={postButtonStyle.color}
-              bgColor={postButtonStyle.bgColor}
-              borderRadius={postButtonStyle.borderRadius}
-              borderColor={postButtonStyle.borderColor}
               width={"125px"}
               height={"50px"}
-              border={"1px solid"}
             >
               <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
                 {isContentView ? "Next" : "Post"}

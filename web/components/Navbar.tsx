@@ -129,10 +129,10 @@ export default function Navbar() {
                 </Stack>
                 <Stack direction="row" justifyContent="flex-end">
                   <Button
-                    variant="outline"
-                    textColor="gray"
+                    variant="outline-secondary"
                     size="sm"
-                    fontWeight={400}
+                    fontWeight="thin"
+                    borderWidth="thin"
                     onClick={() => {
                       router.push(Pages.FEED);
                       signOut(auth);
@@ -147,14 +147,10 @@ export default function Navbar() {
                   >
                     <MenuItem borderRadius="16px" padding={0}>
                       <Button
-                        variant="solid"
-                        bgColor="angelsBlue.100"
-                        borderRadius="16px"
-                        color="white"
+                        variant="solid-primary"
                         size="sm"
-                        _hover={{
-                          bgColor: "rgb(87, 161, 213, 0.5)",
-                        }}
+                        fontWeight="thin"
+                        borderWidth="thin"
                       >
                         View Profile
                       </Button>
@@ -245,10 +241,10 @@ export default function Navbar() {
                   </Stack>
                   <Stack direction="row" justifyContent="flex-end">
                     <Button
-                      variant="outline"
-                      textColor="gray"
+                      variant="outline-secondary"
+                      fontWeight="thin"
+                      borderWidth="thin"
                       size="sm"
-                      fontWeight={400}
                       onClick={() => {
                         router.push(Pages.FEED);
                         signOut(auth);
@@ -262,11 +258,10 @@ export default function Navbar() {
                       style={{ textDecoration: "none" }}
                     >
                       <Button
-                        bgColor="angelsBlue.100"
-                        borderRadius="16px"
-                        color="white"
+                        variant="solid-primary"
                         size="sm"
-                        _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
+                        fontWeight="thin"
+                        borderWidth="thin"
                       >
                         View Profile
                       </Button>

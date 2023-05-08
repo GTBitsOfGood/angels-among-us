@@ -1,4 +1,5 @@
 import { TRPCError, initTRPC } from "@trpc/server";
+import { Role } from "../utils/types/account";
 import { Context } from "./context";
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
@@ -20,7 +21,13 @@ const isAuthed = t.middleware(({ next, ctx }) => {
 });
 
 const isContentCreator = t.middleware(({ next, ctx }) => {
-  // TODO: implement
+  if (
+    !(ctx.user?.role === Role.Admin || ctx.user?.role === Role.ContentCreator)
+  ) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
   return next({
     ctx: {
       session: ctx.session,
@@ -29,7 +36,11 @@ const isContentCreator = t.middleware(({ next, ctx }) => {
 });
 
 const isAdmin = t.middleware(({ next, ctx }) => {
-  //TODO: implement
+  if (ctx.user?.role !== Role.Admin) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
   return next({
     ctx: {
       session: ctx.session,

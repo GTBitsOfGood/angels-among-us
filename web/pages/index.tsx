@@ -188,15 +188,7 @@ function Home() {
             your foster dogs.
           </Text>
           <Stack width="100%">
-            <Button
-              bgColor="#529FD4"
-              width="100%"
-              padding={5}
-              color="white"
-              borderRadius={["6px", "10px"]}
-              cursor={["default", "pointer"]}
-              onClick={() => handleLoginFacebook()}
-            >
+            <Button variant="solid-primary" onClick={handleLoginFacebook}>
               Continue with Facebook
             </Button>
 
@@ -210,15 +202,7 @@ function Home() {
               <Text color="white">or</Text>
               <Divider width="45%" border="1px solid white"></Divider>
             </Stack>
-            <Button
-              bgColor="#529FD4"
-              width="100%"
-              padding={5}
-              color="white"
-              borderRadius={["6px", "10px"]}
-              cursor={["default", "pointer"]}
-              onClick={handleLoginGoogle}
-            >
+            <Button variant="solid-primary" onClick={handleLoginGoogle}>
               Continue with Google
             </Button>
           </Stack>

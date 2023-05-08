@@ -25,20 +25,18 @@ const PetPostModal: React.FC<{
           spacing={8}
           paddingTop={6}
         >
-          <Flex width="100%" paddingLeft={5}>
-            <Stack
-              direction="row"
-              spacing={2}
-              onClick={onClose}
-              color="#7D7E82"
-              alignItems="center"
-              fontWeight="semibold"
-              cursor="pointer"
-            >
-              <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
-              <Text>Back to Pet Feed</Text>
-            </Stack>
-          </Flex>
+          <Button
+            h={8}
+            w="fit-content"
+            bgColor="tag-primary-bg"
+            color="text-primary"
+            marginLeft={10}
+            _hover={{ bgColor: "tag-primary-bg" }}
+            leftIcon={<ArrowBackIcon />}
+            onClick={onClose}
+          >
+            Back to feed
+          </Button>
           <Flex direction="row" width="100%">
             <Flex
               w="50%"
@@ -135,14 +133,7 @@ const PetPostModal: React.FC<{
             paddingRight={5}
             paddingBottom={5}
           >
-            <Button
-              bgColor="angelsBlue.100"
-              color="white"
-              fontWeight="medium"
-              borderRadius="20px"
-              paddingLeft={10}
-              paddingRight={10}
-            >
+            <Button variant="solid-primary" size="lg">
               Foster Me!
             </Button>
           </Flex>
@@ -263,14 +254,7 @@ const PetPostModal: React.FC<{
             padding={4}
             bgColor="white"
           >
-            <Button
-              bgColor="angelsBlue.100"
-              color="white"
-              fontWeight="medium"
-              borderRadius="20px"
-              paddingLeft={10}
-              paddingRight={10}
-            >
+            <Button variant="solid-primary" size="lg">
               Foster Me!
             </Button>
           </Flex>

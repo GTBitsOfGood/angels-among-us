@@ -316,7 +316,7 @@ function Feed(props: {
   const mainContent = (
     <Flex
       className="feed"
-      backgroundColor="#D7E4EE"
+      backgroundColor="bg-primary"
       justifyContent="center"
       height="fit-content"
       minHeight="100vh"
@@ -339,11 +339,10 @@ function Feed(props: {
           justifyContent="flex-end"
         >
           <Button
+            variant="solid-primary"
             onClick={() => {
               setFilterDisplayed(!filterDisplayed);
             }}
-            backgroundColor="#529FD4"
-            color="#FFFFFF"
             fontWeight="normal"
             height="36px"
             borderRadius="10px"
@@ -364,12 +363,9 @@ function Feed(props: {
           </Text>
           <Flex justifyContent="flex-end" margin="12px" gap="8px">
             <Button
-              backgroundColor="#FFFFFF"
+              variant="outline-secondary"
               fontWeight="normal"
-              color="#7D7E82"
-              borderWidth="1px"
-              borderColor="#7D7E82"
-              borderRadius="12px"
+              borderWidth="thin"
               onClick={() => {
                 setSelectedFilters({
                   type: "reset",
@@ -381,12 +377,7 @@ function Feed(props: {
             >
               Clear All
             </Button>
-            <Button
-              backgroundColor="#529FD4"
-              fontWeight="normal"
-              color="#FFFFFF"
-              borderRadius="12px"
-            >
+            <Button variant="solid-primary" fontWeight="normal">
               Use My Preferences
             </Button>
           </Flex>
@@ -405,12 +396,11 @@ function Feed(props: {
           width={{ base: "100%", lg: "70%" }}
           minHeight="full"
           borderRadius={{ base: "0px", lg: "10px" }}
-          backgroundColor={{ base: "#C6E3F9", lg: "#F9F8F8" }}
+          backgroundColor={{ base: "bg-primary", lg: "#F9F8F8" }}
           direction="column"
           alignItems="center"
           height="fit-content"
           padding="20px"
-          // padding="px"
         >
           <Flex
             w="100%"
@@ -424,11 +414,8 @@ function Feed(props: {
             </Text>
             {userData?.role !== Role.Volunteer && (
               <Button
+                variant="solid-primary"
                 leftIcon={<AddIcon />}
-                bg="angelsBlue.100"
-                color="white"
-                variant="solid"
-                borderRadius={12}
                 onClick={onPostCreationOpen}
               >
                 Add new post
@@ -487,16 +474,12 @@ function Feed(props: {
         borderBottomColor="#000000"
       >
         <Button
+          variant="outline-secondary"
           onClick={() => {
             setFilterDisplayed(!filterDisplayed);
           }}
-          backgroundColor="#FFFFFF"
-          color="#7D7E82"
-          borderWidth="1px"
-          borderColor="#7D7E82"
+          borderWidth="thin"
           fontWeight="normal"
-          height="36px"
-          borderRadius="10px"
         >
           Close
         </Button>
@@ -518,12 +501,9 @@ function Feed(props: {
         </Text>
         <Flex justifyContent="flex-end" margin="12px" gap="8px">
           <Button
-            backgroundColor="#FFFFFF"
+            variant="outline-secondary"
             fontWeight="normal"
-            color="#7D7E82"
-            borderWidth="1px"
-            borderColor="#7D7E82"
-            borderRadius="12px"
+            borderWidth="thin"
             onClick={() => {
               setSelectedFilters({
                 type: "reset",
@@ -535,12 +515,7 @@ function Feed(props: {
           >
             Clear All
           </Button>
-          <Button
-            backgroundColor="#529FD4"
-            fontWeight="normal"
-            color="#FFFFFF"
-            borderRadius="12px"
-          >
+          <Button variant="solid-primary" fontWeight="normal">
             Use My Preferences
           </Button>
         </Flex>

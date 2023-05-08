@@ -143,15 +143,9 @@ export default function CreateAccountForm(props: PropertyType) {
             ></AddPermissionSelector>
           </Flex>
           <Button
-            color="white"
-            bg="#529FD4"
-            borderRadius={12}
-            onClick={updateAccountsHandler}
+            variant="solid-primary"
             disabled={mutation.isLoading}
-            w={{ sm: "133px" }}
-            _hover={{
-              bg: "#75B2DD",
-            }}
+            onClick={updateAccountsHandler}
           >
             Add Account
           </Button>

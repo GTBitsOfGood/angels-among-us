@@ -59,19 +59,7 @@ function DeletePopup(props: PropertyType) {
 
   return (
     <>
-      <Button
-        onClick={onOpen}
-        variant="outline"
-        fontWeight="semibold"
-        textColor="white"
-        h="36px"
-        maxWidth="208px"
-        minWidth="170px"
-        borderRadius={12}
-        _hover={{
-          bg: "#75B2DD",
-        }}
-      >
+      <Button variant="outline-primary-inverted" onClick={onOpen}>
         Delete Selected Items
       </Button>
       <AlertDialog

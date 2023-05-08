@@ -45,6 +45,17 @@ function convertStep(num: number) {
   }
 }
 
+function convertTrained(trained: Trained) {
+  switch (trained) {
+    case Trained.No:
+      return 0;
+    case Trained.Unknown:
+      return 1;
+    case Trained.Yes:
+      return 2;
+  }
+}
+
 function Picker<
   T extends Extract<
     keyof FormState,
@@ -65,7 +76,7 @@ function Picker<
   return (
     <Center ml={2} mr={3.5} mt={2}>
       <Slider
-        defaultValue={1}
+        value={convertTrained(val)}
         min={0}
         max={2}
         step={1}
