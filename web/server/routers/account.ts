@@ -12,7 +12,7 @@ import {
 import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { IAccount, Role } from "../../utils/types/account";
-import { router, protectedProcedure } from "../trpc";
+import { router, protectedProcedure, publicProcedure } from "../trpc";
 
 const emailInput = {
   email: z.string().email("Invalid email provided"),
@@ -153,7 +153,7 @@ export const accountRouter = router({
       }
     }),
 
-  get: protectedProcedure
+  get: publicProcedure
     .input(
       z.object({
         email: z.string().email().nullable(),
