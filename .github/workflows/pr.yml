@@ -10,7 +10,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: TestCoverage
+      - name: Generate code coverage report
+        defaults:
+          run:
+            working-directory: web
         uses: anuraag016/Jest-Coverage-Diff@master
         with:
           fullCoverageDiff: false

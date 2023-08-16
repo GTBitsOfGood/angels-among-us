@@ -35,8 +35,7 @@ import Feed from "../components/Feed/Feed";
 import backgroundImage from "../public/backgroundImage.png";
 
 function Home() {
-  const { user, loading, setLoading, authorized, authError, userData } =
-    useAuth();
+  const { loading, setLoading, authorized, authError, userData } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const toastId = "auth-toast" as const;
