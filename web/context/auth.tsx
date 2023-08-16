@@ -49,13 +49,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (error?.data?.code === "UNAUTHORIZED") {
-      setLoading(true);
       // Refreshing token
       const user = auth.currentUser;
       if (user) {
-        user.getIdToken(true).then(() => {
-          setLoading(false);
-        });
+        user.getIdToken(true);
       }
     }
   }, [error]);
@@ -86,8 +83,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (newSignIn.isError) {
         // Not authorized
         await signOut(auth);
-      }
-      if (!newSignIn.data!.hasCompletedOnboarding) {
+      } else if (!newSignIn.data!.hasCompletedOnboarding) {
         router.replace(Pages.ONBOARDING);
       }
       setLoading(false);

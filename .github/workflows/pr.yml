@@ -10,9 +10,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Generate coverage report
-        uses: ArtiomTr/jest-coverage-report-action@v2
+      - name: TestCoverage
+        uses: anuraag016/Jest-Coverage-Diff@master
         with:
-          working-directory: web
-          test-script: yarn jest --collectCoverageFrom='./**/*.{ts,tsx}'
-          package-manager: yarn
+          fullCoverageDiff: false
+          runCommand: "yarn jest --collectCoverageFrom='./**/*.{ts,tsx}' --coverage --collectCoverage=true --coverageDirectory='./' --coverageReporters='json-summary'"
+          delta: 0
