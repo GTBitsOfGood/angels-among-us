@@ -16,3 +16,9 @@ jobs:
           working-directory: web
           test-script: yarn jest --coverage --collectCoverageFrom='./**/*.{ts,tsx}'
           package-manager: yarn
+          output: comment, report-markdown
+
+      - name: Markdown comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: ${{ steps.coverage.outputs.report }}
