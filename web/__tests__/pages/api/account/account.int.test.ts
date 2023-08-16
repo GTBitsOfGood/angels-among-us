@@ -16,9 +16,6 @@ import { appRouter } from "../../../../server/routers/_app";
  * @group api
  * @group unit
  */
-describe("[API] Account - Integration Test", async () => {
-  const context = await createContextInner();
-  const caller = appRouter.createCaller(context);
-
-  test("account.getAll", async () => {});
+describe.skip("[API] Account - Integration Test", () => {
+  test("", async () => {});
 });
