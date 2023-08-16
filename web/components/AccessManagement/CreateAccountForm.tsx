@@ -11,7 +11,6 @@ import {
   Text,
   Flex,
   SimpleGrid,
-  Box,
   FormControl,
   Alert,
   AlertIcon,
@@ -20,18 +19,17 @@ import {
 import { HydratedDocument } from "mongoose";
 
 interface PropertyType {
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CreateAccountForm(props: PropertyType) {
-  const { accountList, updateAccountList, updateSelectItems } = props;
+  const { updateSelectItems } = props;
   const [emailField, setEmailField] = useState("");
   const [role, setRole] = useState(Role.Volunteer);
   const [displayError, setDisplayError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const utils = trpc.useContext();
   const mutation = trpc.account.add.useMutation();
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -60,9 +58,7 @@ export default function CreateAccountForm(props: PropertyType) {
     mutation.mutate(newAccount, {
       onSuccess: () => {
         setDisplayError(false);
-        const temp = [...accountList];
-        temp.unshift(newAccount);
-        updateAccountList(temp);
+        utils.account.invalidate();
         setEmailField("");
         setRole(Role.Volunteer);
         setDisplayError(false);

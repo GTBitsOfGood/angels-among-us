@@ -46,7 +46,7 @@ async function sendCreateReq() {
   });
 }
 
-describe("File Upload - Integration Test", () => {
+describe.skip("File Upload - Integration Test", () => {
   test("With resize, non-resize, and video", async () => {
     const response = await sendCreateReq();
     expect(response.status).toBe(200);

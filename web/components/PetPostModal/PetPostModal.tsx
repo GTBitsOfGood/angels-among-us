@@ -13,9 +13,8 @@ import PetPostTagGroup from "./PetPostTagGroup";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
-  onOpen: () => void;
   onClose: () => void;
-}> = ({ isOpen, onOpen, onClose }) => {
+}> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} size={"full"} onClose={onClose}>
       <ModalContent>

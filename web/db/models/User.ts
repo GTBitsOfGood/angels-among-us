@@ -11,7 +11,6 @@ import {
   Size,
   Status,
   Temperament,
-  Trained,
 } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
 const { Schema } = mongoose;
@@ -25,7 +24,7 @@ const userSchema = new Schema<IUser>({
   },
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   uid: {
     type: String,
@@ -37,6 +36,11 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     enum: Object.values(Role),
+  },
+  hasCompletedOnboarding: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
   disabled: {
     type: Boolean,
@@ -144,22 +148,14 @@ const userSchema = new Schema<IUser>({
     required: false,
   },
   houseTrained: {
-    type: [
-      {
-        type: String,
-        enum: Object.values(Trained),
-      },
-    ],
+    type: String,
+    enum: Object.values(Status),
     default: undefined,
     required: false,
   },
   spayNeuterStatus: {
-    type: [
-      {
-        type: String,
-        enum: Object.values(Status),
-      },
-    ],
+    type: String,
+    enum: Object.values(Status),
     default: undefined,
     required: false,
   },

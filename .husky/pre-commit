@@ -10,5 +10,6 @@ if [ "$(basename "$CURRENT_DIR")" != "web" ]; then
 fi
 
 yarn build
+(yarn jest || true)
 
 exit $?

@@ -24,12 +24,7 @@ import {
   Trained,
   Status,
 } from "../../utils/types/post";
-import {
-  router,
-  creatorProcedure,
-  publicProcedure,
-  protectedProcedure,
-} from "../trpc";
+import { router, procedure } from "../trpc";
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
@@ -82,7 +77,7 @@ const postFilterSchema = z.object({
 });
 
 export const postRouter = router({
-  get: publicProcedure
+  get: procedure
     .input(
       z.object({
         _id: zodOidType,
@@ -91,7 +86,7 @@ export const postRouter = router({
     .query(async ({ input }) => {
       return getPost(input._id);
     }),
-  create: creatorProcedure.input(postSchema).mutation(async ({ input }) => {
+  create: procedure.input(postSchema).mutation(async ({ input }) => {
     const session = await Post.startSession();
     session.startTransaction();
     try {
@@ -114,7 +109,7 @@ export const postRouter = router({
       });
     }
   }),
-  finalize: creatorProcedure
+  finalize: procedure
     .input(
       z.object({
         _id: zodOidType,
@@ -130,7 +125,7 @@ export const postRouter = router({
         });
       }
     }),
-  updateDetails: creatorProcedure
+  updateDetails: procedure
     .input(
       z.object({
         _id: zodOidType,
@@ -148,7 +143,7 @@ export const postRouter = router({
         });
       }
     }),
-  updateStatus: creatorProcedure
+  updateStatus: procedure
     .input(
       z.object({
         _id: zodOidType,
@@ -165,7 +160,7 @@ export const postRouter = router({
         });
       }
     }),
-  getAllPosts: protectedProcedure.query(async () => {
+  getAllPosts: procedure.query(async () => {
     try {
       return await getAllPosts();
     } catch (e) {
@@ -175,7 +170,7 @@ export const postRouter = router({
       });
     }
   }),
-  getFilteredPosts: protectedProcedure
+  getFilteredPosts: procedure
     .input(postFilterSchema)
     .query(async ({ input }) => {
       const houseTrained = input.houseTrained

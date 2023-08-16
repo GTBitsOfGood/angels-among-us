@@ -1,17 +1,15 @@
 import { IAccount, Role } from "../../utils/types/account";
-import { HydratedDocument } from "mongoose";
 import RoleSelector from "./RoleSelector";
-import { Box, Flex, HStack, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
+import { Box, Flex, HStack, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 
 interface PropertyType {
-  account: HydratedDocument<IAccount>;
+  account: IAccount;
   idx: Number;
   selectItems: boolean;
   itemsToDelete: Number[];
   updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
+  accountList: IAccount[];
 }
 
 function createLabel(r: Role) {
@@ -34,12 +32,7 @@ function AccountCard(props: PropertyType) {
     itemsToDelete,
     updateItemsToDelete,
     accountList,
-    updateAccountList,
   } = props;
-
-  let cardStyle = {
-    border: "none",
-  };
 
   let selectButtonStyle = {
     border: "solid",
@@ -106,7 +99,6 @@ function AccountCard(props: PropertyType) {
             <RoleSelector
               account={account}
               accountList={accountList}
-              updateAccountList={updateAccountList}
               createLabel={createLabel}
             ></RoleSelector>
           )}

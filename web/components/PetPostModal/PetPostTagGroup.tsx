@@ -1,9 +1,4 @@
 import {
-  Button,
-  Center,
-  Flex,
-  Modal,
-  ModalContent,
   Stack,
   Tag,
   TagLabel,

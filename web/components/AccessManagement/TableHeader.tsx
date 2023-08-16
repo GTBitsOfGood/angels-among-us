@@ -1,12 +1,10 @@
-import { Flex, Input, Box, Text, Button } from "@chakra-ui/react";
-import { HydratedDocument } from "mongoose";
+import { Flex, Input, Button } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import { IAccount } from "../../utils/types/account";
 import DeletePopup from "./DeletePopup";
 
 interface PropertyType {
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
+  accountList: IAccount[];
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
   itemsToDelete: Number[];
@@ -15,7 +13,6 @@ interface PropertyType {
 function TableHeader(props: PropertyType) {
   const {
     accountList,
-    updateAccountList,
     selectItems,
     updateSelectItems,
     itemsToDelete,
@@ -62,7 +59,6 @@ function TableHeader(props: PropertyType) {
           </Button>
           <DeletePopup
             accountList={accountList}
-            updateAccountList={updateAccountList}
             itemsToDelete={itemsToDelete}
             updateItemsToDelete={updateItemsToDelete}
             updateSelectItems={updateSelectItems}

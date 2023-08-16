@@ -17,7 +17,6 @@ const semanticTokens = {
     "tag-primary-bg": "#c6e3f9",
     "text-primary": "#57a0d5",
     "text-secondary": "#7d7e82",
-    "progress-primary-bg": "#57a0d5",
   },
 } as const;
 
@@ -89,8 +88,11 @@ const components = {
   },
   Progress: {
     baseStyle: {
+      track: {
+        backgroundColor: "bg-primary",
+      },
       filledTrack: {
-        backgroundColor: "progress-primary-bg",
+        backgroundColor: "btn-solid-primary-bg",
       },
     },
   },

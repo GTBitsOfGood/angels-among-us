@@ -18,7 +18,6 @@ import {
   Size,
   Status,
   Temperament,
-  Trained,
 } from "../../utils/types/post";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import PetPostModal from "../PetPostModal/PetPostModal";
@@ -223,8 +222,7 @@ const filterGroups: FilterGroup[] = [
         key: "medicalInfo",
         description: "Dogs that are:",
         options: [
-          { value: Trained.Yes, label: "House Trained" },
-          { value: Trained.Yes, label: "Crate Trained" },
+          { value: Status.Yes, label: "House Trained" },
           { value: Status.Yes, label: "Spayed/Neutered" },
         ],
         dropdown: false,
@@ -540,14 +538,9 @@ function Feed(props: {
       {filterDisplayed ? filter : mainContent}
       <PostCreationModal
         isOpen={isPostCreationOpen}
-        onOpen={onPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      <PetPostModal
-        isOpen={isPostViewOpen}
-        onOpen={onPostViewOpen}
-        onClose={onPostViewClose}
-      />
+      <PetPostModal isOpen={isPostViewOpen} onClose={onPostViewClose} />
     </>
   );
 }

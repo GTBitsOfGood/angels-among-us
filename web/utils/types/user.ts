@@ -10,15 +10,15 @@ import {
   Size,
   Status,
   Temperament,
-  Trained,
 } from "./post";
 
 export interface IUser {
   email: string;
-  name: string;
+  name?: string;
   uid: string;
   role: Role;
   disabled: boolean;
+  hasCompletedOnboarding: boolean;
   type?: FosterType[];
   size?: Size[];
   restrictedBreeds?: Breed[];
@@ -29,6 +29,6 @@ export interface IUser {
   dogsNotGoodWith?: GoodWith[];
   medical?: Medical[];
   behavioral?: Behavioral[];
-  houseTrained?: Trained[];
-  spayNeuterStatus?: Status[];
+  houseTrained?: Status;
+  spayNeuterStatus?: Status;
 }

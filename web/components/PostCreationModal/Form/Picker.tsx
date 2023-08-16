@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Slider,
   SliderMark,
@@ -30,7 +30,6 @@ type Props<
 > = {
   field: T;
   val: FormState[T];
-  // val: Trained;
   dispatchFormState: React.Dispatch<Action<T, FormState[T]>>;
 };
 
