@@ -6,16 +6,13 @@ on:
 jobs:
   coverage:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Generate code coverage report
-        uses: anuraag016/Jest-Coverage-Diff@master
+      - name: Generate coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2
         with:
-          fullCoverageDiff: false
-          runCommand: "yarn jest --collectCoverageFrom='./**/*.{ts,tsx}' --coverage --collectCoverage=true --coverageDirectory='./' --coverageReporters='json-summary'"
-          delta: 0
+          working-directory: web
+          test-script: yarn jest --coverage --collectCoverageFrom='./**/*.{ts,tsx}'
+          package-manager: yarn
