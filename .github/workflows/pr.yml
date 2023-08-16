@@ -7,9 +7,12 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ArtiomTr/jest-coverage-report-action@v2
-    with:
-      working-directory: web
-      test-script: yarn jest --collectCoverageFrom='./**/*.{ts,tsx}'
-      package-manager: yarn
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+          with:
+            working-directory: web
+            test-script: yarn jest --collectCoverageFrom='./**/*.{ts,tsx}'
+            package-manager: yarn
