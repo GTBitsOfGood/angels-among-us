@@ -39,6 +39,7 @@ export const FormSlide: React.FC<{
       <FormControl>
         <FormLabel>Name of the Pet</FormLabel>
         <Input
+          value={formState.name}
           onChange={(e) =>
             dispatchFormState({
               type: "setField",
@@ -51,6 +52,7 @@ export const FormSlide: React.FC<{
       <FormControl className="descriptionForm">
         <FormLabel>Description</FormLabel>
         <Textarea
+          value={formState.description}
           onChange={(e) =>
             dispatchFormState({
               type: "setField",
@@ -65,6 +67,14 @@ export const FormSlide: React.FC<{
           <FormLabel>What kind of pet?</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            value={
+              formState.petKind
+                ? {
+                    value: formState.petKind as string,
+                    label: petKindLabels[formState.petKind],
+                  }
+                : undefined
+            }
             options={Object.entries(petKindLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -83,6 +93,14 @@ export const FormSlide: React.FC<{
           <FormLabel>Gender</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            value={
+              formState.gender
+                ? {
+                    value: formState.gender as string,
+                    label: genderLabels[formState.gender],
+                  }
+                : undefined
+            }
             options={Object.entries(genderLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -102,6 +120,14 @@ export const FormSlide: React.FC<{
           <FormLabel>Age</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            value={
+              formState.age
+                ? {
+                    value: formState.age as string,
+                    label: ageLabels[formState.age],
+                  }
+                : undefined
+            }
             options={Object.entries(ageLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -119,6 +145,14 @@ export const FormSlide: React.FC<{
           <FormLabel>Type of foster</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            value={
+              formState.type
+                ? {
+                    value: formState.type as string,
+                    label: fosterTypeLabels[formState.type],
+                  }
+                : undefined
+            }
             options={Object.entries(fosterTypeLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -138,6 +172,14 @@ export const FormSlide: React.FC<{
           <FormLabel>Size</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            value={
+              formState.size
+                ? {
+                    value: formState.size as string,
+                    label: sizeLabels[formState.size],
+                  }
+                : undefined
+            }
             options={Object.entries(sizeLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -156,6 +198,10 @@ export const FormSlide: React.FC<{
           <Select
             isMulti
             closeMenuOnSelect={false}
+            value={formState.temperament.map((val) => ({
+              value: val as string,
+              label: temperamentLabels[val],
+            }))}
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
             options={Object.entries(temperamentLabels).map(([k, v]) => ({
               value: k,
@@ -176,6 +222,10 @@ export const FormSlide: React.FC<{
         <Select
           isMulti
           closeMenuOnSelect={false}
+          value={formState.breed.map((val) => ({
+            value: val as string,
+            label: breedLabels[val],
+          }))}
           styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
           options={Object.entries(breedLabels).map(([k, v]) => ({
             value: k,

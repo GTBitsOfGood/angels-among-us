@@ -9,8 +9,10 @@ import {
   Flex,
   Box,
   useToast,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
-import { useEffect, useReducer, useState } from "react";
+import { useReducer, useState } from "react";
 import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import {
@@ -20,11 +22,9 @@ import {
   Breed,
   FosterType,
   Gender,
-  GoodWith,
   Medical,
   PetKind,
   Size,
-  Status,
   Temperament,
   Trained,
 } from "../../utils/types/post";
@@ -122,39 +122,22 @@ const formSchema = z.object({
 export type FormState = z.input<typeof formSchema>;
 
 export type Action<K extends keyof FormState, V extends FormState[K]> = {
-  type: "setField";
-  key: K;
-  data: V;
+  type: "setField" | "clear";
+  key?: K;
+  data?: V;
 };
 
 const PostCreationModal: React.FC<{
   isOpen: boolean;
-  onOpen: () => void;
   onClose: () => void;
-}> = ({ isOpen, onOpen, onClose }) => {
+}> = ({ isOpen, onClose }) => {
   const toast = useToast();
   const [isContentView, setIsContentView] = useState(true);
-  const [numFiles, setNumFiles] = useState<number>(0);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
 
-  function reducer<K extends keyof FormState, V extends FormState[K]>(
-    state: FormState,
-    action: Action<K, V>
-  ) {
-    switch (action.type) {
-      case "setField":
-        return {
-          ...state,
-          [action.key]: action.data,
-        };
-      default:
-        throw Error("Unknown action.");
-    }
-  }
-
-  const [formState, dispatch] = useReducer(reducer, {
+  const defaultFormState = {
     name: "",
     description: "",
     petKind: null,
@@ -176,18 +159,26 @@ const PostCreationModal: React.FC<{
     getsAlongWithLargeDogs: Trained.Unknown,
     getsAlongWithSmallDogs: Trained.Unknown,
     getsAlongWithCats: Trained.Unknown,
-  });
+  };
 
-  useEffect(() => {
-    console.log("FILE ARRAY");
-    console.log(fileArr);
-    setNumFiles(fileArr.length);
-  }, [fileArr]);
+  function reducer<K extends keyof FormState, V extends FormState[K]>(
+    state: FormState,
+    action: Action<K, V>
+  ) {
+    switch (action.type) {
+      case "setField":
+        return {
+          ...state,
+          [action.key!]: action.data,
+        };
+      case "clear":
+        return defaultFormState;
+      default:
+        throw Error("Unknown action.");
+    }
+  }
 
-  useEffect(() => {
-    console.log("SELECTED FILES");
-    console.log(selectedFiles);
-  }, [selectedFiles]);
+  const [formState, dispatch] = useReducer(reducer, defaultFormState);
 
   const postCreate = trpc.post.create.useMutation();
   const postFinalize = trpc.post.finalize.useMutation();
@@ -198,7 +189,7 @@ const PostCreationModal: React.FC<{
         const key = file.name;
         if (file.type.includes("image/")) {
           const url = URL.createObjectURL(file);
-          return new Promise((resolve, _) => {
+          return new Promise((resolve) => {
             const image = new Image();
             image.onload = () => {
               URL.revokeObjectURL(url);
@@ -258,144 +249,130 @@ const PostCreationModal: React.FC<{
     }
   };
 
-  let postButtonStyle = {
-    color: "#57A0D5",
-    bgColor: "#FFFFFF",
-    borderColor: "#57A0D5",
-    borderRadius: "20px",
-  };
-
-  if (selectedFiles.length > 0) {
-    postButtonStyle = {
-      color: "#FFFFFF",
-      bgColor: "#57A0D5",
-      borderColor: "#57A0D5",
-      borderRadius: "20px",
-    };
-  }
-
   return (
-    <Modal onClose={onClose} isOpen={isOpen} closeOnOverlayClick={false}>
+    <Modal
+      onClose={onClose}
+      isOpen={isOpen}
+      closeOnOverlayClick={false}
+      blockScrollOnMount
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
-      <ModalContent
-        minW={"800px"}
-        maxH={"770px"}
-        minH={"770px"}
-        alignItems={"center"}
-      >
-        <Stack
-          paddingTop={"30px"}
-          paddingBottom={"20px"}
-          // paddingX="50px"
-          minW={"790px"}
-          minH={"760px"}
-        >
-          <Box paddingX="50px">
-            <Button
-              h={8}
-              w="fit-content"
-              leftIcon={<ArrowBackIcon />}
-              bgColor="#C6E3F9"
-              color="#57A0D5"
-              borderRadius={9}
-              _hover={{
-                bgColor: "#C6E3F9",
-              }}
-              onClick={isContentView ? onClose : () => setIsContentView(true)}
-              mb={4}
-            >
-              {isContentView ? "Back to feed" : "Back to New Post content"}
-            </Button>
-            <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
-              Add A New Post
-            </Text>
-            <Box paddingBottom={5}>
+      <ModalContent p={4} minW="800px" minH="750px">
+        <ModalBody>
+          <Stack>
+            <Box>
+              <Button
+                h={8}
+                w="fit-content"
+                leftIcon={<ArrowBackIcon />}
+                bgColor="#C6E3F9"
+                color="#57A0D5"
+                borderRadius={9}
+                _hover={{
+                  bgColor: "#C6E3F9",
+                }}
+                onClick={isContentView ? onClose : () => setIsContentView(true)}
+                mb={4}
+              >
+                {isContentView ? "Back to feed" : "Back to New Post content"}
+              </Button>
+              <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
+                Add A New Post
+              </Text>
+              <Box paddingBottom={5}>
+                {isContentView ? (
+                  <Text>
+                    Fill out the following fields to add a new pet to the Angels
+                    Among Us Foster Feed!
+                  </Text>
+                ) : (
+                  <Flex
+                    direction={"row"}
+                    justifyContent={"space-between"}
+                    maxW={"688px"}
+                    paddingBottom={"20px"}
+                  >
+                    <Text
+                      fontSize={"l"}
+                      textStyle={"semibold"}
+                      color={"#000000"}
+                    >
+                      Select up to 6 photos or video of the pet (one video
+                      limit)
+                    </Text>
+                    <Text
+                      fontSize={"l"}
+                      textStyle={"semibold"}
+                      color={"#8C8C8C"}
+                    >
+                      {fileArr.length}/6
+                    </Text>
+                  </Flex>
+                )}
+              </Box>
+            </Box>
+            <Box>
               {isContentView ? (
-                <Text>
-                  Fill out the following fields to add a new pet to the Angels
-                  Among Us Foster Feed!
-                </Text>
+                <FormSlide dispatchFormState={dispatch} formState={formState} />
               ) : (
-                <Flex
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  maxW={"688px"}
-                  paddingBottom={"20px"}
-                >
-                  <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
-                    Select up to 6 photos or video of the pet (one video limit)
-                  </Text>
-                  <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
-                    {numFiles}/6
-                  </Text>
-                </Flex>
+                <FileUploadSlide
+                  fileArr={fileArr}
+                  selectedFiles={selectedFiles}
+                  setSelectedFiles={setSelectedFiles}
+                  setFileArr={setFileArr}
+                  showAlert={showAlert}
+                  setShowAlert={setShowAlert}
+                ></FileUploadSlide>
               )}
             </Box>
-          </Box>
-          <Box overflowY="auto" paddingX="50px">
-            {isContentView ? (
-              <FormSlide dispatchFormState={dispatch} formState={formState} />
-            ) : (
-              <FileUploadSlide
-                fileArr={fileArr}
-                selectedFiles={selectedFiles}
-                setSelectedFiles={setSelectedFiles}
-                setFileArr={setFileArr}
-                numFiles={numFiles}
-                showAlert={showAlert}
-                setShowAlert={setShowAlert}
-              ></FileUploadSlide>
-            )}
-          </Box>
-          <Flex
-            paddingX="50px"
-            direction={"row"}
-            justifyContent={"flex-end"}
-            paddingTop={"20px"}
+          </Stack>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
+            onClick={
+              isContentView
+                ? () => {
+                    const validation = formSchema.safeParse(formState);
+                    if (validation.success) {
+                      setIsContentView(false);
+                    } else {
+                      toast.closeAll();
+                      toast({
+                        title: "Error",
+                        description: validation.error.issues
+                          .map((issue) => issue.message)
+                          .join("\r\n"),
+                        containerStyle: {
+                          whiteSpace: "pre-line",
+                        },
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        position: "top",
+                      });
+                    }
+                  }
+                : () => {
+                    //TODO: Wait for success to close.
+                    onClose();
+                    createPost();
+                    setFileArr([]);
+                    setIsContentView(true);
+                    dispatch({
+                      type: "clear",
+                    });
+                  }
+            }
+            width={"125px"}
+            height={"50px"}
           >
-            <Button
-              onClick={
-                isContentView
-                  ? () => {
-                      const validation = formSchema.safeParse(formState);
-                      if (validation.success) {
-                        setIsContentView(false);
-                      } else {
-                        toast({
-                          title: "Error",
-                          description: validation.error.issues
-                            .map((issue) => issue.message)
-                            .join("\r\n"),
-                          status: "error",
-                          duration: 5000,
-                          isClosable: true,
-                          position: "top",
-                          containerStyle: { whiteSpace: "pre" },
-                        });
-                      }
-                    }
-                  : () => {
-                      //TODO: Wait for success to close.
-                      onClose();
-                      createPost();
-                      setFileArr([]);
-                      setIsContentView(true);
-                    }
-              }
-              color={postButtonStyle.color}
-              bgColor={postButtonStyle.bgColor}
-              borderRadius={postButtonStyle.borderRadius}
-              borderColor={postButtonStyle.borderColor}
-              width={"125px"}
-              height={"50px"}
-              border={"1px solid"}
-            >
-              <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
-                {isContentView ? "Next" : "Post"}
-              </Text>
-            </Button>
-          </Flex>
-        </Stack>
+            <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
+              {isContentView ? "Next" : "Post"}
+            </Text>
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

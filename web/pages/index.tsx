@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -18,7 +18,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalBody,
-  IconButton,
   Spinner,
   Center,
   Popover,
@@ -32,14 +31,14 @@ import {
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import PostCreationModal from "../components/PostCreationModal/PostCreationModal";
 import Feed from "../components/Feed/Feed";
 import backgroundImage from "../public/backgroundImage.png";
 
 function Home() {
-  const { loading, setLoading, authorized } = useAuth();
+  const { loading, setLoading, authorized, authError, userData } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const toastId = "auth-toast" as const;
 
   async function handleLoginFacebook() {
     const provider = new FacebookAuthProvider();
@@ -47,9 +46,11 @@ function Home() {
     provider.addScope("public_profile");
     try {
       await signInWithPopup(auth, provider);
+      setLoading!(true);
     } catch (error: any) {
       setLoading!(false);
       toast({
+        id: toastId,
         title: error.code,
         description: error.message,
         status: "error",
@@ -64,11 +65,13 @@ function Home() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
+      setLoading!(true);
     } catch (error: any) {
       setLoading!(false);
       toast({
-        title: error.code,
-        description: error.message,
+        id: toastId,
+        title: "An error has occurred",
+        description: "Please try again.",
         status: "error",
         duration: 9000,
         isClosable: true,
@@ -79,41 +82,42 @@ function Home() {
 
   const [filterDisplayed, setFilterDisplayed] = useState<boolean>(false);
 
-  if (authorized) {
-    /*return (
-      <Flex height="100vh">
-        <Flex width="100%" justifyContent="center" alignItems="center">
-          <Button
-            cursor={["default", "pointer"]}
-            bgColor="#D9D9D9"
-            onClick={() => signOut(auth)}
-          >
-            Logout
-          </Button>
-          <Button onClick={onOpen}>Open Post Creation Modal</Button>
-          <PostCreationModal
-            isOpen={isOpen}
-            onOpen={onOpen}
-            onClose={onClose}
-          />
-        </Flex>
-      </Flex>
-    );*/
+  useEffect(() => {
+    if (!authError) {
+      toast.closeAll();
+    } else if (!toast.isActive(toastId)) {
+      let errorMessage = authError;
+      if (
+        authError.includes("firebase") ||
+        authError.includes("UNAUTHORIZED")
+      ) {
+        errorMessage = "Please reload the page.";
+      }
+      toast({
+        id: toastId,
+        title: "An error has occurred",
+        description: errorMessage,
+        status: "error",
+        duration: 9000,
+        position: "top",
+      });
+    }
+  }, [authError]);
 
-    if (loading) setLoading!(false);
+  if (loading || (userData && !userData.hasCompletedOnboarding)) {
+    return (
+      <Center w="100vw" h="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  if (authorized) {
     return (
       <Feed
         filterDisplayed={filterDisplayed}
         setFilterDisplayed={setFilterDisplayed}
       />
-    );
-  }
-
-  if (loading) {
-    return (
-      <Center w="100vw" h="100vh">
-        <Spinner size="xl" />
-      </Center>
     );
   }
 
@@ -186,15 +190,7 @@ function Home() {
             your foster dogs.
           </Text>
           <Stack width="100%">
-            <Button
-              bgColor="#529FD4"
-              width="100%"
-              padding={5}
-              color="white"
-              borderRadius={["6px", "10px"]}
-              cursor={["default", "pointer"]}
-              onClick={() => handleLoginFacebook()}
-            >
+            <Button variant="solid-primary" onClick={handleLoginFacebook}>
               Continue with Facebook
             </Button>
 
@@ -208,15 +204,7 @@ function Home() {
               <Text color="white">or</Text>
               <Divider width="45%" border="1px solid white"></Divider>
             </Stack>
-            <Button
-              bgColor="#529FD4"
-              width="100%"
-              padding={5}
-              color="white"
-              borderRadius={["6px", "10px"]}
-              cursor={["default", "pointer"]}
-              onClick={handleLoginGoogle}
-            >
+            <Button variant="solid-primary" onClick={handleLoginGoogle}>
               Continue with Google
             </Button>
           </Stack>

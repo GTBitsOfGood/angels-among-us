@@ -6,12 +6,11 @@ import { ArrowUpIcon } from "@chakra-ui/icons";
 interface PropsType {
   fileArr: Array<File>;
   setFileArr: Dispatch<SetStateAction<Array<File>>>;
-  numFiles: number;
   setShowAlert: Dispatch<SetStateAction<boolean>>;
 }
 
 function FileDropZone(props: PropsType) {
-  const { fileArr, setFileArr, numFiles, setShowAlert } = props;
+  const { fileArr, setFileArr, setShowAlert } = props;
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -43,7 +42,7 @@ function FileDropZone(props: PropsType) {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    maxFiles: 6 - numFiles,
+    maxFiles: 6 - fileArr.length,
     accept: {
       "image/*": [".jpg", ".jpeg", ".png"],
       "video/*": [".mp4", ".mov"],
@@ -57,7 +56,7 @@ function FileDropZone(props: PropsType) {
     borderRadius: "5.82474px",
   };
 
-  if (numFiles > 0) {
+  if (fileArr.length > 0) {
     dropZoneStyle.width = "211px";
     dropZoneStyle.height = "211px";
   }
@@ -77,7 +76,7 @@ function FileDropZone(props: PropsType) {
       }}
     >
       <input {...getInputProps()} />
-      {numFiles <= 0 ? (
+      {fileArr.length <= 0 ? (
         <Flex
           direction={"column"}
           alignItems={"center"}

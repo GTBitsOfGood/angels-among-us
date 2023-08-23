@@ -1,6 +1,6 @@
 import { useState } from "react";
 import OnboardingSlide from "../components/Onboarding/OnboardingSlide";
-import { Flex, Progress, Text } from "@chakra-ui/react";
+import { Flex, Progress, Text, useToast } from "@chakra-ui/react";
 import OnboardingButton from "../components/Onboarding/OnboardingButton";
 import {
   FosterType,
@@ -11,7 +11,6 @@ import {
   GoodWith,
   Medical,
   Behavioral,
-  Trained,
   Status,
   Breed,
 } from "../utils/types/post";
@@ -40,7 +39,6 @@ export type PossibleTypes =
   | GoodWith
   | Medical
   | Behavioral
-  | Trained
   | Status;
 
 export interface IQuestion {
@@ -56,6 +54,7 @@ export interface StoredQuestion<T extends PossibleTypes> extends IQuestion {
   dropdown: boolean;
   popover: string;
   allSelected: boolean;
+  required: boolean;
 }
 
 export type Answers<T extends StoredQuestion<PossibleTypes>> = {
@@ -64,6 +63,7 @@ export type Answers<T extends StoredQuestion<PossibleTypes>> = {
 
 function Onboarding() {
   const { user } = useAuth();
+  const toast = useToast();
 
   const questionData: IQuestion[] = [
     {
@@ -92,6 +92,7 @@ function Onboarding() {
       popover:
         "<b>Return Foster</b> <br> A dog that was adopted but then returned to AAU by the adopter. <br><br> <b> Boarding </b> <br> A foster parent or other dogs' owner goes on vacation or other hiatus and needs someone to take their dog for a little while. <br><br> <b> Temporary </b> <br> During holidays, vacations, and emergencies until permanent fosters can be found or return. <br><br> <b> Shelter </b> <br> A dog that comes from or is currently in a shelter and in need of a home. <br><br> <b> Owner Surrender </b> <br> A dog that has been handed over from their previous owner and now needs a home. <br><br> <b> Foster Move </b> <br> A dog whose previous foster parents can't care for the foster dog any more.",
       allSelected: true,
+      required: false,
     } as StoredQuestion<FosterType>,
     {
       key: "size",
@@ -109,6 +110,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Size>,
     {
       key: "restrictedBreeds",
@@ -172,6 +174,7 @@ function Onboarding() {
       dropdown: true,
       popover: "",
       allSelected: false,
+      required: false,
     } as StoredQuestion<Breed>,
     {
       key: "preferredBreeds",
@@ -234,6 +237,7 @@ function Onboarding() {
       dropdown: true,
       popover: "",
       allSelected: false,
+      required: false,
     } as StoredQuestion<Breed>,
     {
       key: "gender",
@@ -250,6 +254,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Gender>,
     {
       key: "age",
@@ -267,6 +272,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Age>,
     {
       key: "temperament",
@@ -284,6 +290,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Temperament>,
     {
       key: "dogsNotGoodWith",
@@ -303,6 +310,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<GoodWith>,
     {
       key: "medical",
@@ -326,6 +334,7 @@ function Onboarding() {
       popover:
         "<b>Illness</b> <br> A treatable illness.  May require additional vet appointments before cleared for adoption. <br><br> <b>Injury</b> <br> May require additional vet visits, bandage changes, and/or surgery. <br><br> <b> Pregnant </b> <br> Will have babies in your home. Puppies can be adopted or split into multiple fosters at 8 weeks. <br><br> <b> Nursing </b> <br> Puppies already born but will need monitoring and to stay with mom until 8 weeks of age. <br><br> <b> Bottle Fed </b> <br> Needs round the clock bottle feedings until able to eat solid food. <br><br> <b> Heartworms </b> <br> Dogs need to be kept calm during heartworm treatment.  In some cases, AAUPR will cover treatment after adoption. <br><br> <b> Chronic Condition </b> <br> May need ongoing medication or follow ups.  May be adopted once diagnosed and an adopter is fully informed. <br><br> <b> Parvo </b><br>A virus that affects puppies.  Since parvo stays in the home for a period of time, if a foster has parvo puppies, they cannot take healthy puppies for 6 months to a year. <br><br> <b> Hospice </b> <br> A dog that is not available for adoption but will be made comfortable for as long as possible in their foster home.",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Medical>,
     {
       key: "behavioral",
@@ -344,6 +353,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Behavioral>,
     {
       key: "houseTrained",
@@ -351,14 +361,15 @@ function Onboarding() {
       description:
         "(Note: We often do not know if a dog is house trained until they are in a foster home.)",
       options: [
-        { value: Trained.Yes, label: "Yes" },
-        { value: Trained.No, label: "No" },
+        { value: Status.Yes, label: "Yes" },
+        { value: Status.No, label: "No" },
       ],
       qtype: QType.Question,
       singleAnswer: true,
       dropdown: false,
       popover: "",
-    } as StoredQuestion<Trained>,
+      required: true,
+    } as StoredQuestion<Status>,
     {
       key: "spayNeuterStatus",
       title: "Are you able to foster a dog who is NOT spayed/neutered?",
@@ -372,6 +383,7 @@ function Onboarding() {
       singleAnswer: true,
       dropdown: false,
       popover: "",
+      required: true,
     } as StoredQuestion<Status>,
     {
       title: "🎉\nThanks for completing your profile!",
@@ -382,14 +394,37 @@ function Onboarding() {
 
   const [qNum, setQNum] = useState<number>(0);
 
+  function validateRequiredQuestionAndAlert() {
+    const currentQuestion = questionData[qNum];
+    if (
+      (currentQuestion as any).required &&
+      answers[(currentQuestion as StoredQuestion<PossibleTypes>).key].length ===
+        0
+    ) {
+      toast({
+        title: "Error",
+        description: "An answer to this question is required.",
+        status: "error",
+        isClosable: true,
+        position: "top",
+      });
+      return false;
+    }
+    return true;
+  }
+
   function prevQ() {
-    if (qNum != 0) {
+    const enforced = validateRequiredQuestionAndAlert();
+    if (enforced && qNum != 0) {
+      toast.closeAll();
       setQNum(qNum - 1);
     }
   }
 
   function nextQ() {
-    if (qNum != questionData.length - 1) {
+    const enforced = validateRequiredQuestionAndAlert();
+    if (enforced && qNum != questionData.length - 1) {
+      toast.closeAll();
       setQNum(qNum + 1);
     }
   }
@@ -482,7 +517,7 @@ function Onboarding() {
           <Text
             className="progressBarText"
             fontWeight="semibold"
-            textColor="angelsBlue.100"
+            textColor="text-primary"
             fontSize={{ base: "10px", md: "16px", lg: "20px" }}
           >
             {Math.max(0, qNum - numIntros + 1) + " of " + numQuestions}

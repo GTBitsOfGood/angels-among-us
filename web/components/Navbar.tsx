@@ -15,7 +15,7 @@ import {
   Accordion,
   AccordionPanel,
   Divider,
-  MenuItem,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
@@ -31,10 +31,16 @@ export default function Navbar() {
   const { user, loading, userData, authorized } = useAuth();
   const role = userData?.role;
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const visible = navbarVisiblity[router.pathname as Pages] ?? false;
 
   if (loading && visible) {
     return <Box h="64px"></Box>;
+  }
+
+  if (!loading && visible && userData && !userData.hasCompletedOnboarding) {
+    return <></>;
   }
 
   if ((loading && !visible) || !authorized || !visible) {
@@ -82,7 +88,7 @@ export default function Navbar() {
           <Link>
             <Text>Resources</Text>
           </Link>
-          <Menu>
+          <Menu isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
             <MenuButton
               as={Button}
               bgColor="white"
@@ -129,11 +135,12 @@ export default function Navbar() {
                 </Stack>
                 <Stack direction="row" justifyContent="flex-end">
                   <Button
-                    variant="outline"
-                    textColor="gray"
+                    variant="outline-secondary"
                     size="sm"
-                    fontWeight={400}
+                    fontWeight="thin"
+                    borderWidth="thin"
                     onClick={() => {
+                      onClose();
                       router.push(Pages.FEED);
                       signOut(auth);
                     }}
@@ -145,20 +152,15 @@ export default function Navbar() {
                     href={Pages.PROFILE}
                     style={{ textDecoration: "none" }}
                   >
-                    <MenuItem borderRadius="16px" padding={0}>
-                      <Button
-                        variant="solid"
-                        bgColor="angelsBlue.100"
-                        borderRadius="16px"
-                        color="white"
-                        size="sm"
-                        _hover={{
-                          bgColor: "rgb(87, 161, 213, 0.5)",
-                        }}
-                      >
-                        View Profile
-                      </Button>
-                    </MenuItem>
+                    <Button
+                      variant="solid-primary"
+                      size="sm"
+                      fontWeight="thin"
+                      borderWidth="thin"
+                      onClick={onClose}
+                    >
+                      View Profile
+                    </Button>
                   </Link>
                 </Stack>
               </Stack>
@@ -245,10 +247,10 @@ export default function Navbar() {
                   </Stack>
                   <Stack direction="row" justifyContent="flex-end">
                     <Button
-                      variant="outline"
-                      textColor="gray"
+                      variant="outline-secondary"
+                      fontWeight="thin"
+                      borderWidth="thin"
                       size="sm"
-                      fontWeight={400}
                       onClick={() => {
                         router.push(Pages.FEED);
                         signOut(auth);
@@ -262,11 +264,10 @@ export default function Navbar() {
                       style={{ textDecoration: "none" }}
                     >
                       <Button
-                        bgColor="angelsBlue.100"
-                        borderRadius="16px"
-                        color="white"
+                        variant="solid-primary"
                         size="sm"
-                        _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
+                        fontWeight="thin"
+                        borderWidth="thin"
                       >
                         View Profile
                       </Button>

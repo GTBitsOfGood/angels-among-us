@@ -1,5 +1,5 @@
-import { router, publicProcedure } from "../trpc";
-import { boolean, z } from "zod";
+import { router, procedure } from "../trpc";
+import { z } from "zod";
 import {
   createUser,
   findUserByUid,
@@ -17,11 +17,11 @@ import {
   GoodWith,
   Medical,
   Behavioral,
-  Trained,
   Status,
 } from "../../utils/types/post";
+import { IUser } from "../../utils/types/user";
 
-const userSchema = z.object({
+const userPreferencesSchema = z.object({
   type: z.array(z.nativeEnum(FosterType)),
   size: z.array(z.nativeEnum(Size)),
   preferredBreeds: z.array(z.nativeEnum(Breed)),
@@ -32,17 +32,40 @@ const userSchema = z.object({
   dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.array(z.nativeEnum(Trained)),
-  spayNeuterStatus: z.array(z.nativeEnum(Status)),
+  houseTrained: z.nativeEnum(Status),
+  spayNeuterStatus: z.nativeEnum(Status),
+});
+
+const userSchema: z.ZodType<
+  Required<Omit<IUser, "name">> | Partial<Pick<IUser, "name">>
+> = z.object({
+  uid: z.string(),
+  email: z.string().email(),
+  role: z.nativeEnum(Role),
+  disabled: z.boolean(),
+  hasCompletedOnboarding: z.boolean(),
+  name: z.string().optional(),
+  type: z.nativeEnum(FosterType),
+  size: z.nativeEnum(Size),
+  restrictedBreeds: z.array(z.nativeEnum(Breed)),
+  preferredBreeds: z.array(z.nativeEnum(Breed)),
+  gender: z.array(z.nativeEnum(Gender)),
+  age: z.array(z.nativeEnum(Age)),
+  temperament: z.array(z.nativeEnum(Temperament)),
+  dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
+  medical: z.array(z.nativeEnum(Medical)),
+  behavioral: z.array(z.nativeEnum(Behavioral)),
+  houseTrained: z.nativeEnum(Status),
+  spayNeuterStatus: z.nativeEnum(Status),
 });
 
 export const userRouter = router({
-  add: publicProcedure
+  add: procedure
     .input(
       z.object({
         email: z.string().email(),
         uid: z.string(),
-        name: z.string(),
+        name: z.string().optional(),
         role: z.nativeEnum(Role),
       })
     )
@@ -53,6 +76,7 @@ export const userRouter = router({
           await createUser({
             ...input,
             disabled: false,
+            hasCompletedOnboarding: false,
           });
         }
       } catch (e) {
@@ -62,23 +86,16 @@ export const userRouter = router({
         });
       }
     }),
-  get: publicProcedure
+  get: procedure
     .input(
       z.object({
-        uid: z.nullable(z.string()),
+        uid: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        if (input.uid === null) {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "Not authenticated",
-          });
-        } else {
-          const user = await findUserByUid(input.uid);
-          return user;
-        }
+        const user = await findUserByUid(input.uid);
+        return user;
       } catch (e) {
         if (e instanceof TRPCError) throw e;
         else
@@ -88,7 +105,7 @@ export const userRouter = router({
           });
       }
     }),
-  disableStatus: publicProcedure
+  disableStatus: procedure
     .input(
       z.object({
         uid: z.string(),
@@ -105,7 +122,7 @@ export const userRouter = router({
         });
       }
     }),
-  modifyRoleEnableStatus: publicProcedure
+  modifyRoleEnableStatus: procedure
     .input(
       z.object({
         uid: z.string(),
@@ -123,16 +140,19 @@ export const userRouter = router({
         });
       }
     }),
-  updateUserPreferences: publicProcedure
+  updateUserPreferences: procedure
     .input(
       z.object({
         uid: z.string(),
-        updateFields: userSchema.partial(),
+        updateFields: userPreferencesSchema.partial(),
       })
     )
     .mutation(async ({ input }) => {
       try {
-        await updateUserByUid(input.uid, input.updateFields);
+        await updateUserByUid(input.uid, {
+          ...input.updateFields,
+          hasCompletedOnboarding: true,
+        });
         return { success: true };
       } catch (e) {
         throw new TRPCError({

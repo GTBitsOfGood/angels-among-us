@@ -1,28 +1,14 @@
 import CreateAccountForm from "../components/AccessManagement/CreateAccountForm";
 import AccountTable from "../components/AccessManagement/AccountTable";
 import { useState } from "react";
-import { Text, Flex, Spinner, Box, Center } from "@chakra-ui/react";
-import { IAccount } from "../utils/types/account";
+import { Text, Flex, Spinner, Box } from "@chakra-ui/react";
 import { trpc } from "../utils/trpc";
-import { HydratedDocument } from "mongoose";
-import { Role } from "../utils/types/account";
 import pageAccessHOC from "../components/HOC/PageAccess";
 
 function Access() {
-  const [accountList, updateAccountList] = useState<
-    HydratedDocument<IAccount>[]
-  >([]);
+  const accounts = trpc.account.getAll.useQuery();
 
   const [selectItems, updateSelectItems] = useState<boolean>(false);
-
-  const accounts = trpc.account.getAll.useQuery(undefined, {
-    onSuccess: (data: HydratedDocument<IAccount>[]) => {
-      if (data) {
-        updateAccountList(data);
-      }
-    },
-    retry: 1,
-  });
 
   return (
     <Flex
@@ -59,14 +45,11 @@ function Access() {
           </Text>
         </Box>
         <CreateAccountForm
-          accountList={accountList}
-          updateAccountList={updateAccountList}
           updateSelectItems={updateSelectItems}
         ></CreateAccountForm>
-        {!(accountList.length === 0) ? (
+        {!(accounts.data?.length === 0) ? (
           <AccountTable
-            accountList={accountList}
-            updateAccountList={updateAccountList}
+            accountList={accounts.data ?? []}
             selectItems={selectItems}
             updateSelectItems={updateSelectItems}
           ></AccountTable>

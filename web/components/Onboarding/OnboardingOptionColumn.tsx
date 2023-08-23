@@ -48,7 +48,7 @@ function OnboardingOptionColumn(props: {
             }
             textAlign="left"
             borderRadius={{ base: "5px", md: "8px", lg: "8px" }}
-            backgroundColor="lighterBlue.100"
+            backgroundColor="tag-primary-bg"
             paddingY={{ base: "10px", md: "15px", lg: "15px" }}
             paddingX={{ base: "10px", md: "15px", lg: "15px" }}
             cursor="pointer"

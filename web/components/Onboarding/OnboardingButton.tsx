@@ -1,5 +1,7 @@
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { Button } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { JSXElementConstructor, ReactElement } from "react";
 import { useAuth } from "../../context/auth";
 import {
   QType,
@@ -21,82 +23,82 @@ function OnboardingButton(props: {
 }) {
   const { onClickFunc, btnType, qNum, questionData, answers } = props;
 
+  const { refetchUserData } = useAuth();
+  const router = useRouter();
+
   let print = false;
   function printAnswers() {
     console.log(answers);
   }
 
   let text;
-  if (btnType == ButtonType.Back) {
-    text = "< Back";
-  } else if (btnType == ButtonType.Next) {
-    text = "Next >";
-  } else if (btnType == ButtonType.Singular) {
-    text = "Get Started >";
+  let icon: ReactElement<any, string | JSXElementConstructor<any>> | undefined;
+  if (btnType === ButtonType.Back) {
+    text = "Back";
+    icon = <ArrowBackIcon />;
+  } else if (btnType === ButtonType.Next) {
+    text = "Next";
+    icon = <ArrowForwardIcon />;
+  } else if (btnType === ButtonType.Singular) {
+    text = "Get Started";
   }
 
   if (
     qNum != questionData.length - 1 &&
-    btnType == ButtonType.Next &&
-    questionData[qNum + 1].qtype == QType.Completion
+    btnType === ButtonType.Next &&
+    questionData[qNum + 1].qtype === QType.Completion
   ) {
-    text = "Finish >";
+    text = "Finish";
     print = true;
-  }
-
-  let buttonAppearance = {
-    borderColor: "#7D7E82",
-    backgroundColor: "#FFFFFF",
-    textColor: "#7D7E82",
-    cursor: "pointer",
-  };
-
-  if (btnType != ButtonType.Back) {
-    buttonAppearance = {
-      borderColor: "#angelsBlue.100",
-      backgroundColor: "angelsBlue.100",
-      textColor: "#FFFFFF",
-      cursor: "pointer",
-    };
-  }
-
-  let hoverProperty = { backgroundColor: buttonAppearance.backgroundColor };
-
-  let paddingX = { base: "50px", md: "18px", lg: "18px" };
-  if (btnType == ButtonType.Singular) {
-    paddingX = { base: "100px", md: "36px", lg: "36px" };
   }
 
   const mutation = trpc.user.updateUserPreferences.useMutation();
   const { user } = useAuth();
 
+  const buttonVariantMap = {
+    [ButtonType.Back]: "outline-secondary",
+    [ButtonType.Next]: "solid-primary",
+    [ButtonType.Singular]: "solid-primary",
+  } as const;
+
+  function processSingleAnswerQuestions(
+    answers: Answers<StoredQuestion<PossibleTypes>>
+  ) {
+    const clonedAnswers = { ...answers };
+    const singleAnswerQuestions = questionData.filter(
+      (question: any) => question.singleAnswer
+    );
+    singleAnswerQuestions.forEach((question: any) => {
+      clonedAnswers[question.key] = answers[question.key][0] as any;
+    });
+    return clonedAnswers;
+  }
+
   return (
     <Button
+      variant={buttonVariantMap[btnType]}
+      size="lg"
       className="onboardingButton"
       onClick={() => {
         onClickFunc();
         if (print) printAnswers();
         if (qNum == questionData.length - 1) {
           mutation.mutate(
-            { uid: user!.uid, updateFields: answers },
             {
-              onSuccess: () => {
-                window.location.href = Pages.FEED;
+              uid: user!.uid,
+              updateFields: processSingleAnswerQuestions(answers),
+            },
+            {
+              onSuccess: async () => {
+                await refetchUserData!();
+                router.push(Pages.FEED);
               },
             }
           );
         }
       }}
-      borderWidth="1px"
-      borderColor={buttonAppearance.borderColor}
-      backgroundColor={buttonAppearance.backgroundColor}
-      textColor={buttonAppearance.textColor}
-      fontSize={{ base: "16px", md: "20px", lg: "24px" }}
-      fontWeight="semibold"
-      borderRadius="10px"
-      paddingX={paddingX}
-      paddingY={{ base: "22px", md: "25px", lg: "25px" }}
-      _hover={hoverProperty}
+      leftIcon={btnType === ButtonType.Back ? icon : undefined}
+      rightIcon={btnType === ButtonType.Next ? icon : undefined}
     >
       {text}
     </Button>

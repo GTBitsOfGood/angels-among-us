@@ -11,22 +11,20 @@ import {
   useDisclosure,
   Portal,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction } from "react";
-import { HydratedDocument } from "mongoose";
 
 interface PropertyType {
-  account: HydratedDocument<IAccount>;
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
+  account: IAccount;
+  accountList: IAccount[];
   createLabel: CallableFunction;
 }
 
 function RoleSelector(props: PropertyType) {
-  const { account, accountList, updateAccountList, createLabel } = props;
+  const { account, accountList, createLabel } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const idx = accountList.indexOf(account);
 
   const mutation = trpc.account.modify.useMutation();
+  const utils = trpc.useContext();
 
   const ops = [
     { label: "Admin", role: Role.Admin },
@@ -43,13 +41,7 @@ function RoleSelector(props: PropertyType) {
       { role: item.role, email: account.email },
       {
         onSuccess() {
-          const temp = {
-            email: account.email,
-            role: item.role,
-          } as HydratedDocument<IAccount>;
-          const tempList = [...accountList] as HydratedDocument<IAccount>[];
-          tempList[idx] = temp;
-          updateAccountList(tempList);
+          utils.account.invalidate();
         },
       }
     );

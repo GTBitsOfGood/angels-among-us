@@ -1,9 +1,10 @@
 import { useAuth } from "../../context/auth";
-import { consts, Pages } from "../../utils/consts";
+import { Pages } from "../../utils/consts";
 import { Role } from "../../utils/types/account";
 import React from "react";
 import { Center, Spinner } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import PageNotFoundError from "../404";
 
 const unrestricted = new Set([Role.Volunteer, Role.ContentCreator, Role.Admin]);
 const restricted = new Set([Role.Admin]);
@@ -18,10 +19,14 @@ const pageAccess: Record<Pages, Set<Role>> = {
 const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {
   const WrappedComponent = (props: P) => {
     const router = useRouter();
-    const { loading, userData } = useAuth();
+    const { loading, userData, authorized, user } = useAuth();
     const role = userData?.role;
 
-    if (loading || !role) {
+    if (!user && !loading) {
+      router.push(Pages.FEED);
+    }
+
+    if (loading) {
       return (
         <Center w="100vw" h="100vh">
           <Spinner size="xl" />
@@ -29,11 +34,14 @@ const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {
       );
     }
 
-    if (pageAccess[router.pathname as Pages].has(role)) {
+    if (!authorized) {
+      return <PageNotFoundError />;
+    }
+
+    if (pageAccess[router.pathname as Pages].has(role!)) {
       return <Component {...props} />;
     } else {
-      router.push(consts[404]);
-      return null;
+      return <PageNotFoundError />;
     }
   };
 

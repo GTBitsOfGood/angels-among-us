@@ -1,12 +1,10 @@
-import { Flex, Input, Box, Text, Button } from "@chakra-ui/react";
-import { HydratedDocument } from "mongoose";
+import { Flex, Input, Button } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import { IAccount } from "../../utils/types/account";
 import DeletePopup from "./DeletePopup";
 
 interface PropertyType {
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
+  accountList: IAccount[];
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
   itemsToDelete: Number[];
@@ -15,7 +13,6 @@ interface PropertyType {
 function TableHeader(props: PropertyType) {
   const {
     accountList,
-    updateAccountList,
     selectItems,
     updateSelectItems,
     itemsToDelete,
@@ -52,34 +49,23 @@ function TableHeader(props: PropertyType) {
       {selectItems ? (
         <Flex flexDirection="row" gap={2}>
           <Button
+            variant="outline-secondary"
             bg="white"
-            textColor="#7D7E82"
-            borderRadius={12}
-            maxWidth="127px"
-            minWidth="70px"
-            h="36px"
-            fontWeight="normal"
+            borderWidth="thin"
+            fontWeight="thin"
             onClick={toggleSelect}
           >
             Cancel
           </Button>
           <DeletePopup
             accountList={accountList}
-            updateAccountList={updateAccountList}
             itemsToDelete={itemsToDelete}
             updateItemsToDelete={updateItemsToDelete}
             updateSelectItems={updateSelectItems}
           ></DeletePopup>
         </Flex>
       ) : (
-        <Button
-          variant="outline"
-          textColor="white"
-          borderColor="white"
-          borderWidth={2}
-          _hover={{ bg: "white", textColor: "#57A0D5" }}
-          onClick={toggleSelect}
-        >
+        <Button variant="outline-primary-inverted" onClick={toggleSelect}>
           Select Items
         </Button>
       )}

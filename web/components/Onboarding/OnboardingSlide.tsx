@@ -1,7 +1,6 @@
 import {
   Flex,
   Text,
-  Tooltip,
   Stack,
   Modal,
   ModalOverlay,

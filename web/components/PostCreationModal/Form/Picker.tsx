@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Slider,
   SliderMark,
@@ -30,7 +30,6 @@ type Props<
 > = {
   field: T;
   val: FormState[T];
-  // val: Trained;
   dispatchFormState: React.Dispatch<Action<T, FormState[T]>>;
 };
 
@@ -42,6 +41,17 @@ function convertStep(num: number) {
       return Trained.Unknown;
     case 2:
       return Trained.Yes;
+  }
+}
+
+function convertTrained(trained: Trained) {
+  switch (trained) {
+    case Trained.No:
+      return 0;
+    case Trained.Unknown:
+      return 1;
+    case Trained.Yes:
+      return 2;
   }
 }
 
@@ -65,7 +75,7 @@ function Picker<
   return (
     <Center ml={2} mr={3.5} mt={2}>
       <Slider
-        defaultValue={1}
+        value={convertTrained(val)}
         min={0}
         max={2}
         step={1}

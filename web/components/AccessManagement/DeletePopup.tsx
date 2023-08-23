@@ -10,43 +10,35 @@ import {
   AlertIcon,
   Button,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { IAccount } from "../../utils/types/account";
-import { HydratedDocument } from "mongoose";
 import { trpc } from "../../utils/trpc";
 
 interface PropertyType {
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
+  accountList: IAccount[];
   itemsToDelete: Number[];
   updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
 
 function DeletePopup(props: PropertyType) {
-  const {
-    accountList,
-    updateAccountList,
-    itemsToDelete,
-    updateItemsToDelete,
-    updateSelectItems,
-  } = props;
+  const { accountList, itemsToDelete, updateItemsToDelete, updateSelectItems } =
+    props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef(null);
+  const utils = trpc.useContext();
   const mutation = trpc.account.remove.useMutation();
   const [showError, setShowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleDelete = () => {
-    const newArr = accountList.filter(
-      (e, i) => !itemsToDelete.includes(i)
-    ) as HydratedDocument<IAccount>[];
-    const removeArr = accountList.filter((e, i) => itemsToDelete.includes(i));
-    const emails = removeArr.map((e) => e.email);
+    const emails = accountList
+      .filter((e, i) => itemsToDelete.includes(i))
+      .map((e) => e.email);
     mutation.mutate(emails, {
       onSuccess: () => {
         setShowError(false);
-        updateAccountList(newArr);
+        utils.account.invalidate();
         updateSelectItems(false);
         updateItemsToDelete([]);
       },
@@ -59,19 +51,7 @@ function DeletePopup(props: PropertyType) {
 
   return (
     <>
-      <Button
-        onClick={onOpen}
-        variant="outline"
-        fontWeight="semibold"
-        textColor="white"
-        h="36px"
-        maxWidth="208px"
-        minWidth="170px"
-        borderRadius={12}
-        _hover={{
-          bg: "#75B2DD",
-        }}
-      >
+      <Button variant="outline-primary-inverted" onClick={onOpen}>
         Delete Selected Items
       </Button>
       <AlertDialog

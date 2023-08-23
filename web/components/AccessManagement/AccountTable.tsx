@@ -1,20 +1,17 @@
 import { useState, SetStateAction, Dispatch, useEffect } from "react";
 import { IAccount } from "../../utils/types/account";
 import AccountCard from "./AccountCard";
-import { Stack, SimpleGrid, Grid, GridItem, Center } from "@chakra-ui/react";
+import { Stack, Grid, GridItem } from "@chakra-ui/react";
 import TableHeader from "./TableHeader";
-import { HydratedDocument } from "mongoose";
 
 interface PropertyType {
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
+  accountList: IAccount[];
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
 }
 
 function AccountTable(props: PropertyType) {
-  const { accountList, updateAccountList, selectItems, updateSelectItems } =
-    props;
+  const { accountList, selectItems, updateSelectItems } = props;
   const [itemsToDelete, updateItemsToDelete] = useState<Number[]>([]);
 
   useEffect(() => {
@@ -36,7 +33,6 @@ function AccountTable(props: PropertyType) {
         itemsToDelete={itemsToDelete}
         updateItemsToDelete={updateItemsToDelete}
         accountList={accountList}
-        updateAccountList={updateAccountList}
       ></TableHeader>
       <Grid
         paddingX={"20px"}
@@ -48,7 +44,7 @@ function AccountTable(props: PropertyType) {
         gap={"20px"}
         width={"inherit"}
       >
-        {accountList.map((e: HydratedDocument<IAccount>) => {
+        {accountList.map((e: IAccount) => {
           return (
             <GridItem
               colSpan={{ sm: 1, md: 1, lg: 2 }}
@@ -63,7 +59,6 @@ function AccountTable(props: PropertyType) {
                 itemsToDelete={itemsToDelete}
                 updateItemsToDelete={updateItemsToDelete}
                 accountList={accountList}
-                updateAccountList={updateAccountList}
               ></AccountCard>
             </GridItem>
           );
