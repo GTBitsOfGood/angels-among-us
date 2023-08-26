@@ -1,12 +1,14 @@
-import {
-  ClientSession,
-  HydratedDocument,
-  ObjectId,
-  UpdateQuery,
-} from "mongoose";
+import { ClientSession, HydratedDocument, UpdateQuery } from "mongoose";
 import Account from "../models/Account";
 import { IAccount } from "../../utils/types/account";
 
+/**
+ * Finds account document by unique email.
+ *
+ * @param email account email used for indexing
+ * @param session MongoDB session used for transactions
+ * @returns pruned document (without _id, __v) if successful, null otherwise
+ */
 async function findAccount(
   email: string,
   session?: ClientSession
@@ -22,6 +24,13 @@ async function findAccount(
   }
 }
 
+/**
+ * Deletes account documents matching an array of emails.
+ *
+ * @param emails array of emails
+ * @param session MongoDB session used for transactions
+ * @returns object with key `deletedCount` containing the number of documents deleted
+ */
 async function removeAllAccounts(emails: string[], session?: ClientSession) {
   return await Account.deleteMany(
     { email: { $in: emails } },
@@ -29,6 +38,14 @@ async function removeAllAccounts(emails: string[], session?: ClientSession) {
   );
 }
 
+/**
+ * Updates account document according to provided model fields.
+ *
+ * @param email account email used for indexing
+ * @param update updated model fields
+ * @param session MongoDB session used for transactions
+ * @returns pruned document (without _id, __v) before update was applied
+ */
 async function updateAccount(
   email: string,
   update: UpdateQuery<IAccount>,
@@ -36,6 +53,7 @@ async function updateAccount(
 ) {
   return await Account.findOneAndUpdate({ email }, update, {
     session: session,
+    returnDocument: "before",
     projection: {
       _id: 0,
       __v: 0,
@@ -43,6 +61,13 @@ async function updateAccount(
   });
 }
 
+/**
+ * Adds account according to provided model fields.
+ *
+ * @param inputData model fields
+ * @param session MongoDB session used for transactions
+ * @returns added document (pruned without _id, __v) or null if creation fails
+ */
 async function addAccount(
   inputData: IAccount,
   session?: ClientSession
@@ -58,6 +83,12 @@ async function addAccount(
   }
 }
 
+/**
+ * Retrieves all account documents.
+ *
+ * @param session MongoDB session used for transactions
+ * @returns all account documents, pruned (no _id, __v) or empty array [] on failure
+ */
 async function findAll(
   session?: ClientSession
 ): Promise<HydratedDocument<IAccount>[]> {
