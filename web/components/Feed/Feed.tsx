@@ -26,6 +26,7 @@ import FeedPostCard from "./FeedPostCard";
 import { AddIcon } from "@chakra-ui/icons";
 import { useAuth } from "../../context/auth";
 import { Role } from "../../utils/types/account";
+import { trpc } from "../../utils/trpc";
 
 export type FilterGroup = {
   title: string;
@@ -310,6 +311,23 @@ function Feed(props: {
     filterReducer,
     getInitialFilters()
   );
+
+  const testFilter = {
+    houseTrained: undefined,
+    spayNeuterStatus: undefined,
+    type: [FosterType.Return],
+    size: [Size.XS],
+    gender: [Gender.Female],
+    age: [Age.Puppy],
+    behavioral: [Behavioral.Barking],
+    breed: [Breed.Beagle],
+    goodWith: [GoodWith.Men],
+  };
+  const posts = trpc.post.getFilteredPosts.useQuery(testFilter);
+  console.log(posts.data);
+  const allPosts = trpc.post.getAllPosts.useQuery();
+  console.log(allPosts.data);
+  console.log(selectedFilters);
 
   const mainContent = (
     <Flex
