@@ -90,12 +90,12 @@ function Profile() {
 
   return (
     <Flex
-      display={["none", "flex"]}
-      bgColor="bg-primary"
+      display={"flex"}
+      bgColor={["white", "bg-primary"]}
       justifyContent="center"
     >
       <Box
-        width="80%"
+        width={["100%", "80%"]}
         p={8}
         bgColor="white"
         borderRadius={12}
@@ -149,7 +149,7 @@ function Profile() {
           <Section heading="General Information">
             <Stack
               width="100%"
-              direction="row"
+              direction={["column", "row"]}
               spacing={10}
               alignItems="center"
             >
@@ -160,9 +160,9 @@ function Profile() {
                 alt="User photo"
               ></Image>
 
-              <Stack direction="column" width="85%" spacing={5}>
-                <Stack direction="row" spacing={5}>
-                  <Stack direction="column" width="50%">
+              <Stack direction="column" width={["100%", "85%"]} spacing={5}>
+                <Stack direction={["column", "row"]} spacing={5}>
+                  <Stack direction="column" width={["100%", "50%"]}>
                     <Text fontWeight="medium">Name</Text>
                     <Input
                       placeholder={
@@ -176,15 +176,15 @@ function Profile() {
                     <Input placeholder={""} disabled={!editing}></Input>
                   </Stack>
                 </Stack>
-                <Stack direction="row" spacing={5}>
-                  <Stack direction="column" width="50%">
+                <Stack direction={["column", "row"]} spacing={5}>
+                  <Stack direction="column" width={["100%", "50%"]}>
                     <Text fontWeight="medium">Email</Text>
                     <Input
                       placeholder={user?.email ?? undefined}
                       disabled={true}
                     ></Input>
                   </Stack>
-                  <Stack direction="column" width="50%">
+                  <Stack direction="column" width={["100", "50%"]}>
                     <Text fontWeight="medium">
                       Which types of fosters can you help with?
                     </Text>
@@ -219,8 +219,8 @@ function Profile() {
           </Section>
           <Section heading="Physical Traits">
             <Stack direction="column" w="100%" spacing={5}>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction={["column", "row"]} spacing={5}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Breed Restrictions</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -248,7 +248,7 @@ function Profile() {
                     }))}
                   />
                 </Stack>
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Breed Preferences</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -277,8 +277,8 @@ function Profile() {
                   />
                 </Stack>
               </Stack>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction={["column", "row"]} spacing={5}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Age Capability</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -306,7 +306,7 @@ function Profile() {
                     }))}
                   />
                 </Stack>
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Dog Size Capability</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -335,8 +335,8 @@ function Profile() {
                   />
                 </Stack>
               </Stack>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction="row" spacing={[0, 5]}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Gender Capability</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -364,14 +364,14 @@ function Profile() {
                     }))}
                   />
                 </Stack>
-                <Stack direction="column" width="50%"></Stack>
+                <Stack direction="column" width={["none", "50%"]}></Stack>
               </Stack>
             </Stack>
           </Section>
           <Section heading="Behavioral Traits">
             <Stack direction="column" w="100%" spacing={5}>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction={["column", "row"]} spacing={5}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs NOT good with:
                   </Text>
@@ -400,7 +400,7 @@ function Profile() {
                     )}
                   />
                 </Stack>
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Able to foster dogs with:</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -429,7 +429,7 @@ function Profile() {
                 </Stack>
               </Stack>
               <Stack direction="row">
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs with these temperaments:
                   </Text>
@@ -463,8 +463,8 @@ function Profile() {
           </Section>
           <Section heading="Medical Information">
             <Stack direction="column" width="100%" spacing={5}>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction={["column", "row"]} spacing={5}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs not house trained...
                   </Text>
@@ -491,7 +491,7 @@ function Profile() {
                     }))}
                   />
                 </Stack>
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs not spayed or neutered...
                   </Text>
