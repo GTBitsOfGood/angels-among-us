@@ -4,6 +4,7 @@ import pageAccessHOC from "../components/HOC/PageAccess";
 
 export type Team = {
   teamName: string;
+  primaryContact?: string;
   contacts: Contact[];
 };
 
@@ -42,6 +43,7 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Dog Records Team",
+    primaryContact: "Marcia Hockenbery (marcia@angelsrescue.org)",
     contacts: [
       {
         email: "records",
@@ -57,6 +59,7 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Vetting Teams",
+    primaryContact: "Samantha Orr (samanthao@angelsrescue.org)",
     contacts: [
       {
         email: "vets",
@@ -210,6 +213,7 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Volunteer Teams",
+    primaryContact: " Susan DuBois (susan@angelsrescue.org)",
     contacts: [
       {
         email: "volunteers",
@@ -230,6 +234,7 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Social Media & Marketing Teams",
+    primaryContact: "Hilary Van Brunt (hilaryv@angelsrescue.org)",
     contacts: [
       {
         email: "socialmedia",
@@ -250,6 +255,7 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Development & Events Teams",
+    primaryContact: "Jackie Spett (jackie@angelsrescue.org)",
     contacts: [
       {
         email: "events",
@@ -270,7 +276,7 @@ const TEAMS: Team[] = [
 ];
 
 interface TeamProps {
-  team: string;
+  team: Team;
   children: JSX.Element | JSX.Element[];
 }
 
@@ -310,9 +316,14 @@ function Team({ team, children }: TeamProps) {
       margin={{ sm: "12px", lg: "10px" }}
       marginTop={{ sm: "6px", lg: "5px" }}
     >
-      <Text fontSize="lg" fontWeight="600" marginBottom={3}>
-        {team}
+      <Text fontSize="lg" fontWeight="600">
+        {team.teamName}
       </Text>
+      {team.primaryContact && (
+        <Text fontSize="md" fontWeight="600" marginBottom={3}>
+          {team.primaryContact}
+        </Text>
+      )}
       <Stack direction="column" gap={3}>
         {children}
       </Stack>
@@ -456,7 +467,7 @@ function Resources() {
         <Box sx={{ columnCount: [1, 2] }} w="100%" mx="auto">
           {TEAMS.map((team) => {
             return (
-              <Team team={team.teamName} key={team.teamName}>
+              <Team team={team} key={team.teamName}>
                 {team.contacts.map((contact) => {
                   return (
                     <TeamContact
