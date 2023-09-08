@@ -7,6 +7,7 @@ import {
   findAll,
   removeAllAccounts,
   updateAccount,
+  searchAccounts
 } from "../../../db/actions/Account";
 import { randomAccounts } from "../../../db/actions/__mocks__/Account";
 import Account from "../../../db/models/Account";
@@ -183,6 +184,28 @@ describe("[DB] Account - Unit Test", () => {
       });
       const accounts = await findAll();
       expect(accounts).toMatchObject([]);
+    });
+  });
+
+  describe("searchAccounts", () => {
+    test("happy", async () => {
+      const searchTerm = randomAccounts[0].email;
+      const accounts = await searchAccounts(searchTerm);
+  
+      expect(accounts).not.toBeNull();
+      expect(accounts).toBeInstanceOf(Array);
+      if (accounts === null) return;
+      expect(accounts.every((account) => account.email.includes(searchTerm))).toBe(true);
+    });
+  
+    test("not found", async () => {
+      const searchTerm = "ASDASDASD";
+      const accounts = await searchAccounts(searchTerm);
+  
+      expect(accounts).not.toBeNull();
+      expect(accounts).toBeInstanceOf(Array);
+      if (accounts === null) return;
+      expect(accounts.length).toBe(0);
     });
   });
 });

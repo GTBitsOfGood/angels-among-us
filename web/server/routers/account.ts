@@ -7,6 +7,7 @@ import {
   findAccount,
   findAll,
   removeAllAccounts,
+  searchAccounts,
 } from "../../db/actions/Account";
 import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
@@ -16,6 +17,10 @@ import { router, procedure } from "../trpc";
 const emailInput = {
   email: z.string().email("Invalid email provided"),
 };
+
+const searchInput = z.object({
+  searchSubject: z.string(),
+});
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
@@ -207,4 +212,25 @@ export const accountRouter = router({
         });
     }
   }),
+
+  search: procedure
+    .input(searchInput)
+    .query(async ({ input, ctx }) => {
+      const session = await Account.startSession();
+      session.startTransaction();
+      try {
+        const { searchSubject } = input;
+        const accounts = await searchAccounts(searchSubject, session);
+        session.commitTransaction();
+        return accounts as IAccount[];
+      } catch (e) {
+        session.abortTransaction();
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occured",
+          });
+      }
+    }),
 });
