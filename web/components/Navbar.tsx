@@ -85,7 +85,7 @@ export default function Navbar() {
               <Text>Access Management</Text>
             </Link>
           )}
-          <Link>
+          <Link as={NextLink} href={Pages.RESOURCES}>
             <Text>Resources</Text>
           </Link>
           <Menu isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
