@@ -2,7 +2,7 @@
 name: Bug
 about: Feature/requirement assigned to a developer.
 title: "[BUG] Bug title"
-labels: ""
+labels: ["bug"]
 assignees: ""
 ---
 
