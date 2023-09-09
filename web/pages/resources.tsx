@@ -313,8 +313,7 @@ function Team({ team, children }: TeamProps) {
       borderColor="#BBBBBB"
       paddingX={6}
       paddingY={4}
-      margin={{ sm: "12px", lg: "10px" }}
-      marginTop={{ sm: "6px", lg: "5px" }}
+      marginTop={[4, 6]}
     >
       <Text fontSize="lg" fontWeight="600">
         {team.teamName}
@@ -333,20 +332,16 @@ function Team({ team, children }: TeamProps) {
 
 function Resources() {
   return (
-    <Flex
-      display={["none", "flex"]}
-      bgColor="bg-primary"
-      justifyContent="center"
-    >
+    <Flex display="flex" bgColor="bg-primary" justifyContent="center">
       <Box
-        width="80%"
-        p={8}
+        width={["100%", "80%"]}
+        p={[6, 8]}
         bgColor="white"
-        borderRadius={12}
-        mt={100}
-        mb={100}
+        borderRadius={[0, 12]}
+        mt={["70px", 100]}
+        mb={[0, 100]}
       >
-        <Box w="100%" textAlign="center">
+        <Box w="100%" textAlign="center" marginBottom={6}>
           <Text
             fontSize="2xl"
             fontWeight="600"
@@ -365,7 +360,7 @@ function Resources() {
           borderColor="#BBBBBB"
           paddingX={6}
           paddingTop={4}
-          margin={{ sm: "12px", lg: "10px" }}
+          width="100%"
           marginTop={{ sm: "6px", lg: "20px" }}
         >
           <Box w="100%" textAlign="center" marginBottom={4}>
@@ -379,7 +374,12 @@ function Resources() {
             </Text>
           </Box>
           <Divider />
-          <Flex direction="row" marginY={6} alignItems="stretch" gap={6}>
+          <Flex
+            direction={["column", "row"]}
+            marginY={6}
+            alignItems="stretch"
+            gap={6}
+          >
             <Flex
               bgColor="btn-solid-primary-bg"
               textColor="white"
