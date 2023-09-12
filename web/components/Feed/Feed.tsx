@@ -26,6 +26,7 @@ import FeedPostCard from "./FeedPostCard";
 import { AddIcon } from "@chakra-ui/icons";
 import { useAuth } from "../../context/auth";
 import { Role } from "../../utils/types/account";
+import { IUser } from "../../utils/types/user";
 
 export type FilterGroup = {
   title: string;
@@ -280,10 +281,29 @@ function Feed(props: {
     //   medicalInfo: [userData.houseTrained || Status.No, userData.spayNeuterStatus || Status.No]
     // };
     const filters = filterGroups.reduce((acc, curr) => {
-      const group = curr.filters.reduce((a, c) => ({
-        ...a,
-        [c.key]: [...c.options.filter((f) => userData[c.key]?.includes(f.value))]
-      }), {});
+      const group = curr.filters.reduce((a, c) => {
+        let options: Array<Option> = [];
+        if (Array.isArray(userData[c.key as keyof IUser])) {
+          options = [...c.options.filter((f) => userData[c.key as keyof IUser]?.includes(f.value))];
+        }
+        if (c.key === "medicalInfo") {
+          if (userData.houseTrained === Status.Yes) {
+            options.push(c.options[0]);
+          }
+          if (userData.spayNeuterStatus === Status.Yes) {
+            options.push(c.options[1]);
+          }
+          // // Typescript doesn't like this but it looks way better :(
+          // options = [
+          //   userData.houseTrained === Status.Yes && c.options[0],
+          //   userData.spayNeuterStatus === Status.Yes && c.options[1]
+          // ];
+        }
+        return ({
+          ...a,
+          [c.key]: options
+        });
+      }, {});
       return {
         ...acc,
         ...group,
