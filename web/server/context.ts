@@ -3,10 +3,9 @@ import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import dbConnect from "../db/dbConnect";
 import nookies from "nookies";
 import { firebaseAdmin } from "../utils/firebase/firebaseAdmin";
-import { findUserByUid } from "../db/actions/User";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
-import { FirebaseError } from "firebase/app";
 import { errorCodeMessageMap } from "../utils/errorCode";
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * Defines your inner context shape.
@@ -27,6 +26,9 @@ interface CreateInnerContextOptions extends Partial<CreateNextContextOptions> {
  */
 export async function createContextInner(opts?: CreateInnerContextOptions) {
   await dbConnect();
+
+  Sentry.setUser(opts?.session ?? null);
+
   return {
     session: opts?.session,
   };
