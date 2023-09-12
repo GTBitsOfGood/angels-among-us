@@ -128,7 +128,7 @@ const filterGroups: FilterGroup[] = [
           { value: Breed.Whippet, label: "Whippet" },
         ],
         dropdown: true,
-        allSelected: true,
+        allSelected: false,
       },
       {
         key: "age",
@@ -251,7 +251,7 @@ function Feed(props: {
 
   const { userData } = useAuth();
 
-  function getInitialFilters() {
+  function getInitialFilters(): SelectedFilters<Filter> {
     return filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
         if (c.allSelected) return { ...a, [c.key]: [...c.options] };
@@ -262,6 +262,34 @@ function Feed(props: {
         ...group,
       };
     }, {});
+  }
+
+  function getPrefs(): SelectedFilters<Filter> | null {
+    if (!userData) {
+      return null;
+    }
+    // const prefData = {
+    //   type: userData.type,
+    //   breed: userData.preferredBreeds?.filter((breed) => !(breed in (userData.restrictedBreeds || []))),
+    //   age: userData.age,
+    //   size: userData.size,
+    //   gender: userData.gender,
+    //   dogsNotGoodWidth: userData.dogsNotGoodWith,
+    //   behavioral: userData.behavioral,
+    //   temperament: userData.temperament,
+    //   medicalInfo: [userData.houseTrained || Status.No, userData.spayNeuterStatus || Status.No]
+    // };
+    const filters = filterGroups.reduce((acc, curr) => {
+      const group = curr.filters.reduce((a, c) => ({
+        ...a,
+        [c.key]: [...c.options.filter((f) => userData[c.key]?.includes(f.value))]
+      }), {});
+      return {
+        ...acc,
+        ...group,
+      };
+    }, {});
+    return filters;
   }
 
   function filterReducer(
@@ -277,6 +305,8 @@ function Feed(props: {
     switch (action.type) {
       case "reset":
         return getInitialFilters();
+      case "useprefs":
+        return getPrefs() || state;
       case "dropdown":
         tempState[action.filter.key] = action.event;
         return tempState;
@@ -366,7 +396,7 @@ function Feed(props: {
               borderWidth="thin"
               onClick={() => {
                 setSelectedFilters({
-                  type: "reset",
+                  type: "useprefs",
                   filter: filterGroups[0].filters[0],
                   ind: 0,
                   event: [],
@@ -375,7 +405,18 @@ function Feed(props: {
             >
               Clear All
             </Button>
-            <Button variant="solid-primary" fontWeight="normal">
+            <Button
+              onClick={() => {
+                setSelectedFilters({
+                  type: "useprefs",
+                  filter: filterGroups[0].filters[0],
+                  ind: 0,
+                  event: []
+                });
+              }}
+              variant="solid-primary"
+              fontWeight="normal"
+            >
               Use My Preferences
             </Button>
           </Flex>
@@ -513,7 +554,19 @@ function Feed(props: {
           >
             Clear All
           </Button>
-          <Button variant="solid-primary" fontWeight="normal">
+          <Button
+            onClick={() => {
+              setFilterDisplayed(!filterDisplayed);
+              setSelectedFilters({
+                type: "useprefs",
+                filter: filterGroups[0].filters[0],
+                ind: 0,
+                event: []
+              });
+            }}
+            variant="solid-primary"
+            fontWeight="normal"
+          >
             Use My Preferences
           </Button>
         </Flex>
