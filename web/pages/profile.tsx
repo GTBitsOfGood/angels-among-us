@@ -9,6 +9,8 @@ import {
   Box,
   Heading,
   StackDivider,
+  Drawer,
+  DrawerContent
 } from "@chakra-ui/react";
 
 import Select from "react-select";
@@ -106,40 +108,27 @@ function Profile() {
           <Heading size="lg" letterSpacing="wide">
             Profile
           </Heading>
-          {!editing ? (
-            <Button variant="solid-primary" onClick={() => setEditing(true)}>
-              Edit
-            </Button>
-          ) : (
-            <Stack direction="row">
-              <Button
-                variant="outline-secondary"
-                fontWeight="thin"
-                borderWidth="thin"
-                onClick={() => {
-                  dispatch({ type: "clear" });
-                  setEditing(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="solid-primary"
-                onClick={async () => {
-                  const req = await updatePreferences.mutateAsync({
-                    uid: userData!.uid,
-                    updateFields: preferences,
-                  });
-                  if (req.success) {
-                    setEditing(false);
-                  }
-                }}
-              >
-                Save
-              </Button>
-            </Stack>
-          )}
+          <Box hideBelow={"md"}>
+          <EditButton></EditButton>
+          </Box>
         </Flex>
+        <Drawer
+          placement={"bottom"}
+          isOpen={true}
+          onClose={() => {}}
+          blockScrollOnMount={false}
+          trapFocus={false}
+          closeOnEsc={false}
+          closeOnOverlayClick={false}
+          size={["xs", "none"]}
+        >
+          <DrawerContent
+          padding={4}
+          hideFrom={"md"}
+          >
+            <EditButton></EditButton>
+          </DrawerContent>
+        </Drawer>
         <Stack
           mt={5}
           direction="column"
@@ -525,6 +514,44 @@ function Profile() {
       </Box>
     </Flex>
   );
+
+  function EditButton() {
+    return !editing ? (
+      <Button variant="solid-primary" onClick={() => setEditing(true)}>
+        Edit
+      </Button>
+    ) : (
+      <Stack direction="row">
+        <Button
+          variant="outline-secondary"
+          fontWeight="thin"
+          borderWidth="thin"
+          width={["50%", "100%"]}
+          onClick={() => {
+            dispatch({ type: "clear" });
+            setEditing(false);
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="solid-primary"
+          width={["50%", "100%"]}
+          onClick={async () => {
+            const req = await updatePreferences.mutateAsync({
+              uid: userData!.uid,
+              updateFields: preferences,
+            });
+            if (req.success) {
+              setEditing(false);
+            }
+          }}
+        >
+          Save
+        </Button>
+      </Stack>
+    );
+  }
 }
 
 export default pageAccessHOC(Profile);
