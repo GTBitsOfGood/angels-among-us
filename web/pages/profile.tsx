@@ -7,10 +7,11 @@ import {
   Input,
   Image,
   Box,
+  extendTheme,
   Heading,
   StackDivider,
   Drawer,
-  DrawerContent
+  DrawerContent,
 } from "@chakra-ui/react";
 
 import Select from "react-select";
@@ -109,7 +110,7 @@ function Profile() {
             Profile
           </Heading>
           <Box hideBelow={"md"}>
-          <EditButton></EditButton>
+            <EditButton></EditButton>
           </Box>
         </Flex>
         <Drawer
@@ -117,15 +118,12 @@ function Profile() {
           isOpen={true}
           onClose={() => {}}
           blockScrollOnMount={false}
-          trapFocus={false}
+          variant="permanent"
           closeOnEsc={false}
           closeOnOverlayClick={false}
-          size={["xs", "none"]}
+          size={"xs"}
         >
-          <DrawerContent
-          padding={4}
-          hideFrom={"md"}
-          >
+          <DrawerContent padding={4} hideFrom={"lg"}>
             <EditButton></EditButton>
           </DrawerContent>
         </Drawer>
@@ -160,7 +158,7 @@ function Profile() {
                       disabled={true}
                     ></Input>
                   </Stack>
-                  <Stack direction="column" width="50%">
+                  <Stack direction="column" width={["100%", "50%"]}>
                     <Text fontWeight="medium">Preferred Email</Text>
                     <Input placeholder={""} disabled={!editing}></Input>
                   </Stack>
