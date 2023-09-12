@@ -12,7 +12,6 @@ export default function PetPostTagGroup(props: {
   tags: Array<String>;
   icons: Array<React.ElementType>;
 }) {
-  console.log(Array.from(props.tags.entries()));
   return (
     <Stack direction="column" spacing={3}>
       <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">

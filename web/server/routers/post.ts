@@ -26,6 +26,7 @@ import {
 } from "../../utils/types/post";
 import { router, procedure } from "../trpc";
 
+
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
 const postSchema = z.object({
@@ -108,6 +109,15 @@ export const postRouter = router({
         code: "INTERNAL_SERVER_ERROR",
       });
     }
+  }),
+  offer: procedure
+    .input(
+      z.object({
+        email: z.string(),
+        postOid: z.string(),
+    })
+  ).mutation(async({input}) => {
+    return {success: true};
   }),
   finalize: procedure
     .input(
