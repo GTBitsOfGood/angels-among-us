@@ -1,13 +1,15 @@
 import { Card, Flex, Image, Text } from "@chakra-ui/react";
 
-function FeedPostCard(props: {
+export type PostCard = {
   image: string;
   date: string;
   title: string;
   tags: string[];
   body: string;
-}) {
-  const { image, date, title, tags, body } = props;
+};
+
+function FeedPostCard(props: { post: PostCard }) {
+  const { post } = props;
 
   return (
     <Card
@@ -18,7 +20,7 @@ function FeedPostCard(props: {
     >
       <Flex gap={{ base: "15px", lg: "20px" }}>
         <Image
-          src={image}
+          src={post.image}
           objectFit="cover"
           minWidth={{ base: "120px", lg: "150px" }}
           width={{ base: "120px", lg: "150px" }}
@@ -32,9 +34,9 @@ function FeedPostCard(props: {
           marginTop={{ base: "0px", lg: "8px" }}
           marginRight="20px"
         >
-          <Text fontSize="14px">{date}</Text>
+          <Text fontSize="14px">{post.date}</Text>
           <Text margin="0px" paddingY="0px" fontWeight="bold" fontSize="18px">
-            {title}
+            {post.title}
           </Text>
           <Text
             margin="0px"
@@ -48,10 +50,10 @@ function FeedPostCard(props: {
             fontSize="14px"
             fontWeight="semibold"
           >
-            {tags[0]}
+            {post.tags[0]}
           </Text>
           <Text fontSize="14px" lineHeight="18px" color="#656565">
-            {body}
+            {post.body}
           </Text>
         </Flex>
       </Flex>

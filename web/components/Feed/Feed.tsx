@@ -15,6 +15,7 @@ import {
   FosterType,
   Gender,
   GoodWith,
+  IPost,
   Size,
   Status,
   Temperament,
@@ -307,10 +308,44 @@ function Feed(props: {
     }
   }
 
+  const allPosts = trpc.post.getAllPosts.useQuery();
+
   const [selectedFilters, setSelectedFilters] = useReducer(
     filterReducer,
     getInitialFilters()
   );
+
+  //const [queryFilters, setQueryFilters] = useReducer();
+  //const [displayedPosts, setDisplayedPosts] = useState(allPosts.data);
+
+  const formattedTestPosts = allPosts?.data?.map((p: IPost) => {
+    let date = p.date.toString();
+    date =
+      date.substring(0, date.indexOf("T")) +
+      " " +
+      date.substring(date.indexOf("T") + 1, date.indexOf(".") - 3);
+    date = date.replaceAll("-", "/");
+    if (parseInt(date.substring(11, 13)) > 12) {
+      date =
+        date.substring(0, 11) +
+        (parseInt(date.substring(11, 13)) - 12).toString() +
+        date.substring(13) +
+        " PM";
+    } else if (parseInt(date.substring(11, 13)) == 0) {
+      date = date.substring(0, 11) + "12" + date.substring(13) + " AM";
+    } else {
+      date = date + " AM";
+    }
+    return {
+      image:
+        "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80",
+      date: date,
+      title: p.age,
+      tags: p.behavioral,
+      body: "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.",
+    };
+  });
+  console.log(formattedTestPosts);
 
   const testFilter = {
     houseTrained: undefined,
@@ -325,7 +360,6 @@ function Feed(props: {
   };
   const posts = trpc.post.getFilteredPosts.useQuery(testFilter);
   console.log(posts.data);
-  const allPosts = trpc.post.getAllPosts.useQuery();
   console.log(allPosts.data);
   console.log(selectedFilters);
 
@@ -439,32 +473,17 @@ function Feed(props: {
             )}
           </Flex>
           <Stack spacing={5}>
-            <Box onClick={onPostViewOpen} _hover={{ cursor: "pointer" }}>
-              <FeedPostCard
-                image={
-                  "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-                }
-                date={"MM/DD/YYYY XX:XX PM"}
-                title={"Pet Name"}
-                tags={["Foster Move"]}
-                body={
-                  "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
-                }
-              />
-            </Box>
-            <Box onClick={onPostViewOpen} _hover={{ cursor: "pointer" }}>
-              <FeedPostCard
-                image={
-                  "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-                }
-                date={"MM/DD/YYYY XX:XX PM"}
-                title={"Pet Name"}
-                tags={["Foster Move"]}
-                body={
-                  "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
-                }
-              />
-            </Box>
+            {formattedTestPosts?.map((p, ind) => {
+              return (
+                <Box
+                  onClick={onPostViewOpen}
+                  _hover={{ cursor: "pointer" }}
+                  key={ind}
+                >
+                  <FeedPostCard post={p} />
+                </Box>
+              );
+            })}
           </Stack>
         </Flex>
       </Stack>
