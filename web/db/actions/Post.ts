@@ -18,7 +18,6 @@ async function getPost(oid: ObjectId) {
 }
 
 async function createPost(post: IPendingPost, session?: ClientSession) {
-  console.log(post);
   const pending = post.attachments.length != 0;
   const createdPost = await Post.create(
     [
