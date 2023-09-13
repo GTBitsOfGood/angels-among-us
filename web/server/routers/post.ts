@@ -23,12 +23,16 @@ import {
   Behavioral,
   Trained,
   Status,
+  PetKind,
 } from "../../utils/types/post";
 import { router, procedure } from "../trpc";
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
 const postSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  petKind: z.nativeEnum(PetKind),
   type: z.nativeEnum(FosterType),
   size: z.nativeEnum(Size),
   breed: z.array(z.nativeEnum(Breed)),
