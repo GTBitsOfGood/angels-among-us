@@ -25,7 +25,7 @@ import {
   Status,
 } from "../../utils/types/post";
 import { router, procedure } from "../trpc";
-
+import nodemailer from "nodemailer"
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
@@ -62,6 +62,15 @@ const postSchema = z.object({
       }),
     ])
   ),
+});
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_SERVER_EMAIL,
+  port: parseInt(process.env.PORT_EMAIL as string),
+  auth: {
+    user: process.env.LOGIN_EMAIL,
+    pass: process.env.PASSWORD_EMAIL
+  }
 });
 
 //TODO: Update goodWith
@@ -117,6 +126,19 @@ export const postRouter = router({
         postOid: z.string(),
     })
   ).mutation(async({input}) => {
+    try {
+      const info = await transporter.sendMail({
+        from: '"Angels Among Us Fostering Portal" <bitsofgood.aau@gmail.com>', // sender address
+        to: "uma2005anand@gmail.com, uma@gatech.com", // list of receivers
+        subject: "Someone is ready to foster your dog!", // Subject line
+        text: "User has signed up to foster dog, a stray dog.", // plain text body
+      });
+    } catch (e) {
+      throw new TRPCError({
+        message: "Unable to send Email.",
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
     return {success: true};
   }),
   finalize: procedure
