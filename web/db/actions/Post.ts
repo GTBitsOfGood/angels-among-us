@@ -18,6 +18,7 @@ async function getPost(oid: ObjectId) {
 }
 
 async function createPost(post: IPendingPost, session?: ClientSession) {
+  console.log(post);
   const pending = post.attachments.length != 0;
   const createdPost = await Post.create(
     [
@@ -130,7 +131,14 @@ async function getAllPosts() {
 }
 
 async function getFilteredPosts(filter: FilterQuery<IPost>) {
-  return await Post.find(filter).sort({ date: -1 });
+  const posts = await Post.find(filter).sort({ date: -1 });
+  posts.forEach(
+    (post) =>
+      (post.attachments = post.attachments.map(
+        (attachment: string) => `${consts.storageBucketURL}/${attachment}`
+      ))
+  );
+  return posts;
 }
 
 export {
