@@ -1,4 +1,4 @@
-import { Card, Flex, Image, Stack, Text } from "@chakra-ui/react";
+import { Card, Flex, Image, Text } from "@chakra-ui/react";
 
 export type PostCard = {
   image: string;
@@ -17,6 +17,7 @@ function FeedPostCard(props: { post: PostCard }) {
       paddingX={{ base: "12px", lg: "16px" }}
       paddingY={{ base: "16px", lg: "20px" }}
       borderRadius="14px"
+      width={{ lg: "52vw" }}
     >
       <Flex gap={{ base: "15px", lg: "20px" }}>
         <Image

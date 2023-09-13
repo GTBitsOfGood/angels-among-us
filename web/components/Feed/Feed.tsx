@@ -378,7 +378,7 @@ function Feed(props: {
         date: dayjs(p.date.toString()).format("MM/DD/YYYY hh:mm A").toString(),
         title: p.age,
         tags: p.type,
-        body: "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.",
+        body: "Lorem",
       };
     });
 
@@ -420,7 +420,7 @@ function Feed(props: {
           </Button>
         </Flex>
         <Flex
-          width="30%"
+          width="25vw"
           borderRadius="10px"
           backgroundColor="#FFFFFF"
           direction="column"
@@ -462,8 +462,7 @@ function Feed(props: {
           })}
         </Flex>
         <Flex
-          minWidth={{ lg: "800px" }}
-          width={{ base: "100%", lg: "70%" }}
+          width={{ base: "100vw", lg: "55vw" }}
           minHeight="full"
           borderRadius={{ base: "0px", lg: "10px" }}
           backgroundColor={{ base: "bg-primary", lg: "#F9F8F8" }}
