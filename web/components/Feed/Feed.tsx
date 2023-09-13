@@ -36,7 +36,7 @@ export type FilterGroup = {
 export type Filter = {
   key: string;
   description: string;
-  options: { value: PossibleTypes; label: string }[];
+  options: Option[];
   dropdown: boolean;
   allSelected: boolean;
 };
@@ -46,9 +46,13 @@ export type Option = {
   label: string;
 };
 
-export type SelectedFilters<T extends Filter> = {
-  [key in T["key"]]: Option[];
+export type SelectedFilters = {
+  [key: string]: Option[];
 };
+
+export type OptHandlers = {
+  [key: string]: (opts: Option[]) => Option[];
+}
 
 const filterGroups: FilterGroup[] = [
   {
@@ -252,7 +256,7 @@ function Feed(props: {
 
   const { userData } = useAuth();
 
-  function getInitialFilters(): SelectedFilters<Filter> {
+  function getInitialFilters(): SelectedFilters {
     return filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
         if (c.allSelected) return { ...a, [c.key]: [...c.options] };
@@ -265,43 +269,40 @@ function Feed(props: {
     }, {});
   }
 
-  function getPrefs(): SelectedFilters<Filter> | null {
+  function getPrefFilters(userData: IUser | null): SelectedFilters | null {
     if (!userData) {
       return null;
     }
-    // const prefData = {
-    //   type: userData.type,
-    //   breed: userData.preferredBreeds?.filter((breed) => !(breed in (userData.restrictedBreeds || []))),
-    //   age: userData.age,
-    //   size: userData.size,
-    //   gender: userData.gender,
-    //   dogsNotGoodWidth: userData.dogsNotGoodWith,
-    //   behavioral: userData.behavioral,
-    //   temperament: userData.temperament,
-    //   medicalInfo: [userData.houseTrained || Status.No, userData.spayNeuterStatus || Status.No]
-    // };
+    
+    // Parse Filter options array based on user preferences
+    const parseOptArr = (opts: Option[], prefArr: any[] | undefined):  Option[] => (
+      [...opts.filter((f) => prefArr?.includes(f.value))]
+    );
+
+    const parseStatusArr = (opts: Option[], statArr: (Status | undefined)[]): Option[] => {
+      return opts.filter((opt, idx) => statArr[idx] === Status.Yes);
+    };
+
+    const optHandlers: OptHandlers = {
+      type: (opts: Option[]) => parseOptArr(opts, userData.type),
+      breed: (opts: Option[]) => parseOptArr(opts, userData.preferredBreeds),
+      age: (opts: Option[]) => parseOptArr(opts, userData.age),
+      size: (opts: Option[]) => parseOptArr(opts, userData.size),
+      gender: (opts: Option[]) => parseOptArr(opts, userData.gender),
+      dogsNotGoodWith: (opts: Option[]) => parseOptArr(opts, userData.dogsNotGoodWith),
+      behavioral: (opts: Option[]) => parseOptArr(opts, userData.behavioral),
+      temperament: (opts: Option[]) => parseOptArr(opts, userData.temperament),
+
+      // medicalInfo has no 1:1 map with DB fields and also has non-unique filter values (Status.Yes/No)
+      medicalInfo: (opts: Option[]) => parseStatusArr(opts, [userData.houseTrained, userData.spayNeuterStatus])
+    };
+
+    console.log(userData);
     const filters = filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
-        let options: Array<Option> = [];
-        if (Array.isArray(userData[c.key as keyof IUser])) {
-          options = [...c.options.filter((f) => userData[c.key as keyof IUser]?.includes(f.value))];
-        }
-        if (c.key === "medicalInfo") {
-          if (userData.houseTrained === Status.Yes) {
-            options.push(c.options[0]);
-          }
-          if (userData.spayNeuterStatus === Status.Yes) {
-            options.push(c.options[1]);
-          }
-          // // Typescript doesn't like this but it looks way better :(
-          // options = [
-          //   userData.houseTrained === Status.Yes && c.options[0],
-          //   userData.spayNeuterStatus === Status.Yes && c.options[1]
-          // ];
-        }
         return ({
           ...a,
-          [c.key]: options
+          [c.key]: optHandlers[c.key](c.options)
         });
       }, {});
       return {
@@ -309,11 +310,12 @@ function Feed(props: {
         ...group,
       };
     }, {});
+    console.log(filters);
     return filters;
   }
 
   function filterReducer(
-    state: SelectedFilters<Filter>,
+    state: SelectedFilters,
     action: {
       type: string;
       filter: Filter;
@@ -326,7 +328,7 @@ function Feed(props: {
       case "reset":
         return getInitialFilters();
       case "useprefs":
-        return getPrefs() || state;
+        return getPrefFilters(userData) || state;
       case "dropdown":
         tempState[action.filter.key] = action.event;
         return tempState;
