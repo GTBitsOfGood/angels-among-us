@@ -6,7 +6,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useReducer } from "react";
+import { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { PossibleTypes } from "../../pages/onboarding";
 import {
   Age,
@@ -19,6 +19,7 @@ import {
   Size,
   Status,
   Temperament,
+  Trained,
 } from "../../utils/types/post";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import PetPostModal from "../PetPostModal/PetPostModal";
@@ -28,6 +29,7 @@ import { AddIcon } from "@chakra-ui/icons";
 import { useAuth } from "../../context/auth";
 import { Role } from "../../utils/types/account";
 import { trpc } from "../../utils/trpc";
+import dayjs from "dayjs";
 
 export type FilterGroup = {
   title: string;
@@ -49,6 +51,18 @@ export type Option = {
 
 export type SelectedFilters<T extends Filter> = {
   [key in T["key"]]: Option[];
+};
+
+export type QueryFilter = {
+  breed: Breed[];
+  type: FosterType[];
+  age: Age[];
+  size: Size[];
+  gender: Gender[];
+  behavioral: Behavioral[];
+  goodWith: GoodWith[];
+  houseTrained: Trained;
+  spayNeuterStatus: Status;
 };
 
 const filterGroups: FilterGroup[] = [
@@ -175,7 +189,7 @@ const filterGroups: FilterGroup[] = [
     title: "Behavioral Traits",
     filters: [
       {
-        key: "dogsNotGoodWith",
+        key: "goodWith",
         description: "Dogs known to be good with:",
         options: [
           { value: GoodWith.Men, label: "Men" },
@@ -266,6 +280,40 @@ function Feed(props: {
     }, {});
   }
 
+  function getQueryFilters(selectedFilters: SelectedFilters<Filter>) {
+    const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
+      if (curr === "medicalInfo") {
+        const keys = ["houseTrained", "spayNeuterStatus"];
+        const filterVals: Record<string, PossibleTypes | undefined> =
+          selectedFilters[curr].reduce((a, c) => {
+            return { ...a, [c.label]: c.value };
+          }, {});
+        for (const k of keys) {
+          if (!(k in filterVals)) {
+            filterVals[k] = undefined;
+          }
+        }
+        return { ...acc, ...filterVals };
+      } else {
+        const filterVals = selectedFilters[curr].map((v) => v.value);
+        return { ...acc, [curr]: filterVals };
+      }
+    }, {});
+    return queryFilters as QueryFilter;
+  }
+
+  /*const testFilter = {
+    houseTrained: undefined,
+    spayNeuterStatus: undefined,
+    type: [FosterType.Return],
+    size: [Size.XS],
+    gender: [Gender.Female],
+    age: [Age.Puppy],
+    behavioral: [Behavioral.Barking],
+    breed: [Breed.Beagle],
+    goodWith: [GoodWith.Men],
+  };*/
+
   function filterReducer(
     state: SelectedFilters<Filter>,
     action: {
@@ -276,17 +324,19 @@ function Feed(props: {
     }
   ) {
     let tempState = JSON.parse(JSON.stringify(state));
+    let toReturn = undefined;
     switch (action.type) {
       case "reset":
-        return getInitialFilters();
+        toReturn = getInitialFilters();
+        break;
       case "dropdown":
         tempState[action.filter.key] = action.event;
-        return tempState;
+        toReturn = tempState;
+        break;
       case "checkbox":
         const filt = action.filter;
         const ind = action.ind;
         const option = filt.options[ind];
-        console.log(option);
         if (
           tempState[filt.key].some(
             (e: Option) => e.value == option.value && e.label == option.label
@@ -301,67 +351,36 @@ function Feed(props: {
         } else {
           tempState[filt.key].push(filt.options[ind]);
         }
-        console.log(tempState);
-        return tempState;
+        toReturn = tempState;
+        break;
       default:
-        return state;
+        toReturn = state;
     }
+    setQueryFilters(getQueryFilters(toReturn));
+    return toReturn;
   }
 
-  const allPosts = trpc.post.getAllPosts.useQuery();
+  const [queryFilters, setQueryFilters] = useState(
+    getQueryFilters(getInitialFilters())
+  );
 
   const [selectedFilters, setSelectedFilters] = useReducer(
     filterReducer,
     getInitialFilters()
   );
 
-  //const [queryFilters, setQueryFilters] = useReducer();
-  //const [displayedPosts, setDisplayedPosts] = useState(allPosts.data);
-
-  const formattedTestPosts = allPosts?.data?.map((p: IPost) => {
-    let date = p.date.toString();
-    date =
-      date.substring(0, date.indexOf("T")) +
-      " " +
-      date.substring(date.indexOf("T") + 1, date.indexOf(".") - 3);
-    date = date.replaceAll("-", "/");
-    if (parseInt(date.substring(11, 13)) > 12) {
-      date =
-        date.substring(0, 11) +
-        (parseInt(date.substring(11, 13)) - 12).toString() +
-        date.substring(13) +
-        " PM";
-    } else if (parseInt(date.substring(11, 13)) == 0) {
-      date = date.substring(0, 11) + "12" + date.substring(13) + " AM";
-    } else {
-      date = date + " AM";
-    }
-    return {
-      image:
-        "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80",
-      date: date,
-      title: p.age,
-      tags: p.behavioral,
-      body: "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.",
-    };
-  });
-  console.log(formattedTestPosts);
-
-  const testFilter = {
-    houseTrained: undefined,
-    spayNeuterStatus: undefined,
-    type: [FosterType.Return],
-    size: [Size.XS],
-    gender: [Gender.Female],
-    age: [Age.Puppy],
-    behavioral: [Behavioral.Barking],
-    breed: [Breed.Beagle],
-    goodWith: [GoodWith.Men],
-  };
-  const posts = trpc.post.getFilteredPosts.useQuery(testFilter);
-  console.log(posts.data);
-  console.log(allPosts.data);
-  console.log(selectedFilters);
+  const feedPosts = trpc.post.getFilteredPosts
+    .useQuery(queryFilters)
+    ?.data?.map((p: IPost) => {
+      return {
+        image:
+          "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80",
+        date: dayjs(p.date.toString()).format("MM/DD/YYYY hh:mm A").toString(),
+        title: p.age,
+        tags: p.type,
+        body: "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.",
+      };
+    });
 
   const mainContent = (
     <Flex
@@ -443,6 +462,7 @@ function Feed(props: {
           })}
         </Flex>
         <Flex
+          minWidth={{ lg: "800px" }}
           width={{ base: "100%", lg: "70%" }}
           minHeight="full"
           borderRadius={{ base: "0px", lg: "10px" }}
@@ -473,7 +493,7 @@ function Feed(props: {
             )}
           </Flex>
           <Stack spacing={5}>
-            {formattedTestPosts?.map((p, ind) => {
+            {feedPosts?.map((p, ind) => {
               return (
                 <Box
                   onClick={onPostViewOpen}

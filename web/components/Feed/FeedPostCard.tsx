@@ -1,10 +1,10 @@
-import { Card, Flex, Image, Text } from "@chakra-ui/react";
+import { Card, Flex, Image, Stack, Text } from "@chakra-ui/react";
 
 export type PostCard = {
   image: string;
   date: string;
   title: string;
-  tags: string[];
+  tags: string;
   body: string;
 };
 
@@ -50,7 +50,7 @@ function FeedPostCard(props: { post: PostCard }) {
             fontSize="14px"
             fontWeight="semibold"
           >
-            {post.tags[0]}
+            {post.tags.charAt(0).toUpperCase() + post.tags.substring(1)}
           </Text>
           <Text fontSize="14px" lineHeight="18px" color="#656565">
             {post.body}
