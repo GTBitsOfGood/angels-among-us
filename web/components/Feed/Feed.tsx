@@ -277,7 +277,6 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
       ...group,
     };
   }, {});
-  console.log(filters);
   return filters;
 }
 
@@ -335,7 +334,6 @@ function Feed(props: {
         const filt = action.filter;
         const ind = action.ind;
         const option = filt.options[ind];
-        console.log(option);
         if (
           tempState[filt.key].some(
             (e: Option) => e.value == option.value && e.label == option.label
@@ -350,7 +348,6 @@ function Feed(props: {
         } else {
           tempState[filt.key].push(filt.options[ind]);
         }
-        console.log(tempState);
         return tempState;
       default:
         return state;
