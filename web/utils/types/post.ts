@@ -267,11 +267,13 @@ export const trainedLabels: Record<Trained, string> = {
 export enum Status {
   Yes = "yes",
   No = "no",
+  Unknown = "unknown",
 }
 
 export const statusLabels: Record<Status, string> = {
   [Trained.Yes]: "Yes",
   [Trained.No]: "No",
+  [Trained.Unknown]: "Unknown",
 };
 
 export type AttachmentInfo =

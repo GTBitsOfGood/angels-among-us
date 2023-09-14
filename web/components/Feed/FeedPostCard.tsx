@@ -3,13 +3,18 @@ import { Card, Flex, Image, Text } from "@chakra-ui/react";
 export type PostCard = {
   image: string;
   date: string;
-  title: string;
+  name: string;
   tags: string;
-  body: string;
+  description: string;
 };
 
 function FeedPostCard(props: { post: PostCard }) {
   const { post } = props;
+
+  const splitTag = post.tags.split(/(?=[A-Z])/);
+  const formattedTag = splitTag.reduce((acc, curr) => {
+    return acc.concat(curr.charAt(0).toUpperCase() + curr.substring(1) + " ");
+  }, "");
 
   return (
     <Card
@@ -37,7 +42,7 @@ function FeedPostCard(props: { post: PostCard }) {
         >
           <Text fontSize="14px">{post.date}</Text>
           <Text margin="0px" paddingY="0px" fontWeight="bold" fontSize="18px">
-            {post.title}
+            {post.name}
           </Text>
           <Text
             margin="0px"
@@ -51,10 +56,10 @@ function FeedPostCard(props: { post: PostCard }) {
             fontSize="14px"
             fontWeight="semibold"
           >
-            {post.tags.charAt(0).toUpperCase() + post.tags.substring(1)}
+            {formattedTag.substring(0, formattedTag.length - 1)}
           </Text>
           <Text fontSize="14px" lineHeight="18px" color="#656565">
-            {post.body}
+            {post.description}
           </Text>
         </Flex>
       </Flex>

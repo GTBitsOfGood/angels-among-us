@@ -283,14 +283,18 @@ function Feed(props: {
   function getQueryFilters(selectedFilters: SelectedFilters<Filter>) {
     const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
       if (curr === "medicalInfo") {
-        const keys = ["houseTrained", "spayNeuterStatus"];
+        const keys: Record<string, string> = {
+          "House Trained": "houseTrained",
+          "Spayed/Neutered": "spayNeuterStatus",
+        };
         const filterVals: Record<string, PossibleTypes | undefined> =
           selectedFilters[curr].reduce((a, c) => {
-            return { ...a, [c.label]: c.value };
+            return { ...a, [keys[c.label]]: c.value };
           }, {});
-        for (const k of keys) {
-          if (!(k in filterVals)) {
-            filterVals[k] = undefined;
+        //console.log(filterVals);
+        for (const k of Object.keys(keys)) {
+          if (!(keys[k] in filterVals)) {
+            filterVals[keys[k]] = undefined;
           }
         }
         return { ...acc, ...filterVals };
@@ -299,6 +303,7 @@ function Feed(props: {
         return { ...acc, [curr]: filterVals };
       }
     }, {});
+    //console.log(queryFilters);
     return queryFilters as QueryFilter;
   }
 
@@ -313,6 +318,8 @@ function Feed(props: {
     breed: [Breed.Beagle],
     goodWith: [GoodWith.Men],
   };*/
+
+  //console.log(trpc.post.getFilteredPosts.useQuery(testFilter)?.data);
 
   function filterReducer(
     state: SelectedFilters<Filter>,
@@ -357,6 +364,7 @@ function Feed(props: {
         toReturn = state;
     }
     setQueryFilters(getQueryFilters(toReturn));
+    //console.log(toReturn);
     return toReturn;
   }
 
@@ -369,18 +377,36 @@ function Feed(props: {
     getInitialFilters()
   );
 
+  //console.log(queryFilters);
+
+  //const allPosts = trpc.post.getAllPosts.useQuery();
+  //console.log(allPosts.data);
+
   const feedPosts = trpc.post.getFilteredPosts
     .useQuery(queryFilters)
     ?.data?.map((p: IPost) => {
+      let firstImage = "https://source.unsplash.com/P0YeIVOyvSI";
+      for (let i = 0; i < p.attachments.length; i++) {
+        const a = p.attachments[i];
+        if (
+          a.toLowerCase().includes(".png") ||
+          a.toLowerCase().includes(".jpeg") ||
+          a.toLowerCase().includes(".jpg")
+        ) {
+          firstImage = a;
+          break;
+        }
+      }
       return {
-        image:
-          "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80",
+        image: firstImage,
         date: dayjs(p.date.toString()).format("MM/DD/YYYY hh:mm A").toString(),
-        title: p.age,
+        name: p.name,
         tags: p.type,
-        body: "Lorem",
+        description: p.description,
       };
     });
+
+  //console.log(feedPosts);
 
   const mainContent = (
     <Flex
