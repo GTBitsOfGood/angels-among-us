@@ -179,7 +179,7 @@ const filterGroups: FilterGroup[] = [
     filters: [
       {
         key: "dogsNotGoodWith",
-        description: "Dogs known to be good with:",
+        description: "Dogs not known to be good with:",
         options: [
           { value: GoodWith.Men, label: "Men" },
           { value: GoodWith.Women, label: "Women" },
