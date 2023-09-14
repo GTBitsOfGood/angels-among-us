@@ -139,7 +139,7 @@ function Profile() {
             >
               <Image
                 borderRadius="100%"
-                boxSize={36}
+                boxSize={[100, 36]}
                 src={user?.photoURL ?? undefined}
                 alt="User photo"
               ></Image>
