@@ -3,6 +3,9 @@ import { Role } from "../../utils/types/account";
 import { Breed, FosterType, Status } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
 
+// Mock authentication
+jest.mock("../../context/auth");
+
 // Function to count the number of filter options
 const countFilters = (filters: SelectedFilters | null): number => {
   if (!filters) return 0;
