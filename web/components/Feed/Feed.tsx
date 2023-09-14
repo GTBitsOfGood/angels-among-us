@@ -418,7 +418,7 @@ function Feed(props: {
               borderWidth="thin"
               onClick={() => {
                 setSelectedFilters({
-                  type: "useprefs",
+                  type: "reset",
                   filter: filterGroups[0].filters[0],
                   ind: 0,
                   event: [],
