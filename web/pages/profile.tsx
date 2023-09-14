@@ -7,11 +7,8 @@ import {
   Input,
   Image,
   Box,
-  extendTheme,
   Heading,
   StackDivider,
-  Drawer,
-  DrawerContent,
 } from "@chakra-ui/react";
 
 import Select from "react-select";
@@ -90,43 +87,43 @@ function Profile() {
   const [preferences, dispatch] = useReducer(reducer, initialFormState);
 
   const updatePreferences = trpc.user.updateUserPreferences.useMutation();
-
   return (
     <Flex
       display={"flex"}
       bgColor={["white", "bg-primary"]}
       justifyContent="center"
     >
+      <Flex
+        display={{ base: "block", md: "none" }}
+        width={"100%"}
+        position={"fixed"}
+        zIndex={1}
+        bottom={0}
+        right={0}
+        left={0}
+        justifyContent={"center"}
+        alignItems={"center"}
+        padding={5}
+        bgGradient={"linear(180deg, #FFF 72.24%, #ECECEC 100%)"}
+      >
+        <EditButton></EditButton>
+      </Flex>
       <Box
         width={["100%", "80%"]}
         p={8}
         bgColor="white"
         borderRadius={12}
-        mt={100}
-        mb={100}
+        mt={[14, 100]}
+        mb={[14, 100]}
       >
         <Flex w="100%" justifyContent="space-between" alignItems="center">
           <Heading size="lg" letterSpacing="wide">
             Profile
           </Heading>
-          <Box hideBelow={"md"}>
+          <Box display={{ base: "none", md: "block" }}>
             <EditButton></EditButton>
           </Box>
         </Flex>
-        <Drawer
-          placement={"bottom"}
-          isOpen={true}
-          onClose={() => {}}
-          blockScrollOnMount={false}
-          variant="permanent"
-          closeOnEsc={false}
-          closeOnOverlayClick={false}
-          size={"xs"}
-        >
-          <DrawerContent padding={4} hideFrom={"lg"}>
-            <EditButton></EditButton>
-          </DrawerContent>
-        </Drawer>
         <Stack
           mt={5}
           direction="column"
@@ -147,9 +144,13 @@ function Profile() {
                 alt="User photo"
               ></Image>
 
-              <Stack direction="column" width={["100%", "85%"]} spacing={5}>
-                <Stack direction={["column", "row"]} spacing={5}>
-                  <Stack direction="column" width={["100%", "50%"]}>
+              <Stack
+                direction={["column", "row"]}
+                width={["100%", "100%"]}
+                spacing={5}
+              >
+                <Stack direction={"column"} spacing={5} width={["100%", "50%"]}>
+                  <Stack direction="column">
                     <Text fontWeight="medium">Name</Text>
                     <Input
                       placeholder={
@@ -158,20 +159,20 @@ function Profile() {
                       disabled={true}
                     ></Input>
                   </Stack>
-                  <Stack direction="column" width={["100%", "50%"]}>
-                    <Text fontWeight="medium">Preferred Email</Text>
-                    <Input placeholder={""} disabled={!editing}></Input>
-                  </Stack>
-                </Stack>
-                <Stack direction={["column", "row"]} spacing={5}>
-                  <Stack direction="column" width={["100%", "50%"]}>
+                  <Stack direction="column">
                     <Text fontWeight="medium">Email</Text>
                     <Input
                       placeholder={user?.email ?? undefined}
                       disabled={true}
                     ></Input>
                   </Stack>
-                  <Stack direction="column" width={["100", "50%"]}>
+                </Stack>
+                <Stack direction={"column"} spacing={5} width={["100%", "50%"]}>
+                  <Stack direction="column">
+                    <Text fontWeight="medium">Preferred Email</Text>
+                    <Input placeholder={""} disabled={!editing}></Input>
+                  </Stack>
+                  <Stack direction="column">
                     <Text fontWeight="medium">
                       Which types of fosters can you help with?
                     </Text>
@@ -206,7 +207,7 @@ function Profile() {
           </Section>
           <Section heading="Physical Traits">
             <Stack direction="column" w="100%" spacing={5}>
-              <Stack direction={["column", "row"]} spacing={5}>
+              <Stack direction={["column-reverse", "row"]} spacing={5}>
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Breed Restrictions</Text>
                   <Select
@@ -264,7 +265,7 @@ function Profile() {
                   />
                 </Stack>
               </Stack>
-              <Stack direction={["column", "row"]} spacing={5}>
+              <Stack direction={["column-reverse", "row"]} spacing={5}>
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Age Capability</Text>
                   <Select
@@ -356,7 +357,7 @@ function Profile() {
             </Stack>
           </Section>
           <Section heading="Behavioral Traits">
-            <Stack direction="column" w="100%" spacing={5}>
+          <Stack direction="column" w="100%" spacing={5}>
               <Stack direction={["column", "row"]} spacing={5}>
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
@@ -388,7 +389,7 @@ function Profile() {
                   />
                 </Stack>
                 <Stack direction="column" width={["100%", "50%"]}>
-                  <Text fontWeight="medium">Able to foster dogs with:</Text>
+                <Text fontWeight="medium">Able to foster dogs with:</Text>
                   <Select
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
@@ -414,9 +415,9 @@ function Profile() {
                     )}
                   />
                 </Stack>
-              </Stack>
+                </Stack>
               <Stack direction="row">
-                <Stack direction="column" width={["100%", "50%"]}>
+              <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs with these temperaments:
                   </Text>
@@ -515,7 +516,11 @@ function Profile() {
 
   function EditButton() {
     return !editing ? (
-      <Button variant="solid-primary" onClick={() => setEditing(true)}>
+      <Button
+        variant="solid-primary"
+        onClick={() => setEditing(true)}
+        width={"100%"}
+      >
         Edit
       </Button>
     ) : (
