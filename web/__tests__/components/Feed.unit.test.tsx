@@ -53,15 +53,8 @@ describe("[Misc] User Preferences - Unit Test", () => {
   });
 
   test("empty userdata", () => {
-    // const filters = {
-    //   type: [],
-    //   breed: [],
-    //   age: [],
-    //   size: [],
-    //   gender: [],
-    //   dogsNotGood
-    // }
-    expect(getPrefFilters(dummyUser));
+    const filters = getPrefFilters(dummyUser);
+    expect(countFilters(filters)).toBe(0);
   });
 
   test("1 pet type", () => {
