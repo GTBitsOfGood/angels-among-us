@@ -186,12 +186,31 @@ export const postRouter = router({
       const notAllowedBehavioral = Object.values(Behavioral).filter(
         (obj) => !input.behavioral.includes(obj)
       );
-      const notGoodWith =
-        input.goodWith.length == 0
-          ? []
-          : Object.values(GoodWith).filter(
-              (obj) => !input.goodWith.includes(obj)
-            );
+      const goodWithMap: Record<GoodWith, string> = {
+        [GoodWith.Cats]: "getsAlongWithCats",
+        [GoodWith.LargeDogs]: "getsAlongWithLargeDogs",
+        [GoodWith.Men]: "getsAlongWithMen",
+        [GoodWith.OlderChildren]: "getsAlongWithOlderKids",
+        [GoodWith.SmallDogs]: "getsAlongWithSmallDogs",
+        [GoodWith.Women]: "getsAlongWithWomen",
+        [GoodWith.YoungChildren]: "getsAlongWithYoungKids",
+      };
+
+      const getsAlongWith: Record<string, Trained> = Object.values(
+        GoodWith
+      ).reduce((acc, curr) => {
+        if (input.goodWith.includes(curr)) {
+          return { ...acc, ...{ [goodWithMap[curr]]: [Trained.Yes] } };
+        } else {
+          return {
+            ...acc,
+            ...{
+              [goodWithMap[curr]]: [Trained.Yes, Trained.No, Trained.Unknown],
+            },
+          };
+        }
+      }, {});
+
       let completeFilter = {
         breed: { $in: input.breed },
         type: { $in: input.type },
@@ -199,7 +218,21 @@ export const postRouter = router({
         size: { $in: input.size },
         gender: { $in: input.gender },
         behavioral: { $nin: notAllowedBehavioral },
-        goodWith: { $nin: notGoodWith },
+        getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
+        getsAlongWithLargeDogs: {
+          $in: getsAlongWith["getsAlongWithLargeDogs"],
+        },
+        getsAlongWithMen: { $in: getsAlongWith["getsAlongWithMen"] },
+        getsAlongWithOlderKids: {
+          $in: getsAlongWith["getsAlongWithOlderKids"],
+        },
+        getsAlongWithSmallDogs: {
+          $in: getsAlongWith["getsAlongWithSmallDogs"],
+        },
+        getsAlongWithWomen: { $in: getsAlongWith["getsAlongWithWomen"] },
+        getsAlongWithYoungKids: {
+          $in: getsAlongWith["getsAlongWithYoungKids"],
+        },
         houseTrained: { $in: houseTrained },
         spayNeuterStatus: { $in: spayNeuterStatus },
       };

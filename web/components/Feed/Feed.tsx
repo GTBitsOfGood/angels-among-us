@@ -291,7 +291,6 @@ function Feed(props: {
           selectedFilters[curr].reduce((a, c) => {
             return { ...a, [keys[c.label]]: c.value };
           }, {});
-        //console.log(filterVals);
         for (const k of Object.keys(keys)) {
           if (!(keys[k] in filterVals)) {
             filterVals[keys[k]] = undefined;
@@ -303,23 +302,8 @@ function Feed(props: {
         return { ...acc, [curr]: filterVals };
       }
     }, {});
-    //console.log(queryFilters);
     return queryFilters as QueryFilter;
   }
-
-  /*const testFilter = {
-    houseTrained: undefined,
-    spayNeuterStatus: undefined,
-    type: [FosterType.Return],
-    size: [Size.XS],
-    gender: [Gender.Female],
-    age: [Age.Puppy],
-    behavioral: [Behavioral.Barking],
-    breed: [Breed.Beagle],
-    goodWith: [GoodWith.Men],
-  };*/
-
-  //console.log(trpc.post.getFilteredPosts.useQuery(testFilter)?.data);
 
   function filterReducer(
     state: SelectedFilters<Filter>,
@@ -364,7 +348,6 @@ function Feed(props: {
         toReturn = state;
     }
     setQueryFilters(getQueryFilters(toReturn));
-    //console.log(toReturn);
     return toReturn;
   }
 
@@ -376,11 +359,6 @@ function Feed(props: {
     filterReducer,
     getInitialFilters()
   );
-
-  //console.log(queryFilters);
-
-  //const allPosts = trpc.post.getAllPosts.useQuery();
-  //console.log(allPosts.data);
 
   const feedPosts = trpc.post.getFilteredPosts
     .useQuery(queryFilters)
@@ -405,8 +383,6 @@ function Feed(props: {
         description: p.description,
       };
     });
-
-  //console.log(feedPosts);
 
   const mainContent = (
     <Flex
