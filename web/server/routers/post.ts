@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { ObjectId } from "mongoose";
-import mongoose from "mongoose";
 import { z } from "zod";
 import {
   createPost,
@@ -27,7 +26,7 @@ import {
 } from "../../utils/types/post";
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
@@ -66,13 +65,22 @@ const postSchema = z.object({
   ),
 });
 
+const fosterTypeEmails: Record<FosterType, string> = {
+  [FosterType.FosterMove]: "foster@angelsrescue.org",
+  [FosterType.Return]: "returns@angelsrescue.org, foster@angelsrescue.org",
+  [FosterType.Temporary]: "tempfoster@angelsrescue.org",
+  [FosterType.Boarding]: "boardingadmin@angelsrescue.org",
+  [FosterType.Shelter]: "fosteroffer@angelsrescue.org",
+  [FosterType.OwnerSurrender]: "fosteroffer@angelsrescue.org",
+};
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_SERVER_EMAIL,
   port: parseInt(process.env.PORT_EMAIL as string),
   auth: {
     user: process.env.LOGIN_EMAIL,
-    pass: process.env.PASSWORD_EMAIL
-  }
+    pass: process.env.PASSWORD_EMAIL,
+  },
 });
 
 //TODO: Update goodWith
@@ -126,62 +134,53 @@ export const postRouter = router({
       z.object({
         email: z.string(),
         postOid: zodOidType,
-    })
-  ).mutation(async({input}) => {
-    const user = await findUserByEmail(input.email);
-    if (!user) {
-      throw new TRPCError({
-        message: "No user with given email exists.",
-        code: "BAD_REQUEST",
-      });
-    }
-    let email = "";
-    try {
-      const post = await getPost(input.postOid);
-      switch(post.type) {
-        case "fosterMove":
-          email = "foster@angelsrescue.org";
-          break;
-        case "return":
-          email = "returns@angelsrescue.org, foster@angelsrescue.org";
-          break;
-        case "temporary":
-          email = "tempfoster@angelsrescue.org";
-          break;
-        case "boarding":
-          email = "boardingadmin@angelsrescue.org"
-        case "shelter":
-        case "ownerSurrender":
-          email = "fosteroffer@angelsrescue.org";
-          break;
-      }
-      if (!email) {
-        throw new TRPCError({
-          message: "Post has invalid type.",
-          code: "BAD_REQUEST",
-        });
-      }
+      })
+    )
+    .mutation(async ({ input }) => {
       try {
-        const info = await transporter.sendMail({
-          from: '"Angels Among Us Fostering Portal" <bitsofgood.aau@gmail.com>', 
-          to: email, 
-          subject: "Someone is ready to foster your dog!", 
-          text: "User has signed up to foster dog, a stray dog.", 
-        });
+        const user = await findUserByEmail(input.email);
+        if (!user) {
+          throw new TRPCError({
+            message: "No user with given email exists.",
+            code: "BAD_REQUEST",
+          });
+        }
       } catch (e) {
         throw new TRPCError({
-          message: "Unable to send Email.",
+          message: "Server unable to access user endpoint.",
           code: "INTERNAL_SERVER_ERROR",
         });
       }
-    } catch (e) {
-      throw new TRPCError({
-        message: "No Post with given ID exists.",
-        code: "BAD_REQUEST",
-      });
-    }
-    return {success: true};
-  }),
+      try {
+        const post = await getPost(input.postOid);
+        const email = (fosterTypeEmails as any)[post.type] || "";
+        if (email.length < 2) {
+          throw new TRPCError({
+            message: "Post has invalid type.",
+            code: "BAD_REQUEST",
+          });
+        }
+        try {
+          const info = await transporter.sendMail({
+            from: '"Angels Among Us Fostering Portal" <bitsofgood.aau@gmail.com>',
+            to: email,
+            subject: "Someone is ready to foster your dog!",
+            text: "User has signed up to foster dog, a stray dog.",
+          });
+        } catch (e) {
+          throw new TRPCError({
+            message: "Unable to send Email.",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+      } catch (e) {
+        throw new TRPCError({
+          message: "No Post with given ID exists.",
+          code: "BAD_REQUEST",
+        });
+      }
+      return { success: true };
+    }),
   finalize: procedure
     .input(
       z.object({
