@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { z } from "zod";
 import {
   createPost,
@@ -24,6 +25,7 @@ import {
   Trained,
   Status,
 } from "../../utils/types/post";
+import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer"
 
@@ -123,20 +125,59 @@ export const postRouter = router({
     .input(
       z.object({
         email: z.string(),
-        postOid: z.string(),
+        postOid: zodOidType,
     })
   ).mutation(async({input}) => {
-    try {
-      const info = await transporter.sendMail({
-        from: '"Angels Among Us Fostering Portal" <bitsofgood.aau@gmail.com>', // sender address
-        to: "uma2005anand@gmail.com, uma@gatech.com", // list of receivers
-        subject: "Someone is ready to foster your dog!", // Subject line
-        text: "User has signed up to foster dog, a stray dog.", // plain text body
+    const user = await findUserByEmail(input.email);
+    if (!user) {
+      throw new TRPCError({
+        message: "No user with given email exists.",
+        code: "BAD_REQUEST",
       });
+    }
+    let email = "";
+    try {
+      const post = await getPost(input.postOid);
+      switch(post.type) {
+        case "fosterMove":
+          email = "foster@angelsrescue.org";
+          break;
+        case "return":
+          email = "returns@angelsrescue.org, foster@angelsrescue.org";
+          break;
+        case "temporary":
+          email = "tempfoster@angelsrescue.org";
+          break;
+        case "boarding":
+          email = "boardingadmin@angelsrescue.org"
+        case "shelter":
+        case "ownerSurrender":
+          email = "fosteroffer@angelsrescue.org";
+          break;
+      }
+      if (!email) {
+        throw new TRPCError({
+          message: "Post has invalid type.",
+          code: "BAD_REQUEST",
+        });
+      }
+      try {
+        const info = await transporter.sendMail({
+          from: '"Angels Among Us Fostering Portal" <bitsofgood.aau@gmail.com>', 
+          to: email, 
+          subject: "Someone is ready to foster your dog!", 
+          text: "User has signed up to foster dog, a stray dog.", 
+        });
+      } catch (e) {
+        throw new TRPCError({
+          message: "Unable to send Email.",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
     } catch (e) {
       throw new TRPCError({
-        message: "Unable to send Email.",
-        code: "INTERNAL_SERVER_ERROR",
+        message: "No Post with given ID exists.",
+        code: "BAD_REQUEST",
       });
     }
     return {success: true};
