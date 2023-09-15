@@ -12,7 +12,11 @@ jest.mock("../../context/auth", () => ({
   useAuth: jest.fn(),
 }));
 
-// Function to count the number of filter options
+/**
+ * Counts the number of filter options within a SelectedFilters object
+ * @param {SelectedFilters} filters object containing filter options
+ * @returns {number} number of options
+ */
 const countFilters = (filters: SelectedFilters | null): number => {
   if (!filters) return 0;
 
@@ -24,11 +28,21 @@ const countFilters = (filters: SelectedFilters | null): number => {
   return count;
 };
 
-// Function to determine whether two options are equivalent
+/**
+ * Checks whether two options are equivalent
+ * @param {Option} a option a
+ * @param {Option} b option b
+ * @returns {boolean} whether options are equal
+ */
 const isEqual = (a: Option, b: Option): boolean =>
   a.value === b.value && a.label === b.label;
 
-// Function to
+/**
+ * Checks if two objects of filters are equal
+ * @param {SelectedFilters | null} filters filters to check
+ * @param {SelectedFilters} target  filters to check against
+ * @returns {boolean} whether filters are equal
+ */
 const checkFilters = (
   filters: SelectedFilters | null,
   target: SelectedFilters
@@ -47,8 +61,12 @@ const checkFilters = (
 
 /**
  * Tests ability to use user preferences to propagate feed filters
+ *
+ * @group components/feed
+ * @group components
+ * @group unit
  */
-describe("[Misc] User Preferences - Unit Test", () => {
+describe("[Feed] Import User Preferences - Unit Test", () => {
   const dummyUser: IUser = {
     email: "",
     uid: "",
@@ -114,6 +132,22 @@ describe("[Misc] User Preferences - Unit Test", () => {
     const filters = getPrefFilters(userData);
     expect(filters).not.toBeNull();
     expect(countFilters(filters)).toBe(2);
+    expect(checkFilters(filters, targetFilters)).toBe(true);
+  });
+
+  test("1 medicalInfo box checked (Status.Yes)", () => {
+    const userData: IUser = {
+      ...dummyUser,
+      houseTrained: Status.No,
+      spayNeuterStatus: Status.Yes,
+    };
+    const targetFilters = {
+      medicalInfo: [{ value: Status.Yes, label: "Spayed/Neutered" }],
+    };
+    const filters = getPrefFilters(userData);
+    console.log(filters);
+    expect(filters).not.toBeNull();
+    expect(countFilters(filters)).toBe(1);
     expect(checkFilters(filters, targetFilters)).toBe(true);
   });
 });

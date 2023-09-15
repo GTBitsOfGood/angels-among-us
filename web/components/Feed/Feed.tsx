@@ -237,23 +237,39 @@ const filterGroups: FilterGroup[] = [
   },
 ];
 
+/**
+ * Parse filter options array based on user preferences
+ * @param {Option[]} opts array of all possible options
+ * @param {FilterEnums | undefined} prefArr array of filter option enums
+ * @returns {Option[]} option enums converted into Option type
+ */
+const parseOptArr = (
+  opts: Option[],
+  prefArr: any[] | undefined
+): Option[] => [...opts.filter((f) => prefArr?.includes(f.value))];
+
+/**
+ * Parse filter options array containing Status types based on user preferences
+ * @param {Option[]} opts array of all possible options
+ * @param {(Status | undefined)[]} statArr array of status enums
+ * @returns {Option[]} status enums converted into Option type
+ */
+const parseStatusArr = (
+  opts: Option[],
+  statArr: (Status | undefined)[]
+): Option[] => {
+  return opts.filter((opt, idx) => statArr[idx] === Status.Yes);
+};
+
+/**
+ * Imports user preferences and maps them to the feed filters
+ * @param {IUser | null} userData user data
+ * @returns {SelectedFilters | null} preferred filters
+ */
 function getPrefFilters(userData: IUser | null): SelectedFilters | null {
   if (!userData) {
     return null;
   }
-
-  // Parse Filter options array based on user preferences
-  const parseOptArr = (
-    opts: Option[],
-    prefArr: any[] | undefined
-  ): Option[] => [...opts.filter((f) => prefArr?.includes(f.value))];
-
-  const parseStatusArr = (
-    opts: Option[],
-    statArr: (Status | undefined)[]
-  ): Option[] => {
-    return opts.filter((opt, idx) => statArr[idx] === Status.Yes);
-  };
 
   const optHandlers: OptHandlers = {
     type: (opts: Option[]) => parseOptArr(opts, userData.type),
