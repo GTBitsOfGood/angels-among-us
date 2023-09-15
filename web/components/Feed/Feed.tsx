@@ -30,6 +30,7 @@ import { useAuth } from "../../context/auth";
 import { Role } from "../../utils/types/account";
 import { trpc } from "../../utils/trpc";
 import dayjs from "dayjs";
+import defaultDog from "../../public/dog.svg";
 
 export type FilterGroup = {
   title: string;
@@ -363,7 +364,7 @@ function Feed(props: {
   const feedPosts = trpc.post.getFilteredPosts
     .useQuery(queryFilters)
     ?.data?.map((p: IPost) => {
-      let firstImage = "https://source.unsplash.com/P0YeIVOyvSI";
+      let firstImage = defaultDog.src;
       for (let i = 0; i < p.attachments.length; i++) {
         const a = p.attachments[i];
         if (
