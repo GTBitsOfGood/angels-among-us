@@ -52,7 +52,7 @@ export type SelectedFilters = {
 
 export type OptHandlers = {
   [key: string]: (opts: Option[]) => Option[];
-}
+};
 
 const filterGroups: FilterGroup[] = [
   {
@@ -241,13 +241,17 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
   if (!userData) {
     return null;
   }
-  
-  // Parse Filter options array based on user preferences
-  const parseOptArr = (opts: Option[], prefArr: any[] | undefined):  Option[] => (
-    [...opts.filter((f) => prefArr?.includes(f.value))]
-  );
 
-  const parseStatusArr = (opts: Option[], statArr: (Status | undefined)[]): Option[] => {
+  // Parse Filter options array based on user preferences
+  const parseOptArr = (
+    opts: Option[],
+    prefArr: any[] | undefined
+  ): Option[] => [...opts.filter((f) => prefArr?.includes(f.value))];
+
+  const parseStatusArr = (
+    opts: Option[],
+    statArr: (Status | undefined)[]
+  ): Option[] => {
     return opts.filter((opt, idx) => statArr[idx] === Status.Yes);
   };
 
@@ -257,20 +261,22 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
     age: (opts: Option[]) => parseOptArr(opts, userData.age),
     size: (opts: Option[]) => parseOptArr(opts, userData.size),
     gender: (opts: Option[]) => parseOptArr(opts, userData.gender),
-    dogsNotGoodWith: (opts: Option[]) => parseOptArr(opts, userData.dogsNotGoodWith),
+    dogsNotGoodWith: (opts: Option[]) =>
+      parseOptArr(opts, userData.dogsNotGoodWith),
     behavioral: (opts: Option[]) => parseOptArr(opts, userData.behavioral),
     temperament: (opts: Option[]) => parseOptArr(opts, userData.temperament),
 
     // medicalInfo has no 1:1 map with DB fields and also has non-unique filter values (Status.Yes/No)
-    medicalInfo: (opts: Option[]) => parseStatusArr(opts, [userData.houseTrained, userData.spayNeuterStatus])
+    medicalInfo: (opts: Option[]) =>
+      parseStatusArr(opts, [userData.houseTrained, userData.spayNeuterStatus]),
   };
 
   const filters = filterGroups.reduce((acc, curr) => {
     const group = curr.filters.reduce((a, c) => {
-      return ({
+      return {
         ...a,
-        [c.key]: optHandlers[c.key](c.options)
-      });
+        [c.key]: optHandlers[c.key](c.options),
+      };
     }, {});
     return {
       ...acc,
@@ -429,7 +435,7 @@ function Feed(props: {
                   type: "useprefs",
                   filter: filterGroups[0].filters[0],
                   ind: 0,
-                  event: []
+                  event: [],
                 });
               }}
               variant="solid-primary"
@@ -579,7 +585,7 @@ function Feed(props: {
                 type: "useprefs",
                 filter: filterGroups[0].filters[0],
                 ind: 0,
-                event: []
+                event: [],
               });
             }}
             variant="solid-primary"
