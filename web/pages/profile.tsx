@@ -39,7 +39,7 @@ import { trpc } from "../utils/trpc";
 import Section from "../components/Profile/Section";
 
 function Profile() {
-  const { user, userData } = useAuth();
+  const { user, userData, refetchUserData } = useAuth();
   const [editing, setEditing] = useState(false);
 
   function pruneUserData(
@@ -86,7 +86,12 @@ function Profile() {
 
   const [preferences, dispatch] = useReducer(reducer, initialFormState);
 
-  const updatePreferences = trpc.user.updateUserPreferences.useMutation();
+  const updatePreferences = trpc.user.updateUserPreferences.useMutation({
+    onSuccess() {
+      refetchUserData!();
+    },
+  });
+
   return (
     <Flex
       display={"flex"}
@@ -357,7 +362,7 @@ function Profile() {
             </Stack>
           </Section>
           <Section heading="Behavioral Traits">
-          <Stack direction="column" w="100%" spacing={5}>
+            <Stack direction="column" w="100%" spacing={5}>
               <Stack direction={["column", "row"]} spacing={5}>
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
@@ -389,7 +394,7 @@ function Profile() {
                   />
                 </Stack>
                 <Stack direction="column" width={["100%", "50%"]}>
-                <Text fontWeight="medium">Able to foster dogs with:</Text>
+                  <Text fontWeight="medium">Able to foster dogs with:</Text>
                   <Select
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
@@ -415,9 +420,9 @@ function Profile() {
                     )}
                   />
                 </Stack>
-                </Stack>
+              </Stack>
               <Stack direction="row">
-              <Stack direction="column" width={["100%", "50%"]}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs with these temperaments:
                   </Text>
