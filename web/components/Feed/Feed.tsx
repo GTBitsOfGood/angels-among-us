@@ -261,10 +261,12 @@ const parseOptArr = (
  */
 const parseStatusArr = (
   opts: Option[],
-  statArr: (Status | undefined)[]
-): Option[] => {
-  return opts.filter((opt, idx) => statArr[idx] === Status.Yes);
-};
+  statArr: (Status | undefined)[],
+  inverse: boolean = false
+): Option[] =>
+  inverse
+    ? opts.filter((opt, idx) => !(statArr[idx] === Status.Yes))
+    : opts.filter((opt, idx) => statArr[idx] === Status.Yes);
 
 /**
  * Imports user preferences and maps them to the feed filters
@@ -289,7 +291,11 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
 
     // medicalInfo has no 1:1 map with DB fields and also has non-unique filter values (Status.Yes/No)
     medicalInfo: (opts: Option[]) =>
-      parseStatusArr(opts, [userData.houseTrained, userData.spayNeuterStatus]),
+      parseStatusArr(
+        opts,
+        [userData.houseTrained, userData.spayNeuterStatus],
+        true
+      ),
   };
 
   const filters = filterGroups.reduce((acc, curr) => {
