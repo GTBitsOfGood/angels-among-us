@@ -4,7 +4,7 @@ import {
   SelectedFilters,
 } from "../../components/Feed/Feed";
 import { Role } from "../../utils/types/account";
-import { Breed, FosterType, Status } from "../../utils/types/post";
+import { Breed, FosterType, GoodWith, Status } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
 
 // Mock authentication
@@ -73,6 +73,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
     role: Role.Volunteer,
     disabled: false,
     hasCompletedOnboarding: true,
+    dogsNotGoodWith: Object.values(GoodWith),
   };
 
   test("null userdata", () => {
@@ -145,9 +146,28 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
       medicalInfo: [{ value: Status.Yes, label: "Spayed/Neutered" }],
     };
     const filters = getPrefFilters(userData);
-    console.log(filters);
     expect(filters).not.toBeNull();
     expect(countFilters(filters)).toBe(1);
+    expect(checkFilters(filters, targetFilters)).toBe(true);
+  });
+
+  test("2 dogsNotGoodWith", () => {
+    const userData: IUser = {
+      ...dummyUser,
+      dogsNotGoodWith: [GoodWith.Men, GoodWith.Women],
+    };
+    const targetFilters = {
+      dogsNotGoodWith: [
+        { value: GoodWith.OlderChildren, label: "Older Children" },
+        { value: GoodWith.YoungChildren, label: "Young Children" },
+        { value: GoodWith.LargeDogs, label: "Large Dogs" },
+        { value: GoodWith.SmallDogs, label: "Small Dogs" },
+        { value: GoodWith.Cats, label: "Cats" },
+      ],
+    };
+    const filters = getPrefFilters(userData);
+    expect(filters).not.toBeNull();
+    expect(countFilters(filters)).toBe(Object.values(GoodWith).length - 2);
     expect(checkFilters(filters, targetFilters)).toBe(true);
   });
 });

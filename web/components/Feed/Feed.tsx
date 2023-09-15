@@ -179,7 +179,7 @@ const filterGroups: FilterGroup[] = [
     filters: [
       {
         key: "dogsNotGoodWith",
-        description: "Dogs not known to be good with:",
+        description: "Dogs known to be good with:",
         options: [
           { value: GoodWith.Men, label: "Men" },
           { value: GoodWith.Women, label: "Women" },
@@ -241,12 +241,17 @@ const filterGroups: FilterGroup[] = [
  * Parse filter options array based on user preferences
  * @param {Option[]} opts array of all possible options
  * @param {FilterEnums | undefined} prefArr array of filter option enums
+ * @param {boolean} inverse whether to invert the user preferences
  * @returns {Option[]} option enums converted into Option type
  */
 const parseOptArr = (
   opts: Option[],
-  prefArr: any[] | undefined
-): Option[] => [...opts.filter((f) => prefArr?.includes(f.value))];
+  prefArr: any[] | undefined,
+  inverse: boolean = false
+): Option[] =>
+  inverse
+    ? [...opts.filter((f) => !prefArr?.includes(f.value))]
+    : [...opts.filter((f) => prefArr?.includes(f.value))];
 
 /**
  * Parse filter options array containing Status types based on user preferences
@@ -278,7 +283,7 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
     size: (opts: Option[]) => parseOptArr(opts, userData.size),
     gender: (opts: Option[]) => parseOptArr(opts, userData.gender),
     dogsNotGoodWith: (opts: Option[]) =>
-      parseOptArr(opts, userData.dogsNotGoodWith),
+      parseOptArr(opts, userData.dogsNotGoodWith, true),
     behavioral: (opts: Option[]) => parseOptArr(opts, userData.behavioral),
     temperament: (opts: Option[]) => parseOptArr(opts, userData.temperament),
 
