@@ -154,12 +154,6 @@ export const postRouter = router({
       try {
         const post = await getPost(input.postOid);
         const email = fosterTypeEmails[post.type as FosterType] || "";
-        if (email == "") {
-          throw new TRPCError({
-            message: "Post has invalid type.",
-            code: "BAD_REQUEST",
-          });
-        }
         try {
           const info = await transporter.sendMail({
             from: '"Angels Among Us Fostering Portal" <bitsofgood.aau@gmail.com>',
@@ -175,7 +169,7 @@ export const postRouter = router({
         }
       } catch (e) {
         throw new TRPCError({
-          message: "No Post with given ID exists.",
+          message: "Post is not valid. Check the provided ID and type.",
           code: "BAD_REQUEST",
         });
       }
