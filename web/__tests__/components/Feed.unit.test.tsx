@@ -67,6 +67,7 @@ const checkFilters = (
  * @group unit
  */
 describe("[Feed] Import User Preferences - Unit Test", () => {
+  // Generate user profile baseline that maps to zero feed filter options
   const dummyUser: IUser = {
     email: "",
     uid: "",
@@ -86,7 +87,6 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
 
   test("empty userdata", () => {
     const filters = getPrefFilters(dummyUser);
-    console.log(filters);
     expect(countFilters(filters)).toBe(0);
   });
 
@@ -146,7 +146,6 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
       medicalInfo: [{ value: Status.Yes, label: "House Trained" }],
     };
     const filters = getPrefFilters(userData);
-    console.log(filters);
     expect(filters).not.toBeNull();
     expect(countFilters(filters)).toBe(1);
     expect(checkFilters(filters, targetFilters)).toBe(true);
