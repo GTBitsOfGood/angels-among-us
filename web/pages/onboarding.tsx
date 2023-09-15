@@ -13,6 +13,7 @@ import {
   Behavioral,
   Status,
   Breed,
+  Trained,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
 import pageAccessHOC from "../components/HOC/PageAccess";
@@ -39,6 +40,7 @@ export type PossibleTypes =
   | GoodWith
   | Medical
   | Behavioral
+  | Trained
   | Status;
 
 export interface IQuestion {

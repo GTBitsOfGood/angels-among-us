@@ -29,8 +29,6 @@ import { AddIcon } from "@chakra-ui/icons";
 import { useAuth } from "../../context/auth";
 import { Role } from "../../utils/types/account";
 import { trpc } from "../../utils/trpc";
-import dayjs from "dayjs";
-import defaultDog from "../../public/dog.svg";
 
 export type FilterGroup = {
   title: string;
@@ -364,23 +362,11 @@ function Feed(props: {
   const feedPosts = trpc.post.getFilteredPosts
     .useQuery(queryFilters)
     ?.data?.map((p: IPost) => {
-      let firstImage = defaultDog.src;
-      for (let i = 0; i < p.attachments.length; i++) {
-        const a = p.attachments[i];
-        if (
-          a.toLowerCase().includes(".png") ||
-          a.toLowerCase().includes(".jpeg") ||
-          a.toLowerCase().includes(".jpg")
-        ) {
-          firstImage = a;
-          break;
-        }
-      }
       return {
-        image: firstImage,
-        date: dayjs(p.date.toString()).format("MM/DD/YYYY hh:mm A").toString(),
+        attachments: p.attachments,
+        date: p.date,
         name: p.name,
-        tags: p.type,
+        tag: p.type,
         description: p.description,
       };
     });

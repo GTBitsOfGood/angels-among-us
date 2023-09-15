@@ -67,7 +67,6 @@ const postSchema = z.object({
   ),
 });
 
-//TODO: Update goodWith
 const postFilterSchema = z.object({
   type: z.array(z.nativeEnum(FosterType)),
   breed: z.array(z.nativeEnum(Breed)),
@@ -79,6 +78,16 @@ const postFilterSchema = z.object({
   houseTrained: z.nativeEnum(Trained).optional(),
   spayNeuterStatus: z.nativeEnum(Status).optional(),
 });
+
+const goodWithMap: Record<GoodWith, string> = {
+  [GoodWith.Cats]: "getsAlongWithCats" as const,
+  [GoodWith.LargeDogs]: "getsAlongWithLargeDogs" as const,
+  [GoodWith.Men]: "getsAlongWithMen" as const,
+  [GoodWith.OlderChildren]: "getsAlongWithOlderKids" as const,
+  [GoodWith.SmallDogs]: "getsAlongWithSmallDogs" as const,
+  [GoodWith.Women]: "getsAlongWithWomen" as const,
+  [GoodWith.YoungChildren]: "getsAlongWithYoungKids" as const,
+};
 
 export const postRouter = router({
   get: procedure
@@ -186,16 +195,12 @@ export const postRouter = router({
       const notAllowedBehavioral = Object.values(Behavioral).filter(
         (obj) => !input.behavioral.includes(obj)
       );
-      const goodWithMap: Record<GoodWith, string> = {
-        [GoodWith.Cats]: "getsAlongWithCats",
-        [GoodWith.LargeDogs]: "getsAlongWithLargeDogs",
-        [GoodWith.Men]: "getsAlongWithMen",
-        [GoodWith.OlderChildren]: "getsAlongWithOlderKids",
-        [GoodWith.SmallDogs]: "getsAlongWithSmallDogs",
-        [GoodWith.Women]: "getsAlongWithWomen",
-        [GoodWith.YoungChildren]: "getsAlongWithYoungKids",
-      };
 
+      /**
+       * Go through each value in GoodWith enum.
+       * If the value should be filtered as yes, get the specific key from the goodWithMap and set the filter array to only yes.
+       * Otherwise we don't need to filter by that enum value and can set the filter array to yes, no and unknown.
+       */
       const getsAlongWith: Record<string, Trained> = Object.values(
         GoodWith
       ).reduce((acc, curr) => {

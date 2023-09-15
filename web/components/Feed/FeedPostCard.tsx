@@ -1,20 +1,37 @@
 import { Card, Flex, Image, Text } from "@chakra-ui/react";
+import { PossibleTypes } from "../../pages/onboarding";
+import defaultDog from "../../public/dog.svg";
+import dayjs from "dayjs";
 
-export type PostCard = {
-  image: string;
-  date: string;
+type PostCard = {
+  attachments: string[];
+  date: Date;
   name: string;
-  tags: string;
+  tag: PossibleTypes;
   description: string;
 };
 
 function FeedPostCard(props: { post: PostCard }) {
   const { post } = props;
 
-  const splitTag = post.tags.split(/(?=[A-Z])/);
+  const splitTag = post.tag.split(/(?=[A-Z])/);
   const formattedTag = splitTag.reduce((acc, curr) => {
     return acc.concat(curr.charAt(0).toUpperCase() + curr.substring(1) + " ");
   }, "");
+
+  let firstImage = defaultDog.src;
+  const imageExtensions = new Set<string>(["png", "jpeg", "jpg"]);
+  for (let i = 0; i < post.attachments.length; i++) {
+    const filenameSplit = post.attachments[i].split(".");
+    if (imageExtensions.has(filenameSplit[filenameSplit.length - 1])) {
+      firstImage = post.attachments[i];
+      break;
+    }
+  }
+
+  const formattedDate = dayjs(post.date.toString())
+    .format("MM/DD/YYYY hh:mm A")
+    .toString();
 
   return (
     <Card
@@ -26,7 +43,7 @@ function FeedPostCard(props: { post: PostCard }) {
     >
       <Flex gap={{ base: "15px", lg: "20px" }}>
         <Image
-          src={post.image}
+          src={firstImage}
           objectFit="cover"
           minWidth={{ base: "120px", lg: "150px" }}
           width={{ base: "120px", lg: "150px" }}
@@ -40,7 +57,7 @@ function FeedPostCard(props: { post: PostCard }) {
           marginTop={{ base: "0px", lg: "8px" }}
           marginRight="20px"
         >
-          <Text fontSize="14px">{post.date}</Text>
+          <Text fontSize="14px">{formattedDate}</Text>
           <Text margin="0px" paddingY="0px" fontWeight="bold" fontSize="18px">
             {post.name}
           </Text>
