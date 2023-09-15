@@ -72,7 +72,7 @@ const fosterTypeEmails: Record<FosterType, string> = {
   [FosterType.Boarding]: "boardingadmin@angelsrescue.org",
   [FosterType.Shelter]: "fosteroffer@angelsrescue.org",
   [FosterType.OwnerSurrender]: "fosteroffer@angelsrescue.org",
-};
+} as const;
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_SERVER_EMAIL,
@@ -153,8 +153,8 @@ export const postRouter = router({
       }
       try {
         const post = await getPost(input.postOid);
-        const email = (fosterTypeEmails as any)[post.type] || "";
-        if (email.length < 2) {
+        const email = fosterTypeEmails[post.type as FosterType] || "";
+        if (email == "") {
           throw new TRPCError({
             message: "Post has invalid type.",
             code: "BAD_REQUEST",
