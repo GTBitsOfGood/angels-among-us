@@ -51,7 +51,7 @@ export type SelectedFilters = {
 };
 
 export type OptHandlers = {
-  [key: string]: (opts: Option[]) => Option[];
+  [key: Filter["key"]]: (opts: Option[]) => Option[];
 };
 
 const filterGroups: FilterGroup[] = [
