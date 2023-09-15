@@ -47,7 +47,7 @@ export type Option = {
 };
 
 export type SelectedFilters = {
-  [key: string]: Option[];
+  [key: Filter["key"]]: Option[];
 };
 
 export type OptHandlers = {
@@ -240,13 +240,13 @@ const filterGroups: FilterGroup[] = [
 /**
  * Parse filter options array based on user preferences
  * @param {Option[]} opts array of all possible options
- * @param {FilterEnums | undefined} prefArr array of filter option enums
+ * @param {PossibleTypes | undefined} prefArr array of filter option enums
  * @param {boolean} inverse whether to invert the user preferences
  * @returns {Option[]} option enums converted into Option type
  */
 const parseOptArr = (
   opts: Option[],
-  prefArr: any[] | undefined,
+  prefArr: PossibleTypes[] | undefined,
   inverse: boolean = false
 ): Option[] =>
   inverse
