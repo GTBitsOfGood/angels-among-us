@@ -1,23 +1,18 @@
 import { Card, Flex, Image, Text } from "@chakra-ui/react";
-import { PossibleTypes } from "../../pages/onboarding";
 import defaultDog from "../../public/dog.svg";
 import dayjs from "dayjs";
+import { FosterType, fosterTypeLabels } from "../../utils/types/post";
 
 type PostCard = {
   attachments: string[];
-  date: Date;
+  date: string;
   name: string;
-  tag: PossibleTypes;
+  tag: FosterType;
   description: string;
 };
 
 function FeedPostCard(props: { post: PostCard }) {
   const { post } = props;
-
-  const splitTag = post.tag.split(/(?=[A-Z])/);
-  const formattedTag = splitTag.reduce((acc, curr) => {
-    return acc.concat(curr.charAt(0).toUpperCase() + curr.substring(1) + " ");
-  }, "");
 
   let firstImage = defaultDog.src;
   const imageExtensions = new Set<string>(["png", "jpeg", "jpg"]);
@@ -73,7 +68,7 @@ function FeedPostCard(props: { post: PostCard }) {
             fontSize="14px"
             fontWeight="semibold"
           >
-            {formattedTag.substring(0, formattedTag.length - 1)}
+            {fosterTypeLabels[post.tag]}
           </Text>
           <Text fontSize="14px" lineHeight="18px" color="#656565">
             {post.description}

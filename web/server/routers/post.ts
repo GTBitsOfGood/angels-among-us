@@ -24,6 +24,7 @@ import {
   Trained,
   Status,
   PetKind,
+  IPost,
 } from "../../utils/types/post";
 import { router, procedure } from "../trpc";
 
@@ -80,14 +81,14 @@ const postFilterSchema = z.object({
 });
 
 const goodWithMap: Record<GoodWith, string> = {
-  [GoodWith.Cats]: "getsAlongWithCats" as const,
-  [GoodWith.LargeDogs]: "getsAlongWithLargeDogs" as const,
-  [GoodWith.Men]: "getsAlongWithMen" as const,
-  [GoodWith.OlderChildren]: "getsAlongWithOlderKids" as const,
-  [GoodWith.SmallDogs]: "getsAlongWithSmallDogs" as const,
-  [GoodWith.Women]: "getsAlongWithWomen" as const,
-  [GoodWith.YoungChildren]: "getsAlongWithYoungKids" as const,
-};
+  [GoodWith.Cats]: "getsAlongWithCats",
+  [GoodWith.LargeDogs]: "getsAlongWithLargeDogs",
+  [GoodWith.Men]: "getsAlongWithMen",
+  [GoodWith.OlderChildren]: "getsAlongWithOlderKids",
+  [GoodWith.SmallDogs]: "getsAlongWithSmallDogs",
+  [GoodWith.Women]: "getsAlongWithWomen",
+  [GoodWith.YoungChildren]: "getsAlongWithYoungKids",
+} as const;
 
 export const postRouter = router({
   get: procedure
@@ -241,6 +242,15 @@ export const postRouter = router({
         houseTrained: { $in: houseTrained },
         spayNeuterStatus: { $in: spayNeuterStatus },
       };
-      return await getFilteredPosts(completeFilter);
+      const filteredPosts = await getFilteredPosts(completeFilter);
+      return filteredPosts.map((p: IPost) => {
+        return {
+          attachments: p.attachments,
+          date: p.date,
+          name: p.name,
+          tag: p.type,
+          description: p.description,
+        };
+      });
     }),
 });
