@@ -257,6 +257,7 @@ const parseOptArr = (
  * Parse filter options array containing Status types based on user preferences
  * @param {Option[]} opts array of all possible options
  * @param {(Status | undefined)[]} statArr array of status enums
+ * @param {boolean} inverse whether to invert the user preferences
  * @returns {Option[]} status enums converted into Option type
  */
 const parseStatusArr = (
