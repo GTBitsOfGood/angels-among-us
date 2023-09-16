@@ -133,7 +133,7 @@ const filterGroups: FilterGroup[] = [
           { value: Breed.Whippet, label: "Whippet" },
         ],
         dropdown: true,
-        allSelected: false,
+        allSelected: true,
       },
       {
         key: "age",
