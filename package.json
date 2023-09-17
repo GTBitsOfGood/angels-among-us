@@ -11,10 +11,5 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,md}": "prettier --write"
-  },
-  "dependencies": {
-    "@smithy/protocol-http": "^3.0.3",
-    "@smithy/signature-v4": "^2.0.7",
-    "nodemailer": "^6.9.5"
   }
 }
