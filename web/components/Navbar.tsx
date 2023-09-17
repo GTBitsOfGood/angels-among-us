@@ -206,7 +206,7 @@ export default function Navbar() {
             <AccordionPanel bgColor="white">
               <Stack direction="column">
                 <Stack direction="column">
-                  <Link>
+                  <Link as={NextLink} href={Pages.RESOURCES}>
                     <Text>Resources</Text>
                   </Link>
                   <Divider border="1px solid angelsGray.100" />

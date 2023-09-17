@@ -1,5 +1,6 @@
 import { PhoneIcon } from "@chakra-ui/icons";
 import { Flex, Stack, Text, Box, Divider } from "@chakra-ui/react";
+import { PropsWithChildren } from "react";
 import pageAccessHOC from "../components/HOC/PageAccess";
 
 export type Team = {
@@ -20,7 +21,7 @@ const TEAMS: Team[] = [
       {
         email: "kimkay",
         purpose:
-          "any questions, problems, concerns, suggestions, or if you don't know '",
+          "any questions, problems, concerns, suggestions, or if you don't know",
       },
     ],
   },
@@ -54,35 +55,6 @@ const TEAMS: Team[] = [
         email: "moves",
         purpose:
           "where fosters email whenever a dog is moved to/from a temp, vet, or boarding facility",
-      },
-    ],
-  },
-  {
-    teamName: "Vetting Teams",
-    primaryContact: "Samantha Orr (samanthao@angelsrescue.org)",
-    contacts: [
-      {
-        email: "vets",
-        purpose:
-          "non-emergency vet appointments and any medical questions about your foster",
-      },
-      {
-        email: "heartworm",
-        purpose: "all vetting & questions for heartworm positive dogs",
-      },
-      {
-        email: "spayneuter",
-        purpose:
-          "to schedule spay/neuter, please wait 5 - 7 days after getting new foster to contact so we have intake records",
-      },
-      {
-        email: "prevents",
-        purpose:
-          "to ask for prevents in your area OR if you give your own supply to let them know to add to the dog's record. You should email prevents@ every month",
-      },
-      {
-        email: "pharmacy",
-        purpose: "for prescription refills, medication & food",
       },
     ],
   },
@@ -167,6 +139,35 @@ const TEAMS: Team[] = [
       {
         email: "supplies",
         purpose: "to borrow crates or get other supplies for your foster",
+      },
+    ],
+  },
+  {
+    teamName: "Vetting Teams",
+    primaryContact: "Samantha Orr (samanthao@angelsrescue.org)",
+    contacts: [
+      {
+        email: "vets",
+        purpose:
+          "non-emergency vet appointments and any medical questions about your foster",
+      },
+      {
+        email: "heartworm",
+        purpose: "all vetting & questions for heartworm positive dogs",
+      },
+      {
+        email: "spayneuter",
+        purpose:
+          "to schedule spay/neuter, please wait 5 - 7 days after getting new foster to contact so we have intake records",
+      },
+      {
+        email: "prevents",
+        purpose:
+          "to ask for prevents in your area OR if you give your own supply to let them know to add to the dog's record. You should email prevents@ every month",
+      },
+      {
+        email: "pharmacy",
+        purpose: "for prescription refills, medication & food",
       },
     ],
   },
@@ -277,12 +278,17 @@ const TEAMS: Team[] = [
 
 interface TeamProps {
   team: Team;
-  children: JSX.Element | JSX.Element[];
 }
 
 interface TeamContactProps {
   contact: string;
   purpose: string;
+}
+
+interface ImportantContactProps {
+  lineName: string;
+  purpose: string;
+  phoneNumber: string;
 }
 
 function TeamContact({ contact, purpose }: TeamContactProps) {
@@ -295,31 +301,60 @@ function TeamContact({ contact, purpose }: TeamContactProps) {
       borderRadius={10}
     >
       <Text fontWeight="600">{`${contact}@angelsrescue.org`}</Text>
-      <Text>{purpose}</Text>
+      <Text fontSize="sm">{purpose}</Text>
     </Flex>
   );
 }
 
-function Team({ team, children }: TeamProps) {
+function ImportantContact({
+  lineName,
+  purpose,
+  phoneNumber,
+}: ImportantContactProps) {
+  return (
+    <Flex
+      bgColor="btn-solid-primary-bg"
+      textColor="white"
+      alignItems="center"
+      textAlign="center"
+      justifyContent="space-between"
+      flexDir="column"
+      borderRadius={12}
+      padding="18px"
+      flex="1"
+    >
+      <Text fontSize="lg" fontWeight="600">
+        {lineName}
+      </Text>
+      <Text fontSize="md">{purpose}</Text>
+      <Text fontSize="xl" fontWeight="600">
+        <PhoneIcon marginRight="4px" />
+        {phoneNumber}
+      </Text>
+    </Flex>
+  );
+}
+
+function Team({ team, children }: PropsWithChildren<TeamProps>) {
   return (
     <Flex
       w="100%"
       display="inline-block"
       direction="column"
-      bgColor="#FFFFFF"
+      bgColor="white"
       border="solid"
       borderRadius={12}
       borderWidth="2px"
-      borderColor="#BBBBBB"
+      borderColor="border-color"
       paddingX={6}
       paddingY={4}
       marginTop={[4, 6]}
     >
-      <Text fontSize="lg" fontWeight="600">
+      <Text fontSize="lg" fontWeight="600" marginBottom={2}>
         {team.teamName}
       </Text>
       {team.primaryContact && (
-        <Text fontSize="md" fontWeight="600" marginBottom={3}>
+        <Text fontSize="md" fontWeight="600" marginTop={-2} marginBottom={1}>
           {team.primaryContact}
         </Text>
       )}
@@ -334,12 +369,12 @@ function Resources() {
   return (
     <Flex display="flex" bgColor="bg-primary" justifyContent="center">
       <Box
-        width={["100%", "80%"]}
+        width={{ base: "100%", lg: "80%" }}
         p={[6, 8]}
         bgColor="white"
-        borderRadius={[0, 12]}
-        mt={["70px", 100]}
-        mb={[0, 100]}
+        borderRadius={{ base: 0, lg: 12 }}
+        mt={{ base: "65px", lg: 100 }}
+        mb={{ base: 0, lg: 100 }}
       >
         <Box w="100%" textAlign="center" marginBottom={6}>
           <Text
@@ -353,15 +388,15 @@ function Resources() {
         </Box>
         <Flex
           direction="column"
-          bgColor="#FFFFFF"
+          bgColor="white"
           border="solid"
           borderRadius={12}
           borderWidth="2px"
-          borderColor="#BBBBBB"
+          borderColor="border-color"
           paddingX={6}
           paddingTop={4}
           width="100%"
-          marginTop={{ sm: "6px", lg: "20px" }}
+          marginTop={{ md: "6px", lg: "20px" }}
         >
           <Box w="100%" textAlign="center" marginBottom={4}>
             <Text
@@ -375,96 +410,34 @@ function Resources() {
           </Box>
           <Divider />
           <Flex
-            direction={["column", "row"]}
+            direction={{ base: "column", lg: "row" }}
             marginY={6}
             alignItems="stretch"
             gap={6}
           >
-            <Flex
-              bgColor="btn-solid-primary-bg"
-              textColor="white"
-              alignItems="center"
-              textAlign="center"
-              justifyContent="space-between"
-              flexDir="column"
-              borderRadius={12}
-              padding="18px"
-              flex="1"
-            >
-              <Text fontSize="lg" fontWeight="600">
-                Emergency Vet Line
-              </Text>
-              <Text fontSize="md">(Dog medical emergencies)</Text>
-              <Text fontSize="xl" fontWeight="600">
-                <PhoneIcon marginRight="4px" />
-                470-239-5502
-              </Text>
-            </Flex>
-            <Flex
-              bgColor="btn-solid-primary-bg"
-              textColor="white"
-              alignItems="center"
-              textAlign="center"
-              justifyContent="space-between"
-              flexDir="column"
-              borderRadius={12}
-              padding="18px"
-              flex="1"
-            >
-              <Text fontSize="lg" fontWeight="600">
-                Lost Dog Hotline
-              </Text>
-              <Text fontSize="md">(Lost AAU Dogs - call right away!)</Text>
-              <Text fontSize="xl" fontWeight="600">
-                <PhoneIcon marginRight="4px" />
-                678-792-8774
-              </Text>
-            </Flex>
-            <Flex
-              bgColor="btn-solid-primary-bg"
-              textColor="white"
-              alignItems="center"
-              textAlign="center"
-              justifyContent="space-between"
-              flexDir="column"
-              borderRadius={12}
-              padding="18px"
-              flex="1"
-            >
-              <Text fontSize="lg" fontWeight="600">
-                Foster Hotline
-              </Text>
-              <Text fontSize="md">(Any foster questions or problems)</Text>
-              <Text fontSize="xl" fontWeight="600">
-                <PhoneIcon marginRight="4px" />
-                470-705-7870
-              </Text>
-            </Flex>
-            <Flex
-              bgColor="btn-solid-primary-bg"
-              textColor="white"
-              alignItems="center"
-              textAlign="center"
-              justifyContent="space-between"
-              flexDir="column"
-              borderRadius={12}
-              padding="18px"
-              flex="1"
-            >
-              <Text fontSize="lg" fontWeight="600">
-                Kim Kay
-              </Text>
-              <Text fontSize="md">
-                (Executive Director, issues or assistance)
-              </Text>
-              <Text fontSize="xl" fontWeight="600">
-                <PhoneIcon marginRight="4px" />
-                404-573-8800
-              </Text>
-            </Flex>
+            <ImportantContact
+              lineName="Emergency Vet Line"
+              purpose="(Dog medical emergencies)"
+              phoneNumber="470-239-5502"
+            />
+            <ImportantContact
+              lineName="Lost Dog Hotline"
+              purpose="(Lost AAU Dogs - call right away!)"
+              phoneNumber="678-792-8774"
+            />
+            <ImportantContact
+              lineName="Foster Hotline"
+              purpose="(Any foster questions or problems)"
+              phoneNumber="470-705-7870"
+            />
+            <ImportantContact
+              lineName="Kim Kay"
+              purpose="(Executive Director, issues or assistance)"
+              phoneNumber="404-573-8800"
+            />
           </Flex>
         </Flex>
-        <Box sx={{ columnCount: [1, 2] }} w="100%" mx="auto">
+        <Box sx={{ columnCount: { md: 1, lg: 2 } }} w="100%" mx="auto">
           {TEAMS.map((team) => {
             return (
               <Team team={team} key={team.teamName}>
