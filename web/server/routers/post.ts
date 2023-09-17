@@ -192,7 +192,7 @@ export const postRouter = router({
         : Object.values(Trained);
       const spayNeuterStatus = input.spayNeuterStatus
         ? [input.spayNeuterStatus]
-        : Object.values(Status);
+        : Object.values(Trained);
       const notAllowedBehavioral = Object.values(Behavioral).filter(
         (obj) => !input.behavioral.includes(obj)
       );
