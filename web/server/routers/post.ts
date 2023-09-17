@@ -12,6 +12,7 @@ import {
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
+  IPost,
   FosterType,
   Size,
   Breed,
@@ -147,16 +148,16 @@ export const postRouter = router({
         }
       } catch (e) {
         throw new TRPCError({
-          message: "Server unable to access user endpoint.",
+          message: "An unexpected error occured.",
           code: "INTERNAL_SERVER_ERROR",
         });
       }
       try {
-        const post = await getPost(input.postOid);
-        const email = fosterTypeEmails[post.type as FosterType] || "";
+        const post = (await getPost(input.postOid)) as IPost;
+        const email = fosterTypeEmails[post.type];
         try {
           const info = await transporter.sendMail({
-            from: '"Angels Among Us Fostering Portal" <bitsofgood.aau@gmail.com>',
+            from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
             to: email,
             subject: "Someone is ready to foster your dog!",
             text: "User has signed up to foster dog, a stray dog.",
@@ -168,10 +169,12 @@ export const postRouter = router({
           });
         }
       } catch (e) {
-        throw new TRPCError({
-          message: "Post is not valid. Check the provided ID and type.",
-          code: "BAD_REQUEST",
-        });
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occured.",
+          });
       }
       return { success: true };
     }),
