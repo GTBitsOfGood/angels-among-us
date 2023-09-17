@@ -191,20 +191,12 @@ describe("[DB] Account - Unit Test", () => {
     test("happy", async () => {
       const searchTerm = randomAccounts[0].email;
       const accounts = await searchAccounts(searchTerm);
-  
-      expect(accounts).not.toBeNull();
-      expect(accounts).toBeInstanceOf(Array);
-      if (accounts === null) return;
       expect(accounts.every((account) => account.email.includes(searchTerm))).toBe(true);
     });
   
     test("not found", async () => {
       const searchTerm = "ASDASDASD";
       const accounts = await searchAccounts(searchTerm);
-  
-      expect(accounts).not.toBeNull();
-      expect(accounts).toBeInstanceOf(Array);
-      if (accounts === null) return;
       expect(accounts.length).toBe(0);
     });
   });
