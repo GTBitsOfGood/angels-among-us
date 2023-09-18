@@ -153,7 +153,7 @@ export const postRouter = router({
         });
       }
       try {
-        const post = (await getPost(input.postOid)) as IPost;
+        const post = await getPost(input.postOid);
         const email = fosterTypeEmails[post.type];
         try {
           const info = await transporter.sendMail({
@@ -173,7 +173,7 @@ export const postRouter = router({
         else
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "An unexpected error occured.",
+            message: "An unexpected error occurred.",
           });
       }
       return { success: true };
