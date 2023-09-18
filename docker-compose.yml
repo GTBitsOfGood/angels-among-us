@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./web:/app
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    command: --replSet rs0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
