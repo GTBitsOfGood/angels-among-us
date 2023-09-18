@@ -12,7 +12,6 @@ import {
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
-  IPost,
   FosterType,
   Size,
   Breed,
@@ -155,14 +154,9 @@ export const postRouter = router({
       try {
         const post = await getPost(input.postOid);
         const email = fosterTypeEmails[post.type];
-        try {
-          const info = await transporter.sendMail({
-            from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
-            to: email,
-            subject: "Someone is ready to foster your dog!",
-            text: "User has signed up to foster dog, a stray dog.",
-          });
-        } catch (e) {
+        let count = 0;
+        const maxTries = 3;
+        while (true) {
           try {
             const info = await transporter.sendMail({
               from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
@@ -170,15 +164,9 @@ export const postRouter = router({
               subject: "Someone is ready to foster your dog!",
               text: "User has signed up to foster dog, a stray dog.",
             });
+            break;
           } catch (e) {
-            try {
-              const info = await transporter.sendMail({
-                from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
-                to: email,
-                subject: "Someone is ready to foster your dog!",
-                text: "User has signed up to foster dog, a stray dog.",
-              });
-            } catch (e) {
+            if (count++ == maxTries) {
               throw new TRPCError({
                 message: "Unable to send Email.",
                 code: "INTERNAL_SERVER_ERROR",
