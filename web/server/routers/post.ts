@@ -163,10 +163,28 @@ export const postRouter = router({
             text: "User has signed up to foster dog, a stray dog.",
           });
         } catch (e) {
-          throw new TRPCError({
-            message: "Unable to send Email.",
-            code: "INTERNAL_SERVER_ERROR",
-          });
+          try {
+            const info = await transporter.sendMail({
+              from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
+              to: email,
+              subject: "Someone is ready to foster your dog!",
+              text: "User has signed up to foster dog, a stray dog.",
+            });
+          } catch (e) {
+            try {
+              const info = await transporter.sendMail({
+                from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
+                to: email,
+                subject: "Someone is ready to foster your dog!",
+                text: "User has signed up to foster dog, a stray dog.",
+              });
+            } catch (e) {
+              throw new TRPCError({
+                message: "Unable to send Email.",
+                code: "INTERNAL_SERVER_ERROR",
+              });
+            }
+          }
         }
       } catch (e) {
         if (e instanceof TRPCError) throw e;
