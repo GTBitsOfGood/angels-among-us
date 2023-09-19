@@ -93,7 +93,7 @@ const filterGroups: FilterGroup[] = [
     filters: [
       {
         key: "breed",
-        description: "Breed Restrictions",
+        description: "Breeds",
         options: [
           { value: Breed.AmericanEskimo, label: "American Eskimo" },
           { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
@@ -295,7 +295,8 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
 
   const optHandlers: OptHandlers = {
     type: (opts: Option[]) => parseOptArr(opts, userData.type),
-    breed: (opts: Option[]) => parseOptArr(opts, userData.preferredBreeds),
+    breed: (opts: Option[]) =>
+      parseOptArr(opts, userData.restrictedBreeds, true),
     age: (opts: Option[]) => parseOptArr(opts, userData.age),
     size: (opts: Option[]) => parseOptArr(opts, userData.size),
     gender: (opts: Option[]) => parseOptArr(opts, userData.gender),
