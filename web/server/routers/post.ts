@@ -24,7 +24,9 @@ import {
   Trained,
   Status,
 } from "../../utils/types/post";
+import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
+import nodemailer from "nodemailer";
 
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
@@ -61,6 +63,24 @@ const postSchema = z.object({
       }),
     ])
   ),
+});
+
+const fosterTypeEmails: Record<FosterType, string> = {
+  [FosterType.FosterMove]: "foster@angelsrescue.org",
+  [FosterType.Return]: "returns@angelsrescue.org, foster@angelsrescue.org",
+  [FosterType.Temporary]: "tempfoster@angelsrescue.org",
+  [FosterType.Boarding]: "boardingadmin@angelsrescue.org",
+  [FosterType.Shelter]: "fosteroffer@angelsrescue.org",
+  [FosterType.OwnerSurrender]: "fosteroffer@angelsrescue.org",
+} as const;
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_SERVER_EMAIL,
+  port: parseInt(process.env.PORT_EMAIL as string),
+  auth: {
+    user: process.env.LOGIN_EMAIL,
+    pass: process.env.PASSWORD_EMAIL,
+  },
 });
 
 //TODO: Update goodWith
@@ -109,6 +129,61 @@ export const postRouter = router({
       });
     }
   }),
+  offer: procedure
+    .input(
+      z.object({
+        email: z.string(),
+        postOid: zodOidType,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const user = await findUserByEmail(input.email);
+        if (!user) {
+          throw new TRPCError({
+            message: "No user with given email exists.",
+            code: "BAD_REQUEST",
+          });
+        }
+      } catch (e) {
+        throw new TRPCError({
+          message: "An unexpected error occured.",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+      try {
+        const post = await getPost(input.postOid);
+        const email = fosterTypeEmails[post.type];
+        let count = 0;
+        const maxTries = 3;
+        while (true) {
+          try {
+            const info = await transporter.sendMail({
+              from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
+              to: email,
+              subject: "Someone is ready to foster your dog!",
+              text: "User has signed up to foster dog, a stray dog.",
+            });
+            break;
+          } catch (e) {
+            if (count++ == maxTries) {
+              throw new TRPCError({
+                message: "Unable to send Email.",
+                code: "INTERNAL_SERVER_ERROR",
+              });
+            }
+          }
+        }
+      } catch (e) {
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occurred.",
+          });
+      }
+      return { success: true };
+    }),
   finalize: procedure
     .input(
       z.object({
