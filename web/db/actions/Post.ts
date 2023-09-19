@@ -9,7 +9,9 @@ import storageClient from "../storageConnect";
 
 type UploadInfo = Record<string, string>;
 
-async function getPost(oid: ObjectId) {
+async function getPost(
+  oid: ObjectId
+): Promise<IPost & { _id: string; __v: number }> {
   const post = await Post.findOne({ _id: oid });
   post.attachments = post.attachments.map((attachment: string) => {
     return `${consts.storageBucketURL}/${attachment}`;

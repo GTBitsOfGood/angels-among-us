@@ -80,6 +80,9 @@ export default function Navbar() {
           alignItems="center"
           spacing={10}
         >
+          <Link as={NextLink} href={Pages.FEED}>
+            <Text>Feed</Text>
+          </Link>
           {role === Role.Admin && (
             <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
               <Text>Access Management</Text>

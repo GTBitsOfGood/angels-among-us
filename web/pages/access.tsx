@@ -7,7 +7,6 @@ import pageAccessHOC from "../components/HOC/PageAccess";
 
 function Access() {
   const accounts = trpc.account.getAll.useQuery();
-
   const [selectItems, updateSelectItems] = useState<boolean>(false);
 
   return (

@@ -14,6 +14,7 @@ import {
 
 export interface IUser {
   email: string;
+  preferredEmail?: string;
   name?: string;
   uid: string;
   role: Role;

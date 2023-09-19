@@ -93,11 +93,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   // force refresh the token every 10 minutes
   useEffect(() => {
     const handle = setInterval(async () => {
-      setLoading(true);
       // Refreshing token
       const user = auth.currentUser;
       if (user) await user.getIdToken(true);
-      setLoading(false);
     }, 10 * 60 * 1000);
     return () => clearInterval(handle);
   }, []);
