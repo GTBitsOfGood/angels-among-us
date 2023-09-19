@@ -17,6 +17,7 @@ const semanticTokens = {
     "tag-primary-bg": "#c6e3f9",
     "text-primary": "#57a0d5",
     "text-secondary": "#7d7e82",
+    "border-color": "#bbbbbb",
   },
 } as const;
 

@@ -111,7 +111,7 @@ async function searchAccounts(
   session?: ClientSession
 ): Promise<Array<HydratedDocument<IAccount>>> {
   try {
-    const regexTerm = new RegExp(`.*${searchSubject}.*`, 'i');
+    const regexTerm = new RegExp(`.*${searchSubject}.*`, "i");
     const accounts = await Account.find(
       { email: regexTerm },
       { _id: 0, __v: 0 },
@@ -123,4 +123,11 @@ async function searchAccounts(
   }
 }
 
-export { findAccount, addAccount, removeAllAccounts, updateAccount, findAll, searchAccounts };
+export {
+  findAccount,
+  addAccount,
+  removeAllAccounts,
+  updateAccount,
+  findAll,
+  searchAccounts,
+};

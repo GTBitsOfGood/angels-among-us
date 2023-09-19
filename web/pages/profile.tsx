@@ -555,13 +555,13 @@ function Profile() {
             if (req.success) {
               setEditing(false);
             } else {
-                toast({
-                    title: 'Request unsuccessful',
-                    status: 'error',
-                    duration: 9000,
-                    isClosable: true,
-                    position: 'top'
-                  })
+              toast({
+                title: "Request unsuccessful",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+                position: "top",
+              });
             }
           }}
         >

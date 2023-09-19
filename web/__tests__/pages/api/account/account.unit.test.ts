@@ -214,13 +214,19 @@ describe("[API] Account - Unit Test", () => {
   describe("account.search", () => {
     test("happy", async () => {
       const searchTerm = randomAccounts[0].email;
-      const accounts = await caller.account.search({ searchSubject: searchTerm });
-      expect(accounts.every((account) => account.email.includes(searchTerm))).toBe(true);
+      const accounts = await caller.account.search({
+        searchSubject: searchTerm,
+      });
+      expect(
+        accounts.every((account) => account.email.includes(searchTerm))
+      ).toBe(true);
     });
-    
+
     test("not found", async () => {
       const searchTerm = "asdasdasdasd";
-      const accounts = await caller.account.search({ searchSubject: searchTerm });
+      const accounts = await caller.account.search({
+        searchSubject: searchTerm,
+      });
       expect(accounts.length).toBe(0);
     });
   });

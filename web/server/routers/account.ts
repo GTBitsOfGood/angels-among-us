@@ -213,24 +213,22 @@ export const accountRouter = router({
     }
   }),
 
-  search: procedure
-    .input(searchInput)
-    .query(async ({ input, ctx }) => {
-      const session = await Account.startSession();
-      session.startTransaction();
-      try {
-        const { searchSubject } = input;
-        const accounts = await searchAccounts(searchSubject, session);
-        session.commitTransaction();
-        return accounts as IAccount[];
-      } catch (e) {
-        session.abortTransaction();
-        if (e instanceof TRPCError) throw e;
-        else
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "An unexpected error occured",
-          });
-      }
-    }),
+  search: procedure.input(searchInput).query(async ({ input, ctx }) => {
+    const session = await Account.startSession();
+    session.startTransaction();
+    try {
+      const { searchSubject } = input;
+      const accounts = await searchAccounts(searchSubject, session);
+      session.commitTransaction();
+      return accounts as IAccount[];
+    } catch (e) {
+      session.abortTransaction();
+      if (e instanceof TRPCError) throw e;
+      else
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occured",
+        });
+    }
+  }),
 });

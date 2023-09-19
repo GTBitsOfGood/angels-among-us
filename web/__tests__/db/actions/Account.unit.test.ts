@@ -7,7 +7,7 @@ import {
   findAll,
   removeAllAccounts,
   updateAccount,
-  searchAccounts
+  searchAccounts,
 } from "../../../db/actions/Account";
 import { randomAccounts } from "../../../db/actions/__mocks__/Account";
 import Account from "../../../db/models/Account";
@@ -191,9 +191,11 @@ describe("[DB] Account - Unit Test", () => {
     test("happy", async () => {
       const searchTerm = randomAccounts[0].email;
       const accounts = await searchAccounts(searchTerm);
-      expect(accounts.every((account) => account.email.includes(searchTerm))).toBe(true);
+      expect(
+        accounts.every((account) => account.email.includes(searchTerm))
+      ).toBe(true);
     });
-  
+
     test("not found", async () => {
       const searchTerm = "ASDASDASD";
       const accounts = await searchAccounts(searchTerm);
