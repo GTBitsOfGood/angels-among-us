@@ -299,7 +299,7 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
     age: (opts: Option[]) => parseOptArr(opts, userData.age),
     size: (opts: Option[]) => parseOptArr(opts, userData.size),
     gender: (opts: Option[]) => parseOptArr(opts, userData.gender),
-    dogsNotGoodWith: (opts: Option[]) =>
+    goodWith: (opts: Option[]) =>
       parseOptArr(opts, userData.dogsNotGoodWith, true),
     behavioral: (opts: Option[]) => parseOptArr(opts, userData.behavioral),
     temperament: (opts: Option[]) => parseOptArr(opts, userData.temperament),
