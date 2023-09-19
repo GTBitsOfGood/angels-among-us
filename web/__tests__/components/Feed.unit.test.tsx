@@ -4,7 +4,13 @@ import {
   SelectedFilters,
 } from "../../components/Feed/Feed";
 import { Role } from "../../utils/types/account";
-import { Breed, FosterType, GoodWith, Status } from "../../utils/types/post";
+import {
+  Breed,
+  breedLabels,
+  FosterType,
+  GoodWith,
+  Status,
+} from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
 
 // Mock authentication
@@ -87,7 +93,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
 
   test("empty userdata", () => {
     const filters = getPrefFilters(dummyUser);
-    expect(countFilters(filters)).toBe(0);
+    expect(countFilters(filters)).toBe(50);
   });
 
   test("1 pet type", () => {
@@ -100,24 +106,30 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
     };
     const filters = getPrefFilters(userData);
     expect(filters).not.toBeNull();
-    expect(countFilters(filters)).toBe(1);
+    expect(countFilters(filters)).toBe(
+      Object.keys(Breed).length + targetFilters.type.length
+    );
     expect(checkFilters(filters, targetFilters)).toBe(true);
   });
 
   test("2 pet breeds", () => {
     const userData: IUser = {
       ...dummyUser,
-      preferredBreeds: [Breed.AmericanEskimo, Breed.Beagle],
+      restrictedBreeds: [Breed.AmericanEskimo, Breed.Beagle],
     };
     const targetFilters = {
-      breed: [
-        { value: Breed.AmericanEskimo, label: "American Eskimo" },
-        { value: Breed.Beagle, label: "Beagle" },
-      ],
+      breed: Object.keys(breedLabels)
+        .filter(
+          (val: string) => !userData.restrictedBreeds?.includes(val as Breed)
+        )
+        .map((val) => ({
+          value: val as Breed,
+          label: breedLabels[val as Breed],
+        })),
     };
     const filters = getPrefFilters(userData);
     expect(filters).not.toBeNull();
-    expect(countFilters(filters)).toBe(2);
+    expect(countFilters(filters)).toBe(targetFilters.breed.length);
     expect(checkFilters(filters, targetFilters)).toBe(true);
   });
 
@@ -132,7 +144,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
     };
     const filters = getPrefFilters(userData);
     expect(filters).not.toBeNull();
-    expect(countFilters(filters)).toBe(0);
+    expect(countFilters(filters)).toBe(Object.keys(Breed).length);
     expect(checkFilters(filters, targetFilters)).toBe(true);
   });
 
@@ -147,7 +159,9 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
     };
     const filters = getPrefFilters(userData);
     expect(filters).not.toBeNull();
-    expect(countFilters(filters)).toBe(1);
+    expect(countFilters(filters)).toBe(
+      Object.keys(Breed).length + targetFilters.medicalInfo.length
+    );
     expect(checkFilters(filters, targetFilters)).toBe(true);
   });
 
@@ -167,7 +181,9 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
     };
     const filters = getPrefFilters(userData);
     expect(filters).not.toBeNull();
-    expect(countFilters(filters)).toBe(Object.values(GoodWith).length - 2);
+    expect(countFilters(filters)).toBe(
+      Object.keys(Breed).length + Object.keys(GoodWith).length - 2
+    );
     expect(checkFilters(filters, targetFilters)).toBe(true);
   });
 });

@@ -329,6 +329,31 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
   return filters;
 }
 
+function getQueryFilters(selectedFilters: SelectedFilters) {
+  const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
+    if (curr === "medicalInfo") {
+      const keys: Record<string, string> = {
+        "House Trained": "houseTrained",
+        "Spayed/Neutered": "spayNeuterStatus",
+      };
+      const filterVals: Record<string, PossibleTypes | undefined> =
+        selectedFilters[curr].reduce((a, c) => {
+          return { ...a, [keys[c.label]]: c.value };
+        }, {});
+      for (const k of Object.keys(keys)) {
+        if (!(keys[k] in filterVals)) {
+          filterVals[keys[k]] = undefined;
+        }
+      }
+      return { ...acc, ...filterVals };
+    } else {
+      const filterVals = selectedFilters[curr].map((v) => v.value);
+      return { ...acc, [curr]: filterVals };
+    }
+  }, {});
+  return queryFilters as QueryFilter;
+}
+
 function Feed(props: {
   filterDisplayed: boolean;
   setFilterDisplayed: Dispatch<SetStateAction<boolean>>;
@@ -359,31 +384,6 @@ function Feed(props: {
         ...group,
       };
     }, {});
-  }
-
-  function getQueryFilters(selectedFilters: SelectedFilters) {
-    const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
-      if (curr === "medicalInfo") {
-        const keys: Record<string, string> = {
-          "House Trained": "houseTrained",
-          "Spayed/Neutered": "spayNeuterStatus",
-        };
-        const filterVals: Record<string, PossibleTypes | undefined> =
-          selectedFilters[curr].reduce((a, c) => {
-            return { ...a, [keys[c.label]]: c.value };
-          }, {});
-        for (const k of Object.keys(keys)) {
-          if (!(keys[k] in filterVals)) {
-            filterVals[keys[k]] = undefined;
-          }
-        }
-        return { ...acc, ...filterVals };
-      } else {
-        const filterVals = selectedFilters[curr].map((v) => v.value);
-        return { ...acc, [curr]: filterVals };
-      }
-    }, {});
-    return queryFilters as QueryFilter;
   }
 
   function filterReducer(
