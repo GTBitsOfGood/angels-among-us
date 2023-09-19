@@ -7,12 +7,14 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./web:/app
-    env_file:
-      - .env
+    environment:
+      - MONGO_DB=mongodb://db:27017
     ports:
       - "3000:3000"
     depends_on:
       - mongodb
+    networks:
+      - angels-among-us
 
   mongodb:
     image: mongo:latest
@@ -21,6 +23,12 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - angels-among-us
 
 volumes:
   mongodb_data:
+
+networks:
+  angels-among-us:
+    driver: bridge
