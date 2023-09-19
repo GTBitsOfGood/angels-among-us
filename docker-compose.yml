@@ -8,7 +8,7 @@ services:
     volumes:
       - ./web:/app
     environment:
-      - MONGO_DB=mongodb://db:27017
+      - MONGO_DB=mongodb://mongodb:27017
     ports:
       - "3000:3000"
     depends_on:
