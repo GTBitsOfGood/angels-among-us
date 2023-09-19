@@ -14,6 +14,7 @@ const pageAccess: Record<Pages, Set<Role>> = {
   [Pages.ACCESS_MANAGEMENT]: restricted,
   [Pages.PROFILE]: unrestricted,
   [Pages.FEED]: unrestricted,
+  [Pages.RESOURCES]: unrestricted,
 };
 
 const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {

@@ -60,4 +60,22 @@ async function findAll(session?: ClientSession) {
   return randomAccounts;
 }
 
-export { findAccount, addAccount, removeAllAccounts, updateAccount, findAll };
+async function searchAccounts(
+  searchSubject: string,
+  session?: ClientSession
+): Promise<Array<IAccount>> {
+  const regexTerm = new RegExp(`.*${searchSubject}.*`, "i");
+  const accounts = randomAccounts.filter((account) =>
+    regexTerm.test(account.email)
+  );
+  return accounts ?? [];
+}
+
+export {
+  findAccount,
+  addAccount,
+  removeAllAccounts,
+  updateAccount,
+  findAll,
+  searchAccounts,
+};

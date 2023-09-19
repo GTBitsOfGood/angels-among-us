@@ -9,6 +9,7 @@ import {
   Box,
   Heading,
   StackDivider,
+  useToast,
 } from "@chakra-ui/react";
 
 import Select from "react-select";
@@ -41,6 +42,7 @@ import Section from "../components/Profile/Section";
 function Profile() {
   const { user, userData, refetchUserData } = useAuth();
   const [editing, setEditing] = useState(false);
+  const toast = useToast();
 
   function pruneUserData(
     data: NonNullable<typeof userData>
@@ -552,6 +554,14 @@ function Profile() {
             });
             if (req.success) {
               setEditing(false);
+            } else {
+              toast({
+                title: "Request unsuccessful",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+                position: "top",
+              });
             }
           }}
         >

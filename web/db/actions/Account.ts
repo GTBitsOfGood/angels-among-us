@@ -99,4 +99,35 @@ async function findAll(
   }
 }
 
-export { findAccount, addAccount, removeAllAccounts, updateAccount, findAll };
+/**
+ * Finds account by search term using regex
+ *
+ * @param searchSubject string in regex
+ * @param session MongoDB session used for transactions
+ * @returns all account documents, pruned (no _id, __v) or empty array [] on failure
+ */
+async function searchAccounts(
+  searchSubject: string,
+  session?: ClientSession
+): Promise<Array<HydratedDocument<IAccount>>> {
+  try {
+    const regexTerm = new RegExp(`.*${searchSubject}.*`, "i");
+    const accounts = await Account.find(
+      { email: regexTerm },
+      { _id: 0, __v: 0 },
+      { session: session }
+    );
+    return accounts ?? [];
+  } catch (e) {
+    return [];
+  }
+}
+
+export {
+  findAccount,
+  addAccount,
+  removeAllAccounts,
+  updateAccount,
+  findAll,
+  searchAccounts,
+};
