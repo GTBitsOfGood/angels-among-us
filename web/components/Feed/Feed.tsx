@@ -6,7 +6,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useReducer, useState } from "react";
+import { Dispatch, SetStateAction, useReducer } from "react";
 import { PossibleTypes } from "../../pages/onboarding";
 import {
   Age,
@@ -313,15 +313,12 @@ function Feed(props: {
     }
   ) {
     let tempState = JSON.parse(JSON.stringify(state));
-    let toReturn = undefined;
     switch (action.type) {
       case "reset":
-        toReturn = getInitialFilters();
-        break;
+        return getInitialFilters();
       case "dropdown":
         tempState[action.filter.key] = action.event;
-        toReturn = tempState;
-        break;
+        return tempState;
       case "checkbox":
         const filt = action.filter;
         const ind = action.ind;
@@ -340,25 +337,20 @@ function Feed(props: {
         } else {
           tempState[filt.key].push(filt.options[ind]);
         }
-        toReturn = tempState;
-        break;
+        return tempState;
       default:
-        toReturn = state;
+        return state;
     }
-    setQueryFilters(getQueryFilters(toReturn));
-    return toReturn;
   }
-
-  const [queryFilters, setQueryFilters] = useState(
-    getQueryFilters(getInitialFilters())
-  );
 
   const [selectedFilters, setSelectedFilters] = useReducer(
     filterReducer,
     getInitialFilters()
   );
 
-  const feedPosts = trpc.post.getFilteredPosts.useQuery(queryFilters).data;
+  const feedPosts = trpc.post.getFilteredPosts.useQuery(
+    getQueryFilters(selectedFilters)
+  ).data;
 
   const mainContent = (
     <Flex
