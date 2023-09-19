@@ -27,6 +27,7 @@ import FeedPostCard from "./FeedPostCard";
 import { AddIcon } from "@chakra-ui/icons";
 import { useAuth } from "../../context/auth";
 import { Role } from "../../utils/types/account";
+import { IUser } from "../../utils/types/user";
 import { trpc } from "../../utils/trpc";
 
 export type FilterGroup = {
@@ -37,7 +38,7 @@ export type FilterGroup = {
 export type Filter = {
   key: string;
   description: string;
-  options: { value: PossibleTypes; label: string }[];
+  options: Option[];
   dropdown: boolean;
   allSelected: boolean;
 };
@@ -47,8 +48,12 @@ export type Option = {
   label: string;
 };
 
-export type SelectedFilters<T extends Filter> = {
-  [key in T["key"]]: Option[];
+export type SelectedFilters = {
+  [key: Filter["key"]]: Option[];
+};
+
+export type OptHandlers = {
+  [key: Filter["key"]]: (opts: Option[]) => Option[];
 };
 
 export type QueryFilter = {
@@ -246,6 +251,83 @@ const filterGroups: FilterGroup[] = [
   },
 ];
 
+/**
+ * Parse filter options array based on user preferences
+ * @param {Option[]} opts array of all possible options
+ * @param {PossibleTypes | undefined} prefArr array of filter option enums
+ * @param {boolean} inverse whether to invert the user preferences
+ * @returns {Option[]} option enums converted into Option type
+ */
+const parseOptArr = (
+  opts: Option[],
+  prefArr: PossibleTypes[] | undefined,
+  inverse: boolean = false
+): Option[] =>
+  inverse
+    ? [...opts.filter((f) => !prefArr?.includes(f.value))]
+    : [...opts.filter((f) => prefArr?.includes(f.value))];
+
+/**
+ * Parse filter options array containing Status types based on user preferences
+ * @param {Option[]} opts array of all possible options
+ * @param {(Status | undefined)[]} statArr array of status enums
+ * @param {boolean} inverse whether to invert the user preferences
+ * @returns {Option[]} status enums converted into Option type
+ */
+const parseStatusArr = (
+  opts: Option[],
+  statArr: (Status | undefined)[],
+  inverse: boolean = false
+): Option[] =>
+  inverse
+    ? opts.filter((opt, idx) => !(statArr[idx] === Status.Yes))
+    : opts.filter((opt, idx) => statArr[idx] === Status.Yes);
+
+/**
+ * Imports user preferences and maps them to the feed filters
+ * @param {IUser | null} userData user data
+ * @returns {SelectedFilters | null} preferred filters
+ */
+function getPrefFilters(userData: IUser | null): SelectedFilters | null {
+  if (!userData) {
+    return null;
+  }
+
+  const optHandlers: OptHandlers = {
+    type: (opts: Option[]) => parseOptArr(opts, userData.type),
+    breed: (opts: Option[]) => parseOptArr(opts, userData.preferredBreeds),
+    age: (opts: Option[]) => parseOptArr(opts, userData.age),
+    size: (opts: Option[]) => parseOptArr(opts, userData.size),
+    gender: (opts: Option[]) => parseOptArr(opts, userData.gender),
+    dogsNotGoodWith: (opts: Option[]) =>
+      parseOptArr(opts, userData.dogsNotGoodWith, true),
+    behavioral: (opts: Option[]) => parseOptArr(opts, userData.behavioral),
+    temperament: (opts: Option[]) => parseOptArr(opts, userData.temperament),
+
+    // medicalInfo has no 1:1 map with DB fields and also has non-unique filter values (Status.Yes/No)
+    medicalInfo: (opts: Option[]) =>
+      parseStatusArr(
+        opts,
+        [userData.houseTrained, userData.spayNeuterStatus],
+        true
+      ),
+  };
+
+  const filters = filterGroups.reduce((acc, curr) => {
+    const group = curr.filters.reduce((a, c) => {
+      return {
+        ...a,
+        [c.key]: optHandlers[c.key](c.options),
+      };
+    }, {});
+    return {
+      ...acc,
+      ...group,
+    };
+  }, {});
+  return filters;
+}
+
 function Feed(props: {
   filterDisplayed: boolean;
   setFilterDisplayed: Dispatch<SetStateAction<boolean>>;
@@ -265,7 +347,7 @@ function Feed(props: {
 
   const { userData } = useAuth();
 
-  function getInitialFilters() {
+  function getInitialFilters(): SelectedFilters {
     return filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
         if (c.allSelected) return { ...a, [c.key]: [...c.options] };
@@ -278,7 +360,7 @@ function Feed(props: {
     }, {});
   }
 
-  function getQueryFilters(selectedFilters: SelectedFilters<Filter>) {
+  function getQueryFilters(selectedFilters: SelectedFilters) {
     const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
       if (curr === "medicalInfo") {
         const keys: Record<string, string> = {
@@ -304,7 +386,7 @@ function Feed(props: {
   }
 
   function filterReducer(
-    state: SelectedFilters<Filter>,
+    state: SelectedFilters,
     action: {
       type: string;
       filter: Filter;
@@ -316,6 +398,8 @@ function Feed(props: {
     switch (action.type) {
       case "reset":
         return getInitialFilters();
+      case "useprefs":
+        return getPrefFilters(userData) || state;
       case "dropdown":
         tempState[action.filter.key] = action.event;
         return tempState;
@@ -416,7 +500,18 @@ function Feed(props: {
             >
               Clear All
             </Button>
-            <Button variant="solid-primary" fontWeight="normal">
+            <Button
+              onClick={() => {
+                setSelectedFilters({
+                  type: "useprefs",
+                  filter: filterGroups[0].filters[0],
+                  ind: 0,
+                  event: [],
+                });
+              }}
+              variant="solid-primary"
+              fontWeight="normal"
+            >
               Use My Preferences
             </Button>
           </Flex>
@@ -539,7 +634,19 @@ function Feed(props: {
           >
             Clear All
           </Button>
-          <Button variant="solid-primary" fontWeight="normal">
+          <Button
+            onClick={() => {
+              setFilterDisplayed(!filterDisplayed);
+              setSelectedFilters({
+                type: "useprefs",
+                filter: filterGroups[0].filters[0],
+                ind: 0,
+                event: [],
+              });
+            }}
+            variant="solid-primary"
+            fontWeight="normal"
+          >
             Use My Preferences
           </Button>
         </Flex>
@@ -572,3 +679,4 @@ function Feed(props: {
 }
 
 export default Feed;
+export { getPrefFilters };

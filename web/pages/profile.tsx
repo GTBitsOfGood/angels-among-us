@@ -39,7 +39,7 @@ import { trpc } from "../utils/trpc";
 import Section from "../components/Profile/Section";
 
 function Profile() {
-  const { user, userData } = useAuth();
+  const { user, userData, refetchUserData } = useAuth();
   const [editing, setEditing] = useState(false);
 
   function pruneUserData(
@@ -86,59 +86,48 @@ function Profile() {
 
   const [preferences, dispatch] = useReducer(reducer, initialFormState);
 
-  const updatePreferences = trpc.user.updateUserPreferences.useMutation();
+  const updatePreferences = trpc.user.updateUserPreferences.useMutation({
+    onSuccess() {
+      refetchUserData!();
+    },
+  });
 
   return (
     <Flex
-      display={["none", "flex"]}
-      bgColor="bg-primary"
+      display={"flex"}
+      bgColor={["white", "bg-primary"]}
       justifyContent="center"
     >
+      <Flex
+        display={{ base: "block", md: "none" }}
+        width={"100%"}
+        position={"fixed"}
+        zIndex={1}
+        bottom={0}
+        right={0}
+        left={0}
+        justifyContent={"center"}
+        alignItems={"center"}
+        padding={5}
+        bgGradient={"linear(180deg, #FFF 72.24%, #ECECEC 100%)"}
+      >
+        <EditButton></EditButton>
+      </Flex>
       <Box
-        width="80%"
+        width={["100%", "80%"]}
         p={8}
         bgColor="white"
         borderRadius={12}
-        mt={100}
-        mb={100}
+        mt={[14, 100]}
+        mb={[14, 100]}
       >
         <Flex w="100%" justifyContent="space-between" alignItems="center">
           <Heading size="lg" letterSpacing="wide">
             Profile
           </Heading>
-          {!editing ? (
-            <Button variant="solid-primary" onClick={() => setEditing(true)}>
-              Edit
-            </Button>
-          ) : (
-            <Stack direction="row">
-              <Button
-                variant="outline-secondary"
-                fontWeight="thin"
-                borderWidth="thin"
-                onClick={() => {
-                  dispatch({ type: "clear" });
-                  setEditing(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="solid-primary"
-                onClick={async () => {
-                  const req = await updatePreferences.mutateAsync({
-                    uid: userData!.uid,
-                    updateFields: preferences,
-                  });
-                  if (req.success) {
-                    setEditing(false);
-                  }
-                }}
-              >
-                Save
-              </Button>
-            </Stack>
-          )}
+          <Box display={{ base: "none", md: "block" }}>
+            <EditButton></EditButton>
+          </Box>
         </Flex>
         <Stack
           mt={5}
@@ -149,20 +138,24 @@ function Profile() {
           <Section heading="General Information">
             <Stack
               width="100%"
-              direction="row"
+              direction={["column", "row"]}
               spacing={10}
               alignItems="center"
             >
               <Image
                 borderRadius="100%"
-                boxSize={36}
+                boxSize={[100, 36]}
                 src={user?.photoURL ?? undefined}
                 alt="User photo"
               ></Image>
 
-              <Stack direction="column" width="85%" spacing={5}>
-                <Stack direction="row" spacing={5}>
-                  <Stack direction="column" width="50%">
+              <Stack
+                direction={["column", "row"]}
+                width={["100%", "100%"]}
+                spacing={5}
+              >
+                <Stack direction={"column"} spacing={5} width={["100%", "50%"]}>
+                  <Stack direction="column">
                     <Text fontWeight="medium">Name</Text>
                     <Input
                       placeholder={
@@ -171,20 +164,20 @@ function Profile() {
                       disabled={true}
                     ></Input>
                   </Stack>
-                  <Stack direction="column" width="50%">
-                    <Text fontWeight="medium">Preferred Email</Text>
-                    <Input placeholder={""} disabled={!editing}></Input>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" spacing={5}>
-                  <Stack direction="column" width="50%">
+                  <Stack direction="column">
                     <Text fontWeight="medium">Email</Text>
                     <Input
                       placeholder={user?.email ?? undefined}
                       disabled={true}
                     ></Input>
                   </Stack>
-                  <Stack direction="column" width="50%">
+                </Stack>
+                <Stack direction={"column"} spacing={5} width={["100%", "50%"]}>
+                  <Stack direction="column">
+                    <Text fontWeight="medium">Preferred Email</Text>
+                    <Input placeholder={""} disabled={!editing}></Input>
+                  </Stack>
+                  <Stack direction="column">
                     <Text fontWeight="medium">
                       Which types of fosters can you help with?
                     </Text>
@@ -219,8 +212,8 @@ function Profile() {
           </Section>
           <Section heading="Physical Traits">
             <Stack direction="column" w="100%" spacing={5}>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction={["column-reverse", "row"]} spacing={5}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Breed Restrictions</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -248,7 +241,7 @@ function Profile() {
                     }))}
                   />
                 </Stack>
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Breed Preferences</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -277,8 +270,8 @@ function Profile() {
                   />
                 </Stack>
               </Stack>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction={["column-reverse", "row"]} spacing={5}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Age Capability</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -306,7 +299,7 @@ function Profile() {
                     }))}
                   />
                 </Stack>
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Dog Size Capability</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -335,8 +328,8 @@ function Profile() {
                   />
                 </Stack>
               </Stack>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction="row" spacing={[0, 5]}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Gender Capability</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -364,14 +357,14 @@ function Profile() {
                     }))}
                   />
                 </Stack>
-                <Stack direction="column" width="50%"></Stack>
+                <Stack direction="column" width={["none", "50%"]}></Stack>
               </Stack>
             </Stack>
           </Section>
           <Section heading="Behavioral Traits">
             <Stack direction="column" w="100%" spacing={5}>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction={["column", "row"]} spacing={5}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs NOT good with:
                   </Text>
@@ -400,7 +393,7 @@ function Profile() {
                     )}
                   />
                 </Stack>
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Able to foster dogs with:</Text>
                   <Select
                     closeMenuOnSelect={false}
@@ -429,7 +422,7 @@ function Profile() {
                 </Stack>
               </Stack>
               <Stack direction="row">
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs with these temperaments:
                   </Text>
@@ -463,8 +456,8 @@ function Profile() {
           </Section>
           <Section heading="Medical Information">
             <Stack direction="column" width="100%" spacing={5}>
-              <Stack direction="row" spacing={5}>
-                <Stack direction="column" width="50%">
+              <Stack direction={["column", "row"]} spacing={5}>
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs not house trained...
                   </Text>
@@ -491,7 +484,7 @@ function Profile() {
                     }))}
                   />
                 </Stack>
-                <Stack direction="column" width="50%">
+                <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">
                     Able to foster dogs not spayed or neutered...
                   </Text>
@@ -525,6 +518,48 @@ function Profile() {
       </Box>
     </Flex>
   );
+
+  function EditButton() {
+    return !editing ? (
+      <Button
+        variant="solid-primary"
+        onClick={() => setEditing(true)}
+        width={"100%"}
+      >
+        Edit
+      </Button>
+    ) : (
+      <Stack direction="row">
+        <Button
+          variant="outline-secondary"
+          fontWeight="thin"
+          borderWidth="thin"
+          width={["50%", "100%"]}
+          onClick={() => {
+            dispatch({ type: "clear" });
+            setEditing(false);
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="solid-primary"
+          width={["50%", "100%"]}
+          onClick={async () => {
+            const req = await updatePreferences.mutateAsync({
+              uid: userData!.uid,
+              updateFields: preferences,
+            });
+            if (req.success) {
+              setEditing(false);
+            }
+          }}
+        >
+          Save
+        </Button>
+      </Stack>
+    );
+  }
 }
 
 export default pageAccessHOC(Profile);
