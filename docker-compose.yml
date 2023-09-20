@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./web:/app
+    environment:
+      - DB_URL=mongodb://mongodb:27017
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - angels-among-us
+
+  mongodb:
+    image: mongo:latest
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - angels-among-us
+    environment:
+      - MONGO_REPLICA_SET_NAME=rs0
+    healthcheck:
+      test: 'test $$(mongosh --eval "rs.initiate().ok || rs.status().ok" --quiet) -eq 1'
+      interval: 10s
+      start_period: 30s
+
+
+volumes:
+  mongodb_data:
+
+networks:
+  angels-among-us:
+    driver: bridge
