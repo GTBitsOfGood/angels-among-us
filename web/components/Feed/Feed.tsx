@@ -56,6 +56,7 @@ export type OptHandlers = {
   [key: Filter["key"]]: (opts: Option[]) => Option[];
 };
 
+//TODO: Temperament is not included currently.
 export type QueryFilter = {
   breed: Breed[];
   type: FosterType[];
@@ -65,7 +66,7 @@ export type QueryFilter = {
   behavioral: Behavioral[];
   goodWith: GoodWith[];
   houseTrained: Trained;
-  spayNeuterStatus: Status;
+  spayNeuterStatus: Trained;
 };
 
 const filterGroups: FilterGroup[] = [
@@ -241,15 +242,15 @@ const filterGroups: FilterGroup[] = [
         key: "medicalInfo",
         description: "Dogs that are:",
         options: [
-          { value: Status.Yes, label: "House Trained" },
-          { value: Status.Yes, label: "Spayed/Neutered" },
+          { value: Trained.Yes, label: "House Trained" },
+          { value: Trained.Yes, label: "Spayed/Neutered" },
         ],
         dropdown: false,
         allSelected: false,
       },
     ],
   },
-];
+] satisfies FilterGroup[];
 
 /**
  * Parse filter options array based on user preferences
@@ -329,6 +330,11 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
   return filters;
 }
 
+/**
+ * Transforms `selectedFilters` into QueryFilter to match API input
+ * @param selectedFilters selected feed filters
+ * @returns query filters used to send shaped to the API input
+ */
 function getQueryFilters(selectedFilters: SelectedFilters) {
   const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
     if (curr === "medicalInfo") {

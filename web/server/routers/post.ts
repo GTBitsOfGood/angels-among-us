@@ -88,7 +88,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-//TODO: Update goodWith
 const postFilterSchema = z.object({
   type: z.array(z.nativeEnum(FosterType)),
   breed: z.array(z.nativeEnum(Breed)),
@@ -98,7 +97,7 @@ const postFilterSchema = z.object({
   goodWith: z.array(z.nativeEnum(GoodWith)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
   houseTrained: z.nativeEnum(Trained).optional(),
-  spayNeuterStatus: z.nativeEnum(Status).optional(),
+  spayNeuterStatus: z.nativeEnum(Trained).optional(),
 });
 
 const goodWithMap: Record<GoodWith, string> = {
