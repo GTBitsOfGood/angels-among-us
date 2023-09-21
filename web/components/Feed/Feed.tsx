@@ -1,3 +1,4 @@
+import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -7,7 +8,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useReducer } from "react";
+import { useAuth } from "../../context/auth";
 import { PossibleTypes } from "../../pages/onboarding";
+import { trpc } from "../../utils/trpc";
+import { Role } from "../../utils/types/account";
 import {
   Age,
   Behavioral,
@@ -20,15 +24,11 @@ import {
   Temperament,
   Trained,
 } from "../../utils/types/post";
-import PostCreationModal from "../PostCreationModal/PostCreationModal";
+import { IUser } from "../../utils/types/user";
 import PetPostModal from "../PetPostModal/PetPostModal";
+import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
-import { AddIcon } from "@chakra-ui/icons";
-import { useAuth } from "../../context/auth";
-import { Role } from "../../utils/types/account";
-import { IUser } from "../../utils/types/user";
-import { trpc } from "../../utils/trpc";
 
 export type FilterGroup = {
   title: string;
@@ -448,8 +448,7 @@ function Feed(props: {
       className="feed"
       backgroundColor="bg-primary"
       justifyContent="center"
-      height="fit-content"
-      minHeight="100vh"
+      height="100vh"
     >
       <Stack
         spacing={{ base: "0px", lg: "30px" }}
@@ -460,6 +459,7 @@ function Feed(props: {
         marginBottom="50px"
         marginX={{ base: "0px", lg: "40px" }}
         direction={{ base: "column", lg: "row" }}
+        maxHeight="100%"
       >
         <Flex
           display={{ base: "flex", lg: "none" }}
@@ -485,8 +485,8 @@ function Feed(props: {
           borderRadius="10px"
           backgroundColor="#FFFFFF"
           direction="column"
-          height="fit-content"
           display={{ base: "none", lg: "flex" }}
+          overflowY="auto"
         >
           <Text fontWeight="semibold" margin="16px">
             Filter By:
@@ -535,16 +535,16 @@ function Feed(props: {
         </Flex>
         <Flex
           width={{ base: "100vw", lg: "55vw" }}
-          minHeight="full"
+          height="100%"
           borderRadius={{ base: "0px", lg: "10px" }}
           backgroundColor={{ base: "bg-primary", lg: "#F9F8F8" }}
           direction="column"
           alignItems="center"
-          height="fit-content"
           padding="20px"
         >
           <Flex
             w="100%"
+            h="min-content"
             mb="20px"
             dir="row"
             alignItems="center"
@@ -563,7 +563,7 @@ function Feed(props: {
               </Button>
             )}
           </Flex>
-          <Stack spacing={5}>
+          <Stack spacing={5} overflowY="auto">
             {feedPosts?.map((p, ind) => {
               return (
                 <Box
