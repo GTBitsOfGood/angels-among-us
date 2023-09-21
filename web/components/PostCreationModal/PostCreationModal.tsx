@@ -132,6 +132,8 @@ const PostCreationModal: React.FC<{
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
   const toast = useToast();
+  const utils = trpc.useContext();
+
   const [isContentView, setIsContentView] = useState(true);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
@@ -356,12 +358,14 @@ const PostCreationModal: React.FC<{
                   }
                 : () => {
                     //TODO: Wait for success to close.
-                    onClose();
-                    createPost();
-                    setFileArr([]);
-                    setIsContentView(true);
-                    dispatch({
-                      type: "clear",
+                    createPost().then(() => {
+                      onClose();
+                      utils.post.invalidate();
+                      setFileArr([]);
+                      setIsContentView(true);
+                      dispatch({
+                        type: "clear",
+                      });
                     });
                   }
             }

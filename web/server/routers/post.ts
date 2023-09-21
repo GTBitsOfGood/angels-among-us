@@ -23,6 +23,8 @@ import {
   Behavioral,
   Trained,
   Status,
+  PetKind,
+  IPost,
 } from "../../utils/types/post";
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
@@ -31,6 +33,9 @@ import nodemailer from "nodemailer";
 const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
 const postSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  petKind: z.nativeEnum(PetKind),
   type: z.nativeEnum(FosterType),
   size: z.nativeEnum(Size),
   breed: z.array(z.nativeEnum(Breed)),
@@ -83,7 +88,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-//TODO: Update goodWith
 const postFilterSchema = z.object({
   type: z.array(z.nativeEnum(FosterType)),
   breed: z.array(z.nativeEnum(Breed)),
@@ -93,8 +97,18 @@ const postFilterSchema = z.object({
   goodWith: z.array(z.nativeEnum(GoodWith)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
   houseTrained: z.nativeEnum(Trained).optional(),
-  spayNeuterStatus: z.nativeEnum(Status).optional(),
+  spayNeuterStatus: z.nativeEnum(Trained).optional(),
 });
+
+const goodWithMap: Record<GoodWith, string> = {
+  [GoodWith.Cats]: "getsAlongWithCats",
+  [GoodWith.LargeDogs]: "getsAlongWithLargeDogs",
+  [GoodWith.Men]: "getsAlongWithMen",
+  [GoodWith.OlderChildren]: "getsAlongWithOlderKids",
+  [GoodWith.SmallDogs]: "getsAlongWithSmallDogs",
+  [GoodWith.Women]: "getsAlongWithWomen",
+  [GoodWith.YoungChildren]: "getsAlongWithYoungKids",
+} as const;
 
 export const postRouter = router({
   get: procedure
@@ -253,16 +267,31 @@ export const postRouter = router({
         : Object.values(Trained);
       const spayNeuterStatus = input.spayNeuterStatus
         ? [input.spayNeuterStatus]
-        : Object.values(Status);
+        : Object.values(Trained);
       const notAllowedBehavioral = Object.values(Behavioral).filter(
         (obj) => !input.behavioral.includes(obj)
       );
-      const notGoodWith =
-        input.goodWith.length == 0
-          ? []
-          : Object.values(GoodWith).filter(
-              (obj) => !input.goodWith.includes(obj)
-            );
+
+      /**
+       * Go through each value in GoodWith enum.
+       * If the value should be filtered as yes, get the specific key from the goodWithMap and set the filter array to only yes.
+       * Otherwise we don't need to filter by that enum value and can set the filter array to yes, no and unknown.
+       */
+      const getsAlongWith: Record<string, Trained> = Object.values(
+        GoodWith
+      ).reduce((acc, curr) => {
+        if (input.goodWith.includes(curr)) {
+          return { ...acc, ...{ [goodWithMap[curr]]: [Trained.Yes] } };
+        } else {
+          return {
+            ...acc,
+            ...{
+              [goodWithMap[curr]]: [Trained.Yes, Trained.No, Trained.Unknown],
+            },
+          };
+        }
+      }, {});
+
       let completeFilter = {
         breed: { $in: input.breed },
         type: { $in: input.type },
@@ -270,10 +299,33 @@ export const postRouter = router({
         size: { $in: input.size },
         gender: { $in: input.gender },
         behavioral: { $nin: notAllowedBehavioral },
-        goodWith: { $nin: notGoodWith },
+        getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
+        getsAlongWithLargeDogs: {
+          $in: getsAlongWith["getsAlongWithLargeDogs"],
+        },
+        getsAlongWithMen: { $in: getsAlongWith["getsAlongWithMen"] },
+        getsAlongWithOlderKids: {
+          $in: getsAlongWith["getsAlongWithOlderKids"],
+        },
+        getsAlongWithSmallDogs: {
+          $in: getsAlongWith["getsAlongWithSmallDogs"],
+        },
+        getsAlongWithWomen: { $in: getsAlongWith["getsAlongWithWomen"] },
+        getsAlongWithYoungKids: {
+          $in: getsAlongWith["getsAlongWithYoungKids"],
+        },
         houseTrained: { $in: houseTrained },
         spayNeuterStatus: { $in: spayNeuterStatus },
       };
-      return await getFilteredPosts(completeFilter);
+      const filteredPosts = await getFilteredPosts(completeFilter);
+      return filteredPosts.map((p: IPost) => {
+        return {
+          attachments: p.attachments,
+          date: p.date,
+          name: p.name,
+          tag: p.type,
+          description: p.description,
+        };
+      });
     }),
 });
