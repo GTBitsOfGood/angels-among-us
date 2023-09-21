@@ -1,7 +1,7 @@
 import { ClientSession, FilterQuery, ObjectId, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
 import { IPendingPost, IPost } from "../../utils/types/post";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { consts } from "../../utils/consts";
 import { sign } from "jsonwebtoken";
@@ -77,6 +77,26 @@ async function getDirectUploadUrl(uuid: string): Promise<string> {
   return getSignedUrl(storageClient, command);
 }
 
+async function deleteAttachments(keysToDelete: string[]) {
+  //will make key splitting more efficient later
+  const objectsToDelete = keysToDelete.map((keyToDelete) => ({
+    Key:
+      keyToDelete.split("/")[keyToDelete.split("/").length - 2] +
+      "/" +
+      keyToDelete.split("/")[keyToDelete.split("/").length - 1],
+  }));
+  const deleteObjectsCommand = new DeleteObjectsCommand({
+    Bucket: consts.storageBucket,
+    Delete: { Objects: objectsToDelete },
+  });
+  try {
+    const returned = await storageClient.send(deleteObjectsCommand);
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
 async function getResizedUploadUrl(uuid: string): Promise<string> {
   const token = sign({ uuid: uuid }, process.env.JWT_SIGNING_KEY ?? "");
   return `${consts.baseUrl}/api/resizedUpload/${token}`;
@@ -140,6 +160,7 @@ export {
   createPost,
   updatePostDetails,
   updatePostStatus,
+  deleteAttachments,
   finalizePost,
   getAllPosts,
   getFilteredPosts,
