@@ -459,7 +459,6 @@ function Feed(props: {
         marginBottom="50px"
         marginX={{ base: "0px", lg: "40px" }}
         direction={{ base: "column", lg: "row" }}
-        flex="1"
       >
         <Flex
           display={{ base: "flex", lg: "none" }}
