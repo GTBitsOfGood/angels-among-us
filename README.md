@@ -55,6 +55,14 @@ To start the Next.js development server, run:
 yarn dev
 ```
 
+## Development with Docker
+
+To run the development environment using Docker:
+
+1. Ensure Docker and docker-compose are installed.
+2. Run `docker-compose up` in the root directory. This command will spin up the Next.js application and a MongoDB instance in separate containers.
+3. Access the application by navigating to `http://localhost:3000` in your browser.
+
 ## Code Formatting
 
 Install and enable [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) in VSCode. This repository is also configured with a pre-commit hook that automatically formats any code you commit to ensure formatting consistency throughout the codebase.
