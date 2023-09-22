@@ -643,7 +643,6 @@ function Feed(props: {
           </Button>
           <Button
             onClick={() => {
-              setFilterDisplayed(!filterDisplayed);
               setSelectedFilters({
                 type: "useprefs",
                 filter: filterGroups[0].filters[0],
