@@ -459,7 +459,7 @@ function Feed(props: {
         marginBottom="50px"
         marginX={{ base: "0px", lg: "40px" }}
         direction={{ base: "column", lg: "row" }}
-        maxHeight="100%"
+        flex="1"
       >
         <Flex
           display={{ base: "flex", lg: "none" }}
@@ -535,7 +535,8 @@ function Feed(props: {
         </Flex>
         <Flex
           width={{ base: "100vw", lg: "55vw" }}
-          height="100%"
+          minHeight="0" // To prevent mobile view column flexbox blowout (flex: 1 doesn't respect parent's max height)
+          flex="1"
           borderRadius={{ base: "0px", lg: "10px" }}
           backgroundColor={{ base: "bg-primary", lg: "#F9F8F8" }}
           direction="column"
