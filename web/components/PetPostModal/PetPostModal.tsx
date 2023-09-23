@@ -7,6 +7,7 @@ import {
   ModalContent,
   Stack,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostTagGroup from "./PetPostTagGroup";
@@ -15,6 +16,12 @@ const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
+  const {
+    isOpen: isFormViewOpen,
+    onOpen: onFormViewOpen,
+    onClose: onFormViewClose,
+  } = useDisclosure();
+
   return (
     <Modal isOpen={isOpen} size={"full"} onClose={onClose}>
       <ModalContent>
@@ -132,9 +139,16 @@ const PetPostModal: React.FC<{
             paddingRight={5}
             paddingBottom={5}
           >
-            <Button variant="solid-primary" size="lg">
+            <Button variant="solid-primary" size="lg" onClick={onFormViewOpen}>
               Foster Me!
             </Button>
+            <Modal isOpen={isFormViewOpen} onClose={onFormViewClose}>
+              <ModalContent>
+                <Stack>
+                  <Button></Button>
+                </Stack>
+              </ModalContent>
+            </Modal>
           </Flex>
         </Stack>
         <Flex direction="column" width="100%" display={["flex", "none"]}>
