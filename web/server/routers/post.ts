@@ -3,6 +3,7 @@ import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   createPost,
+  deleteAttachments,
   finalizePost,
   getPost,
   getAllPosts,
@@ -195,6 +196,24 @@ export const postRouter = router({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred.",
           });
+      }
+      return { success: true };
+    }),
+  delete: procedure
+    .input(
+      z.object({
+        postOid: zodOidType,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const post = await getPost(input.postOid);
+        const returned = await deleteAttachments(post.attachments);
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred.",
+        });
       }
       return { success: true };
     }),

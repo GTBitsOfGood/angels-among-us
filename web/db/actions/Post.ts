@@ -1,7 +1,7 @@
 import { ClientSession, FilterQuery, ObjectId, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
 import { IPendingPost, IPost } from "../../utils/types/post";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { consts } from "../../utils/consts";
 import { sign } from "jsonwebtoken";
@@ -82,6 +82,26 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
   return `${consts.baseUrl}/api/resizedUpload/${token}`;
 }
 
+async function deleteAttachments(keysToDelete: string[]) {
+  //will make key splitting more efficient later
+  const objectsToDelete = keysToDelete.map((keyToDelete) => ({
+    Key:
+      keyToDelete.split("/")[keyToDelete.split("/").length - 2] +
+      "/" +
+      keyToDelete.split("/")[keyToDelete.split("/").length - 1],
+  }));
+  const deleteObjectsCommand = new DeleteObjectsCommand({
+    Bucket: consts.storageBucket,
+    Delete: { Objects: objectsToDelete },
+  });
+  try {
+    const returned = await storageClient.send(deleteObjectsCommand);
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
 async function finalizePost(id: ObjectId, session?: ClientSession) {
   const post = await Post.findOne({ _id: id });
   const uploadedObjects = await storageClient.listObjectsV2({
@@ -145,6 +165,7 @@ async function getFilteredPosts(filter: FilterQuery<IPost>) {
 export {
   getPost,
   createPost,
+  deleteAttachments,
   updatePostDetails,
   updatePostStatus,
   finalizePost,
