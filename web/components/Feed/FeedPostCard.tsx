@@ -1,7 +1,26 @@
-import { Card, Flex, Image, Text } from "@chakra-ui/react";
-import defaultDog from "../../public/dog.svg";
+import { Card, Center, Flex, Image, Text } from "@chakra-ui/react";
+import DefaultDog from "../../public/dog.svg";
 import dayjs from "dayjs";
 import { FosterType, fosterTypeLabels } from "../../utils/types/post";
+
+function DefaultDogImage() {
+  return (
+    <Center
+      minWidth={{ base: "120px", lg: "150px" }}
+      width={{ base: "120px", lg: "150px" }}
+      height={{ base: "120px", lg: "150px" }}
+      backgroundColor="#D9D9D9"
+      borderRadius="14px"
+    >
+      <DefaultDog
+        fill="white"
+        width="75px"
+        height="75px"
+        style={{ paddingBottom: "10px" }}
+      />
+    </Center>
+  );
+}
 
 type PostCard = {
   attachments: string[];
@@ -14,11 +33,13 @@ type PostCard = {
 function FeedPostCard(props: { post: PostCard }) {
   const { post } = props;
 
-  let firstImage = defaultDog.src;
+  let firstImage;
   const imageExtensions = new Set<string>(["png", "jpeg", "jpg"]);
   for (let i = 0; i < post.attachments.length; i++) {
     const filenameSplit = post.attachments[i].split(".");
-    if (imageExtensions.has(filenameSplit[filenameSplit.length - 1])) {
+    if (
+      imageExtensions.has(filenameSplit[filenameSplit.length - 1].toLowerCase())
+    ) {
       firstImage = post.attachments[i];
       break;
     }
@@ -37,15 +58,19 @@ function FeedPostCard(props: { post: PostCard }) {
       width={{ lg: "52vw" }}
     >
       <Flex gap={{ base: "15px", lg: "20px" }}>
-        <Image
-          src={firstImage}
-          objectFit="cover"
-          minWidth={{ base: "120px", lg: "150px" }}
-          width={{ base: "120px", lg: "150px" }}
-          height={{ base: "120px", lg: "150px" }}
-          backgroundColor="#D9D9D9"
-          borderRadius="14px"
-        ></Image>
+        {firstImage ? (
+          <Image
+            src={firstImage}
+            objectFit="cover"
+            minWidth={{ base: "120px", lg: "150px" }}
+            width={{ base: "120px", lg: "150px" }}
+            height={{ base: "120px", lg: "150px" }}
+            backgroundColor="#D9D9D9"
+            borderRadius="14px"
+          ></Image>
+        ) : (
+          <DefaultDogImage />
+        )}
         <Flex
           direction="column"
           width="80%"
