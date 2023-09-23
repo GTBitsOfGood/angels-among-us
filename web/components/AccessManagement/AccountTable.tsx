@@ -8,10 +8,12 @@ interface PropertyType {
   accountList: IAccount[];
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
+  search: string;
+  setSearch: Dispatch<SetStateAction<string>>;
 }
 
 function AccountTable(props: PropertyType) {
-  const { accountList, selectItems, updateSelectItems } = props;
+  const { accountList, selectItems } = props;
   const [itemsToDelete, updateItemsToDelete] = useState<Number[]>([]);
 
   useEffect(() => {
@@ -28,11 +30,9 @@ function AccountTable(props: PropertyType) {
       paddingBottom={"20px"}
     >
       <TableHeader
-        selectItems={selectItems}
-        updateSelectItems={updateSelectItems}
+        {...props}
         itemsToDelete={itemsToDelete}
         updateItemsToDelete={updateItemsToDelete}
-        accountList={accountList}
       ></TableHeader>
       <Grid
         paddingX={"20px"}

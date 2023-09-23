@@ -4,10 +4,13 @@ import { useState } from "react";
 import { Text, Flex, Spinner, Box } from "@chakra-ui/react";
 import { trpc } from "../utils/trpc";
 import pageAccessHOC from "../components/HOC/PageAccess";
+import useDebounce from "../hooks/useDebounce";
 
 function Access() {
-  const accounts = trpc.account.getAll.useQuery();
   const [selectItems, updateSelectItems] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+  const searchQuery = useDebounce<string>(search, 400);
+  const accounts = trpc.account.search.useQuery({ searchSubject: searchQuery });
 
   return (
     <Flex
@@ -51,7 +54,9 @@ function Access() {
             accountList={accounts.data ?? []}
             selectItems={selectItems}
             updateSelectItems={updateSelectItems}
-          ></AccountTable>
+            search={search}
+            setSearch={setSearch}
+          />
         ) : (
           <Spinner></Spinner>
         )}
