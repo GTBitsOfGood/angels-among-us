@@ -24,11 +24,13 @@ import { navbarVisiblity } from "../utils/visibility";
 import { Pages } from "../utils/consts";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase/firebaseClient";
+import { useState } from "react";
 
 export default function Navbar() {
   const router = useRouter();
   const { user, loading, userData, authorized } = useAuth();
   const role = userData?.role;
+  const [index, setIndex] = useState(-1);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -172,6 +174,8 @@ export default function Navbar() {
           allowToggle
           width="100%"
           zIndex={10}
+          index={index}
+          onChange={(idx: number) => setIndex(idx)}
         >
           <AccordionItem width="100%">
             <Stack
@@ -205,17 +209,29 @@ export default function Navbar() {
             <AccordionPanel bgColor="white">
               <Stack direction="column">
                 <Stack direction="column">
-                  <Link as={NextLink} href={Pages.FEED}>
+                  <Link
+                    as={NextLink}
+                    href={Pages.FEED}
+                    onClick={() => setIndex(-1)}
+                  >
                     <Text>Feed</Text>
                   </Link>
                   <Divider border="1px solid angelsGray.100" />
-                  <Link as={NextLink} href={Pages.RESOURCES}>
+                  <Link
+                    as={NextLink}
+                    href={Pages.RESOURCES}
+                    onClick={() => setIndex(-1)}
+                  >
                     <Text>Resources</Text>
                   </Link>
                   <Divider border="1px solid angelsGray.100" />
                   {role === Role.Admin && (
                     <>
-                      <Link>
+                      <Link
+                        as={NextLink}
+                        href={Pages.ACCESS_MANAGEMENT}
+                        onClick={() => setIndex(-1)}
+                      >
                         <Text>Access Management</Text>
                       </Link>
                       <Divider border="1px solid angelsGray.100" />
