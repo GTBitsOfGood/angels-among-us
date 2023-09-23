@@ -37,7 +37,9 @@ function FeedPostCard(props: { post: PostCard }) {
   const imageExtensions = new Set<string>(["png", "jpeg", "jpg"]);
   for (let i = 0; i < post.attachments.length; i++) {
     const filenameSplit = post.attachments[i].split(".");
-    if (imageExtensions.has(filenameSplit[filenameSplit.length - 1])) {
+    if (
+      imageExtensions.has(filenameSplit[filenameSplit.length - 1].toLowerCase())
+    ) {
       firstImage = post.attachments[i];
       break;
     }
