@@ -234,20 +234,30 @@ const PostCreationModal: React.FC<{
 
       console.log(JSON.stringify(postInfo));
     } catch (e) {
-      console.log(e);
+      //TODO: Delete pending post on error
+      throw e;
     }
   };
 
   const uploadFile = async (url: string, file: File) => {
-    const uploadResp = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "content-length": `${file.size}`,
-      },
-      body: await file.arrayBuffer(),
-    });
-    if (uploadResp.status == 500) {
-      // TODO retry logic
+    let count = 0;
+    const maxTries = 3;
+    while (true) {
+      const uploadResp = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "content-length": `${file.size}`,
+        },
+        body: await file.arrayBuffer(),
+      });
+
+      if (uploadResp.status === 200) {
+        return;
+      }
+
+      if (uploadResp.status === 500 && count++ === maxTries) {
+        throw new Error("Error uploading images.");
+      }
     }
   };
 
