@@ -6,7 +6,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useReducer } from "react";
+import { Dispatch, SetStateAction, useEffect, useReducer, useState } from "react";
 import { PossibleTypes } from "../../pages/onboarding";
 import {
   Age,
@@ -15,6 +15,7 @@ import {
   FosterType,
   Gender,
   GoodWith,
+  IPost,
   Size,
   Status,
   Temperament,
@@ -26,6 +27,7 @@ import FeedPostCard from "./FeedPostCard";
 import { AddIcon } from "@chakra-ui/icons";
 import { useAuth } from "../../context/auth";
 import { Role } from "../../utils/types/account";
+import { trpc } from "../../utils/trpc";
 
 export type FilterGroup = {
   title: string;
@@ -311,6 +313,11 @@ function Feed(props: {
     getInitialFilters()
   );
 
+  const allPosts = trpc.post.getAllPosts.useQuery().data;
+
+  const decoyPost = {} as IPost;
+  const [currentPostModalData, setCurrentPostModalData] = useState(decoyPost)
+
   const mainContent = (
     <Flex
       className="feed"
@@ -421,32 +428,27 @@ function Feed(props: {
             )}
           </Flex>
           <Stack spacing={5}>
-            <Box onClick={onPostViewOpen} _hover={{ cursor: "pointer" }}>
-              <FeedPostCard
-                image={
-                  "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-                }
-                date={"MM/DD/YYYY XX:XX PM"}
-                title={"Pet Name"}
-                tags={["Foster Move"]}
-                body={
-                  "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
-                }
-              />
-            </Box>
-            <Box onClick={onPostViewOpen} _hover={{ cursor: "pointer" }}>
-              <FeedPostCard
-                image={
-                  "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-                }
-                date={"MM/DD/YYYY XX:XX PM"}
-                title={"Pet Name"}
-                tags={["Foster Move"]}
-                body={
-                  "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
-                }
-              />
-            </Box>
+            {allPosts?.map((post: IPost) => {
+              return (
+                <Box
+                  onClick={() => {
+                    setCurrentPostModalData(post);
+                    onPostViewOpen();
+                  }}
+                  _hover={{ cursor: "pointer" }}
+                >
+                  <FeedPostCard
+                    image={post.attachments[0]}
+                    date={post.date.toString()}
+                    title={"Pet Name"}
+                    tags={post.temperament}
+                    body={
+                      "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
+                    }
+                  />
+                </Box>
+              );
+            })}
           </Stack>
         </Flex>
       </Stack>
@@ -540,7 +542,11 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      <PetPostModal isOpen={isPostViewOpen} onClose={onPostViewClose} />
+      <PetPostModal
+        isOpen={isPostViewOpen}
+        onClose={onPostViewClose}
+        postData={currentPostModalData}
+      />
     </>
   );
 }

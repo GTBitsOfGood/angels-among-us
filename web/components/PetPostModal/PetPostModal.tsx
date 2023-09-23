@@ -3,18 +3,55 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
   Flex,
+  ListItem,
   Modal,
   ModalContent,
   Stack,
   Text,
+  UnorderedList,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostTagGroup from "./PetPostTagGroup";
+import PetPostListGroup from "./PetPostListGroup";
+import {
+  breedLabels,
+  genderLabels,
+  sizeLabels,
+  ageLabels,
+  IPost,
+  behavioralLabels,
+  medicalLabels,
+  spayNeuterStatusLabels,
+  houseTrainedLabels,
+  crateTrainedLabels,
+  GoodWith,
+  Trained,
+  goodWithLabels,
+} from "../../utils/types/post";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-}> = ({ isOpen, onClose }) => {
+  postData: IPost;
+}> = ({ isOpen, onClose, postData }) => {
+  const behavioralTagLabels: String[] = [];
+  postData.behavioral?.map((tag) => {
+    behavioralTagLabels.push(behavioralLabels[tag]);
+  });
+
+  const medicalTagLabels: String[] = [
+    spayNeuterStatusLabels[postData.spayNeuterStatus],
+    houseTrainedLabels[postData.houseTrained],
+    crateTrainedLabels[postData.crateTrained],
+  ];
+
+  postData.medical?.map((tag) => {
+    medicalTagLabels.push(medicalLabels[tag]);
+  });
+
+  const behavioralAndMedicalTagLabels =
+    medicalTagLabels.concat(behavioralTagLabels);
+
   return (
     <Modal isOpen={isOpen} size={"full"} onClose={onClose}>
       <ModalContent>
@@ -60,59 +97,63 @@ const PetPostModal: React.FC<{
                   Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit
                   amet consectetur.
                 </Text>
-                <Text>
-                  {
-                    "I am a foster move dog. My previous foster parents weren't able to care for me anymore."
-                  }
-                </Text>
+                <Text>{`${postData.type}`}</Text>
               </Stack>
               <Stack direction="column" spacing={8}>
                 <Flex direction="row" width="100%">
                   <Flex width="50%">
-                    <PetPostTagGroup
-                      title={"Main Characteristics"}
-                      tags={[
-                        "Male",
-                        "Australian Shepherd",
-                        "Medium-sized",
-                        "Adult",
-                      ]}
-                      icons={[CheckIcon, CheckIcon, CheckIcon, CheckIcon]}
-                    />
+                    <Stack direction="column" spacing={3}>
+                      <Text
+                        fontWeight="bold"
+                        fontSize="xl"
+                        fontFamily="sans-serif"
+                      >
+                        {"Main Characteristics"}
+                      </Text>
+                      <UnorderedList>
+                        <ListItem>
+                          <Text>Gender: {genderLabels[postData.gender]}</Text>
+                        </ListItem>
+                        <ListItem>
+                          <Text>
+                            Breed:{" "}
+                            {postData.breed?.map((breed) => {
+                              return `${breedLabels[breed]}${
+                                postData.breed.indexOf(breed) ===
+                                postData.breed.length - 1
+                                  ? " "
+                                  : ", "
+                              }`;
+                            })}
+                          </Text>
+                        </ListItem>
+                        <ListItem>
+                          <Text>Size: {sizeLabels[postData.size]}</Text>
+                        </ListItem>
+                        <ListItem>
+                          <Text>Age: {ageLabels[postData.age]}</Text>
+                        </ListItem>
+                      </UnorderedList>
+                    </Stack>
                   </Flex>
                   <Flex width="50%">
-                    <PetPostTagGroup
+                    <PetPostListGroup
                       title={"Behavioral and Medical Info"}
-                      tags={[
-                        "House-trained",
-                        "Friendly",
-                        "Heartworms",
-                        "Flight Risk",
-                        "Spayed/Neutered",
-                      ]}
-                      icons={[
-                        CheckIcon,
-                        CheckIcon,
-                        CheckIcon,
-                        CheckIcon,
-                        CheckIcon,
-                      ]}
+                      tags={behavioralAndMedicalTagLabels}
                     />
                   </Flex>
                 </Flex>
                 <Flex direction="row" width="100%">
                   <Flex width="50%">
-                    <PetPostTagGroup
+                    <PetPostListGroup
                       title={"I'm not comfortable with"}
-                      tags={["Cats", "Young Children"]}
-                      icons={[CheckIcon, CheckIcon]}
+                      tags={[]}
                     />
                   </Flex>
                   <Flex width="50%">
-                    <PetPostTagGroup
+                    <PetPostListGroup
                       title={"I'm comfortable with"}
-                      tags={["Cats", "Young Children"]}
-                      icons={[CheckIcon, CheckIcon]}
+                      tags={[]}
                     />
                   </Flex>
                 </Flex>

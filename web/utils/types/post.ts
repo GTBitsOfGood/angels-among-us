@@ -264,6 +264,24 @@ export const trainedLabels: Record<Trained, string> = {
   [Trained.Unknown]: "Unknown",
 };
 
+export const houseTrainedLabels: Record<Trained, string> = {
+    [Trained.Yes]: "House-Trained",
+    [Trained.No]: "Not House-Trained",
+    [Trained.Unknown]: "House-Training Status Unknown",
+}
+
+export const crateTrainedLabels: Record<Trained, string> = {
+    [Trained.Yes]: "Crate-Trained",
+    [Trained.No]: "Not Crate-Trained",
+    [Trained.Unknown]: "Crate-Training Status Unknown",
+}
+
+export const spayNeuterStatusLabels: Record<Trained, string> = {
+    [Trained.Yes]: "Spayed/Neutered",
+    [Trained.No]: "Not Spayed/Neutered",
+    [Trained.Unknown]: "Spay/Neuter Status Not Known",
+}
+
 export enum Status {
   Yes = "yes",
   No = "no",
