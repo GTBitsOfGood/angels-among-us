@@ -1,7 +1,6 @@
 import NextLink from "next/link";
 import {
   Link,
-  Box,
   Button,
   Flex,
   Menu,
@@ -35,17 +34,14 @@ export default function Navbar() {
 
   const visible = navbarVisiblity[router.pathname as Pages] ?? false;
 
-  if (loading && visible) {
-    return <Box h="64px"></Box>;
-  }
-
   if (!loading && visible && userData && !userData.hasCompletedOnboarding) {
     return <></>;
   }
 
-  if ((loading && !visible) || !authorized || !visible) {
+  if (loading || !authorized || !visible) {
     return <></>;
   }
+
   return (
     <Flex
       id="navbar"
