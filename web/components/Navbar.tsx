@@ -12,7 +12,7 @@ import {
   IconButton,
   useDisclosure,
   Box,
-  useMediaQuery,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
@@ -28,7 +28,10 @@ interface AvatarProps {
 }
 function Avatar({ user }: AvatarProps) {
   const router = useRouter();
-  const [isMd] = useMediaQuery("(min-width: 48em)");
+  const isMd = useBreakpointValue({
+    base: false,
+    md: true,
+  });
 
   return (
     <Menu>
@@ -151,7 +154,6 @@ export default function Navbar() {
         alignItems="center"
         justifyContent="space-between"
         w="100%"
-        marginLeft={[0, 2]}
         minH="64px"
         p={2}
       >
@@ -167,13 +169,13 @@ export default function Navbar() {
           <Image
             src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
             alt="logo"
-            boxSize={[8, 10]}
+            boxSize={{ base: 8, md: 10 }}
             w={46}
           ></Image>
         </Link>
 
         <Stack
-          display={["none", "flex"]}
+          display={{ base: "none", md: "flex" }}
           justifyContent="flex-end"
           direction="row"
           alignItems="center"
@@ -193,7 +195,7 @@ export default function Navbar() {
           <Avatar user={user} />
         </Stack>
 
-        <Box display={["block", "none"]}>
+        <Box display={{ base: "block", md: "none" }}>
           <Avatar user={user} />
         </Box>
       </Flex>
