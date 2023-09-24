@@ -9,14 +9,12 @@ import {
   Image,
   Stack,
   Text,
-  AccordionButton,
-  AccordionItem,
-  Accordion,
-  AccordionPanel,
-  Divider,
+  IconButton,
   useDisclosure,
+  Box,
+  useMediaQuery,
 } from "@chakra-ui/react";
-import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
 import { Role } from "../utils/types/account";
 import { useRouter } from "next/router";
@@ -24,15 +22,109 @@ import { navbarVisiblity } from "../utils/visibility";
 import { Pages } from "../utils/consts";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase/firebaseClient";
-import { useState } from "react";
+
+interface AvatarProps {
+  user: typeof auth.currentUser | null;
+}
+function Avatar({ user }: AvatarProps) {
+  const router = useRouter();
+  const [isMd] = useMediaQuery("(min-width: 48em)");
+
+  return (
+    <Menu>
+      {({ isOpen, onClose }) => (
+        <>
+          <MenuButton
+            as={Button}
+            bgColor="white"
+            p={{ base: 0, md: 4 }}
+            _hover={{ bgColor: "white" }}
+            _active={{ bgColor: "white" }}
+            borderLeft={{ md: "1px solid black" }}
+            borderRadius={0}
+            onClick={isOpen ? onClose : () => {}}
+            rightIcon={isMd ? <ChevronDownIcon /> : undefined}
+          >
+            <Image
+              borderRadius="100%"
+              boxSize={10}
+              src={user?.photoURL ?? undefined} //TODO: Replace with default avatar
+              alt="User photo"
+            ></Image>
+          </MenuButton>
+          <MenuList marginTop={4} marginRight={2}>
+            <Stack
+              direction="column"
+              paddingRight={5}
+              paddingLeft={2}
+              paddingTop={2}
+              spacing={5}
+            >
+              <Stack direction="row">
+                <Image
+                  borderRadius="100%"
+                  boxSize={10}
+                  src={user?.photoURL ?? undefined}
+                  alt="User photo"
+                />
+
+                <Stack direction="column">
+                  <Text fontWeight="bold" color="gray">
+                    {user?.displayName}
+                  </Text>
+                  <Text fontWeight="semibold" color="gray" fontSize="sm">
+                    {user?.email}
+                  </Text>
+                </Stack>
+              </Stack>
+              <Stack direction="row" justifyContent="flex-end">
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  fontWeight="thin"
+                  borderWidth="thin"
+                  onClick={() => {
+                    onClose();
+                    router.push(Pages.FEED);
+                    signOut(auth);
+                  }}
+                >
+                  Logout
+                </Button>
+                <Link
+                  as={NextLink}
+                  href={Pages.PROFILE}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Button
+                    variant="solid-primary"
+                    size="sm"
+                    fontWeight="thin"
+                    borderWidth="thin"
+                    onClick={onClose}
+                  >
+                    View Profile
+                  </Button>
+                </Link>
+              </Stack>
+            </Stack>
+          </MenuList>
+        </>
+      )}
+    </Menu>
+  );
+}
 
 export default function Navbar() {
   const router = useRouter();
   const { user, loading, userData, authorized } = useAuth();
   const role = userData?.role;
-  const [index, setIndex] = useState(-1);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isMenuOpen,
+    onOpen: onMenuOpen,
+    onClose: onMenuClose,
+  } = useDisclosure();
 
   const visible = navbarVisiblity[router.pathname as Pages] ?? false;
 
@@ -49,10 +141,10 @@ export default function Navbar() {
       id="navbar"
       bgColor="white"
       width="100%"
-      minH="64px"
+      zIndex="1"
+      flexDir="column"
       position="absolute"
       top={0}
-      zIndex="1"
     >
       <Flex
         direction="row"
@@ -60,8 +152,18 @@ export default function Navbar() {
         justifyContent="space-between"
         w="100%"
         marginLeft={[0, 2]}
+        minH="64px"
+        p={2}
       >
-        <Link as={NextLink} href={Pages.FEED} display={["none", "flex"]}>
+        <IconButton
+          size={"md"}
+          icon={isMenuOpen ? <CloseIcon /> : <HamburgerIcon />}
+          aria-label={"Open Menu"}
+          display={{ md: "none" }}
+          onClick={isMenuOpen ? onMenuClose : onMenuOpen}
+        />
+
+        <Link as={NextLink} href={Pages.FEED}>
           <Image
             src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
             alt="logo"
@@ -72,7 +174,6 @@ export default function Navbar() {
 
         <Stack
           display={["none", "flex"]}
-          width="50%"
           justifyContent="flex-end"
           direction="row"
           alignItems="center"
@@ -89,215 +190,35 @@ export default function Navbar() {
           <Link as={NextLink} href={Pages.RESOURCES}>
             <Text>Resources</Text>
           </Link>
-          <Menu isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-            <MenuButton
-              as={Button}
-              bgColor="white"
-              _hover={{ bgColor: "white" }}
-              _active={{ bgColor: "white" }}
-              borderLeft="1px solid black"
-              borderRadius="0%"
-            >
-              <Stack direction="row" alignItems="center">
-                <Image
-                  borderRadius="100%"
-                  boxSize={10}
-                  src={user?.photoURL ?? undefined}
-                  alt="User photo"
-                ></Image>
-
-                <ChevronDownIcon />
-              </Stack>
-            </MenuButton>
-            <MenuList marginTop={4} marginRight={2}>
-              <Stack
-                direction="column"
-                paddingRight={5}
-                paddingLeft={2}
-                paddingTop={2}
-                spacing={5}
-              >
-                <Stack direction="row">
-                  <Image
-                    borderRadius="100%"
-                    boxSize={10}
-                    src={user?.photoURL ?? undefined}
-                    alt="User photo"
-                  />
-
-                  <Stack direction="column">
-                    <Text fontWeight="bold" color="gray">
-                      {user?.displayName}
-                    </Text>
-                    <Text fontWeight="semibold" color="gray" fontSize="sm">
-                      {user?.email}
-                    </Text>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" justifyContent="flex-end">
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    fontWeight="thin"
-                    borderWidth="thin"
-                    onClick={() => {
-                      onClose();
-                      router.push(Pages.FEED);
-                      signOut(auth);
-                    }}
-                  >
-                    Logout
-                  </Button>
-                  <Link
-                    as={NextLink}
-                    href={Pages.PROFILE}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <Button
-                      variant="solid-primary"
-                      size="sm"
-                      fontWeight="thin"
-                      borderWidth="thin"
-                      onClick={onClose}
-                    >
-                      View Profile
-                    </Button>
-                  </Link>
-                </Stack>
-              </Stack>
-            </MenuList>
-          </Menu>
+          <Avatar user={user} />
         </Stack>
 
-        <Accordion
-          display={["flex", "none"]}
-          allowToggle
-          width="100%"
-          zIndex={10}
-          index={index}
-          onChange={(idx: number) => setIndex(idx)}
-        >
-          <AccordionItem width="100%">
-            <Stack
-              direction="row"
-              width="100%"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Link as={NextLink} href={Pages.FEED}>
-                <Image
-                  src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
-                  alt="logo"
-                  boxSize={[8, 10]}
-                  w={46}
-                ></Image>
-              </Link>
-              <AccordionButton
-                as={Button}
-                height="70px"
-                width="10%"
-                alignItems="center"
-                justifyContent="flex-end"
-                bgColor="white"
-                _hover={{ bgColor: "white" }}
-                _active={{ bgColor: "white" }}
-                cursor="default"
-              >
-                <HamburgerIcon fontSize="30px" color="gray" />
-              </AccordionButton>
-            </Stack>
-            <AccordionPanel bgColor="white">
-              <Stack direction="column">
-                <Stack direction="column">
-                  <Link
-                    as={NextLink}
-                    href={Pages.FEED}
-                    onClick={() => setIndex(-1)}
-                  >
-                    <Text>Feed</Text>
-                  </Link>
-                  <Divider border="1px solid angelsGray.100" />
-                  <Link
-                    as={NextLink}
-                    href={Pages.RESOURCES}
-                    onClick={() => setIndex(-1)}
-                  >
-                    <Text>Resources</Text>
-                  </Link>
-                  <Divider border="1px solid angelsGray.100" />
-                  {role === Role.Admin && (
-                    <>
-                      <Link
-                        as={NextLink}
-                        href={Pages.ACCESS_MANAGEMENT}
-                        onClick={() => setIndex(-1)}
-                      >
-                        <Text>Access Management</Text>
-                      </Link>
-                      <Divider border="1px solid angelsGray.100" />
-                    </>
-                  )}
-                </Stack>
-                <Stack
-                  direction="column"
-                  paddingRight={5}
-                  paddingLeft={2}
-                  paddingTop={2}
-                  paddingBottom={2}
-                  spacing={5}
-                  borderRadius="12px"
-                  border="1px solid angels.Gray"
-                >
-                  <Stack direction="row">
-                    <Image
-                      borderRadius="100%"
-                      boxSize={10}
-                      src={user?.photoURL ?? undefined}
-                      alt="User photo"
-                    />
-                    <Stack direction="column">
-                      <Text fontWeight="bold" color="gray">
-                        {user?.displayName}
-                      </Text>
-                      <Text fontWeight="semibold" color="gray" fontSize="sm">
-                        {user?.email}
-                      </Text>
-                    </Stack>
-                  </Stack>
-                  <Stack direction="row" justifyContent="flex-end">
-                    <Button
-                      variant="outline-secondary"
-                      fontWeight="thin"
-                      borderWidth="thin"
-                      size="sm"
-                      onClick={() => {
-                        router.push(Pages.FEED);
-                        signOut(auth);
-                      }}
-                    >
-                      Logout
-                    </Button>
-                    <Link
-                      as={NextLink}
-                      href={Pages.PROFILE}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <Button
-                        variant="solid-primary"
-                        size="sm"
-                        fontWeight="thin"
-                        borderWidth="thin"
-                      >
-                        View Profile
-                      </Button>
-                    </Link>
-                  </Stack>
-                </Stack>
-              </Stack>
-            </AccordionPanel>
-          </AccordionItem>
-        </Accordion>
+        <Box display={["block", "none"]}>
+          <Avatar user={user} />
+        </Box>
       </Flex>
+
+      {isMenuOpen ? (
+        <Box display={{ md: "none" }} p={2}>
+          <Stack spacing={4}>
+            <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
+              <Text>Feed</Text>
+            </Link>
+            {role === Role.Admin && (
+              <Link
+                as={NextLink}
+                href={Pages.ACCESS_MANAGEMENT}
+                onClick={onMenuClose}
+              >
+                <Text>Access Management</Text>
+              </Link>
+            )}
+            <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
+              <Text>Resources</Text>
+            </Link>
+          </Stack>
+        </Box>
+      ) : null}
     </Flex>
   );
 }
