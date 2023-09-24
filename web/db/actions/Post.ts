@@ -10,12 +10,15 @@ import storageClient from "../storageConnect";
 type UploadInfo = Record<string, string>;
 
 async function getPost(
-  oid: ObjectId
+  oid: ObjectId,
+  publicAttachmentUrls: boolean
 ): Promise<IPost & { _id: string; __v: number }> {
   const post = await Post.findOne({ _id: oid });
-  post.attachments = post.attachments.map((attachment: string) => {
-    return `${consts.storageBucketURL}/${attachment}`;
-  });
+  if (publicAttachmentUrls) {
+    post.attachments = post.attachments.map((attachment: string) => {
+      return `${consts.storageBucketURL}/${attachment}`;
+    });
+  }
   return post;
 }
 
@@ -83,12 +86,8 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
 }
 
 async function deleteAttachments(keysToDelete: string[]) {
-  //will make key splitting more efficient later
   const objectsToDelete = keysToDelete.map((keyToDelete) => ({
-    Key:
-      keyToDelete.split("/")[keyToDelete.split("/").length - 2] +
-      "/" +
-      keyToDelete.split("/")[keyToDelete.split("/").length - 1],
+    Key: keyToDelete,
   }));
   const deleteObjectsCommand = new DeleteObjectsCommand({
     Bucket: consts.storageBucket,

@@ -119,7 +119,7 @@ export const postRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return getPost(input._id);
+      return getPost(input._id, true);
     }),
   create: procedure.input(postSchema).mutation(async ({ input }) => {
     const session = await Post.startSession();
@@ -167,7 +167,7 @@ export const postRouter = router({
         });
       }
       try {
-        const post = await getPost(input.postOid);
+        const post = await getPost(input.postOid, true);
         const email = fosterTypeEmails[post.type];
         let count = 0;
         const maxTries = 3;
@@ -207,7 +207,7 @@ export const postRouter = router({
     )
     .mutation(async ({ input }) => {
       try {
-        const post = await getPost(input.postOid);
+        const post = await getPost(input.postOid, false);
         const returned = await deleteAttachments(post.attachments);
       } catch (e) {
         throw new TRPCError({
