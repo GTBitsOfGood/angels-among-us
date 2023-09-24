@@ -22,7 +22,6 @@ function getBaseUrl() {
 
 const consts = {
   dbUrl: process.env.DB_URL,
-  dbName: "angels-among-us",
   pages: Object.values(Pages),
   baseUrl: getBaseUrl(),
   storageBucket: process.env.STORAGE_BUCKET_NAME,
