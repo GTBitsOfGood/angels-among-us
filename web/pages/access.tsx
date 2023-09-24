@@ -1,7 +1,7 @@
 import CreateAccountForm from "../components/AccessManagement/CreateAccountForm";
 import AccountTable from "../components/AccessManagement/AccountTable";
 import { useState } from "react";
-import { Text, Flex, Spinner, Box } from "@chakra-ui/react";
+import { Text, Flex, Box } from "@chakra-ui/react";
 import { trpc } from "../utils/trpc";
 import pageAccessHOC from "../components/HOC/PageAccess";
 import useDebounce from "../hooks/useDebounce";
@@ -9,7 +9,7 @@ import useDebounce from "../hooks/useDebounce";
 function Access() {
   const [selectItems, updateSelectItems] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
-  const searchQuery = useDebounce<string>(search, 400);
+  const [searchQuery, isUpdating] = useDebounce<string>(search, 400);
   const accounts = trpc.account.search.useQuery({ searchSubject: searchQuery });
 
   return (
@@ -49,17 +49,14 @@ function Access() {
         <CreateAccountForm
           updateSelectItems={updateSelectItems}
         ></CreateAccountForm>
-        {!(accounts.data?.length === 0) ? (
-          <AccountTable
-            accountList={accounts.data ?? []}
-            selectItems={selectItems}
-            updateSelectItems={updateSelectItems}
-            search={search}
-            setSearch={setSearch}
-          />
-        ) : (
-          <Spinner></Spinner>
-        )}
+        <AccountTable
+          accountList={accounts.data ?? []}
+          isLoading={accounts.isLoading || isUpdating}
+          selectItems={selectItems}
+          updateSelectItems={updateSelectItems}
+          search={search}
+          setSearch={setSearch}
+        />
       </Flex>
     </Flex>
   );
