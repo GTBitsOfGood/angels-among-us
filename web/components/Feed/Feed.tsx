@@ -313,11 +313,6 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const allPosts = trpc.post.getAllPosts.useQuery().data;
-
-  const decoyPost = {} as IPost;
-  const [currentPostModalData, setCurrentPostModalData] = useState(decoyPost)
-
   const mainContent = (
     <Flex
       className="feed"
