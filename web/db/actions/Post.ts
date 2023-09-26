@@ -86,19 +86,33 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
 }
 
 async function deleteAttachments(keysToDelete: string[]) {
-  const objectsToDelete = keysToDelete.map((keyToDelete) => ({
-    Key: keyToDelete,
-  }));
-  const deleteObjectsCommand = new DeleteObjectsCommand({
-    Bucket: consts.storageBucket,
-    Delete: { Objects: objectsToDelete },
-  });
-  try {
-    const returned = await storageClient.send(deleteObjectsCommand);
-    return { success: true };
-  } catch (error) {
-    return { success: false };
+  for (let i = 0; i < 2; i++) {
+    const objectsToDelete = keysToDelete.map((keyToDelete) => ({
+      Key: keyToDelete,
+    }));
+    const deleteObjectsCommand = new DeleteObjectsCommand({
+      Bucket: consts.storageBucket,
+      Delete: { Objects: objectsToDelete, Quiet: true },
+    });
+    try {
+      const returned = await storageClient.send(deleteObjectsCommand);
+      let arr: string[] = [];
+      if (returned["Deleted"]) {
+        returned["Deleted"].forEach((element) => {
+          element["Key"] &&
+            !element["DeleteMarker"] &&
+            arr.push(element["Key"]);
+        });
+        keysToDelete = arr;
+      } else {
+        return { success: true };
+      }
+    } catch (error) {
+      return { success: false };
+    }
   }
+  //false or true? depends on how we want to handle partial deletes
+  return { success: true };
 }
 
 async function deletePost(id: ObjectId) {
