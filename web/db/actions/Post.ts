@@ -101,6 +101,20 @@ async function deleteAttachments(keysToDelete: string[]) {
   }
 }
 
+async function deletePost(id: ObjectId) {
+  try {
+    const post = await getPost(id, false);
+    const returned = await deleteAttachments(post.attachments);
+    if (returned.success) {
+      const deletePost = await Post.deleteOne({ _id: id });
+      if (deletePost.deletedCount === 1) {
+        return { success: true };
+      }
+    }
+  } catch (e) {}
+  return { success: false };
+}
+
 async function finalizePost(id: ObjectId, session?: ClientSession) {
   const post = await Post.findOne({ _id: id });
   const uploadedObjects = await storageClient.listObjectsV2({
@@ -164,7 +178,7 @@ async function getFilteredPosts(filter: FilterQuery<IPost>) {
 export {
   getPost,
   createPost,
-  deleteAttachments,
+  deletePost,
   updatePostDetails,
   updatePostStatus,
   finalizePost,

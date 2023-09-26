@@ -3,7 +3,7 @@ import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   createPost,
-  deleteAttachments,
+  deletePost,
   finalizePost,
   getPost,
   getAllPosts,
@@ -23,7 +23,6 @@ import {
   Medical,
   Behavioral,
   Trained,
-  Status,
   PetKind,
   IPost,
 } from "../../utils/types/post";
@@ -206,10 +205,8 @@ export const postRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      try {
-        const post = await getPost(input.postOid, false);
-        const returned = await deleteAttachments(post.attachments);
-      } catch (e) {
+      const deleteSuccess = await deletePost(input.postOid);
+      if (!deleteSuccess.success) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "An unexpected error occurred.",
