@@ -26,6 +26,25 @@ export const fosterTypeLabels: Record<FosterType, string> = {
   [FosterType.Shelter]: "Shelter",
 };
 
+export const fosterTypeDescriptions: Record<FosterType, string> = {
+  [FosterType.Return]:
+    "I was returned back to Angels Among Us by my previous foster parent.",
+
+  [FosterType.Boarding]:
+    "My foster parent or owner needs someone to care for me for while they are away for a bit.",
+
+  [FosterType.Temporary]:
+    "I already have a foster parent but while they sort out logistics, I need care for a few days.",
+
+  [FosterType.FosterMove]:
+    "My previous foster parent's weren't able to care for me any more so I need a new home.",
+
+  [FosterType.Shelter]: "I'm originally from a shelter and need a home!",
+
+  [FosterType.OwnerSurrender]:
+    "I was previously surrendered from my previous owner and need a new home!",
+};
+
 export enum Size {
   XS = "xs",
   S = "s",
@@ -272,6 +291,24 @@ export enum Status {
 export const statusLabels: Record<Status, string> = {
   [Trained.Yes]: "Yes",
   [Trained.No]: "No",
+};
+
+export const houseTrainedLabels: Record<Trained, string> = {
+  [Trained.Yes]: "House-Trained",
+  [Trained.No]: "Not House-Trained",
+  [Trained.Unknown]: "House-Training Status Unknown",
+};
+
+export const crateTrainedLabels: Record<Trained, string> = {
+  [Trained.Yes]: "Crate-Trained",
+  [Trained.No]: "Not Crate-Trained",
+  [Trained.Unknown]: "Crate-Training Status Unknown",
+};
+
+export const spayNeuterStatusLabels: Record<Trained, string> = {
+  [Trained.Yes]: "Spayed/Neutered",
+  [Trained.No]: "Not Spayed/Neutered",
+  [Trained.Unknown]: "Spay/Neuter Status Not Known",
 };
 
 export type AttachmentInfo =

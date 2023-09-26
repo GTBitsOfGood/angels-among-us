@@ -3,27 +3,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 
-const SlideData = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-
-  {
-    image:
-      "https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1601979031925-424e53b6caaa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1591160690555-5debfba289f0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-];
-
-const ImageSlider = () => {
+function ImageSlider(props: { attachments: Array<string> }) {
   return (
     <Carousel
       axis="horizontal"
@@ -69,11 +49,11 @@ const ImageSlider = () => {
         );
       }}
     >
-      {SlideData.map((slide) => {
+      {props.attachments?.map((slide) => {
         return (
           <Image
-            key={slide.image}
-            src={slide.image}
+            key={slide}
+            src={slide}
             borderRadius="15px"
             objectFit="cover"
             width="full"
@@ -85,6 +65,6 @@ const ImageSlider = () => {
       })}
     </Carousel>
   );
-};
+}
 
 export default ImageSlider;
