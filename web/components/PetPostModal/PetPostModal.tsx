@@ -144,14 +144,15 @@ const PetPostModal: React.FC<{
               </Stack>
               <Stack direction="column" spacing={8}>
                 <Flex direction="row" width="100%">
-                  <Flex width="50%">
+                  <Flex direction={"column"} width="50%">
                     <PetPostListGroup
                       title={"Main Characteristics"}
                       tags={[]}
                     />
                     <Text>Gender: {genderLabels[gender]}</Text>
                     <Text>
-                      Breed: {breed.map((breed) => breedLabels[breed]).join()}
+                      Breed:{" "}
+                      {breed.map((breed) => breedLabels[breed]).join(" ")}
                     </Text>
                     <Text>Size: {sizeLabels[size]}</Text>
                     <Text>Age: {ageLabels[age]}</Text>
@@ -250,7 +251,7 @@ const PetPostModal: React.FC<{
                 <PetPostListGroup title={"Main Characteristics"} tags={[]} />
                 <Text>Gender: {genderLabels[gender]}</Text>
                 <Text>
-                  Breed: {breed.map((breed) => breedLabels[breed]).join()}
+                  Breed: {breed.map((breed) => breedLabels[breed]).join(" ")}
                 </Text>
                 <Text>Size: {sizeLabels[size]}</Text>
                 <Text>Age: {ageLabels[age]}</Text>
