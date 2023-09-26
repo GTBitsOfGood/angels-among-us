@@ -3,26 +3,34 @@
   <head>
     <title>Email</title>
     <link rel="stylesheet" href="template.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="email">
       <img
+        class="logo"
+        width="46px"
+        height="49px"
         src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
       />
-      <p>
+      <p class="medium-weight-text font-24px congrats-text">
         Congratulations!<br />
         There is a new foster application for the dog below to review.
       </p>
       <div class="pet-info">
         <img
-          width="10%"
-          height="10%"
+          class="pet-image"
           src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
         />
         <div class="pet-info-text">
-          <p>Pet Name</p>
-          <p>About</p>
-          <p>
+          <p class="pet-name-text medium-weight-text font-28px">Pet Name</p>
+          <p class="pet-about-header bold-text font-22px">About</p>
+          <p class="pet-about-text font-22px">
             Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
             consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum
             dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.
@@ -33,25 +41,25 @@
       </div>
       <div class="volunteer-info">
         <table class="info-table">
-          <tr class="info-table-row">
+          <tr>
             <th>About the Volunteer</th>
           </tr>
-          <tr class="info-table-row">
-            <td class="blue-cell">Name:</td>
+          <tr>
+            <td>Name:</td>
             <td>First Last</td>
           </tr>
-          <tr class="info-table-row">
-            <td class="blue-cell">Email:</td>
+          <tr>
+            <td>Email:</td>
             <td>exampleemail@gmail.com</td>
           </tr>
-          <tr class="info-table-row">
-            <td class="blue-cell">Preferred Email:</td>
+          <tr>
+            <td>Preferred Email:</td>
             <td>exampleemail@gmail.com</td>
           </tr>
         </table>
       </div>
       <div class="preferences-info">
-        <table>
+        <table class="info-table">
           <tr>
             <th>Preferences & Info</th>
             <th>Volunteer Preferences</th>
@@ -70,54 +78,100 @@
           <tr>
             <td>Breed:</td>
             <td>
-              <i>Preferred Breeds:</i> <br />
-              None <br />
-              <i>Restricted Breeds</i> <br />
+              <p class="font-20px">Preferred Breeds:</p>
+              None
+
+              <p class="font-20px space-above">Restricted Breeds</p>
               Chihuahua
             </td>
-            <td>Foster Move</td>
+            <td>Australian Shepherd</td>
           </tr>
           <tr>
-            <td>Foster Type:</td>
+            <td>Gender:</td>
             <td>All</td>
-            <td>Foster Move</td>
+            <td>Male</td>
           </tr>
           <tr>
-            <td>Foster Type:</td>
+            <td>Age:</td>
             <td>All</td>
-            <td>Foster Move</td>
+            <td>Puppy</td>
           </tr>
           <tr>
-            <td>Foster Type:</td>
-            <td>All</td>
-            <td>Foster Move</td>
+            <td>Temperament:</td>
+            <td>Friendly, Calm</td>
+            <td>Friendly, Active</td>
           </tr>
           <tr>
-            <td>Foster Type:</td>
-            <td>All</td>
-            <td>Foster Move</td>
+            <td>Dog Not Good With:</td>
+            <td>
+              <p class="font-20px">Can foster dogs NOT good with:</p>
+              All
+            </td>
+            <td>
+              <p class="font-20px">Dog is NOT good with:</p>
+              Younger Kids, Large Dogs
+              <p class="font-20px space-above">Dog is good with:</p>
+              Men, Women, Older Kids, Small Dogs, Cats
+            </td>
           </tr>
           <tr>
-            <td>Foster Type:</td>
-            <td>All</td>
-            <td>Foster Move</td>
+            <td>Medical:</td>
+            <td>
+              <p class="font-20px">Able to foster dogs with:</p>
+              All
+            </td>
+            <td>
+              <p class="font-20px">Dog has:</p>
+              None
+            </td>
           </tr>
           <tr>
-            <td>Foster Type:</td>
-            <td>All</td>
-            <td>Foster Move</td>
+            <td>Behavioral:</td>
+            <td>
+              <p class="font-20px">Able to foster dogs with:</p>
+              All
+            </td>
+            <td>
+              <p class="font-20px">Dog has:</p>
+              Separation Anxiety, Flight Risk
+            </td>
           </tr>
           <tr>
-            <td>Foster Type:</td>
-            <td>All</td>
-            <td>Foster Move</td>
+            <td>House Trained:</td>
+            <td><i>Unable</i> to foster dogs that are NOT house trained</td>
+            <td>IS house trained</td>
           </tr>
           <tr>
-            <td>Foster Type:</td>
-            <td>All</td>
-            <td>Foster Move</td>
+            <td>Spayed/Neutered:</td>
+            <td><i>Able</i> to foster dogs that are NOT house trained</td>
+            <td>IS spayed/neutered</td>
           </tr>
         </table>
+      </div>
+      <div class="questionnaire-responses">
+        <p class="medium-weight-text font-24px">
+          Foster Questionnaire Responses
+        </p>
+        <div class="question">
+          <p class="medium-weight-text question-title">Placeholder Question</p>
+          <p class="question-response">Response to question</p>
+        </div>
+        <div class="question">
+          <p class="medium-weight-text question-title">Placeholder Question</p>
+          <p class="question-response">Response to question</p>
+        </div>
+        <div class="question">
+          <p class="medium-weight-text question-title">Placeholder Question</p>
+          <p class="question-response">Response to question</p>
+        </div>
+        <div class="question">
+          <p class="medium-weight-text question-title">Placeholder Question</p>
+          <p class="question-response">Response to question</p>
+        </div>
+        <div class="question">
+          <p class="medium-weight-text question-title">Placeholder Question</p>
+          <p class="question-response">Response to question</p>
+        </div>
       </div>
     </div>
   </body>

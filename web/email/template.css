@@ -1,14 +1,33 @@
+body {
+  font-family: "Comfortaa", cursive;
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
 .email {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  width: 1050px;
+  margin: 50px 0px;
+}
+
+.logo {
+  align-self: center;
+  padding-bottom: 50px;
+}
+
+.congrats-text {
+  line-height: 48px;
 }
 
 .pet-info {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin-top: 60px;
+  margin-bottom: 50px;
 }
 
 .pet-info-text {
@@ -16,15 +35,111 @@
   flex-direction: column;
 }
 
+.pet-name-text {
+  margin-top: 0px;
+}
+
+.pet-about-text {
+  color: #656565;
+}
+
 .info-table {
   border-collapse: separate;
   border-spacing: 10px;
+  width: 100%;
+  margin-bottom: 40px;
 }
 
-.info-table-row {
-  outline: thin solid;
+table.info-table tr {
+  outline: #7d7e82 thin solid;
 }
 
-.blue-cell {
+table.info-table tr:first-child {
+  outline: none;
+}
+
+table.info-table td:first-child {
   background-color: #c6e3f9;
+  font-weight: 500;
+  width: 25%;
+}
+
+table.info-table td:nth-child(3) {
+  border-left: #7d7e82 thin solid;
+}
+
+table.info-table td {
+  font-size: 22px;
+  padding: 12px 15px;
+}
+
+table.info-table th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 24px;
+}
+
+.medium-weight-text {
+  font-weight: 500;
+}
+
+.bold-text {
+  font-weight: 700;
+}
+
+.font-24px {
+  font-size: 24px;
+  margin-bottom: 0px;
+}
+
+.font-28px {
+  font-size: 28px;
+  margin-bottom: 0px;
+}
+
+.font-22px {
+  font-size: 22px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.font-20px {
+  font-size: 20px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-style: italic;
+}
+
+.italic-cell-header {
+  font-style: italic;
+}
+
+.space-above {
+  margin-top: 12px;
+}
+
+.question {
+  font-size: 22px;
+  padding-bottom: 2px;
+}
+
+.question-title {
+  margin-bottom: 8px;
+}
+
+.question-response {
+  margin: 0px;
+}
+
+.pet-image {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+  border-radius: 12px;
+  margin-right: 20px;
+}
+
+.pet-about-header {
+  margin: 18px 0px;
 }
