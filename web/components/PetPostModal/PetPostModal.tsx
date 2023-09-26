@@ -1,4 +1,4 @@
-import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
@@ -9,14 +9,15 @@ import {
   Text,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
-import PetPostTagGroup from "./PetPostTagGroup";
-import { IFeedPost } from "../../utils/types/post";
+import PetPostListGroup from "./PetPostListGroup";
+import { fosterTypeLabels, IPost } from "../../utils/types/post";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IFeedPost;
+  postData: IPost;
 }> = ({ isOpen, onClose, postData }) => {
+  const { name, description, type } = postData;
   return (
     <Modal isOpen={isOpen} size={"full"} onClose={onClose}>
       <ModalContent>
@@ -50,31 +51,26 @@ const PetPostModal: React.FC<{
             </Flex>
             <Stack direction="column" width="50%" spacing={8}>
               <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
-                {postData.name}
+                {name}
               </Text>
               <Stack direction="column">
                 <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
                   About
                 </Text>
-                <Text>{postData.description}</Text>
-                {/* <Text>{fosterTypeLabels[postData.type]}</Text> */}
+                <Text>{description}</Text>
+                <Text></Text>
+                <Text>{fosterTypeLabels[type]}</Text>
               </Stack>
               <Stack direction="column" spacing={8}>
                 <Flex direction="row" width="100%">
                   <Flex width="50%">
-                    <PetPostTagGroup
+                    <PetPostListGroup
                       title={"Main Characteristics"}
-                      tags={[
-                        "Male",
-                        "Australian Shepherd",
-                        "Medium-sized",
-                        "Adult",
-                      ]}
-                      icons={[CheckIcon, CheckIcon, CheckIcon, CheckIcon]}
+                      tags={[""]}
                     />
                   </Flex>
                   <Flex width="50%">
-                    <PetPostTagGroup
+                    <PetPostListGroup
                       title={"Behavioral and Medical Info"}
                       tags={[
                         "House-trained",
@@ -83,37 +79,27 @@ const PetPostModal: React.FC<{
                         "Flight Risk",
                         "Spayed/Neutered",
                       ]}
-                      icons={[
-                        CheckIcon,
-                        CheckIcon,
-                        CheckIcon,
-                        CheckIcon,
-                        CheckIcon,
-                      ]}
                     />
                   </Flex>
                 </Flex>
                 <Flex direction="row" width="100%">
                   <Flex width="50%">
-                    <PetPostTagGroup
+                    <PetPostListGroup
                       title={"I'm not comfortable with"}
                       tags={["Cats", "Young Children"]}
-                      icons={[CheckIcon, CheckIcon]}
                     />
                   </Flex>
                   <Flex width="50%">
-                    <PetPostTagGroup
+                    <PetPostListGroup
                       title={"I'm comfortable with"}
                       tags={["Cats", "Young Children"]}
-                      icons={[CheckIcon, CheckIcon]}
                     />
                   </Flex>
                 </Flex>
                 <Flex direction="row" width="100%">
-                  <PetPostTagGroup
+                  <PetPostListGroup
                     title={"I'm not sure about"}
                     tags={["Cats", "Young Children"]}
-                    icons={[CheckIcon, CheckIcon]}
                   />
                 </Flex>
               </Stack>
@@ -184,7 +170,7 @@ const PetPostModal: React.FC<{
 
             <Stack direction="column" width="100%" spacing={6}>
               <Flex width="100%">
-                <PetPostTagGroup
+                <PetPostListGroup
                   title={"Main Characteristics"}
                   tags={[
                     "Male",
@@ -192,11 +178,10 @@ const PetPostModal: React.FC<{
                     "Medium-sized",
                     "Adult",
                   ]}
-                  icons={[CheckIcon, CheckIcon, CheckIcon, CheckIcon]}
                 />
               </Flex>
               <Flex width="100%">
-                <PetPostTagGroup
+                <PetPostListGroup
                   title={"Behavioral and Medical Info"}
                   tags={[
                     "House-trained",
@@ -205,34 +190,24 @@ const PetPostModal: React.FC<{
                     "Flight Risk",
                     "Spayed/Neutered",
                   ]}
-                  icons={[
-                    CheckIcon,
-                    CheckIcon,
-                    CheckIcon,
-                    CheckIcon,
-                    CheckIcon,
-                  ]}
                 />
               </Flex>
               <Flex width="100%">
-                <PetPostTagGroup
+                <PetPostListGroup
                   title={"I'm not comfortable with"}
                   tags={["Cats", "Young Children"]}
-                  icons={[CheckIcon, CheckIcon]}
                 />
               </Flex>
               <Flex width="100%">
-                <PetPostTagGroup
+                <PetPostListGroup
                   title={"I'm comfortable with"}
                   tags={["Cats", "Young Children"]}
-                  icons={[CheckIcon, CheckIcon]}
                 />
               </Flex>
               <Flex width="100%">
-                <PetPostTagGroup
+                <PetPostListGroup
                   title={"I'm not sure about"}
                   tags={["Cats", "Young Children"]}
-                  icons={[CheckIcon, CheckIcon]}
                 />
               </Flex>
             </Stack>

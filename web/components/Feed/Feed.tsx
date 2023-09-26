@@ -19,6 +19,7 @@ import {
   FosterType,
   Gender,
   GoodWith,
+  IPost,
   Size,
   Status,
   Temperament,
@@ -439,7 +440,7 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts = trpc.post.getFilteredPosts.useQuery(
+  const feedPosts: IPost[] | undefined = trpc.post.getFilteredPosts.useQuery(
     getQueryFilters(selectedFilters)
   ).data;
 

@@ -318,14 +318,6 @@ export const postRouter = router({
         spayNeuterStatus: { $in: spayNeuterStatus },
       };
       const filteredPosts = await getFilteredPosts(completeFilter);
-      return filteredPosts.map((p: IPost) => {
-        return {
-          attachments: p.attachments,
-          date: p.date,
-          name: p.name,
-          tag: p.type,
-          description: p.description,
-        };
-      });
+      return filteredPosts;
     }),
 });
