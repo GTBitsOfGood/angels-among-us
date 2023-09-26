@@ -571,8 +571,8 @@ function Feed(props: {
               return (
                 <Box
                   onClick={() => {
-                    onPostViewOpen;
                     setModalPostIndex(ind);
+                    onPostViewOpen();
                   }}
                   _hover={{ cursor: "pointer" }}
                   key={ind}
