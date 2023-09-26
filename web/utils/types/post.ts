@@ -306,6 +306,14 @@ export interface IPost {
   attachments: string[];
 }
 
+export interface IFeedPost {
+  date: string;
+  name: string;
+  description: string;
+  attachments: string[];
+  tag: FosterType;
+}
+
 export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
   attachments: AttachmentInfo[];
 };

@@ -7,7 +7,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useReducer } from "react";
+import { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { useAuth } from "../../context/auth";
 import { PossibleTypes } from "../../pages/onboarding";
 import { trpc } from "../../utils/trpc";
@@ -443,6 +443,8 @@ function Feed(props: {
     getQueryFilters(selectedFilters)
   ).data;
 
+  const [modalPostIndex, setModalPostIndex] = useState(0);
+
   const mainContent = (
     <Flex
       className="feed"
@@ -567,7 +569,10 @@ function Feed(props: {
             {feedPosts?.map((p, ind) => {
               return (
                 <Box
-                  onClick={onPostViewOpen}
+                  onClick={() => {
+                    onPostViewOpen;
+                    setModalPostIndex(ind);
+                  }}
                   _hover={{ cursor: "pointer" }}
                   key={ind}
                 >
@@ -679,7 +684,13 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      <PetPostModal isOpen={isPostViewOpen} onClose={onPostViewClose} />
+      {feedPosts && (
+        <PetPostModal
+          isOpen={isPostViewOpen}
+          onClose={onPostViewClose}
+          postData={feedPosts[modalPostIndex]}
+        />
+      )}
     </>
   );
 }

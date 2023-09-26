@@ -10,11 +10,13 @@ import {
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostTagGroup from "./PetPostTagGroup";
+import { IFeedPost } from "../../utils/types/post";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-}> = ({ isOpen, onClose }) => {
+  postData: IFeedPost;
+}> = ({ isOpen, onClose, postData }) => {
   return (
     <Modal isOpen={isOpen} size={"full"} onClose={onClose}>
       <ModalContent>
@@ -48,23 +50,14 @@ const PetPostModal: React.FC<{
             </Flex>
             <Stack direction="column" width="50%" spacing={8}>
               <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
-                Pet Name
+                {postData.name}
               </Text>
               <Stack direction="column">
                 <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
                   About
                 </Text>
-                <Text>
-                  Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit
-                  amet consectetur. Lorem ipsum dolor sit amet consectetur.
-                  Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit
-                  amet consectetur.
-                </Text>
-                <Text>
-                  {
-                    "I am a foster move dog. My previous foster parents weren't able to care for me anymore."
-                  }
-                </Text>
+                <Text>{postData.description}</Text>
+                {/* <Text>{fosterTypeLabels[postData.type]}</Text> */}
               </Stack>
               <Stack direction="column" spacing={8}>
                 <Flex direction="row" width="100%">
