@@ -2,7 +2,6 @@
 <html>
   <head>
     <title>Email</title>
-    <link rel="stylesheet" href="template.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -10,27 +9,100 @@
       rel="stylesheet"
     />
   </head>
-  <body>
-    <div class="email">
+  <body
+    style="
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      justify-content: center;
+    "
+  >
+    <div
+      class="email"
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 1050px;
+        margin: 50px 0px;
+      "
+    >
       <img
         class="logo"
         width="46px"
         height="49px"
         src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
+        style="align-self: center; padding-bottom: 50px"
       />
-      <p class="medium-weight-text font-24px congrats-text">
+      <p
+        class="medium-weight-text font-24px congrats-text"
+        style="
+          line-height: 48px;
+          font-weight: 500;
+          font-size: 24px;
+          margin-bottom: 0px;
+        "
+      >
         Congratulations!<br />
         There is a new foster application for the dog below to review.
       </p>
-      <div class="pet-info">
+      <div
+        class="pet-info"
+        style="
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          margin-top: 60px;
+          margin-bottom: 50px;
+        "
+      >
         <img
           class="pet-image"
           src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
+          style="
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            aspect-ratio: 1/1;
+            border-radius: 12px;
+            margin-right: 20px;
+          "
         />
-        <div class="pet-info-text">
-          <p class="pet-name-text medium-weight-text font-28px">Pet Name</p>
-          <p class="pet-about-header bold-text font-22px">About</p>
-          <p class="pet-about-text font-22px">
+        <div
+          class="pet-info-text"
+          style="display: flex; flex-direction: column"
+        >
+          <p
+            class="pet-name-text medium-weight-text font-28px"
+            style="
+              margin-top: 0px;
+              font-weight: 500;
+              font-size: 28px;
+              margin-bottom: 0px;
+            "
+          >
+            Pet Name
+          </p>
+          <p
+            class="pet-about-header bold-text font-22px"
+            style="
+              font-weight: 700;
+              font-size: 22px;
+              margin-top: 0px;
+              margin-bottom: 0px;
+              margin: 18px 0px;
+            "
+          >
+            About
+          </p>
+          <p
+            class="pet-about-text font-22px"
+            style="
+              color: #656565;
+              font-size: 22px;
+              margin-top: 0px;
+              margin-bottom: 0px;
+            "
+          >
             Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
             consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum
             dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.
@@ -40,137 +112,519 @@
         </div>
       </div>
       <div class="volunteer-info">
-        <table class="info-table">
-          <tr>
-            <th>About the Volunteer</th>
+        <table
+          class="info-table"
+          style="
+            border-collapse: separate;
+            border-spacing: 10px;
+            width: 100%;
+            margin-bottom: 40px;
+          "
+        >
+          <tr style="outline: none">
+            <th style="text-align: left; font-weight: 500; font-size: 24px">
+              About the Volunteer
+            </th>
           </tr>
-          <tr>
-            <td>Name:</td>
-            <td>First Last</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Name:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">First Last</td>
           </tr>
-          <tr>
-            <td>Email:</td>
-            <td>exampleemail@gmail.com</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Email:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">
+              exampleemail@gmail.com
+            </td>
           </tr>
-          <tr>
-            <td>Preferred Email:</td>
-            <td>exampleemail@gmail.com</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Preferred Email:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">
+              exampleemail@gmail.com
+            </td>
           </tr>
         </table>
       </div>
       <div class="preferences-info">
-        <table class="info-table">
-          <tr>
-            <th>Preferences & Info</th>
-            <th>Volunteer Preferences</th>
-            <th>Dog Information</th>
+        <table
+          class="info-table"
+          style="
+            border-collapse: separate;
+            border-spacing: 10px;
+            width: 100%;
+            margin-bottom: 40px;
+          "
+        >
+          <tr style="outline: none">
+            <th style="text-align: left; font-weight: 500; font-size: 24px">
+              Preferences & Info
+            </th>
+            <th style="text-align: left; font-weight: 500; font-size: 24px">
+              Volunteer Preferences
+            </th>
+            <th style="text-align: left; font-weight: 500; font-size: 24px">
+              Dog Information
+            </th>
           </tr>
-          <tr>
-            <td>Foster Type:</td>
-            <td>All</td>
-            <td>Foster Move</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Foster Type:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">All</td>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              Foster Move
+            </td>
           </tr>
-          <tr>
-            <td>Size:</td>
-            <td>All</td>
-            <td>Medium</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Size:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">All</td>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              Medium
+            </td>
           </tr>
-          <tr>
-            <td>Breed:</td>
-            <td>
-              <p class="font-20px">Preferred Breeds:</p>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Breed:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">
+              <p
+                class="font-20px"
+                style="
+                  font-size: 20px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Preferred Breeds:
+              </p>
               None
 
-              <p class="font-20px space-above">Restricted Breeds</p>
+              <p
+                class="font-20px space-above"
+                style="
+                  font-size: 20px;
+                  margin-top: 12px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Restricted Breeds
+              </p>
               Chihuahua
             </td>
-            <td>Australian Shepherd</td>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              Australian Shepherd
+            </td>
           </tr>
-          <tr>
-            <td>Gender:</td>
-            <td>All</td>
-            <td>Male</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Gender:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">All</td>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              Male
+            </td>
           </tr>
-          <tr>
-            <td>Age:</td>
-            <td>All</td>
-            <td>Puppy</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Age:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">All</td>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              Puppy
+            </td>
           </tr>
-          <tr>
-            <td>Temperament:</td>
-            <td>Friendly, Calm</td>
-            <td>Friendly, Active</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Temperament:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">Friendly, Calm</td>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              Friendly, Active
+            </td>
           </tr>
-          <tr>
-            <td>Dog Not Good With:</td>
-            <td>
-              <p class="font-20px">Can foster dogs NOT good with:</p>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Dog Not Good With:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">
+              <p
+                class="font-20px"
+                style="
+                  font-size: 20px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Can foster dogs NOT good with:
+              </p>
               All
             </td>
-            <td>
-              <p class="font-20px">Dog is NOT good with:</p>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              <p
+                class="font-20px"
+                style="
+                  font-size: 20px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Dog is NOT good with:
+              </p>
               Younger Kids, Large Dogs
-              <p class="font-20px space-above">Dog is good with:</p>
+              <p
+                class="font-20px space-above"
+                style="
+                  font-size: 20px;
+                  margin-top: 12px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Dog is good with:
+              </p>
               Men, Women, Older Kids, Small Dogs, Cats
             </td>
           </tr>
-          <tr>
-            <td>Medical:</td>
-            <td>
-              <p class="font-20px">Able to foster dogs with:</p>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Medical:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">
+              <p
+                class="font-20px"
+                style="
+                  font-size: 20px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Able to foster dogs with:
+              </p>
               All
             </td>
-            <td>
-              <p class="font-20px">Dog has:</p>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              <p
+                class="font-20px"
+                style="
+                  font-size: 20px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Dog has:
+              </p>
               None
             </td>
           </tr>
-          <tr>
-            <td>Behavioral:</td>
-            <td>
-              <p class="font-20px">Able to foster dogs with:</p>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Behavioral:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">
+              <p
+                class="font-20px"
+                style="
+                  font-size: 20px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Able to foster dogs with:
+              </p>
               All
             </td>
-            <td>
-              <p class="font-20px">Dog has:</p>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              <p
+                class="font-20px"
+                style="
+                  font-size: 20px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  font-style: italic;
+                "
+              >
+                Dog has:
+              </p>
               Separation Anxiety, Flight Risk
             </td>
           </tr>
-          <tr>
-            <td>House Trained:</td>
-            <td><i>Unable</i> to foster dogs that are NOT house trained</td>
-            <td>IS house trained</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              House Trained:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">
+              <i>Unable</i> to foster dogs that are NOT house trained
+            </td>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              IS house trained
+            </td>
           </tr>
-          <tr>
-            <td>Spayed/Neutered:</td>
-            <td><i>Able</i> to foster dogs that are NOT house trained</td>
-            <td>IS spayed/neutered</td>
+          <tr style="outline: #7d7e82 thin solid">
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                background-color: #c6e3f9;
+                font-weight: 500;
+                width: 25%;
+              "
+            >
+              Spayed/Neutered:
+            </td>
+            <td style="font-size: 22px; padding: 12px 15px">
+              <i>Able</i> to foster dogs that are NOT house trained
+            </td>
+            <td
+              style="
+                font-size: 22px;
+                padding: 12px 15px;
+                border-left: #7d7e82 thin solid;
+              "
+            >
+              IS spayed/neutered
+            </td>
           </tr>
         </table>
       </div>
       <div class="questionnaire-responses">
-        <p class="medium-weight-text font-24px">
+        <p
+          class="medium-weight-text font-24px"
+          style="font-weight: 500; font-size: 24px; margin-bottom: 0px"
+        >
           Foster Questionnaire Responses
         </p>
-        <div class="question">
-          <p class="medium-weight-text question-title">Placeholder Question</p>
-          <p class="question-response">Response to question</p>
+        <div class="question" style="font-size: 22px; padding-bottom: 2px">
+          <p
+            class="medium-weight-text question-title"
+            style="font-weight: 500; margin-bottom: 8px"
+          >
+            Placeholder Question
+          </p>
+          <p class="question-response" style="margin: 0px">
+            Response to question
+          </p>
         </div>
-        <div class="question">
-          <p class="medium-weight-text question-title">Placeholder Question</p>
-          <p class="question-response">Response to question</p>
+        <div class="question" style="font-size: 22px; padding-bottom: 2px">
+          <p
+            class="medium-weight-text question-title"
+            style="font-weight: 500; margin-bottom: 8px"
+          >
+            Placeholder Question
+          </p>
+          <p class="question-response" style="margin: 0px">
+            Response to question
+          </p>
         </div>
-        <div class="question">
-          <p class="medium-weight-text question-title">Placeholder Question</p>
-          <p class="question-response">Response to question</p>
+        <div class="question" style="font-size: 22px; padding-bottom: 2px">
+          <p
+            class="medium-weight-text question-title"
+            style="font-weight: 500; margin-bottom: 8px"
+          >
+            Placeholder Question
+          </p>
+          <p class="question-response" style="margin: 0px">
+            Response to question
+          </p>
         </div>
-        <div class="question">
-          <p class="medium-weight-text question-title">Placeholder Question</p>
-          <p class="question-response">Response to question</p>
+        <div class="question" style="font-size: 22px; padding-bottom: 2px">
+          <p
+            class="medium-weight-text question-title"
+            style="font-weight: 500; margin-bottom: 8px"
+          >
+            Placeholder Question
+          </p>
+          <p class="question-response" style="margin: 0px">
+            Response to question
+          </p>
         </div>
-        <div class="question">
-          <p class="medium-weight-text question-title">Placeholder Question</p>
-          <p class="question-response">Response to question</p>
+        <div class="question" style="font-size: 22px; padding-bottom: 2px">
+          <p
+            class="medium-weight-text question-title"
+            style="font-weight: 500; margin-bottom: 8px"
+          >
+            Placeholder Question
+          </p>
+          <p class="question-response" style="margin: 0px">
+            Response to question
+          </p>
         </div>
       </div>
     </div>
