@@ -11,12 +11,16 @@ import {
 import {
   Age,
   ageLabels,
+  Behavioral,
+  behavioralLabels,
   Breed,
   breedLabels,
   FosterType,
   fosterTypeLabels,
   Gender,
   genderLabels,
+  Medical,
+  medicalLabels,
   PetKind,
   petKindLabels,
   Size,
@@ -240,6 +244,54 @@ export const FormSlide: React.FC<{
           }
         />
       </FormControl>
+      <Stack direction={"row"} spacing={10}>
+        <FormControl className="medicalForm" maxW="450px">
+          <FormLabel>Medical</FormLabel>
+          <Select
+            isMulti
+            closeMenuOnSelect={false}
+            value={formState.medical.map((val) => ({
+              value: val as string,
+              label: medicalLabels[val],
+            }))}
+            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            options={Object.entries(medicalLabels).map(([k, v]) => ({
+              value: k,
+              label: v,
+            }))}
+            onChange={(e) =>
+              dispatchFormState({
+                type: "setField",
+                key: "medical",
+                data: e!.map(({ value }) => value) as Medical[],
+              })
+            }
+          />
+        </FormControl>
+        <FormControl className="behavioralForm" maxW="450px">
+          <FormLabel>Behavioral</FormLabel>
+          <Select
+            isMulti
+            closeMenuOnSelect={false}
+            value={formState.behavioral.map((val) => ({
+              value: val as string,
+              label: behavioralLabels[val],
+            }))}
+            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            options={Object.entries(behavioralLabels).map(([k, v]) => ({
+              value: k,
+              label: v,
+            }))}
+            onChange={(e) =>
+              dispatchFormState({
+                type: "setField",
+                key: "behavioral",
+                data: e!.map(({ value }) => value) as Behavioral[],
+              })
+            }
+          />
+        </FormControl>
+      </Stack>
       <Stack dir="col" spacing={10} pt={2}>
         <Stack direction="row" spacing={10}>
           <Box flex={1}>

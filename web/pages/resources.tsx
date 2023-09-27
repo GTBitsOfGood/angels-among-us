@@ -214,7 +214,6 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Volunteer Teams",
-    primaryContact: " Susan DuBois (susan@angelsrescue.org)",
     contacts: [
       {
         email: "volunteers",

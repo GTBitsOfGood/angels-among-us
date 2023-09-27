@@ -17,7 +17,7 @@ import { Filter, FilterGroup, Option, SelectedFilters } from "./Feed";
 function FeedFilterGroup(props: {
   key: string;
   filterGroup: FilterGroup;
-  selectedFilters: SelectedFilters<Filter>;
+  selectedFilters: SelectedFilters;
   setSelectedFilters: Dispatch<{
     type: string;
     filter: Filter;
