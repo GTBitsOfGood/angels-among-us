@@ -3,40 +3,28 @@
   <head>
     <title>Email</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link
       href="https://fonts.googleapis.com/css2?family=Comfortaa&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap"
       rel="stylesheet"
     />
   </head>
   <body
-    style="
-      font-family: 'Roboto', sans-serif;
-      display: flex;
-      justify-content: center;
-    "
+    style="font-family: 'Comfortaa', cursive; font-family: 'Roboto', sans-serif"
   >
-    <div
-      class="email"
-      style="
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        width: 1050px;
-        margin: 50px 0px;
-      "
-    >
+    <div class="email" style="width: 1050px; margin: auto">
       <img
         class="logo"
         width="46px"
         height="49px"
         src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
-        style="align-self: center; padding-bottom: 50px"
+        style="width: 100%; padding: 50px 0px"
       />
       <p
         class="medium-weight-text font-24px congrats-text"
         style="
           line-height: 48px;
+          display: inline-block;
           font-weight: 500;
           font-size: 24px;
           margin-bottom: 0px;
@@ -45,72 +33,68 @@
         Congratulations!<br />
         There is a new foster application for the dog below to review.
       </p>
-      <div
-        class="pet-info"
-        style="
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-          margin-top: 60px;
-          margin-bottom: 50px;
-        "
-      >
-        <img
-          class="pet-image"
-          src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-          style="
-            width: 250px;
-            height: 250px;
-            object-fit: cover;
-            aspect-ratio: 1/1;
-            border-radius: 12px;
-            margin-right: 20px;
-          "
-        />
-        <div
-          class="pet-info-text"
-          style="display: flex; flex-direction: column"
-        >
-          <p
-            class="pet-name-text medium-weight-text font-28px"
-            style="
-              margin-top: 0px;
-              font-weight: 500;
-              font-size: 28px;
-              margin-bottom: 0px;
-            "
-          >
-            Pet Name
-          </p>
-          <p
-            class="pet-about-header bold-text font-22px"
-            style="
-              font-weight: 700;
-              font-size: 22px;
-              margin-top: 0px;
-              margin-bottom: 0px;
-              margin: 18px 0px;
-            "
-          >
-            About
-          </p>
-          <p
-            class="pet-about-text font-22px"
-            style="
-              color: #656565;
-              font-size: 22px;
-              margin-top: 0px;
-              margin-bottom: 0px;
-            "
-          >
-            Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
-            consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum
-            dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.
-            Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
-            consectetur.
-          </p>
-        </div>
-      </div>
+      <table class="pet-info" style="margin-top: 60px; margin-bottom: 50px">
+        <tr>
+          <td style="vertical-align: top" valign="top">
+            <img
+              class="pet-image"
+              src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
+              style="
+                width: 250px;
+                height: 250px;
+                object-fit: cover;
+                aspect-ratio: 1/1;
+                border-radius: 12px;
+                margin-right: 20px;
+              "
+              width="250"
+              height="250"
+            />
+          </td>
+          <td style="vertical-align: top" valign="top">
+            <div class="pet-info-text">
+              <p
+                class="pet-name-text medium-weight-text font-28px"
+                style="
+                  margin-top: 8px;
+                  font-weight: 500;
+                  font-size: 28px;
+                  margin-bottom: 0px;
+                "
+              >
+                Pet Name
+              </p>
+              <p
+                class="pet-about-header bold-text font-22px"
+                style="
+                  font-weight: 700;
+                  font-size: 22px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                  margin: 18px 0px;
+                "
+              >
+                About
+              </p>
+              <p
+                class="pet-about-text font-22px"
+                style="
+                  color: #656565;
+                  font-size: 22px;
+                  margin-top: 0px;
+                  margin-bottom: 0px;
+                "
+              >
+                Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit
+                amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem
+                ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum
+                dolor sit amet consectetur.
+              </p>
+            </div>
+          </td>
+        </tr>
+      </table>
       <div class="volunteer-info">
         <table
           class="info-table"
@@ -120,9 +104,13 @@
             width: 100%;
             margin-bottom: 40px;
           "
+          width="100%"
         >
           <tr style="outline: none">
-            <th style="text-align: left; font-weight: 500; font-size: 24px">
+            <th
+              style="text-align: left; font-weight: 500; font-size: 24px"
+              align="left"
+            >
               About the Volunteer
             </th>
           </tr>
@@ -135,6 +123,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Name:
             </td>
@@ -149,6 +139,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Email:
             </td>
@@ -165,6 +157,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Preferred Email:
             </td>
@@ -183,15 +177,25 @@
             width: 100%;
             margin-bottom: 40px;
           "
+          width="100%"
         >
           <tr style="outline: none">
-            <th style="text-align: left; font-weight: 500; font-size: 24px">
+            <th
+              style="text-align: left; font-weight: 500; font-size: 24px"
+              align="left"
+            >
               Preferences & Info
             </th>
-            <th style="text-align: left; font-weight: 500; font-size: 24px">
+            <th
+              style="text-align: left; font-weight: 500; font-size: 24px"
+              align="left"
+            >
               Volunteer Preferences
             </th>
-            <th style="text-align: left; font-weight: 500; font-size: 24px">
+            <th
+              style="text-align: left; font-weight: 500; font-size: 24px"
+              align="left"
+            >
               Dog Information
             </th>
           </tr>
@@ -204,6 +208,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Foster Type:
             </td>
@@ -227,6 +233,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Size:
             </td>
@@ -250,6 +258,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Breed:
             </td>
@@ -271,9 +281,9 @@
                 class="font-20px space-above"
                 style="
                   font-size: 20px;
-                  margin-top: 12px;
                   margin-bottom: 0px;
                   font-style: italic;
+                  margin-top: 12px;
                 "
               >
                 Restricted Breeds
@@ -299,6 +309,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Gender:
             </td>
@@ -322,6 +334,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Age:
             </td>
@@ -345,6 +359,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Temperament:
             </td>
@@ -368,6 +384,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Dog Not Good With:
             </td>
@@ -408,9 +426,9 @@
                 class="font-20px space-above"
                 style="
                   font-size: 20px;
-                  margin-top: 12px;
                   margin-bottom: 0px;
                   font-style: italic;
+                  margin-top: 12px;
                 "
               >
                 Dog is good with:
@@ -427,6 +445,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Medical:
             </td>
@@ -521,6 +541,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               House Trained:
             </td>
@@ -546,6 +568,8 @@
                 font-weight: 500;
                 width: 25%;
               "
+              width="25%"
+              bgcolor="#c6e3f9"
             >
               Spayed/Neutered:
             </td>
@@ -564,7 +588,7 @@
           </tr>
         </table>
       </div>
-      <div class="questionnaire-responses">
+      <div class="questionnaire-responses" style="padding-bottom: 50px">
         <p
           class="medium-weight-text font-24px"
           style="font-weight: 500; font-size: 24px; margin-bottom: 0px"

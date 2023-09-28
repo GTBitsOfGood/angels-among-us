@@ -12,42 +12,34 @@
       body {
         font-family: "Comfortaa", cursive;
         font-family: "Roboto", sans-serif;
-        display: flex;
-        justify-content: center;
       }
 
       .email {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         width: 1050px;
-        margin: 50px 0px;
+        margin: auto;
       }
 
       .logo {
-        align-self: center;
-        padding-bottom: 50px;
+        width: 100%;
+        padding: 50px 0px;
       }
 
       .congrats-text {
         line-height: 48px;
+        display: inline-block;
       }
 
       .pet-info {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
         margin-top: 60px;
         margin-bottom: 50px;
       }
 
-      .pet-info-text {
-        display: flex;
-        flex-direction: column;
+      table.pet-info td {
+        vertical-align: top;
       }
 
       .pet-name-text {
-        margin-top: 0px;
+        margin-top: 8px;
       }
 
       .pet-about-text {
@@ -129,6 +121,10 @@
         margin-top: 12px;
       }
 
+      .questionnaire-responses {
+        padding-bottom: 50px;
+      }
+
       .question {
         font-size: 22px;
         padding-bottom: 2px;
@@ -168,23 +164,29 @@
         Congratulations!<br />
         There is a new foster application for the dog below to review.
       </p>
-      <div class="pet-info">
-        <img
-          class="pet-image"
-          src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-        />
-        <div class="pet-info-text">
-          <p class="pet-name-text medium-weight-text font-28px">Pet Name</p>
-          <p class="pet-about-header bold-text font-22px">About</p>
-          <p class="pet-about-text font-22px">
-            Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
-            consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum
-            dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur.
-            Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
-            consectetur.
-          </p>
-        </div>
-      </div>
+      <table class="pet-info">
+        <tr>
+          <td>
+            <img
+              class="pet-image"
+              src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
+            />
+          </td>
+          <td>
+            <div class="pet-info-text">
+              <p class="pet-name-text medium-weight-text font-28px">Pet Name</p>
+              <p class="pet-about-header bold-text font-22px">About</p>
+              <p class="pet-about-text font-22px">
+                Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit
+                amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem
+                ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet
+                consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum
+                dolor sit amet consectetur.
+              </p>
+            </div>
+          </td>
+        </tr>
+      </table>
       <div class="volunteer-info">
         <table class="info-table">
           <tr>
