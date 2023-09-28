@@ -1,7 +1,7 @@
 import { Stack, Text, UnorderedList, ListItem } from "@chakra-ui/react";
 export default function PetPostListGroup(props: {
   title: string;
-  tags: Array<String> | undefined;
+  tags: Array<string> | undefined;
 }) {
   return (
     <Stack direction="column" spacing={3}>

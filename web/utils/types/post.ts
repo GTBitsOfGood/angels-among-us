@@ -37,7 +37,7 @@ export const fosterTypeDescriptions: Record<FosterType, string> = {
     "I already have a foster parent but while they sort out logistics, I need care for a few days.",
 
   [FosterType.FosterMove]:
-    "My previous foster parent's weren't able to care for me any more so I need a new home.",
+    "My previous foster parents weren't able to care for me any more so I need a new home.",
 
   [FosterType.Shelter]: "I'm originally from a shelter and need a home!",
 
@@ -294,21 +294,21 @@ export const statusLabels: Record<Status, string> = {
 };
 
 export const houseTrainedLabels: Record<Trained, string> = {
-  [Trained.Yes]: "House-Trained",
-  [Trained.No]: "Not House-Trained",
-  [Trained.Unknown]: "House-Training Status Unknown",
+  [Trained.Yes]: "House-trained",
+  [Trained.No]: "Not house-trained",
+  [Trained.Unknown]: "House-training status unknown",
 };
 
 export const crateTrainedLabels: Record<Trained, string> = {
-  [Trained.Yes]: "Crate-Trained",
-  [Trained.No]: "Not Crate-Trained",
-  [Trained.Unknown]: "Crate-Training Status Unknown",
+  [Trained.Yes]: "Crate-trained",
+  [Trained.No]: "Not crate-trained",
+  [Trained.Unknown]: "Crate-training status unknown",
 };
 
 export const spayNeuterStatusLabels: Record<Trained, string> = {
-  [Trained.Yes]: "Spayed/Neutered",
-  [Trained.No]: "Not Spayed/Neutered",
-  [Trained.Unknown]: "Spay/Neuter Status Not Known",
+  [Trained.Yes]: "Spayed/neutered",
+  [Trained.No]: "Not spayed/neutered",
+  [Trained.Unknown]: "Spay/neuter status unknown",
 };
 
 export type AttachmentInfo =

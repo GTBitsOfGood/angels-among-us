@@ -49,6 +49,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
         );
       }}
     >
+      {/* TODO: Account for Videos */}
       {props.attachments?.map((slide) => {
         return (
           <Image
@@ -56,6 +57,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
             src={slide}
             borderRadius="15px"
             objectFit="cover"
+            verticalAlign={"true"}
             width="full"
             height="full"
             maxHeight={["50vh", "75vh"]}

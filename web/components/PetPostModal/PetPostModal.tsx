@@ -5,6 +5,7 @@ import {
   Flex,
   Modal,
   ModalContent,
+  ModalFooter,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -56,54 +57,89 @@ const PetPostModal: React.FC<{
     attachments,
   } = postData;
 
-  const behavioralTagLabels: string[] = behavioral?.map(
-    (tag) => behavioralLabels[tag]
-  );
-
-  const medicalTagLabels: string[] = medical.map((tag) => medicalLabels[tag]);
-
-  const trainedTagLabels: string[] = [
+  const behavioralMedicalAndTrainedTagLabels = [
+    ...behavioral?.map((tag) => behavioralLabels[tag]),
+    ...medical?.map((tag) => medicalLabels[tag]),
     spayNeuterStatusLabels[spayNeuterStatus],
     houseTrainedLabels[houseTrained],
     crateTrainedLabels[crateTrained],
   ];
 
-  const behavioralAndMedicalTagLabels =
-    medicalTagLabels.concat(behavioralTagLabels);
+  const goodWithLabelMap = {
+    getsAlongWithMen: GoodWith.Men,
+    getsAlongWithWomen: GoodWith.Women,
+    getsAlongWithOlderKids: GoodWith.OlderChildren,
+    getsAlongWithYoungKids: GoodWith.YoungChildren,
+    getsAlongWithLargeDogs: GoodWith.LargeDogs,
+    getsAlongWithSmallDogs: GoodWith.SmallDogs,
+    getsAlongWithCats: GoodWith.Cats,
+  };
 
-  const behavioralMedicalAndTrainedTagLabels =
-    behavioralAndMedicalTagLabels.concat(trainedTagLabels);
+  const goodWithValueMap = {
+    getsAlongWithMen,
+    getsAlongWithWomen,
+    getsAlongWithOlderKids,
+    getsAlongWithYoungKids,
+    getsAlongWithLargeDogs,
+    getsAlongWithSmallDogs,
+    getsAlongWithCats,
+  };
 
-  const goodWithLabelsAndValues = [
-    [goodWithLabels[GoodWith.Men], getsAlongWithMen],
-    [goodWithLabels[GoodWith.Women], getsAlongWithWomen],
-    [goodWithLabels[GoodWith.OlderChildren], getsAlongWithOlderKids],
-    [goodWithLabels[GoodWith.YoungChildren], getsAlongWithYoungKids],
-    [goodWithLabels[GoodWith.LargeDogs], getsAlongWithLargeDogs],
-    [goodWithLabels[GoodWith.SmallDogs], getsAlongWithSmallDogs],
-    [goodWithLabels[GoodWith.Cats], getsAlongWithCats],
+  const getsAlongWithFields = [
+    "getsAlongWithMen",
+    "getsAlongWithWomen",
+    "getsAlongWithOlderKids",
+    "getsAlongWithYoungKids",
+    "getsAlongWithLargeDogs",
+    "getsAlongWithSmallDogs",
+    "getsAlongWithCats",
   ];
 
-  const goodWithTagLabels: string[] | undefined = goodWithLabelsAndValues
-    .filter((goodWith) => goodWith[1] === Trained.Yes)
-    .map((goodWith) => goodWith[0]);
+  const goodWithTagLabels: string[] = getsAlongWithFields
+    .filter(
+      (field: string) =>
+        goodWithValueMap[field as keyof typeof goodWithLabelMap] === Trained.Yes
+    )
+    .map(
+      (field) =>
+        goodWithLabels[goodWithLabelMap[field as keyof typeof goodWithValueMap]]
+    );
 
-  const notGoodWithTagLabels: string[] | undefined = goodWithLabelsAndValues
-    .filter((goodWith) => goodWith[1] === Trained.No)
-    .map((goodWith) => goodWith[0]);
+  const notGoodWithTagLabels = getsAlongWithFields
+    .filter(
+      (field) =>
+        goodWithValueMap[field as keyof typeof goodWithLabelMap] === Trained.No
+    )
+    .map(
+      (field) =>
+        goodWithLabels[goodWithLabelMap[field as keyof typeof goodWithValueMap]]
+    );
 
-  const unsureAboutTagLabels: string[] | undefined = goodWithLabelsAndValues
-    .filter((goodWith) => goodWith[1] === Trained.Unknown)
-    .map((goodWith) => goodWith[0]);
+  const unsureAboutTagLabels = getsAlongWithFields
+    .filter(
+      (field) =>
+        goodWithValueMap[field as keyof typeof goodWithLabelMap] ===
+        Trained.Unknown
+    )
+    .map(
+      (field) =>
+        goodWithLabels[goodWithLabelMap[field as keyof typeof goodWithValueMap]]
+    );
 
   return (
-    <Modal isOpen={isOpen} size={"full"} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      size={"full"}
+      onClose={onClose}
+      scrollBehavior={"inside"}
+    >
       <ModalContent>
         <Stack
           direction="column"
           display={["none", "flex"]}
           spacing={8}
           paddingTop={6}
+          height={"inherit"}
         >
           <Button
             h={8}
@@ -127,7 +163,15 @@ const PetPostModal: React.FC<{
             >
               <ImageSlider attachments={attachments}></ImageSlider>
             </Flex>
-            <Stack direction="column" width="50%" spacing={8}>
+            <Stack
+              direction="column"
+              width="50%"
+              spacing={8}
+              paddingLeft={10}
+              paddingRight={10}
+              height={"75vh"}
+              overflowY={"scroll"}
+            >
               <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
                 {name}
               </Text>
@@ -138,7 +182,7 @@ const PetPostModal: React.FC<{
                 <Text>{description}</Text>
                 <Text></Text>
                 <Text>
-                  I am a {fosterTypeLabels[type]} dog.{" "}
+                  I am a <b>{fosterTypeLabels[type].toLowerCase()}</b> dog.{" "}
                   {fosterTypeDescriptions[type]}
                 </Text>
               </Stack>
@@ -149,13 +193,24 @@ const PetPostModal: React.FC<{
                       title={"Main Characteristics"}
                       tags={[]}
                     />
-                    <Text>Gender: {genderLabels[gender]}</Text>
                     <Text>
-                      Breed:{" "}
-                      {breed.map((breed) => breedLabels[breed]).join(" ")}
+                      <b>Gender: </b>
+                      {genderLabels[gender]}
                     </Text>
-                    <Text>Size: {sizeLabels[size]}</Text>
-                    <Text>Age: {ageLabels[age]}</Text>
+                    <Text>
+                      <b>Breed: </b>
+                      {breed.map((breed) => breedLabels[breed]).join(", ")}
+                    </Text>
+                    <Text>
+                      <b>Size: </b>
+
+                      {sizeLabels[size]}
+                    </Text>
+
+                    <Text>
+                      <b>Age: </b>
+                      {ageLabels[age]}
+                    </Text>
                   </Flex>
                   <Flex width="50%">
                     <PetPostListGroup
@@ -187,16 +242,6 @@ const PetPostModal: React.FC<{
               </Stack>
             </Stack>
           </Flex>
-          <Flex
-            width="100%"
-            justifyContent="flex-end"
-            paddingRight={5}
-            paddingBottom={5}
-          >
-            <Button variant="solid-primary" size="lg">
-              Foster Me!
-            </Button>
-          </Flex>
         </Stack>
         <Flex direction="column" width="100%" display={["flex", "none"]}>
           <Flex
@@ -226,13 +271,15 @@ const PetPostModal: React.FC<{
             alignSelf="center"
             spacing={8}
             paddingTop={4}
+            height={"70vh"}
+            overflowY={"scroll"}
           >
             <Stack direction="column" spacing={4}>
               <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
                 {name}
               </Text>
               <Flex color="white">
-                <ImageSlider attachments={attachments} />
+                <ImageSlider attachments={attachments}></ImageSlider>
               </Flex>
               <Stack direction="column">
                 <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
@@ -240,21 +287,31 @@ const PetPostModal: React.FC<{
                 </Text>
                 <Text>{description}</Text>
                 <Text>
-                  I am a {fosterTypeLabels[type]} dog.{" "}
+                  I am a <b>{fosterTypeLabels[type].toLowerCase()}</b> dog.{" "}
                   {fosterTypeDescriptions[type]}
                 </Text>
               </Stack>
             </Stack>
 
             <Stack direction="column" width="100%" spacing={6}>
-              <Flex width="100%">
+              <Flex width="100%" direction={"column"}>
                 <PetPostListGroup title={"Main Characteristics"} tags={[]} />
-                <Text>Gender: {genderLabels[gender]}</Text>
                 <Text>
-                  Breed: {breed.map((breed) => breedLabels[breed]).join(" ")}
+                  <b>Gender: </b>
+                  {genderLabels[gender]}
                 </Text>
-                <Text>Size: {sizeLabels[size]}</Text>
-                <Text>Age: {ageLabels[age]}</Text>
+                <Text>
+                  <b>Breed: </b>
+                  {breed.map((breed) => breedLabels[breed]).join(", ")}
+                </Text>
+                <Text>
+                  <b>Size: </b>
+                  {sizeLabels[size]}
+                </Text>
+                <Text>
+                  <b>Age: </b>
+                  {ageLabels[age]}
+                </Text>
               </Flex>
               <Flex width="100%">
                 <PetPostListGroup
@@ -282,20 +339,30 @@ const PetPostModal: React.FC<{
               </Flex>
             </Stack>
           </Stack>
+        </Flex>
+        <ModalFooter>
           <Flex
             width="100%"
-            justifyContent="center"
-            direction="row"
-            position="sticky"
+            justifyContent={["center", "flex-end"]}
+            paddingRight={{ lg: 5 }}
+            paddingBottom={{ lg: 5 }}
+            position={["sticky", "fixed"]}
+            zIndex={1}
             bottom={0}
-            padding={4}
-            bgColor="white"
+            padding={{ sm: 4 }}
+            right={{ lg: 0 }}
+            left={{ lg: 0 }}
+            bgColor={"white"}
           >
-            <Button variant="solid-primary" size="lg">
+            <Button
+              variant="solid-primary"
+              width={["100%", 60]}
+              borderRadius={"20px"}
+            >
               Foster Me!
             </Button>
           </Flex>
-        </Flex>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
