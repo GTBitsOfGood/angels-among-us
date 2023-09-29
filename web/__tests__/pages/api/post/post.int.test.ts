@@ -7,8 +7,6 @@ const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
 const resizeData = readFileSync("./__tests__/assets/resize.png");
 const videoData = readFileSync("./__tests__/assets/video.mp4");
 
-jest.setTimeout(10000);
-
 async function sendCreateReq() {
   const randPost = createRandomPost();
   return fetch("http://localhost:3000/api/trpc/post.create", {
