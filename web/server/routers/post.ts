@@ -10,6 +10,7 @@ import {
   updatePostDetails,
   updatePostStatus,
   getFilteredPosts,
+  getAttachments,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -275,6 +276,15 @@ export const postRouter = router({
       });
     }
   }),
+  getAttachments: procedure
+    .input(
+      z.object({
+        _id: zodOidType,
+      })
+    )
+    .query(async ({ input }) => {
+      return getAttachments(input._id);
+    }),
   getFilteredPosts: procedure
     .input(postFilterSchema)
     .query(async ({ input }) => {

@@ -1,7 +1,11 @@
 import { ClientSession, FilterQuery, ObjectId, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
 import { IPendingPost, IPost } from "../../utils/types/post";
-import { PutObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
+import {
+  ListObjectsCommand,
+  PutObjectCommand,
+  DeleteObjectsCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { consts } from "../../utils/consts";
 import { sign } from "jsonwebtoken";
@@ -14,7 +18,7 @@ async function getPost(
   publicAttachmentUrls: boolean
 ): Promise<IPost & { _id: string; __v: number }> {
   const post = await Post.findOne({ _id: oid });
-  if (publicAttachmentUrls) {
+  if (publicAttachmentUrls && post) {
     post.attachments = post.attachments.map((attachment: string) => {
       return `${consts.storageBucketURL}/${attachment}`;
     });
@@ -111,7 +115,6 @@ async function deleteAttachments(keysToDelete: string[]) {
       return { success: false };
     }
   }
-  //false or true? depends on how we want to handle partial deletes
   return { success: true };
 }
 
@@ -178,6 +181,15 @@ async function getAllPosts() {
   return await Post.find().sort({ date: -1 });
 }
 
+async function getAttachments(oid: ObjectId) {
+  const listObjectsCommand = new ListObjectsCommand({
+    Bucket: consts.storageBucket,
+    Prefix: oid + "",
+  });
+  const attachInfo = await storageClient.send(listObjectsCommand);
+  return attachInfo;
+}
+
 async function getFilteredPosts(filter: FilterQuery<IPost>) {
   const posts = await Post.find(filter).sort({ date: -1 });
   posts.forEach(
@@ -197,5 +209,6 @@ export {
   updatePostStatus,
   finalizePost,
   getAllPosts,
+  getAttachments,
   getFilteredPosts,
 };
