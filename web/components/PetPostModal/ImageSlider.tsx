@@ -2,6 +2,7 @@ import { Flex, Image } from "@chakra-ui/react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
+import DefaultDog from "../../public/dog.svg";
 
 function ImageSlider(props: { attachments: Array<string> }) {
   return (
@@ -50,21 +51,40 @@ function ImageSlider(props: { attachments: Array<string> }) {
       }}
     >
       {/* TODO: Account for Videos */}
-      {props.attachments?.map((slide) => {
-        return (
-          <Image
-            key={slide}
-            src={slide}
-            borderRadius="15px"
-            objectFit="cover"
-            verticalAlign={"true"}
-            width="full"
-            height="full"
-            maxHeight={["50vh", "75vh"]}
-            alt=""
-          />
-        );
-      })}
+      {props.attachments.length > 0
+        ? props.attachments?.map((slide) => {
+            return (
+              <Flex
+                justifyContent={"center"}
+                alignItems={"center"}
+                borderRadius="15px"
+                bgColor={"#C6E3F9"}
+                key={slide}
+              >
+                <Image
+                  src={slide}
+                  objectFit="cover"
+                  verticalAlign={"true"}
+                  align="center"
+                  maxHeight={["40vh", "75vh"]}
+                  alt=""
+                />
+              </Flex>
+            );
+          })
+        : [
+            <Flex
+              key={"default"}
+              direction={"column"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              borderRadius="15px"
+              maxHeight={["40vh", "70vh"]}
+              paddingBottom={10}
+            >
+              <DefaultDog fill="#C6E3F9" height={"100%"} width={"100%"} />
+            </Flex>,
+          ]}
     </Carousel>
   );
 }

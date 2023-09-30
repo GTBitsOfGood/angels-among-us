@@ -160,6 +160,8 @@ const PetPostModal: React.FC<{
               paddingLeft={10}
               color="white"
               maxHeight="75vh"
+              alignItems={"center"}
+              justifyContent={"center"}
             >
               <ImageSlider attachments={attachments}></ImageSlider>
             </Flex>
@@ -175,7 +177,7 @@ const PetPostModal: React.FC<{
               <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
                 {name}
               </Text>
-              <Stack direction="column">
+              <Flex direction="column">
                 <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
                   About
                 </Text>
@@ -185,7 +187,7 @@ const PetPostModal: React.FC<{
                   I am a <b>{fosterTypeLabels[type].toLowerCase()}</b> dog.{" "}
                   {fosterTypeDescriptions[type]}
                 </Text>
-              </Stack>
+              </Flex>
               <Stack direction="column" spacing={8}>
                 <Flex direction="row" width="100%">
                   <Flex direction={"column"} width="50%">
@@ -203,10 +205,8 @@ const PetPostModal: React.FC<{
                     </Text>
                     <Text>
                       <b>Size: </b>
-
                       {sizeLabels[size]}
                     </Text>
-
                     <Text>
                       <b>Age: </b>
                       {ageLabels[age]}
@@ -271,7 +271,7 @@ const PetPostModal: React.FC<{
             alignSelf="center"
             spacing={8}
             paddingTop={4}
-            height={"70vh"}
+            height={"86vh"}
             overflowY={"scroll"}
           >
             <Stack direction="column" spacing={4}>
@@ -296,22 +296,28 @@ const PetPostModal: React.FC<{
             <Stack direction="column" width="100%" spacing={6}>
               <Flex width="100%" direction={"column"}>
                 <PetPostListGroup title={"Main Characteristics"} tags={[]} />
-                <Text>
-                  <b>Gender: </b>
-                  {genderLabels[gender]}
-                </Text>
-                <Text>
-                  <b>Breed: </b>
-                  {breed.map((breed) => breedLabels[breed]).join(", ")}
-                </Text>
-                <Text>
-                  <b>Size: </b>
-                  {sizeLabels[size]}
-                </Text>
-                <Text>
-                  <b>Age: </b>
-                  {ageLabels[age]}
-                </Text>
+                <Stack direction={"row"}>
+                  <Stack direction={"column"} spacing={0.5} width={"50%"}>
+                    <Text>
+                      <b>Gender: </b>
+                      {genderLabels[gender]}
+                    </Text>
+                    <Text>
+                      <b>Breed: </b>
+                      {breed.map((breed) => breedLabels[breed]).join(", ")}
+                    </Text>
+                  </Stack>
+                  <Stack direction={"column"} spacing={0.5} width={"50%"}>
+                    <Text>
+                      <b>Size: </b>
+                      {sizeLabels[size]}
+                    </Text>
+                    <Text>
+                      <b>Age: </b>
+                      {ageLabels[age]}
+                    </Text>
+                  </Stack>
+                </Stack>
               </Flex>
               <Flex width="100%">
                 <PetPostListGroup
@@ -346,12 +352,12 @@ const PetPostModal: React.FC<{
             justifyContent={["center", "flex-end"]}
             paddingRight={{ lg: 5 }}
             paddingBottom={{ lg: 5 }}
+            padding={{ sm: 4 }}
             position={["sticky", "fixed"]}
             zIndex={1}
             bottom={0}
-            padding={{ sm: 4 }}
-            right={{ lg: 0 }}
-            left={{ lg: 0 }}
+            right={0}
+            left={0}
             bgColor={"white"}
           >
             <Button

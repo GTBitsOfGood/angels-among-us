@@ -1,22 +1,26 @@
-import { Stack, Text, UnorderedList, ListItem } from "@chakra-ui/react";
+import { Stack, Text, UnorderedList, ListItem, Flex } from "@chakra-ui/react";
 export default function PetPostListGroup(props: {
   title: string;
   tags: Array<string> | undefined;
 }) {
   return (
-    <Stack direction="column" spacing={3}>
+    <Stack direction="column" spacing={3} width={"100%"}>
       <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
         {props.title}
       </Text>
-      <UnorderedList>
+      <Flex direction={["row", "column"]} flexBasis={2} flexWrap={"wrap"}>
         {props.tags?.map((tag, index) => {
           return (
-            <ListItem key={index}>
-              <Text>{tag}</Text>
-            </ListItem>
+            <Stack key={index} width={["50%", "100%"]}>
+              <UnorderedList>
+                <ListItem>
+                  <Text>{tag}</Text>
+                </ListItem>
+              </UnorderedList>
+            </Stack>
           );
         })}
-      </UnorderedList>
+      </Flex>
     </Stack>
   );
 }
