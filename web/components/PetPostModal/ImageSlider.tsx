@@ -57,8 +57,9 @@ function ImageSlider(props: { attachments: Array<string> }) {
               <Flex
                 justifyContent={"center"}
                 alignItems={"center"}
-                borderRadius="15px"
                 bgColor={"#C6E3F9"}
+                borderRadius="15px"
+                minHeight={["40vh", "75vh"]}
                 key={slide}
               >
                 <Image
@@ -67,6 +68,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
                   verticalAlign={"true"}
                   align="center"
                   maxHeight={["40vh", "75vh"]}
+                  borderRadius="15px"
                   alt=""
                 />
               </Flex>
