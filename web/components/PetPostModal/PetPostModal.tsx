@@ -1,10 +1,8 @@
 import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
-  Box,
   Button,
   Flex,
-  Heading,
   Input,
   Modal,
   ModalCloseButton,
@@ -127,7 +125,7 @@ const FosterQuestionnaire = ({
         <ModalCloseButton display={["none", "block"]} />
         <Flex display={["none", "flex"]} flexDir="column" overflowY="scroll">
           <Flex paddingX={6} flexDir="column" gap={4}>
-            {data[FosterType.Return].map((question) => {
+            {data[fosterType].map((question) => {
               return (
                 <Flex key={question.key} flexDir="column" gap={2}>
                   <Text>{question.title}</Text>
@@ -170,7 +168,7 @@ const FosterQuestionnaire = ({
             overflowY="scroll"
             marginBottom={6}
           >
-            {data[FosterType.Return].map((question) => {
+            {data[fosterType].map((question) => {
               return (
                 <Flex key={question.key} flexDir="column" gap={2}>
                   <Text>{question.title}</Text>
