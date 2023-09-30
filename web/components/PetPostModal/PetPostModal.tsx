@@ -1,16 +1,192 @@
 import { ArrowBackIcon, CheckIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
+  Box,
   Button,
   Flex,
+  Heading,
+  Input,
   Modal,
+  ModalCloseButton,
   ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostTagGroup from "./PetPostTagGroup";
+import { FosterType } from "../../utils/types/post";
+
+type FosterTypeData = {
+  [key in FosterType]: Array<{
+    key: string;
+    title: string;
+  }>;
+};
+
+const data: FosterTypeData = {
+  [FosterType.Return]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "maxDogs",
+      title: "What is the maximum number of dogs you are willing to foster?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "maxDogs",
+      title: "What is the maximum number of dogs you are willing to foster?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "maxDogs",
+      title: "What is the maximum number of dogs you are willing to foster?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "maxDogs",
+      title: "What is the maximum number of dogs you are willing to foster?",
+    },
+  ],
+  [FosterType.Boarding]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+  ],
+  [FosterType.Temporary]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+  ],
+  [FosterType.Shelter]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+  ],
+  [FosterType.FosterMove]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+  ],
+  [FosterType.OwnerSurrender]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+  ],
+};
+
+const FosterQuestionnaire = ({
+  fosterType,
+  isFormViewOpen,
+  onFormViewClose,
+}: {
+  fosterType: FosterType;
+  isFormViewOpen: boolean;
+  onFormViewClose: () => void;
+}) => {
+  return (
+    <Modal
+      isOpen={isFormViewOpen}
+      onClose={onFormViewClose}
+      isCentered
+      scrollBehavior="inside"
+      size={["full", "lg"]}
+    >
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader display={["none", "block"]}>
+          Foster Questionnaire
+        </ModalHeader>
+        <ModalCloseButton display={["none", "block"]} />
+        <Flex display={["none", "flex"]} flexDir="column" overflowY="scroll">
+          <Flex paddingX={6} flexDir="column" gap={4}>
+            {data[FosterType.Return].map((question) => {
+              return (
+                <Flex key={question.key} flexDir="column" gap={2}>
+                  <Text>{question.title}</Text>
+                  <Input />
+                </Flex>
+              );
+            })}
+          </Flex>
+        </Flex>
+        <ModalFooter display={["none", "flex"]}>
+          <Button variant="ghost" mr={3} onClick={onFormViewClose}>
+            Cancel
+          </Button>
+          <Button variant="solid-primary">Submit</Button>
+        </ModalFooter>
+        <Flex
+          direction="column"
+          width="100%"
+          height="100vh"
+          display={["flex", "none"]}
+        >
+          <Stack
+            marginTop={4}
+            marginLeft={4}
+            direction="row"
+            onClick={onFormViewClose}
+            spacing={2}
+            color="#7D7E82"
+            alignItems="center"
+            fontWeight="semibold"
+          >
+            <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
+            <Text>Back to Pet Post</Text>
+          </Stack>
+          <ModalHeader>Foster Questionnaire</ModalHeader>
+          <Flex
+            paddingX={6}
+            flexDir="column"
+            gap={4}
+            overflowY="scroll"
+            marginBottom={6}
+          >
+            {data[FosterType.Return].map((question) => {
+              return (
+                <Flex key={question.key} flexDir="column" gap={2}>
+                  <Text>{question.title}</Text>
+                  <Input />
+                </Flex>
+              );
+            })}
+            <Button variant="solid-primary" paddingY={5} borderRadius="full">
+              Submit
+            </Button>
+          </Flex>
+        </Flex>
+      </ModalContent>
+    </Modal>
+  );
+};
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
@@ -142,13 +318,11 @@ const PetPostModal: React.FC<{
             <Button variant="solid-primary" size="lg" onClick={onFormViewOpen}>
               Foster Me!
             </Button>
-            <Modal isOpen={isFormViewOpen} onClose={onFormViewClose}>
-              <ModalContent>
-                <Stack>
-                  <Button></Button>
-                </Stack>
-              </ModalContent>
-            </Modal>
+            <FosterQuestionnaire
+              fosterType={FosterType.Return}
+              isFormViewOpen={isFormViewOpen}
+              onFormViewClose={onFormViewClose}
+            />
           </Flex>
         </Stack>
         <Flex direction="column" width="100%" display={["flex", "none"]}>
@@ -267,7 +441,7 @@ const PetPostModal: React.FC<{
             padding={4}
             bgColor="white"
           >
-            <Button variant="solid-primary" size="lg">
+            <Button variant="solid-primary" size="lg" onClick={onFormViewOpen}>
               Foster Me!
             </Button>
           </Flex>
