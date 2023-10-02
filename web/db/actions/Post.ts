@@ -10,6 +10,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { consts } from "../../utils/consts";
 import { sign } from "jsonwebtoken";
 import storageClient from "../storageConnect";
+import { TRPCError } from "@trpc/server";
 
 type UploadInfo = Record<string, string>;
 
@@ -90,30 +91,26 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
 }
 
 async function deleteAttachments(keysToDelete: string[]) {
-  for (let i = 0; i < 2; i++) {
-    const objectsToDelete = keysToDelete.map((keyToDelete) => ({
-      Key: keyToDelete,
-    }));
-    const deleteObjectsCommand = new DeleteObjectsCommand({
-      Bucket: consts.storageBucket,
-      Delete: { Objects: objectsToDelete, Quiet: true },
-    });
+  let numTries = 1;
+  const MAXTRIES = 3;
+  const objectsToDelete = keysToDelete.map((keyToDelete) => ({
+    Key: keyToDelete,
+  }));
+  const deleteObjectsCommand = new DeleteObjectsCommand({
+    Bucket: consts.storageBucket,
+    Delete: { Objects: objectsToDelete, Quiet: true },
+  });
+  while (numTries <= MAXTRIES) {
     try {
       const returned = await storageClient.send(deleteObjectsCommand);
-      let arr: string[] = [];
-      if (returned["Deleted"]) {
-        returned["Deleted"].forEach((element) => {
-          element["Key"] &&
-            !element["DeleteMarker"] &&
-            arr.push(element["Key"]);
-        });
-        keysToDelete = arr;
-      } else {
+      if (!returned["Deleted"]) {
         return { success: true };
       }
     } catch (error) {
-      return { success: false };
+      //TODO: Write cron job to mark unsuccessful deletions to delete later
+      throw new Error("All attachments not successfully deleted");
     }
+    numTries++;
   }
   return { success: true };
 }
@@ -128,7 +125,16 @@ async function deletePost(id: ObjectId) {
         return { success: true };
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    if (e instanceof TRPCError) {
+      throw e;
+    } else {
+      throw new TRPCError({
+        message: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  }
   return { success: false };
 }
 
