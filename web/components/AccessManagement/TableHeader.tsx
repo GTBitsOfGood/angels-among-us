@@ -7,6 +7,8 @@ interface PropertyType {
   accountList: IAccount[];
   selectItems: boolean;
   updateSelectItems: Dispatch<SetStateAction<boolean>>;
+  search: string;
+  setSearch: Dispatch<SetStateAction<string>>;
   itemsToDelete: Number[];
   updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
 }
@@ -15,6 +17,8 @@ function TableHeader(props: PropertyType) {
     accountList,
     selectItems,
     updateSelectItems,
+    search,
+    setSearch,
     itemsToDelete,
     updateItemsToDelete,
   } = props;
@@ -35,6 +39,10 @@ function TableHeader(props: PropertyType) {
       width={"inherit"}
     >
       <Input
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+        }}
         variant="filled"
         type="text"
         placeholder="Search"

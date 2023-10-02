@@ -218,7 +218,9 @@ export const accountRouter = router({
     session.startTransaction();
     try {
       const { searchSubject } = input;
-      const accounts = await searchAccounts(searchSubject, session);
+      const accounts = searchSubject
+        ? await searchAccounts(searchSubject, session)
+        : await findAll();
       session.commitTransaction();
       return accounts as IAccount[];
     } catch (e) {
