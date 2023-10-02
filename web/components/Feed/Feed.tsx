@@ -1,3 +1,4 @@
+import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -7,7 +8,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useReducer } from "react";
+import { useAuth } from "../../context/auth";
 import { PossibleTypes } from "../../pages/onboarding";
+import { trpc } from "../../utils/trpc";
+import { Role } from "../../utils/types/account";
 import {
   Age,
   Behavioral,
@@ -18,14 +22,13 @@ import {
   Size,
   Status,
   Temperament,
+  Trained,
 } from "../../utils/types/post";
-import PostCreationModal from "../PostCreationModal/PostCreationModal";
+import { IUser } from "../../utils/types/user";
 import PetPostModal from "../PetPostModal/PetPostModal";
+import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
-import { AddIcon } from "@chakra-ui/icons";
-import { useAuth } from "../../context/auth";
-import { Role } from "../../utils/types/account";
 
 export type FilterGroup = {
   title: string;
@@ -35,7 +38,7 @@ export type FilterGroup = {
 export type Filter = {
   key: string;
   description: string;
-  options: { value: PossibleTypes; label: string }[];
+  options: Option[];
   dropdown: boolean;
   allSelected: boolean;
 };
@@ -45,8 +48,25 @@ export type Option = {
   label: string;
 };
 
-export type SelectedFilters<T extends Filter> = {
-  [key in T["key"]]: Option[];
+export type SelectedFilters = {
+  [key: Filter["key"]]: Option[];
+};
+
+export type OptHandlers = {
+  [key: Filter["key"]]: (opts: Option[]) => Option[];
+};
+
+//TODO: Temperament is not included currently.
+export type QueryFilter = {
+  breed: Breed[];
+  type: FosterType[];
+  age: Age[];
+  size: Size[];
+  gender: Gender[];
+  behavioral: Behavioral[];
+  goodWith: GoodWith[];
+  houseTrained: Trained;
+  spayNeuterStatus: Trained;
 };
 
 const filterGroups: FilterGroup[] = [
@@ -74,7 +94,7 @@ const filterGroups: FilterGroup[] = [
     filters: [
       {
         key: "breed",
-        description: "Breed Restrictions",
+        description: "Breeds",
         options: [
           { value: Breed.AmericanEskimo, label: "American Eskimo" },
           { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
@@ -173,7 +193,7 @@ const filterGroups: FilterGroup[] = [
     title: "Behavioral Traits",
     filters: [
       {
-        key: "dogsNotGoodWith",
+        key: "goodWith",
         description: "Dogs known to be good with:",
         options: [
           { value: GoodWith.Men, label: "Men" },
@@ -222,15 +242,123 @@ const filterGroups: FilterGroup[] = [
         key: "medicalInfo",
         description: "Dogs that are:",
         options: [
-          { value: Status.Yes, label: "House Trained" },
-          { value: Status.Yes, label: "Spayed/Neutered" },
+          { value: Trained.Yes, label: "House Trained" },
+          { value: Trained.Yes, label: "Spayed/Neutered" },
         ],
         dropdown: false,
         allSelected: false,
       },
     ],
   },
-];
+] satisfies FilterGroup[];
+
+/**
+ * Parse filter options array based on user preferences
+ * @param {Option[]} opts array of all possible options
+ * @param {PossibleTypes | undefined} prefArr array of filter option enums
+ * @param {boolean} inverse whether to invert the user preferences
+ * @returns {Option[]} option enums converted into Option type
+ */
+const parseOptArr = (
+  opts: Option[],
+  prefArr: PossibleTypes[] | undefined,
+  inverse: boolean = false
+): Option[] =>
+  inverse
+    ? [...opts.filter((f) => !prefArr?.includes(f.value))]
+    : [...opts.filter((f) => prefArr?.includes(f.value))];
+
+/**
+ * Parse filter options array containing Status types based on user preferences
+ * @param {Option[]} opts array of all possible options
+ * @param {(Status | undefined)[]} statArr array of status enums
+ * @param {boolean} inverse whether to invert the user preferences
+ * @returns {Option[]} status enums converted into Option type
+ */
+const parseStatusArr = (
+  opts: Option[],
+  statArr: (Status | undefined)[],
+  inverse: boolean = false
+): Option[] =>
+  inverse
+    ? opts.filter((opt, idx) => !(statArr[idx] === Status.Yes))
+    : opts.filter((opt, idx) => statArr[idx] === Status.Yes);
+
+/**
+ * Imports user preferences and maps them to the feed filters
+ * @param {IUser | null} userData user data
+ * @returns {SelectedFilters | null} preferred filters
+ */
+function getPrefFilters(userData: IUser | null): SelectedFilters | null {
+  if (!userData) {
+    return null;
+  }
+
+  const optHandlers: OptHandlers = {
+    type: (opts: Option[]) => parseOptArr(opts, userData.type),
+    breed: (opts: Option[]) =>
+      parseOptArr(opts, userData.restrictedBreeds, true),
+    age: (opts: Option[]) => parseOptArr(opts, userData.age),
+    size: (opts: Option[]) => parseOptArr(opts, userData.size),
+    gender: (opts: Option[]) => parseOptArr(opts, userData.gender),
+    goodWith: (opts: Option[]) =>
+      parseOptArr(opts, userData.dogsNotGoodWith, true),
+    behavioral: (opts: Option[]) => parseOptArr(opts, userData.behavioral),
+    temperament: (opts: Option[]) => parseOptArr(opts, userData.temperament),
+
+    // medicalInfo has no 1:1 map with DB fields and also has non-unique filter values (Status.Yes/No)
+    medicalInfo: (opts: Option[]) =>
+      parseStatusArr(
+        opts,
+        [userData.houseTrained, userData.spayNeuterStatus],
+        true
+      ),
+  };
+
+  const filters = filterGroups.reduce((acc, curr) => {
+    const group = curr.filters.reduce((a, c) => {
+      return {
+        ...a,
+        [c.key]: optHandlers[c.key](c.options),
+      };
+    }, {});
+    return {
+      ...acc,
+      ...group,
+    };
+  }, {});
+  return filters;
+}
+
+/**
+ * Transforms `selectedFilters` into QueryFilter to match API input
+ * @param selectedFilters selected feed filters
+ * @returns query filters used to send shaped to the API input
+ */
+function getQueryFilters(selectedFilters: SelectedFilters) {
+  const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
+    if (curr === "medicalInfo") {
+      const keys: Record<string, string> = {
+        "House Trained": "houseTrained",
+        "Spayed/Neutered": "spayNeuterStatus",
+      };
+      const filterVals: Record<string, PossibleTypes | undefined> =
+        selectedFilters[curr].reduce((a, c) => {
+          return { ...a, [keys[c.label]]: c.value };
+        }, {});
+      for (const k of Object.keys(keys)) {
+        if (!(keys[k] in filterVals)) {
+          filterVals[keys[k]] = undefined;
+        }
+      }
+      return { ...acc, ...filterVals };
+    } else {
+      const filterVals = selectedFilters[curr].map((v) => v.value);
+      return { ...acc, [curr]: filterVals };
+    }
+  }, {});
+  return queryFilters as QueryFilter;
+}
 
 function Feed(props: {
   filterDisplayed: boolean;
@@ -251,7 +379,7 @@ function Feed(props: {
 
   const { userData } = useAuth();
 
-  function getInitialFilters() {
+  function getInitialFilters(): SelectedFilters {
     return filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
         if (c.allSelected) return { ...a, [c.key]: [...c.options] };
@@ -265,7 +393,7 @@ function Feed(props: {
   }
 
   function filterReducer(
-    state: SelectedFilters<Filter>,
+    state: SelectedFilters,
     action: {
       type: string;
       filter: Filter;
@@ -277,6 +405,8 @@ function Feed(props: {
     switch (action.type) {
       case "reset":
         return getInitialFilters();
+      case "useprefs":
+        return getPrefFilters(userData) || state;
       case "dropdown":
         tempState[action.filter.key] = action.event;
         return tempState;
@@ -284,7 +414,6 @@ function Feed(props: {
         const filt = action.filter;
         const ind = action.ind;
         const option = filt.options[ind];
-        console.log(option);
         if (
           tempState[filt.key].some(
             (e: Option) => e.value == option.value && e.label == option.label
@@ -299,7 +428,6 @@ function Feed(props: {
         } else {
           tempState[filt.key].push(filt.options[ind]);
         }
-        console.log(tempState);
         return tempState;
       default:
         return state;
@@ -311,13 +439,16 @@ function Feed(props: {
     getInitialFilters()
   );
 
+  const feedPosts = trpc.post.getFilteredPosts.useQuery(
+    getQueryFilters(selectedFilters)
+  ).data;
+
   const mainContent = (
     <Flex
       className="feed"
       backgroundColor="bg-primary"
       justifyContent="center"
-      height="fit-content"
-      minHeight="100vh"
+      height="100vh"
     >
       <Stack
         spacing={{ base: "0px", lg: "30px" }}
@@ -349,12 +480,12 @@ function Feed(props: {
           </Button>
         </Flex>
         <Flex
-          width="30%"
+          width="25vw"
           borderRadius="10px"
           backgroundColor="#FFFFFF"
           direction="column"
-          height="fit-content"
           display={{ base: "none", lg: "flex" }}
+          overflowY="auto"
         >
           <Text fontWeight="semibold" margin="16px">
             Filter By:
@@ -375,7 +506,18 @@ function Feed(props: {
             >
               Clear All
             </Button>
-            <Button variant="solid-primary" fontWeight="normal">
+            <Button
+              onClick={() => {
+                setSelectedFilters({
+                  type: "useprefs",
+                  filter: filterGroups[0].filters[0],
+                  ind: 0,
+                  event: [],
+                });
+              }}
+              variant="solid-primary"
+              fontWeight="normal"
+            >
               Use My Preferences
             </Button>
           </Flex>
@@ -391,17 +533,18 @@ function Feed(props: {
           })}
         </Flex>
         <Flex
-          width={{ base: "100%", lg: "70%" }}
-          minHeight="full"
+          width={{ base: "100vw", lg: "55vw" }}
+          minHeight="0" // To prevent mobile view column flexbox blowout (flex: 1 doesn't respect parent's max height)
+          flex="1"
           borderRadius={{ base: "0px", lg: "10px" }}
           backgroundColor={{ base: "bg-primary", lg: "#F9F8F8" }}
           direction="column"
           alignItems="center"
-          height="fit-content"
           padding="20px"
         >
           <Flex
             w="100%"
+            h="min-content"
             mb="20px"
             dir="row"
             alignItems="center"
@@ -420,33 +563,18 @@ function Feed(props: {
               </Button>
             )}
           </Flex>
-          <Stack spacing={5}>
-            <Box onClick={onPostViewOpen} _hover={{ cursor: "pointer" }}>
-              <FeedPostCard
-                image={
-                  "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-                }
-                date={"MM/DD/YYYY XX:XX PM"}
-                title={"Pet Name"}
-                tags={["Foster Move"]}
-                body={
-                  "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
-                }
-              />
-            </Box>
-            <Box onClick={onPostViewOpen} _hover={{ cursor: "pointer" }}>
-              <FeedPostCard
-                image={
-                  "https://images.unsplash.com/photo-1615751072497-5f5169febe17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y3V0ZSUyMGRvZ3xlbnwwfHwwfHw%3D&w=1000&q=80"
-                }
-                date={"MM/DD/YYYY XX:XX PM"}
-                title={"Pet Name"}
-                tags={["Foster Move"]}
-                body={
-                  "Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur. Lorem ipsum dolor sit amet consectetur."
-                }
-              />
-            </Box>
+          <Stack spacing={5} overflowY="auto">
+            {feedPosts?.map((p, ind) => {
+              return (
+                <Box
+                  onClick={onPostViewOpen}
+                  _hover={{ cursor: "pointer" }}
+                  key={ind}
+                >
+                  <FeedPostCard post={p} />
+                </Box>
+              );
+            })}
           </Stack>
         </Flex>
       </Stack>
@@ -513,7 +641,18 @@ function Feed(props: {
           >
             Clear All
           </Button>
-          <Button variant="solid-primary" fontWeight="normal">
+          <Button
+            onClick={() => {
+              setSelectedFilters({
+                type: "useprefs",
+                filter: filterGroups[0].filters[0],
+                ind: 0,
+                event: [],
+              });
+            }}
+            variant="solid-primary"
+            fontWeight="normal"
+          >
             Use My Preferences
           </Button>
         </Flex>
@@ -546,3 +685,4 @@ function Feed(props: {
 }
 
 export default Feed;
+export { getPrefFilters };

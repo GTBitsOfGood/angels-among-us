@@ -13,6 +13,7 @@ import {
   Behavioral,
   Status,
   Breed,
+  Trained,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
 import pageAccessHOC from "../components/HOC/PageAccess";
@@ -39,6 +40,7 @@ export type PossibleTypes =
   | GoodWith
   | Medical
   | Behavioral
+  | Trained
   | Status;
 
 export interface IQuestion {
@@ -90,7 +92,7 @@ function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       popover:
-        "<b>Return Foster</b> <br> A dog that was adopted but then returned to AAU by the adopter. <br><br> <b> Boarding </b> <br> A foster parent or other dogs' owner goes on vacation or other hiatus and needs someone to take their dog for a little while. <br><br> <b> Temporary </b> <br> During holidays, vacations, and emergencies until permanent fosters can be found or return. <br><br> <b> Shelter </b> <br> A dog that comes from or is currently in a shelter and in need of a home. <br><br> <b> Owner Surrender </b> <br> A dog that has been handed over from their previous owner and now needs a home. <br><br> <b> Foster Move </b> <br> A dog whose previous foster parents can't care for the foster dog any more.",
+        "<b>Return Foster</b> <br> A dog that was adopted from AAUPR and is being returned <br><br> <b> Boarding </b> <br> Dogs that are in a boarding facility until a foster or adopter is found <br><br> <b> Temporary </b> <br> Short term placement while the primary foster is on vacation or other emergency placement <br><br> <b> Shelter </b> <br> A dog that is coming into the rescue from a shelter or animal control facility <br><br> <b> Owner Surrender </b> <br> A dog that is being surrendered by their current owner <br><br> <b> Foster Move </b> <br> A current Angel dog that needs a new placement",
       allSelected: true,
       required: false,
     } as StoredQuestion<FosterType>,
