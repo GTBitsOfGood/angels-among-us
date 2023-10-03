@@ -22,7 +22,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
             left={0}
             p={3}
             alignItems="center"
-            maxHeight={["50vh", "75vh"]}
+            maxHeight={["50vh", "65vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <FaArrowCircleLeft size={30} />
@@ -41,7 +41,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
             right={0}
             p={3}
             alignItems="center"
-            maxHeight={["50vh", "75vh"]}
+            maxHeight={["50vh", "65vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <FaArrowCircleRight size={30} />
@@ -57,18 +57,19 @@ function ImageSlider(props: { attachments: Array<string> }) {
               <Flex
                 justifyContent={"center"}
                 alignItems={"center"}
-                bgColor={"#C6E3F9"}
+                bgColor={"tag-primary-bg"}
                 borderRadius="15px"
-                minHeight={["40vh", "75vh"]}
+                minHeight={["40vh", "65vh"]}
                 key={slide}
+                paddingTop={{ lg: "5vh" }}
+                paddingX={0}
               >
                 <Image
                   src={slide}
                   objectFit="cover"
                   verticalAlign={"true"}
                   align="center"
-                  maxHeight={["40vh", "75vh"]}
-                  borderRadius="15px"
+                  maxHeight={["40vh", "65vh"]}
                   alt=""
                 />
               </Flex>
@@ -81,10 +82,13 @@ function ImageSlider(props: { attachments: Array<string> }) {
               justifyContent={"center"}
               alignItems={"center"}
               borderRadius="15px"
-              maxHeight={["40vh", "70vh"]}
+              minHeight={["40vh", "65vh"]}
+              minWidth={{ lg: "20vw" }}
+              width={"100%"}
               paddingBottom={10}
+              bgColor={"#DDDDDD"}
             >
-              <DefaultDog fill="#C6E3F9" height={"100%"} width={"100%"} />
+              <DefaultDog fill="white" height={"50%"} width={"50%"} />
             </Flex>,
           ]}
     </Carousel>

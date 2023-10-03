@@ -133,12 +133,13 @@ const PetPostModal: React.FC<{
       onClose={onClose}
       scrollBehavior={"inside"}
     >
-      <ModalContent>
+      <ModalContent paddingTop={{ lg: 10 }}>
         <Stack
           direction="column"
           display={["none", "flex"]}
           spacing={8}
-          paddingTop={6}
+          paddingTop={12}
+          paddingX={12}
           height={"inherit"}
         >
           <Button
@@ -167,27 +168,26 @@ const PetPostModal: React.FC<{
             </Flex>
             <Stack
               direction="column"
+              height={{ lg: "65vh" }}
               width="50%"
               spacing={8}
               paddingLeft={10}
               paddingRight={10}
-              height={"75vh"}
               overflowY={"scroll"}
             >
               <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
                 {name}
               </Text>
-              <Flex direction="column">
+              <Stack direction="column" spacing={3}>
                 <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
                   About
                 </Text>
                 <Text>{description}</Text>
-                <Text></Text>
                 <Text>
                   I am a <b>{fosterTypeLabels[type].toLowerCase()}</b> dog.{" "}
                   {fosterTypeDescriptions[type]}
                 </Text>
-              </Flex>
+              </Stack>
               <Stack direction="column" spacing={8}>
                 <Flex direction="row" width="100%">
                   <Flex direction={"column"} width="50%">
@@ -242,6 +242,16 @@ const PetPostModal: React.FC<{
               </Stack>
             </Stack>
           </Flex>
+          <Flex
+            width="100%"
+            justifyContent={"flex-end"}
+            alignItems={"flex-start"}
+            bgColor={"white"}
+          >
+            <Button variant="solid-primary" width={60} borderRadius={"20px"}>
+              Foster Me!
+            </Button>
+          </Flex>
         </Stack>
         <Flex direction="column" width="100%" display={["flex", "none"]}>
           <Flex
@@ -293,7 +303,7 @@ const PetPostModal: React.FC<{
               </Stack>
             </Stack>
 
-            <Stack direction="column" width="100%" spacing={6}>
+            <Stack direction="column" width="100%" spacing={4}>
               <Flex width="100%" direction={"column"}>
                 <PetPostListGroup title={"Main Characteristics"} tags={[]} />
                 <Stack direction={"row"}>
@@ -348,12 +358,11 @@ const PetPostModal: React.FC<{
         </Flex>
         <ModalFooter>
           <Flex
+            display={["flex", "none"]}
             width="100%"
-            justifyContent={["center", "flex-end"]}
-            paddingRight={{ lg: 5 }}
-            paddingBottom={{ lg: 5 }}
+            justifyContent={"center"}
             padding={{ sm: 4 }}
-            position={["sticky", "fixed"]}
+            position={"sticky"}
             zIndex={1}
             bottom={0}
             right={0}
@@ -362,7 +371,7 @@ const PetPostModal: React.FC<{
           >
             <Button
               variant="solid-primary"
-              width={["100%", 60]}
+              width={"100%"}
               borderRadius={"20px"}
             >
               Foster Me!
