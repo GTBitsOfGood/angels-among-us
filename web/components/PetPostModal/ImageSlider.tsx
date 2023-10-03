@@ -61,7 +61,6 @@ function ImageSlider(props: { attachments: Array<string> }) {
                 borderRadius="15px"
                 minHeight={["40vh", "65vh"]}
                 key={slide}
-                paddingTop={{ lg: "5vh" }}
                 paddingX={0}
               >
                 <Image

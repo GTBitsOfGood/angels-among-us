@@ -160,7 +160,6 @@ const PetPostModal: React.FC<{
               paddingRight={10}
               paddingLeft={10}
               color="white"
-              maxHeight="75vh"
               alignItems={"center"}
               justifyContent={"center"}
             >
@@ -247,6 +246,7 @@ const PetPostModal: React.FC<{
             justifyContent={"flex-end"}
             alignItems={"flex-start"}
             bgColor={"white"}
+            paddingRight={8}
           >
             <Button variant="solid-primary" width={60} borderRadius={"20px"}>
               Foster Me!
