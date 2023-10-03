@@ -98,7 +98,7 @@ async function deleteAttachments(keysToDelete: string[]) {
   }));
   const deleteObjectsCommand = new DeleteObjectsCommand({
     Bucket: consts.storageBucket,
-    Delete: { Objects: objectsToDelete, Quiet: true },
+    Delete: { Objects: objectsToDelete, Quiet: false },
   });
   while (true) {
     try {
