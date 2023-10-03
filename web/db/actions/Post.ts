@@ -92,7 +92,7 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
 
 async function deleteAttachments(keysToDelete: string[]) {
   let numTries = 1;
-  const MAXTRIES = 3;
+  const maxTries = 3;
   const objectsToDelete = keysToDelete.map((keyToDelete) => ({
     Key: keyToDelete,
   }));
@@ -100,7 +100,7 @@ async function deleteAttachments(keysToDelete: string[]) {
     Bucket: consts.storageBucket,
     Delete: { Objects: objectsToDelete, Quiet: true },
   });
-  while (numTries <= MAXTRIES) {
+  while (true) {
     try {
       const returned = await storageClient.send(deleteObjectsCommand);
       if (!returned["Deleted"]) {
@@ -108,22 +108,26 @@ async function deleteAttachments(keysToDelete: string[]) {
       }
     } catch (error) {
       //TODO: Write cron job to mark unsuccessful deletions to delete later
-      throw new Error("All attachments not successfully deleted");
+      if (numTries++ == maxTries) {
+        throw new Error("All attachments not successfully deleted");
+      }
     }
     numTries++;
   }
-  return { success: true };
 }
 
 async function deletePost(id: ObjectId) {
   try {
     const post = await getPost(id, false);
     const returned = await deleteAttachments(post.attachments);
-    if (returned.success) {
-      const deletePost = await Post.deleteOne({ _id: id });
-      if (deletePost.deletedCount === 1) {
-        return { success: true };
-      }
+    const deletePost = await Post.deleteOne({ _id: id });
+    if (deletePost.deletedCount === 1) {
+      return { success: true };
+    } else {
+      throw new TRPCError({
+        message: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   } catch (e) {
     if (e instanceof TRPCError) {
@@ -135,7 +139,6 @@ async function deletePost(id: ObjectId) {
       });
     }
   }
-  return { success: false };
 }
 
 async function finalizePost(id: ObjectId, session?: ClientSession) {
@@ -190,7 +193,7 @@ async function getAllPosts() {
 async function getAttachments(oid: ObjectId) {
   const listObjectsCommand = new ListObjectsCommand({
     Bucket: consts.storageBucket,
-    Prefix: oid + "",
+    Prefix: oid as unknown as string,
   });
   const attachInfo = await storageClient.send(listObjectsCommand);
   return attachInfo;

@@ -206,12 +206,17 @@ export const postRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const deleteSuccess = await deletePost(input.postOid);
-      if (!deleteSuccess.success) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "An unexpected error occurred.",
-        });
+      try {
+        await deletePost(input.postOid);
+      } catch (e) {
+        if (e instanceof TRPCError) {
+          throw e;
+        } else {
+          throw new TRPCError({
+            message: "Internal Server Error",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
       }
       return { success: true };
     }),
