@@ -65,7 +65,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
               >
                 <Image
                   src={slide}
-                  objectFit="cover"
+                  fit="cover"
                   verticalAlign={"true"}
                   align="center"
                   maxHeight={["40vh", "65vh"]}
