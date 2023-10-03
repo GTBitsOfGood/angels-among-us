@@ -106,13 +106,12 @@ async function deleteAttachments(keysToDelete: string[]) {
       if (!returned["Deleted"]) {
         return { success: true };
       }
-    } catch (error) {
+    } catch (e) {
       //TODO: Write cron job to mark unsuccessful deletions to delete later
       if (numTries++ == maxTries) {
-        throw new Error("All attachments not successfully deleted");
+        throw e;
       }
     }
-    numTries++;
   }
 }
 
@@ -193,7 +192,7 @@ async function getAllPosts() {
 async function getAttachments(oid: ObjectId) {
   const listObjectsCommand = new ListObjectsCommand({
     Bucket: consts.storageBucket,
-    Prefix: oid as unknown as string,
+    Prefix: oid.toString(),
   });
   const attachInfo = await storageClient.send(listObjectsCommand);
   return attachInfo;
