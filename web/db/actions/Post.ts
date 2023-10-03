@@ -103,7 +103,7 @@ async function deleteAttachments(keysToDelete: string[]) {
   while (true) {
     try {
       const returned = await storageClient.send(deleteObjectsCommand);
-      if (!returned["Deleted"]) {
+      if (returned.Deleted?.length === keysToDelete.length) {
         return { success: true };
       } else {
         throw new Error("All attachments not successfully deleted.");
