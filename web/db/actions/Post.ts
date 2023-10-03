@@ -117,11 +117,16 @@ async function deleteAttachments(keysToDelete: string[]) {
   }
 }
 
+function dummy(x: number): number {
+  return x + 1;
+}
+
 async function deletePost(id: ObjectId) {
   const post = await getPost(id, false);
   const returned = deleteAttachments(post.attachments).catch((e) =>
     captureException(e)
   );
+  dummy(5);
   const deletePost = await Post.deleteOne({ _id: id });
   if (deletePost.deletedCount !== 1) {
     throw new Error("Post document deletion failed");
