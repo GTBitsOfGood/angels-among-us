@@ -59,13 +59,14 @@ function ImageSlider(props: { attachments: Array<string> }) {
                 alignItems={"center"}
                 bgColor={"tag-primary-bg"}
                 borderRadius="15px"
+                overflow={"hidden"}
                 minHeight={["40vh", "65vh"]}
                 key={slide}
                 paddingX={0}
               >
                 <Image
                   src={slide}
-                  backgroundSize={"cover"}
+                  objectFit={"cover"}
                   verticalAlign={"true"}
                   align="center"
                   maxHeight={["40vh", "65vh"]}
