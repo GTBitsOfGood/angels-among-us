@@ -2,17 +2,19 @@ import { ClientSession, ObjectId, UpdateQuery } from "mongoose";
 import { faker } from "@faker-js/faker";
 import { IUser } from "../../../utils/types/user";
 import { Role } from "../../../utils/types/account";
+var mongoose = require("mongoose");
 
 faker.seed(0);
 
 function createRandomUser(): IUser & { _id: ObjectId } {
   return {
-    _id: faker.string.alphanumeric(24) as unknown as ObjectId,
+    _id: new mongoose.Types.ObjectId(),
     email: faker.internet.email(),
     name: faker.person.fullName(),
     uid: faker.string.alphanumeric(28),
     role: faker.helpers.arrayElement(Object.values(Role)),
     disabled: faker.datatype.boolean(),
+    hasCompletedOnboarding: faker.datatype.boolean(),
   };
 }
 
