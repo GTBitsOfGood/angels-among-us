@@ -115,16 +115,16 @@ const FosterQuestionnaire = ({
       onClose={onFormViewClose}
       isCentered
       scrollBehavior="inside"
-      size={["full", "lg"]}
+      size={["full", "xl"]}
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader display={["none", "block"]}>
+        <ModalHeader display={["none", "block"]} px={10} mt={4}>
           Foster Questionnaire
         </ModalHeader>
-        <ModalCloseButton display={["none", "block"]} />
+        <ModalCloseButton display={["none", "block"]} mt={6} mr={6} />
         <Flex display={["none", "flex"]} flexDir="column" overflowY="scroll">
-          <Flex paddingX={6} flexDir="column" gap={4}>
+          <Flex paddingX={10} flexDir="column" gap={4}>
             {data[fosterType].map((question) => {
               return (
                 <Flex key={question.key} flexDir="column" gap={2}>
@@ -135,8 +135,8 @@ const FosterQuestionnaire = ({
             })}
           </Flex>
         </Flex>
-        <ModalFooter display={["none", "flex"]}>
-          <Button variant="ghost" mr={3} onClick={onFormViewClose}>
+        <ModalFooter display={["none", "flex"]} mb={2}>
+          <Button variant="outline-secondary" mr={3} onClick={onFormViewClose}>
             Cancel
           </Button>
           <Button variant="solid-primary">Submit</Button>
@@ -153,7 +153,7 @@ const FosterQuestionnaire = ({
             direction="row"
             onClick={onFormViewClose}
             spacing={2}
-            color="#7D7E82"
+            color="text-secondary"
             alignItems="center"
             fontWeight="semibold"
           >
@@ -161,13 +161,7 @@ const FosterQuestionnaire = ({
             <Text>Back to Pet Post</Text>
           </Stack>
           <ModalHeader>Foster Questionnaire</ModalHeader>
-          <Flex
-            paddingX={6}
-            flexDir="column"
-            gap={4}
-            overflowY="scroll"
-            marginBottom={6}
-          >
+          <Flex paddingX={6} flexDir="column" gap={4} overflowY="scroll">
             {data[fosterType].map((question) => {
               return (
                 <Flex key={question.key} flexDir="column" gap={2}>
@@ -176,10 +170,17 @@ const FosterQuestionnaire = ({
                 </Flex>
               );
             })}
-            <Button variant="solid-primary" paddingY={5} borderRadius="full">
+          </Flex>
+          <ModalFooter display={["flex", "none"]} mb={2}>
+            <Button
+              variant="solid-primary"
+              width="full"
+              paddingY={5}
+              borderRadius="full"
+            >
               Submit
             </Button>
-          </Flex>
+          </ModalFooter>
         </Flex>
       </ModalContent>
     </Modal>
@@ -337,7 +338,7 @@ const PetPostModal: React.FC<{
               direction="row"
               onClick={onClose}
               spacing={2}
-              color="#7D7E82"
+              color="text-secondary"
               alignItems="center"
               fontWeight="semibold"
             >
