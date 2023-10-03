@@ -10,7 +10,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { consts } from "../../utils/consts";
 import { sign } from "jsonwebtoken";
 import storageClient from "../storageConnect";
-import { TRPCError } from "@trpc/server";
+import { captureException } from "@sentry/nextjs";
 
 type UploadInfo = Record<string, string>;
 
@@ -105,6 +105,8 @@ async function deleteAttachments(keysToDelete: string[]) {
       const returned = await storageClient.send(deleteObjectsCommand);
       if (!returned["Deleted"]) {
         return { success: true };
+      } else {
+        throw new Error("All attachments not successfully deleted.");
       }
     } catch (e) {
       //TODO: Write cron job to mark unsuccessful deletions to delete later
@@ -116,28 +118,15 @@ async function deleteAttachments(keysToDelete: string[]) {
 }
 
 async function deletePost(id: ObjectId) {
-  try {
-    const post = await getPost(id, false);
-    const returned = await deleteAttachments(post.attachments);
-    const deletePost = await Post.deleteOne({ _id: id });
-    if (deletePost.deletedCount === 1) {
-      return { success: true };
-    } else {
-      throw new TRPCError({
-        message: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
-  } catch (e) {
-    if (e instanceof TRPCError) {
-      throw e;
-    } else {
-      throw new TRPCError({
-        message: "Internal Server Error",
-        code: "INTERNAL_SERVER_ERROR",
-      });
-    }
+  const post = await getPost(id, false);
+  const returned = deleteAttachments(post.attachments).catch((e) =>
+    captureException(e)
+  );
+  const deletePost = await Post.deleteOne({ _id: id });
+  if (deletePost.deletedCount !== 1) {
+    throw new Error("Post document deletion failed");
   }
+  return { success: true };
 }
 
 async function finalizePost(id: ObjectId, session?: ClientSession) {
