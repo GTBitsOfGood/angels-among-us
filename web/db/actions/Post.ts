@@ -82,7 +82,7 @@ async function getDirectUploadUrl(uuid: string): Promise<string> {
     Key: uuid,
     Bucket: consts.storageBucket,
   });
-  return getSignedUrl(storageClient, command as any);
+  return getSignedUrl(storageClient, command);
 }
 
 async function getResizedUploadUrl(uuid: string): Promise<string> {
