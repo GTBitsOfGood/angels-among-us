@@ -133,7 +133,7 @@ const PetPostModal: React.FC<{
       onClose={onClose}
       scrollBehavior={"inside"}
     >
-      <ModalContent paddingTop={{ lg: 10 }}>
+      <ModalContent>
         <Stack
           direction="column"
           display={["none", "flex"]}
