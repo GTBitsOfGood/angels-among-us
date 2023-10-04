@@ -7,7 +7,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useReducer } from "react";
+import { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { useAuth } from "../../context/auth";
 import { PossibleTypes } from "../../pages/onboarding";
 import { trpc } from "../../utils/trpc";
@@ -19,6 +19,7 @@ import {
   FosterType,
   Gender,
   GoodWith,
+  IPost,
   Size,
   Status,
   Temperament,
@@ -439,9 +440,11 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts = trpc.post.getFilteredPosts.useQuery(
+  const feedPosts: IPost[] | undefined = trpc.post.getFilteredPosts.useQuery(
     getQueryFilters(selectedFilters)
   ).data;
+
+  const [modalPostIndex, setModalPostIndex] = useState(0);
 
   const mainContent = (
     <Flex
@@ -568,7 +571,10 @@ function Feed(props: {
             {feedPosts?.map((p, ind) => {
               return (
                 <Box
-                  onClick={onPostViewOpen}
+                  onClick={() => {
+                    setModalPostIndex(ind);
+                    onPostViewOpen();
+                  }}
                   _hover={{ cursor: "pointer" }}
                   key={ind}
                 >
@@ -680,7 +686,13 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      <PetPostModal isOpen={isPostViewOpen} onClose={onPostViewClose} />
+      {feedPosts && (
+        <PetPostModal
+          isOpen={isPostViewOpen}
+          onClose={onPostViewClose}
+          postData={feedPosts[modalPostIndex]}
+        />
+      )}
     </>
   );
 }

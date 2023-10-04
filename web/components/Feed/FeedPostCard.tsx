@@ -1,7 +1,7 @@
 import { Card, Center, Flex, Image, Text } from "@chakra-ui/react";
 import DefaultDog from "../../public/dog.svg";
 import dayjs from "dayjs";
-import { FosterType, fosterTypeLabels } from "../../utils/types/post";
+import { fosterTypeLabels, IPost } from "../../utils/types/post";
 
 function DefaultDogImage() {
   return (
@@ -22,15 +22,15 @@ function DefaultDogImage() {
   );
 }
 
-type PostCard = {
-  attachments: string[];
-  date: string;
-  name: string;
-  tag: FosterType;
-  description: string;
-};
+// type PostCard = {
+//   attachments: string[];
+//   date: string;
+//   name: string;
+//   tag: FosterType;
+//   description: string;
+// };
 
-function FeedPostCard(props: { post: PostCard }) {
+function FeedPostCard(props: { post: IPost }) {
   const { post } = props;
 
   let firstImage;
@@ -93,7 +93,7 @@ function FeedPostCard(props: { post: PostCard }) {
             fontSize="14px"
             fontWeight="semibold"
           >
-            {fosterTypeLabels[post.tag]}
+            {fosterTypeLabels[post.type]}
           </Text>
           <Text fontSize="14px" lineHeight="18px" color="#656565">
             {post.description}

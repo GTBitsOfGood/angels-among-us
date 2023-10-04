@@ -162,10 +162,11 @@ export const userRouter = router({
         });
       }
     }),
-    searchUsers: procedure
-      .input(
-        z.object({
-          searchParams: z.object({
+  searchUsers: procedure
+    .input(
+      z.object({
+        searchParams: z
+          .object({
             role: z.nativeEnum(Role),
             type: z.array(z.nativeEnum(FosterType)),
             size: z.array(z.nativeEnum(Size)),
@@ -178,21 +179,22 @@ export const userRouter = router({
             behavioral: z.array(z.nativeEnum(Behavioral)),
             houseTrained: z.nativeEnum(Status),
             spayNeuterStatus: z.nativeEnum(Status),
-          }).partial(),
-        })
-      )
-      .query(async ({ input }) => {
-        try {
-          const { searchParams } = input;
-          const res = await searchUsers(searchParams);
-          return { data: res };
-        } catch (e) {
-          if (e instanceof TRPCError) throw e;
-          else
-            throw new TRPCError({
-              message: "Internal Server Error",
-              code: "INTERNAL_SERVER_ERROR",
-            });
-        }
-      }),
+          })
+          .partial(),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const { searchParams } = input;
+        const res = await searchUsers(searchParams);
+        return { data: res };
+      } catch (e) {
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            message: "Internal Server Error",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+      }
+    }),
 });
