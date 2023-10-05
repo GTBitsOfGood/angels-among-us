@@ -1,4 +1,4 @@
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
@@ -323,18 +323,24 @@ const PetPostModal: React.FC<{
           paddingX={12}
           height={"inherit"}
         >
-          <Button
-            h={8}
-            w="fit-content"
-            bgColor="tag-primary-bg"
-            color="text-primary"
-            marginLeft={10}
-            _hover={{ bgColor: "tag-primary-bg" }}
-            leftIcon={<ArrowBackIcon />}
-            onClick={onClose}
-          >
-            Back to feed
-          </Button>
+          <Stack direction="row" justifyContent="space-between">
+            <Button
+              h={8}
+              w="fit-content"
+              bgColor="tag-primary-bg"
+              color="text-primary"
+              marginLeft={10}
+              _hover={{ bgColor: "tag-primary-bg" }}
+              leftIcon={<ArrowBackIcon />}
+              onClick={onClose}
+            >
+              Back to feed
+            </Button>
+            <Button h={8}>
+              <DeleteIcon marginRight="5px" />
+              Delete
+            </Button>
+          </Stack>
           <Flex direction="row" width="100%">
             <Flex
               w="50%"
