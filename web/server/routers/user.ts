@@ -4,6 +4,7 @@ import {
   createUser,
   findUserByUid,
   updateUserByUid,
+  searchUsers,
 } from "../../db/actions/User";
 import { TRPCError } from "@trpc/server";
 import { Role } from "../../utils/types/account";
@@ -159,6 +160,41 @@ export const userRouter = router({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
         });
+      }
+    }),
+  searchUsers: procedure
+    .input(
+      z.object({
+        searchParams: z
+          .object({
+            role: z.nativeEnum(Role),
+            type: z.array(z.nativeEnum(FosterType)),
+            size: z.array(z.nativeEnum(Size)),
+            preferredBreeds: z.array(z.nativeEnum(Breed)),
+            gender: z.array(z.nativeEnum(Gender)),
+            age: z.array(z.nativeEnum(Age)),
+            temperament: z.array(z.nativeEnum(Temperament)),
+            dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
+            medical: z.array(z.nativeEnum(Medical)),
+            behavioral: z.array(z.nativeEnum(Behavioral)),
+            houseTrained: z.nativeEnum(Status),
+            spayNeuterStatus: z.nativeEnum(Status),
+          })
+          .partial(),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const { searchParams } = input;
+        const res = await searchUsers(searchParams);
+        return { data: res };
+      } catch (e) {
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            message: "Internal Server Error",
+            code: "INTERNAL_SERVER_ERROR",
+          });
       }
     }),
 });
