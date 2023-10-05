@@ -1,21 +1,29 @@
 import { ClientSession, FilterQuery, ObjectId, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
 import { IPendingPost, IPost } from "../../utils/types/post";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  ListObjectsCommand,
+  PutObjectCommand,
+  DeleteObjectsCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { consts } from "../../utils/consts";
 import { sign } from "jsonwebtoken";
 import storageClient from "../storageConnect";
+import { captureException } from "@sentry/nextjs";
 
 type UploadInfo = Record<string, string>;
 
 async function getPost(
-  oid: ObjectId
+  oid: ObjectId,
+  publicAttachmentUrls: boolean
 ): Promise<IPost & { _id: string; __v: number }> {
   const post = await Post.findOne({ _id: oid });
-  post.attachments = post.attachments.map((attachment: string) => {
-    return `${consts.storageBucketURL}/${attachment}`;
-  });
+  if (publicAttachmentUrls && post) {
+    post.attachments = post.attachments.map((attachment: string) => {
+      return `${consts.storageBucketURL}/${attachment}`;
+    });
+  }
   return post;
 }
 
@@ -82,6 +90,45 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
   return `${consts.baseUrl}/api/resizedUpload/${token}`;
 }
 
+async function deleteAttachments(keysToDelete: string[]) {
+  let numTries = 1;
+  const maxTries = 3;
+  const objectsToDelete = keysToDelete.map((keyToDelete) => ({
+    Key: keyToDelete,
+  }));
+  const deleteObjectsCommand = new DeleteObjectsCommand({
+    Bucket: consts.storageBucket,
+    Delete: { Objects: objectsToDelete, Quiet: false },
+  });
+  while (true) {
+    try {
+      const returned = await storageClient.send(deleteObjectsCommand);
+      if (returned.Deleted?.length === keysToDelete.length) {
+        return { success: true };
+      } else {
+        throw new Error("All attachments not successfully deleted.");
+      }
+    } catch (e) {
+      //TODO: Write cron job to mark unsuccessful deletions to delete later
+      if (numTries++ == maxTries) {
+        throw e;
+      }
+    }
+  }
+}
+
+async function deletePost(id: ObjectId) {
+  const post = await getPost(id, false);
+  const returned = deleteAttachments(post.attachments).catch((e) =>
+    captureException(e)
+  );
+  const deletePost = await Post.deleteOne({ _id: id });
+  if (deletePost.deletedCount !== 1) {
+    throw new Error("Post document deletion failed");
+  }
+  return { success: true };
+}
+
 async function finalizePost(id: ObjectId, session?: ClientSession) {
   const post = await Post.findOne({ _id: id });
   const uploadedObjects = await storageClient.listObjectsV2({
@@ -131,6 +178,15 @@ async function getAllPosts() {
   return await Post.find().sort({ date: -1 });
 }
 
+async function getAttachments(oid: ObjectId) {
+  const listObjectsCommand = new ListObjectsCommand({
+    Bucket: consts.storageBucket,
+    Prefix: oid.toString(),
+  });
+  const attachInfo = await storageClient.send(listObjectsCommand);
+  return attachInfo;
+}
+
 async function getFilteredPosts(filter: FilterQuery<IPost>) {
   const posts = await Post.find(filter).sort({ date: -1 });
   posts.forEach(
@@ -145,9 +201,11 @@ async function getFilteredPosts(filter: FilterQuery<IPost>) {
 export {
   getPost,
   createPost,
+  deletePost,
   updatePostDetails,
   updatePostStatus,
   finalizePost,
   getAllPosts,
+  getAttachments,
   getFilteredPosts,
 };
