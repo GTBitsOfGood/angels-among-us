@@ -423,37 +423,6 @@ function Profile() {
                   />
                 </Stack>
               </Stack>
-              <Stack direction="row">
-                <Stack direction="column" width={["100%", "50%"]}>
-                  <Text fontWeight="medium">
-                    Able to foster dogs with these temperaments:
-                  </Text>
-                  <Select
-                    closeMenuOnSelect={false}
-                    onChange={(newVals) =>
-                      dispatch({
-                        type: "setField",
-                        key: "temperament",
-                        data: (
-                          newVals as {
-                            value: Temperament;
-                            label: string;
-                          }[]
-                        ).map(({ value }) => value),
-                      })
-                    }
-                    value={preferences?.temperament?.map((temperament) => ({
-                      value: temperament as string,
-                      label: temperamentLabels[temperament],
-                    }))}
-                    isDisabled={!editing}
-                    isMulti
-                    options={Object.entries(temperamentLabels).map(
-                      ([key, val]) => ({ value: key, label: val })
-                    )}
-                  />
-                </Stack>
-              </Stack>
             </Stack>
           </Section>
           <Section heading="Medical Information">
