@@ -125,6 +125,9 @@ describe("[API] Post - Integration Test", () => {
         postOid: id,
       });
       expect(res.success).toBe(true);
+
+      const post = await Post.findById(id);
+      expect(post).toBeNull();
     });
 
     test("bucket object deletion failure, expect successful post deletion", async () => {
@@ -137,6 +140,9 @@ describe("[API] Post - Integration Test", () => {
       });
       expect(spy).toHaveBeenCalledTimes(3);
       expect(res.success).toBe(true);
+
+      const post = await Post.findById(id);
+      expect(post).toBeNull();
     });
   });
 });
