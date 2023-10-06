@@ -30,8 +30,6 @@ import {
   medicalLabels,
   Size,
   sizeLabels,
-  Temperament,
-  temperamentLabels,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
 import pageAccessHOC from "../components/HOC/PageAccess";
