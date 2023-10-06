@@ -16,7 +16,7 @@ jobs:
         env:
           STORAGE_BUCKET_NAME: ${{ secrets.STORAGE_BUCKET_NAME }}
           STORAGE_S3_ENDPOINT: ${{ secrets.STORAGE_S3_ENDPOINT }}
-          STORAGE_S3_REGION: ${{ secrests.STORAGE_S3_REGION }}
+          STORAGE_S3_REGION: ${{ secrets.STORAGE_S3_REGION }}
           STORAGE_KEY_ID: ${{ secrets.STORAGE_KEY_ID }}
           STORAGE_APPLICATION_KEY: ${{ secrets.STORAGE_APPLICATION_KEY }}
           STORAGE_BUCKET_URL: ${{ secrets.STORAGE_BUCKET_URL }}
