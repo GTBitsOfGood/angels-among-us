@@ -439,9 +439,9 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts = trpc.post.getFilteredPosts.useQuery(
-    getQueryFilters(selectedFilters)
-  ).data;
+  const feedPosts = trpc.post.getFilteredPosts.useQuery({
+    postFilterSchema: getQueryFilters(selectedFilters),
+  }).data;
 
   const mainContent = (
     <Flex
