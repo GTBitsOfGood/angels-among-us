@@ -1,152 +1,148 @@
+declare var global: any;
+
 import { readFileSync } from "fs";
 import { createRandomPost } from "../../../../db/actions/__mocks__/Post";
+import { deleteAttachments } from "../../../../db/actions/Post";
 import { consts } from "../../../../utils/consts";
 import storageClient from "../../../../db/storageConnect";
+import mongoose, { ConnectOptions } from "mongoose";
+import { appRouter } from "../../../../server/routers/_app";
+import { createContextInner } from "../../../../server/context";
+import Post from "../../../../db/models/Post";
 
 const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
-const resizeData = readFileSync("./__tests__/assets/resize.png");
 const videoData = readFileSync("./__tests__/assets/video.mp4");
 
-async function sendCreateReq() {
-  const randPost = createRandomPost();
-  return fetch("http://localhost:3000/api/trpc/post.create", {
-    method: "POST",
-    body: JSON.stringify({
-      ...randPost,
-      attachments: [
-        {
-          type: "image",
-          width: 2200,
-          length: 2259,
-          key: "resizedImage",
-        },
-        {
-          type: "image",
-          width: 1000,
-          length: 842,
-          key: "nonResizedImage",
-        },
-        {
-          type: "video",
-          key: "video",
-        },
-      ],
-    }),
-  });
+// Mocks procedures without authentication session
+jest.mock("../../../../server/trpc");
+
+// Mocks context without db connection
+jest.mock("../../../../server/context");
+
+async function simulateAuthenticatedSession() {
+  const context = await createContextInner();
+  const caller = appRouter.createCaller(context);
+  return caller;
 }
 
-describe.skip("[Post] Delete Post - Integration Test", () => {
-  test("delete post and attachments with different uploads", async () => {
-    const response = await sendCreateReq();
-    expect(response.status).toBe(200);
-    const json = await response.json();
-    const attachments = json["result"]["data"]["attachments"];
-    const oid = json["result"]["data"]["_id"];
+/**
+ * Tests post API endpoints and integration with db. DB actions hit an
+ * in-memory MongoDB database. Storage bucket calls hit a development bucket.
+ *
+ * @group api/post
+ * @group api
+ * @group int
+ */
+describe("[API] Post - Integration Test", () => {
+  beforeAll(async () => {
+    mongoose
+      .connect(global.__MONGO_URI__, {
+        useNewUrlParser: true,
+      } as ConnectOptions)
+      .then(
+        (instance) => {
+          instance.connection.db.admin().command({
+            setParameter: 1,
+            maxTransactionLockRequestTimeoutMillis: 5000,
+          });
+        },
+        (err) => {
+          if (err) {
+            console.error(err);
+            process.exit(1);
+          }
+        }
+      );
+    await Post.createCollection();
+  });
 
-    // Upload no-resize
-    const resultNoResize = await fetch(attachments[`${oid}/nonResizedImage`], {
-      method: "PUT",
-      body: noResizeData,
-      headers: {
-        "Content-Length": `${noResizeData.length}`,
-      },
-    });
-    expect(resultNoResize.status).toBe(200);
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
 
-    // Upload with resize
-    const resultResize = await fetch(attachments[`${oid}/resizedImage`], {
-      method: "PUT",
-      body: resizeData,
-      headers: {
-        "Content-Length": `${resizeData.length}`,
-      },
-    });
-    expect(resultResize.status).toBe(200);
+  describe("post.delete", () => {
+    let caller: ReturnType<typeof appRouter.createCaller>;
 
-    // Upload video
-    const resultVideo = await fetch(attachments[`${oid}/video`], {
-      method: "PUT",
-      body: videoData,
-      headers: {
-        "Content-Length": `${videoData.length}`,
-      },
-    });
-    expect(resultVideo.status).toBe(200);
+    const id = new mongoose.Types.ObjectId();
+    const idString = id.toString();
+    const attachmentBodyMap = {
+      "no-resize.png": noResizeData,
+      "video.mp4": videoData,
+    } as const;
 
-    const finalize = await fetch(
-      "http://localhost:3000/api/trpc/post.finalize",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          _id: oid,
-        }),
-      }
-    );
-    expect(finalize.status).toBe(200);
+    const attachments: Array<keyof typeof attachmentBodyMap> = [
+      "no-resize.png",
+      "video.mp4",
+    ];
 
-    const postData = await finalize.json();
-    expect(postData["result"]["data"]["pending"]).toBe(false);
-
-    const testObjInfo: Record<string, any> = {
-      resizedImage: {
-        length: resizeData.length,
-        shouldEqual: false,
-      },
-      nonResizedImage: {
-        length: noResizeData.length,
-        shouldEqual: true,
-      },
-      video: {
-        length: videoData.length,
-        shouldEqual: true,
-      },
-    };
-
-    const objectInfo = await storageClient.listObjectsV2({
-      Bucket: consts.storageBucket,
-      Prefix: oid,
+    beforeAll(async () => {
+      caller = await simulateAuthenticatedSession();
     });
 
-    for (let i = 0; i < objectInfo.Contents!.length; i++) {
-      const info = objectInfo.Contents![i];
-      const testInfo = testObjInfo[info.Key!.replace(`${oid}/`, "")];
-      expect(testInfo.length === info.Size).toBe(testInfo.shouldEqual);
-    }
+    beforeEach(async () => {
+      jest.restoreAllMocks();
+      const samplePost = createRandomPost();
+      const post = await Post.create({
+        ...samplePost,
+        _id: id,
+        attachments,
+      });
+      expect(post).not.toBeNull();
 
-    //check if delete post is successful on mongoose object
-    const deletePostResponse = await fetch(
-      "http://localhost:3000/api/trpc/post.delete",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          postOid: oid,
-        }),
+      for (const attachment of attachments) {
+        const res = await storageClient.putObject({
+          Key: `${idString}/${attachment}`,
+          Bucket: consts.storageBucket,
+          Body: attachmentBodyMap[attachment],
+          ContentLength: attachmentBodyMap[attachment].length,
+        });
+        expect(res.$metadata.httpStatusCode).toBe(200);
       }
-    );
-    expect(deletePostResponse.status).toBe(200);
+      const objects = await storageClient.listObjectsV2({
+        Bucket: consts.storageBucket,
+        Prefix: idString,
+      });
 
-    const deletePostSuccess = await deletePostResponse.json();
-    expect(deletePostSuccess["result"]["data"]["success"]).toBe(true);
+      expect(objects.Contents).not.toBeUndefined();
+      expect(objects.Contents!.length).toBe(attachments.length);
+    });
 
-    const post = await fetch(
-      `http://localhost:3000/api/trpc/post.get?input={"_id":"${oid}"}`,
-      {
-        method: "GET",
-      }
-    );
-    expect(post.status).toBe(200);
+    afterEach(async () => {
+      jest.restoreAllMocks();
+      await storageClient.deleteObjects({
+        Bucket: consts.storageBucket,
+        Delete: {
+          Objects: attachments.map((attachment) => ({
+            Key: `${id}/${attachment}`,
+          })),
+        },
+      });
+      await Post.deleteMany({});
+    });
 
-    const getPostSuccess = await post.json();
-    expect(getPostSuccess["result"]["data"]).toBe(null);
+    test("happy", async () => {
+      const res = await caller.post.delete({
+        postOid: id,
+      });
+      expect(res.success).toBe(true);
 
-    //check if attachments are all deleted in storage bucket
-    const attach = await fetch(
-      `http://localhost:3000/api/trpc/post.getAttachments?input={"_id":"${oid}"}`,
-      {
-        method: "GET",
-      }
-    );
-    const attachmentsInfo = await attach.json();
-    expect(attachmentsInfo["result"]["data"]["Contents"]).toBe(undefined);
+      const post = await Post.findById(id);
+      expect(post).toBeNull();
+    });
+
+    test("bucket object deletion failure, expect successful post deletion", async () => {
+      const spy = jest.spyOn(storageClient, "send").mockImplementation(() => {
+        throw new Error();
+      });
+
+      const res = await caller.post.delete({
+        postOid: id,
+      });
+      expect(spy).toHaveBeenCalledTimes(3);
+      expect(res.success).toBe(true);
+
+      const post = await Post.findById(id);
+      expect(post).toBeNull();
+    });
   });
 });
