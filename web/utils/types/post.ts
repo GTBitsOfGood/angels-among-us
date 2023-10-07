@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+
 export enum PetKind {
   Dog = "dog",
   Cat = "cat",
@@ -316,6 +318,35 @@ export type AttachmentInfo =
   | { type: "video"; key: string };
 
 export interface IPost {
+  date: Date;
+  name: string;
+  description: string;
+  petKind: PetKind;
+  type: FosterType;
+  size: Size;
+  breed: Breed[];
+  gender: Gender;
+  age: Age;
+  temperament: Temperament[];
+  medical: Medical[];
+  behavioral: Behavioral[];
+  houseTrained: Trained;
+  crateTrained: Trained;
+  spayNeuterStatus: Trained;
+  getsAlongWithMen: Trained;
+  getsAlongWithWomen: Trained;
+  getsAlongWithOlderKids: Trained;
+  getsAlongWithYoungKids: Trained;
+  getsAlongWithLargeDogs: Trained;
+  getsAlongWithSmallDogs: Trained;
+  getsAlongWithCats: Trained;
+  covered: boolean;
+  pending: boolean;
+  attachments: string[];
+}
+
+export interface IPostWithId {
+  _id: ObjectId;
   date: Date;
   name: string;
   description: string;

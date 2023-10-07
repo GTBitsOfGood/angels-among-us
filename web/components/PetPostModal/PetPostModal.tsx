@@ -13,10 +13,30 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostListGroup from "./PetPostListGroup";
 import { FosterType } from "../../utils/types/post";
+import {
+  fosterTypeLabels,
+  behavioralLabels,
+  spayNeuterStatusLabels,
+  IPostWithId,
+  medicalLabels,
+  crateTrainedLabels,
+  houseTrainedLabels,
+  GoodWith,
+  Trained,
+  goodWithLabels,
+  genderLabels,
+  breedLabels,
+  sizeLabels,
+  ageLabels,
+  fosterTypeDescriptions,
+} from "../../utils/types/post";
+import { trpc } from "../../utils/trpc";
+import { ObjectId } from "mongoose";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -102,13 +122,18 @@ const data: FosterTypeData = {
 
 const FosterQuestionnaire = ({
   fosterType,
+  postId,
   isFormViewOpen,
   onFormViewClose,
 }: {
   fosterType: FosterType;
+  postId: ObjectId;
   isFormViewOpen: boolean;
   onFormViewClose: () => void;
 }) => {
+  const toast = useToast();
+  const mutation = trpc.post.offer.useMutation();
+
   return (
     <Modal
       isOpen={isFormViewOpen}
@@ -177,6 +202,36 @@ const FosterQuestionnaire = ({
               width="full"
               paddingY={5}
               borderRadius="full"
+              onClick={() => {
+                const offer = {
+                  email: "laurenm90@gmail.com",
+                  postOid: postId,
+                };
+                console.log(`handler ${offer.postOid}`);
+
+                mutation.mutate(offer, {
+                  onSuccess: () => {
+                    onFormViewClose();
+                    toast({
+                      title:
+                        "Thank you for submitting a foster application with Angels Among Us! You will hear back from us soon!",
+                      status: "success",
+                      duration: 9000,
+                      isClosable: true,
+                      position: "top",
+                    });
+                  },
+                  onError: () => {
+                    toast({
+                      title: "Request unsuccessful",
+                      status: "error",
+                      duration: 9000,
+                      isClosable: true,
+                      position: "top",
+                    });
+                  },
+                });
+              }}
             >
               Submit
             </Button>
@@ -186,28 +241,11 @@ const FosterQuestionnaire = ({
     </Modal>
   );
 };
-import {
-  fosterTypeLabels,
-  behavioralLabels,
-  spayNeuterStatusLabels,
-  IPost,
-  medicalLabels,
-  crateTrainedLabels,
-  houseTrainedLabels,
-  GoodWith,
-  Trained,
-  goodWithLabels,
-  genderLabels,
-  breedLabels,
-  sizeLabels,
-  ageLabels,
-  fosterTypeDescriptions,
-} from "../../utils/types/post";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost;
+  postData: IPostWithId;
 }> = ({ isOpen, onClose, postData }) => {
   const {
     isOpen: isFormViewOpen,
@@ -438,7 +476,8 @@ const PetPostModal: React.FC<{
               Foster Me!
             </Button>
             <FosterQuestionnaire
-              fosterType={FosterType.Return}
+              fosterType={type}
+              postId={postData._id}
               isFormViewOpen={isFormViewOpen}
               onFormViewClose={onFormViewClose}
             />

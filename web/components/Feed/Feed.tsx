@@ -19,7 +19,7 @@ import {
   FosterType,
   Gender,
   GoodWith,
-  IPost,
+  IPostWithId,
   Size,
   Status,
   Temperament,
@@ -440,9 +440,8 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts: IPost[] | undefined = trpc.post.getFilteredPosts.useQuery(
-    getQueryFilters(selectedFilters)
-  ).data;
+  const feedPosts: IPostWithId[] | undefined =
+    trpc.post.getFilteredPosts.useQuery(getQueryFilters(selectedFilters)).data;
 
   const [modalPostIndex, setModalPostIndex] = useState(0);
 
