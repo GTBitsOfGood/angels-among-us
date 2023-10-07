@@ -260,16 +260,22 @@ export const postRouter = router({
     }
   }),
   getFilteredPosts: procedure
-    .input(postFilterSchema)
+    .input(
+      z.object({
+        postFilterSchema: postFilterSchema,
+        covered: z.optional(z.boolean()),
+      })
+    )
     .query(async ({ input }) => {
-      const houseTrained = input.houseTrained
-        ? [input.houseTrained]
+      const postFilterSchema = input.postFilterSchema;
+      const houseTrained = postFilterSchema.houseTrained
+        ? [postFilterSchema.houseTrained]
         : Object.values(Trained);
-      const spayNeuterStatus = input.spayNeuterStatus
-        ? [input.spayNeuterStatus]
+      const spayNeuterStatus = postFilterSchema.spayNeuterStatus
+        ? [postFilterSchema.spayNeuterStatus]
         : Object.values(Trained);
       const notAllowedBehavioral = Object.values(Behavioral).filter(
-        (obj) => !input.behavioral.includes(obj)
+        (obj) => !postFilterSchema.behavioral.includes(obj)
       );
 
       /**
@@ -280,7 +286,7 @@ export const postRouter = router({
       const getsAlongWith: Record<string, Trained> = Object.values(
         GoodWith
       ).reduce((acc, curr) => {
-        if (input.goodWith.includes(curr)) {
+        if (postFilterSchema.goodWith.includes(curr)) {
           return { ...acc, ...{ [goodWithMap[curr]]: [Trained.Yes] } };
         } else {
           return {
@@ -293,11 +299,11 @@ export const postRouter = router({
       }, {});
 
       let completeFilter = {
-        breed: { $in: input.breed },
-        type: { $in: input.type },
-        age: { $in: input.age },
-        size: { $in: input.size },
-        gender: { $in: input.gender },
+        breed: { $in: postFilterSchema.breed },
+        type: { $in: postFilterSchema.type },
+        age: { $in: postFilterSchema.age },
+        size: { $in: postFilterSchema.size },
+        gender: { $in: postFilterSchema.gender },
         behavioral: { $nin: notAllowedBehavioral },
         getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
         getsAlongWithLargeDogs: {
