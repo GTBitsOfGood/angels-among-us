@@ -29,12 +29,9 @@ const userPreferencesSchema = z.object({
   restrictedBreeds: z.array(z.nativeEnum(Breed)),
   gender: z.array(z.nativeEnum(Gender)),
   age: z.array(z.nativeEnum(Age)),
-  temperament: z.array(z.nativeEnum(Temperament)),
   dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Status),
-  spayNeuterStatus: z.nativeEnum(Status),
 });
 
 const userSchema: z.ZodType<
@@ -52,12 +49,9 @@ const userSchema: z.ZodType<
   preferredBreeds: z.array(z.nativeEnum(Breed)),
   gender: z.array(z.nativeEnum(Gender)),
   age: z.array(z.nativeEnum(Age)),
-  temperament: z.array(z.nativeEnum(Temperament)),
   dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Status),
-  spayNeuterStatus: z.nativeEnum(Status),
 });
 
 export const userRouter = router({
@@ -173,12 +167,9 @@ export const userRouter = router({
             preferredBreeds: z.array(z.nativeEnum(Breed)),
             gender: z.array(z.nativeEnum(Gender)),
             age: z.array(z.nativeEnum(Age)),
-            temperament: z.array(z.nativeEnum(Temperament)),
             dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
             medical: z.array(z.nativeEnum(Medical)),
             behavioral: z.array(z.nativeEnum(Behavioral)),
-            houseTrained: z.nativeEnum(Status),
-            spayNeuterStatus: z.nativeEnum(Status),
           })
           .partial(),
       })

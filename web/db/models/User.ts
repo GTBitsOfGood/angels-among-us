@@ -9,8 +9,6 @@ import {
   GoodWith,
   Medical,
   Size,
-  Status,
-  Temperament,
 } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
 const { Schema } = mongoose;
@@ -111,16 +109,6 @@ const userSchema = new Schema<IUser>({
     default: undefined,
     required: false,
   },
-  temperament: {
-    type: [
-      {
-        type: String,
-        enum: Object.values(Temperament),
-      },
-    ],
-    default: undefined,
-    required: false,
-  },
   dogsNotGoodWith: {
     type: [
       {
@@ -148,18 +136,6 @@ const userSchema = new Schema<IUser>({
         enum: Object.values(Behavioral),
       },
     ],
-    default: undefined,
-    required: false,
-  },
-  houseTrained: {
-    type: String,
-    enum: Object.values(Status),
-    default: undefined,
-    required: false,
-  },
-  spayNeuterStatus: {
-    type: String,
-    enum: Object.values(Status),
     default: undefined,
     required: false,
   },
