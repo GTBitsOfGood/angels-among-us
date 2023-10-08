@@ -81,8 +81,6 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
     disabled: false,
     hasCompletedOnboarding: true,
     dogsNotGoodWith: Object.values(GoodWith),
-    houseTrained: Status.Yes,
-    spayNeuterStatus: Status.Yes,
   };
 
   test("null userdata", () => {
@@ -130,38 +128,6 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
     const filters = getPrefFilters(userData);
     expect(filters).not.toBeNull();
     expect(countFilters(filters)).toBe(targetFilters.breed.length);
-    expect(checkFilters(filters, targetFilters)).toBe(true);
-  });
-
-  test("2 medicalInfo boxes checked (Status.Yes)", () => {
-    const userData: IUser = {
-      ...dummyUser,
-      houseTrained: Status.Yes,
-      spayNeuterStatus: Status.Yes,
-    };
-    const targetFilters = {
-      medicalInfo: [],
-    };
-    const filters = getPrefFilters(userData);
-    expect(filters).not.toBeNull();
-    expect(countFilters(filters)).toBe(Object.keys(Breed).length);
-    expect(checkFilters(filters, targetFilters)).toBe(true);
-  });
-
-  test("1 medicalInfo box checked (Status.Yes)", () => {
-    const userData: IUser = {
-      ...dummyUser,
-      houseTrained: Status.No,
-      spayNeuterStatus: Status.Yes,
-    };
-    const targetFilters = {
-      medicalInfo: [{ value: Status.Yes, label: "House Trained" }],
-    };
-    const filters = getPrefFilters(userData);
-    expect(filters).not.toBeNull();
-    expect(countFilters(filters)).toBe(
-      Object.keys(Breed).length + targetFilters.medicalInfo.length
-    );
     expect(checkFilters(filters, targetFilters)).toBe(true);
   });
 
