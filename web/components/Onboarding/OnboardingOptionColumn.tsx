@@ -48,7 +48,11 @@ function OnboardingOptionColumn(props: {
             }
             textAlign="left"
             borderRadius={{ base: "5px", md: "8px", lg: "8px" }}
-            backgroundColor="tag-primary-bg"
+            backgroundColor={
+              answers[qKey].includes(options[ind].value)
+                ? "tag-primary-bg"
+                : "white"
+            }
             paddingY={{ base: "10px", md: "15px", lg: "15px" }}
             paddingX={{ base: "10px", md: "15px", lg: "15px" }}
             cursor="pointer"
