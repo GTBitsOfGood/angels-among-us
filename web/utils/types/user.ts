@@ -8,8 +8,6 @@ import {
   GoodWith,
   Medical,
   Size,
-  Status,
-  Temperament,
 } from "./post";
 
 export interface IUser {
@@ -26,10 +24,7 @@ export interface IUser {
   preferredBreeds?: Breed[];
   gender?: Gender[];
   age?: Age[];
-  temperament?: Temperament[];
   dogsNotGoodWith?: GoodWith[];
   medical?: Medical[];
   behavioral?: Behavioral[];
-  houseTrained?: Status;
-  spayNeuterStatus?: Status;
 }
