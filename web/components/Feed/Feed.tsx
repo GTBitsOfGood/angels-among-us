@@ -686,7 +686,7 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      {feedPosts && (
+      {feedPosts && feedPosts.length > 0 && (
         <PetPostModal
           isOpen={isPostViewOpen}
           onClose={onPostViewClose}
