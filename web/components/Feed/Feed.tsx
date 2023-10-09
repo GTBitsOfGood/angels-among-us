@@ -27,7 +27,7 @@ import PetPostModal from "../PetPostModal/PetPostModal";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 
 export type FilterGroup = {
   title: string;
@@ -367,7 +367,7 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts: (IPost & { _id: ObjectId })[] | undefined =
+  const feedPosts: (IPost & { _id: Types.ObjectId })[] | undefined =
     trpc.post.getFilteredPosts.useQuery(getQueryFilters(selectedFilters)).data;
 
   const [modalPostIndex, setModalPostIndex] = useState(0);

@@ -1,11 +1,10 @@
-import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
   Flex,
   Input,
   Modal,
-  ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
@@ -14,12 +13,11 @@ import {
   Stack,
   Text,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostListGroup from "./PetPostListGroup";
 import { FosterType } from "../../utils/types/post";
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -207,14 +205,14 @@ import {
   ageLabels,
   fosterTypeDescriptions,
 } from "../../utils/types/post";
-import { trpc } from "../../utils/trpc";
 import { Role } from "../../utils/types/account";
 import { useAuth } from "../../context/auth";
+import DeleteButtonModal from "./DeleteButtonModal";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost & { _id: ObjectId };
+  postData: IPost & { _id: Types.ObjectId };
 }> = ({ isOpen, onClose, postData }) => {
   const {
     isOpen: isFormViewOpen,
@@ -222,21 +220,8 @@ const PetPostModal: React.FC<{
     onClose: onFormViewClose,
   } = useDisclosure();
 
-  const {
-    isOpen: isDeleteConfirmationOpen,
-    onOpen: onDeleteConfirmationOpen,
-    onClose: onDeleteConfirmationClose,
-  } = useDisclosure();
-
   const { userData } = useAuth();
   const role = userData?.role;
-
-  const posts = trpc.post.getAllPosts.useQuery().data;
-  console.log(posts);
-  const mutation = trpc.post.delete.useMutation();
-  const utils = trpc.useContext();
-
-  const toast = useToast();
 
   const {
     name,
@@ -361,74 +346,8 @@ const PetPostModal: React.FC<{
               Back to feed
             </Button>
             {(role === Role.Admin || role === Role.ContentCreator) && (
-              <Button
-                h={8}
-                backgroundColor="white"
-                onClick={onDeleteConfirmationOpen}
-                _hover={{}}
-              >
-                <DeleteIcon marginRight="5px" color="#7D7E82" />
-                <Text textDecoration="underline" color="#7D7E82">
-                  Delete
-                </Text>
-              </Button>
+              <DeleteButtonModal onClose={onClose} postId={postData._id} />
             )}
-            <Modal
-              isOpen={isDeleteConfirmationOpen}
-              onClose={onDeleteConfirmationClose}
-            >
-              <ModalOverlay />
-              <ModalContent textAlign="center">
-                <ModalHeader marginTop={2}>Delete Post</ModalHeader>
-                <ModalBody>
-                  Are you sure you would like to delete this post? <br /> You
-                  cannot undo this action afterwards.
-                </ModalBody>
-                <ModalFooter justifyContent="center" marginBottom={2}>
-                  <Button
-                    variant="outline-secondary"
-                    width={32}
-                    borderRadius={16}
-                    marginRight={10}
-                    onClick={onDeleteConfirmationClose}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="solid-primary"
-                    width={32}
-                    borderRadius={16}
-                    onClick={() => {
-                      mutation.mutate(
-                        { postOid: postData._id },
-                        {
-                          onSuccess: () => {
-                            utils.post.invalidate();
-                          },
-                          onError: () => {
-                            toast({
-                              title: "Error",
-                              description: "Post deletion was unsuccessful",
-                              containerStyle: {
-                                whiteSpace: "pre-line",
-                              },
-                              status: "error",
-                              duration: 5000,
-                              isClosable: true,
-                              position: "top",
-                            });
-                          },
-                        }
-                      );
-                      onDeleteConfirmationClose();
-                      window.location.reload();
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
           </Stack>
           <Flex direction="row" width="100%">
             <Flex
@@ -571,9 +490,18 @@ const PetPostModal: React.FC<{
             overflowY={"scroll"}
           >
             <Stack direction="column" spacing={4}>
-              <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
-                {name}
-              </Text>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
+                  {name}
+                </Text>
+                {(role === Role.Admin || role === Role.ContentCreator) && (
+                  <DeleteButtonModal onClose={onClose} postId={postData._id} />
+                )}
+              </Stack>
               <Flex color="white">
                 <ImageSlider attachments={attachments}></ImageSlider>
               </Flex>
