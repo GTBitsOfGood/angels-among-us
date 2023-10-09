@@ -27,6 +27,7 @@ import PetPostModal from "../PetPostModal/PetPostModal";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
+import { Types } from "mongoose";
 
 export type FilterGroup = {
   title: string;
@@ -305,6 +306,9 @@ function Feed(props: {
   } = useDisclosure();
 
   const { userData } = useAuth();
+  const role = userData?.role;
+
+  const [hideCovered, setHideCovered] = useState(false);
 
   function getInitialFilters(): SelectedFilters {
     return filterGroups.reduce((acc, curr) => {
@@ -366,9 +370,10 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts: IPost[] | undefined = trpc.post.getFilteredPosts.useQuery(
-    getQueryFilters(selectedFilters)
-  ).data;
+  const feedPosts: (IPost & { _id: Types.ObjectId })[] | undefined =
+    trpc.post.getFilteredPosts.useQuery(getQueryFilters(selectedFilters)).data;
+
+  console.log(feedPosts);
 
   const [modalPostIndex, setModalPostIndex] = useState(0);
 
@@ -420,35 +425,51 @@ function Feed(props: {
           <Text fontWeight="semibold" margin="16px">
             Filter By:
           </Text>
-          <Flex justifyContent="flex-end" margin="12px" gap="8px">
+          <Flex direction="column" alignItems="flex-end" margin="12px">
+            <Flex gap="8px">
+              <Button
+                variant="outline-secondary"
+                borderWidth="thin"
+                onClick={() => {
+                  setSelectedFilters({
+                    type: "reset",
+                    filter: filterGroups[0].filters[0],
+                    ind: 0,
+                    event: [],
+                  });
+                }}
+              >
+                Clear All
+              </Button>
+              <Button
+                onClick={() => {
+                  setSelectedFilters({
+                    type: "useprefs",
+                    filter: filterGroups[0].filters[0],
+                    ind: 0,
+                    event: [],
+                  });
+                }}
+                variant="solid-primary"
+              >
+                Use My Preferences
+              </Button>
+            </Flex>
             <Button
-              variant="outline-secondary"
-              fontWeight="normal"
+              width="min-content"
+              marginTop={2}
+              variant="outline-primary"
               borderWidth="thin"
               onClick={() => {
-                setSelectedFilters({
-                  type: "reset",
-                  filter: filterGroups[0].filters[0],
-                  ind: 0,
-                  event: [],
-                });
+                setHideCovered(!hideCovered);
               }}
+              display={
+                role === Role.Admin || role === Role.ContentCreator
+                  ? "flex"
+                  : "none"
+              }
             >
-              Clear All
-            </Button>
-            <Button
-              onClick={() => {
-                setSelectedFilters({
-                  type: "useprefs",
-                  filter: filterGroups[0].filters[0],
-                  ind: 0,
-                  event: [],
-                });
-              }}
-              variant="solid-primary"
-              fontWeight="normal"
-            >
-              Use My Preferences
+              {hideCovered ? "Show" : "Hide"} Covered Posts
             </Button>
           </Flex>
           {filterGroups.map((val) => {
@@ -493,7 +514,7 @@ function Feed(props: {
               </Button>
             )}
           </Flex>
-          <Stack spacing={5} overflowY="auto">
+          <Stack overflowY="auto">
             {feedPosts?.map((p, ind) => {
               return (
                 <Box
@@ -504,7 +525,7 @@ function Feed(props: {
                   _hover={{ cursor: "pointer" }}
                   key={ind}
                 >
-                  <FeedPostCard post={p} />
+                  <FeedPostCard post={p} hideCovered={hideCovered} />
                 </Box>
               );
             })}

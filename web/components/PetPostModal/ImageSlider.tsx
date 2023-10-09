@@ -7,6 +7,7 @@ import DefaultDog from "../../public/dog.svg";
 function ImageSlider(props: { attachments: Array<string> }) {
   return (
     <Carousel
+      showThumbs={false}
       axis="horizontal"
       showStatus={false}
       swipeable={false}

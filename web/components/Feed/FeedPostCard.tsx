@@ -2,6 +2,8 @@ import { Card, Center, Flex, Image, Text } from "@chakra-ui/react";
 import DefaultDog from "../../public/dog.svg";
 import dayjs from "dayjs";
 import { fosterTypeLabels, IPost } from "../../utils/types/post";
+import { useAuth } from "../../context/auth";
+import { Role } from "../../utils/types/account";
 
 function DefaultDogImage() {
   return (
@@ -30,8 +32,11 @@ function DefaultDogImage() {
 //   description: string;
 // };
 
-function FeedPostCard(props: { post: IPost }) {
-  const { post } = props;
+function FeedPostCard(props: { post: IPost; hideCovered: boolean }) {
+  const { post, hideCovered } = props;
+
+  const { userData } = useAuth();
+  const role = userData?.role;
 
   let firstImage;
   const imageExtensions = new Set<string>(["png", "jpeg", "jpg"]);
@@ -50,57 +55,88 @@ function FeedPostCard(props: { post: IPost }) {
     .toString();
 
   return (
-    <Card
-      marginBottom="0px"
-      paddingX={{ base: "12px", lg: "16px" }}
-      paddingY={{ base: "16px", lg: "20px" }}
-      borderRadius="14px"
-      width={{ lg: "52vw" }}
+    <Flex
+      position="relative"
+      display={
+        ((role === Role.Admin || role === Role.ContentCreator) &&
+          (!post.covered || !hideCovered)) ||
+        (role === Role.Volunteer && !post.covered)
+          ? "flex"
+          : "none"
+      }
+      marginBottom="10px"
     >
-      <Flex gap={{ base: "15px", lg: "20px" }}>
-        {firstImage ? (
-          <Image
-            src={firstImage}
-            objectFit="cover"
-            minWidth={{ base: "120px", lg: "150px" }}
-            width={{ base: "120px", lg: "150px" }}
-            height={{ base: "120px", lg: "150px" }}
-            backgroundColor="#D9D9D9"
-            borderRadius="14px"
-          ></Image>
-        ) : (
-          <DefaultDogImage />
-        )}
-        <Flex
-          direction="column"
-          width="80%"
-          marginTop={{ base: "0px", lg: "8px" }}
-          marginRight="20px"
-        >
-          <Text fontSize="14px">{formattedDate}</Text>
-          <Text margin="0px" paddingY="0px" fontWeight="bold" fontSize="18px">
-            {post.name}
-          </Text>
-          <Text
-            margin="0px"
-            backgroundColor="#C6E3F9"
-            width="fit-content"
-            paddingX="16px"
-            paddingY="4px"
-            borderRadius="20px"
-            marginTop="5px"
-            marginBottom="10px"
-            fontSize="14px"
-            fontWeight="semibold"
-          >
-            {fosterTypeLabels[post.type]}
-          </Text>
-          <Text fontSize="14px" lineHeight="18px" color="#656565">
-            {post.description}
-          </Text>
+      <Card
+        paddingX={{ base: "12px", lg: "16px" }}
+        paddingY={{ base: "16px", lg: "20px" }}
+        borderRadius="14px"
+        borderStyle={"solid"}
+        borderColor={"#7d7e82a5"}
+        borderWidth={0.1}
+        width={{ lg: "52vw" }}
+      >
+        <Flex gap={{ base: "15px", lg: "20px" }}>
+          {firstImage ? (
+            <Image
+              src={firstImage}
+              objectFit="cover"
+              minWidth={{ base: "120px", lg: "150px" }}
+              width={{ base: "120px", lg: "150px" }}
+              height={{ base: "120px", lg: "150px" }}
+              backgroundColor="#D9D9D9"
+              borderRadius="14px"
+            ></Image>
+          ) : (
+            <DefaultDogImage />
+          )}
+          <Flex direction="column" width="80%" marginRight="20px">
+            <Text fontSize="14px">{formattedDate}</Text>
+            <Text
+              position="absolute"
+              top={5}
+              right={5}
+              display={post.covered ? "flex" : "none"}
+              fontSize={20}
+              fontWeight="semibold"
+              zIndex={3}
+            >
+              Covered Post
+            </Text>
+            <Text margin="0px" paddingY="0px" fontWeight="bold" fontSize="18px">
+              {post.name}
+            </Text>
+            <Text
+              margin="0px"
+              backgroundColor="#C6E3F9"
+              width="fit-content"
+              paddingX="16px"
+              paddingY="4px"
+              borderRadius="20px"
+              marginTop="5px"
+              marginBottom="10px"
+              fontSize="14px"
+              fontWeight="semibold"
+            >
+              {fosterTypeLabels[post.type]}
+            </Text>
+            <Text fontSize="14px" lineHeight="18px" color="#656565">
+              {post.description}
+            </Text>
+          </Flex>
         </Flex>
-      </Flex>
-    </Card>
+      </Card>
+      <Card
+        position="absolute"
+        width={{ lg: "52vw" }}
+        height={"100%"}
+        zIndex={2}
+        top={0}
+        right={0}
+        opacity={post.covered ? "30%" : "0%"}
+        backgroundColor={post.covered ? "#57a0d5" : "white"}
+        borderRadius="14px"
+      ></Card>
+    </Flex>
   );
 }
 

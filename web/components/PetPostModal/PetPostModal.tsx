@@ -1,4 +1,4 @@
-import { ArrowBackIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
@@ -203,17 +203,24 @@ import {
   ageLabels,
   fosterTypeDescriptions,
 } from "../../utils/types/post";
+import MarkCoveredButton from "./MarkCoveredButton";
+import { Types } from "mongoose";
+import { useAuth } from "../../context/auth";
+import { Role } from "../../utils/types/account";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost;
+  postData: IPost & { _id: Types.ObjectId };
 }> = ({ isOpen, onClose, postData }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
     onClose: onFormViewClose,
   } = useDisclosure();
+
+  const { userData } = useAuth();
+  const role = userData?.role;
 
   const {
     name,
@@ -336,10 +343,12 @@ const PetPostModal: React.FC<{
             >
               Back to feed
             </Button>
-            <Button h={8}>
-              <ViewOffIcon marginRight="5px" />
-              Mark as Covered
-            </Button>
+            {(role === Role.Admin || role === Role.ContentCreator) && (
+              <MarkCoveredButton
+                postId={postData._id}
+                isCovered={postData.covered}
+              />
+            )}
           </Stack>
           <Flex direction="row" width="100%">
             <Flex
