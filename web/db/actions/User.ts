@@ -15,8 +15,6 @@ import {
   Gender,
   GoodWith,
   Size,
-  Status,
-  Temperament,
   Medical,
 } from "../../utils/types/post";
 
@@ -84,12 +82,9 @@ export interface SearchUsersParams {
   preferredBreeds?: Breed[];
   gender?: Gender[];
   age?: Age[];
-  temperament?: Temperament[];
   dogsNotGoodWith?: GoodWith[];
   medical?: Medical[];
   behavioral?: Behavioral[];
-  houseTrained?: Status;
-  spayNeuterStatus?: Status;
 }
 
 function createFilterQuery(
@@ -107,12 +102,9 @@ function createFilterQuery(
     preferredBreeds: { $all: searchParams.preferredBreeds },
     gender: { $all: searchParams.gender },
     age: { $all: searchParams.age },
-    temperament: { $all: searchParams.temperament },
     dogsNotGoodWith: { $all: searchParams.dogsNotGoodWith },
     medical: { $all: searchParams.medical },
     behavioral: { $all: searchParams.behavioral },
-    houseTrained: searchParams.houseTrained,
-    spayNeuterStatus: searchParams.spayNeuterStatus,
   };
 
   return Object.entries(fieldMap).reduce((acc, [key, value]) => {

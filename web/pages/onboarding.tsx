@@ -7,13 +7,10 @@ import {
   Size,
   Gender,
   Age,
-  Temperament,
   GoodWith,
   Medical,
   Behavioral,
-  Status,
   Breed,
-  Trained,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
 import pageAccessHOC from "../components/HOC/PageAccess";
@@ -36,12 +33,9 @@ export type PossibleTypes =
   | Breed
   | Gender
   | Age
-  | Temperament
   | GoodWith
   | Medical
-  | Behavioral
-  | Trained
-  | Status;
+  | Behavioral;
 
 export interface IQuestion {
   title: string;
@@ -277,24 +271,6 @@ function Onboarding() {
       required: false,
     } as StoredQuestion<Age>,
     {
-      key: "temperament",
-      title:
-        "Which of the following dog temperaments are you comfortable with?",
-      description: "",
-      options: [
-        { value: Temperament.Friendly, label: "Friendly" },
-        { value: Temperament.Scared, label: "Scared" },
-        { value: Temperament.Active, label: "Active" },
-        { value: Temperament.Calm, label: "Calm" },
-      ],
-      qtype: QType.Question,
-      singleAnswer: false,
-      dropdown: false,
-      popover: "",
-      allSelected: true,
-      required: false,
-    } as StoredQuestion<Temperament>,
-    {
       key: "dogsNotGoodWith",
       title: "Are you able to foster dogs that DO NOT do well with:",
       description: "",
@@ -357,36 +333,6 @@ function Onboarding() {
       allSelected: true,
       required: false,
     } as StoredQuestion<Behavioral>,
-    {
-      key: "houseTrained",
-      title: "Are you able to foster a dog who is NOT house trained?",
-      description:
-        "(Note: We often do not know if a dog is house trained until they are in a foster home.)",
-      options: [
-        { value: Status.Yes, label: "Yes" },
-        { value: Status.No, label: "No" },
-      ],
-      qtype: QType.Question,
-      singleAnswer: true,
-      dropdown: false,
-      popover: "",
-      required: true,
-    } as StoredQuestion<Status>,
-    {
-      key: "spayNeuterStatus",
-      title: "Are you able to foster a dog who is NOT spayed/neutered?",
-      description:
-        "(Note: New intakes are rarely altered but an appointment can be scheduled.) ",
-      options: [
-        { value: Status.Yes, label: "Yes" },
-        { value: Status.No, label: "No" },
-      ],
-      qtype: QType.Question,
-      singleAnswer: true,
-      dropdown: false,
-      popover: "",
-      required: true,
-    } as StoredQuestion<Status>,
     {
       title: "🎉\nThanks for completing your profile!",
       description: `We're super excited that you're interested in helping our dogs in need by providing them with a kind home!\n\nYou may change any of these preferences on the profile page.`,
