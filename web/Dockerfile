@@ -5,10 +5,10 @@ FROM node:16
 WORKDIR /app
 
 # Copy the package.json and yarn.lock files to the container
-COPY web/package.json web/yarn.lock ./
+COPY package.json yarn.lock ./
 
 # Copy the rest of the application to the container (not necessary since we will use volumes, but it's a good practice)
-COPY web/ .
+COPY . .
 
 # Install application dependencies
 RUN yarn
