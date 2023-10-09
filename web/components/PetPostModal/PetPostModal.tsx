@@ -5,6 +5,7 @@ import {
   Flex,
   Input,
   Modal,
+  ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
@@ -13,10 +14,12 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostListGroup from "./PetPostListGroup";
 import { FosterType } from "../../utils/types/post";
+import { ObjectId } from "mongoose";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -186,6 +189,7 @@ const FosterQuestionnaire = ({
     </Modal>
   );
 };
+
 import {
   fosterTypeLabels,
   behavioralLabels,
@@ -203,17 +207,36 @@ import {
   ageLabels,
   fosterTypeDescriptions,
 } from "../../utils/types/post";
+import { trpc } from "../../utils/trpc";
+import { Role } from "../../utils/types/account";
+import { useAuth } from "../../context/auth";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost;
+  postData: IPost & { _id: ObjectId };
 }> = ({ isOpen, onClose, postData }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
     onClose: onFormViewClose,
   } = useDisclosure();
+
+  const {
+    isOpen: isDeleteConfirmationOpen,
+    onOpen: onDeleteConfirmationOpen,
+    onClose: onDeleteConfirmationClose,
+  } = useDisclosure();
+
+  const { userData } = useAuth();
+  const role = userData?.role;
+
+  const posts = trpc.post.getAllPosts.useQuery().data;
+  console.log(posts);
+  const mutation = trpc.post.delete.useMutation();
+  const utils = trpc.useContext();
+
+  const toast = useToast();
 
   const {
     name,
@@ -333,13 +356,79 @@ const PetPostModal: React.FC<{
               _hover={{ bgColor: "tag-primary-bg" }}
               leftIcon={<ArrowBackIcon />}
               onClick={onClose}
+              id="backToFeedButton"
             >
               Back to feed
             </Button>
-            <Button h={8}>
-              <DeleteIcon marginRight="5px" />
-              Delete
-            </Button>
+            {(role === Role.Admin || role === Role.ContentCreator) && (
+              <Button
+                h={8}
+                backgroundColor="white"
+                onClick={onDeleteConfirmationOpen}
+                _hover={{}}
+              >
+                <DeleteIcon marginRight="5px" color="#7D7E82" />
+                <Text textDecoration="underline" color="#7D7E82">
+                  Delete
+                </Text>
+              </Button>
+            )}
+            <Modal
+              isOpen={isDeleteConfirmationOpen}
+              onClose={onDeleteConfirmationClose}
+            >
+              <ModalOverlay />
+              <ModalContent textAlign="center">
+                <ModalHeader marginTop={2}>Delete Post</ModalHeader>
+                <ModalBody>
+                  Are you sure you would like to delete this post? <br /> You
+                  cannot undo this action afterwards.
+                </ModalBody>
+                <ModalFooter justifyContent="center" marginBottom={2}>
+                  <Button
+                    variant="outline-secondary"
+                    width={32}
+                    borderRadius={16}
+                    marginRight={10}
+                    onClick={onDeleteConfirmationClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="solid-primary"
+                    width={32}
+                    borderRadius={16}
+                    onClick={() => {
+                      mutation.mutate(
+                        { postOid: postData._id },
+                        {
+                          onSuccess: () => {
+                            utils.post.invalidate();
+                          },
+                          onError: () => {
+                            toast({
+                              title: "Error",
+                              description: "Post deletion was unsuccessful",
+                              containerStyle: {
+                                whiteSpace: "pre-line",
+                              },
+                              status: "error",
+                              duration: 5000,
+                              isClosable: true,
+                              position: "top",
+                            });
+                          },
+                        }
+                      );
+                      onDeleteConfirmationClose();
+                      window.location.reload();
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </Stack>
           <Flex direction="row" width="100%">
             <Flex
