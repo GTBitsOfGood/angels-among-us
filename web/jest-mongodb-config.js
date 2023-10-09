@@ -8,5 +8,9 @@ module.exports = {
       skipMD5: true,
     },
     autoStart: false,
+    replSet: {
+      count: 3,
+      storageEngine: "wiredTiger",
+    },
   },
 };

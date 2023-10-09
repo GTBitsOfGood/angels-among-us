@@ -1,5 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   createPost,
@@ -30,8 +29,11 @@ import {
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
+import { Types } from "mongoose";
 
-const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
+const zodOidType = z.custom<Types.ObjectId>(
+  (item) => String(item).length == 24
+);
 
 const postSchema = z.object({
   name: z.string(),
@@ -207,8 +209,9 @@ export const postRouter = router({
     )
     .mutation(async ({ input }) => {
       try {
-        await deletePost(input.postOid);
+        return await deletePost(input.postOid);
       } catch (e) {
+        console.error(e);
         if (e instanceof TRPCError) {
           throw e;
         } else {
@@ -218,7 +221,6 @@ export const postRouter = router({
           });
         }
       }
-      return { success: true };
     }),
   finalize: procedure
     .input(
