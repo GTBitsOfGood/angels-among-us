@@ -4,6 +4,7 @@ enum Pages {
   ONBOARDING = "/onboarding",
   PROFILE = "/profile",
   RESOURCES = "/resources",
+  USERS = "/users",
 }
 
 function getBaseUrl() {
