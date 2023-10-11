@@ -64,7 +64,7 @@ function FeedPostCard(props: { post: IPost; hideCovered: boolean }) {
           ? "flex"
           : "none"
       }
-      marginBottom="10px"
+      marginBottom={4}
     >
       <Card
         paddingX={{ base: "12px", lg: "16px" }}
@@ -95,7 +95,7 @@ function FeedPostCard(props: { post: IPost; hideCovered: boolean }) {
               position="absolute"
               top={5}
               right={5}
-              display={post.covered ? "flex" : "none"}
+              display={{ base: "none", lg: post.covered ? "flex" : "none" }}
               fontSize={20}
               fontWeight="semibold"
               zIndex={3}

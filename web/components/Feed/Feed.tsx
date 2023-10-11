@@ -514,7 +514,7 @@ function Feed(props: {
               </Button>
             )}
           </Flex>
-          <Stack overflowY="auto">
+          <Stack overflowY="auto" spacing={0}>
             {feedPosts?.map((p, ind) => {
               return (
                 <Box

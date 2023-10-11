@@ -508,7 +508,6 @@ const PetPostModal: React.FC<{
                 </Text>
               </Stack>
             </Stack>
-
             <Stack direction="column" width="100%" spacing={4}>
               <Flex width="100%" direction={"column"}>
                 <PetPostListGroup title={"Main Characteristics"} tags={[]} />
