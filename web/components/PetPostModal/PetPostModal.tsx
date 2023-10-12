@@ -1,4 +1,4 @@
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
@@ -207,7 +207,7 @@ import {
 } from "../../utils/types/post";
 import { Role } from "../../utils/types/account";
 import { useAuth } from "../../context/auth";
-import DeleteButtonModal from "./DeleteButtonModal";
+import DeletePostModal from "./DeletePostModal";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
@@ -218,6 +218,12 @@ const PetPostModal: React.FC<{
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
     onClose: onFormViewClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDeleteConfirmationOpen,
+    onOpen: onDeleteConfirmationOpen,
+    onClose: onDeleteConfirmationClose,
   } = useDisclosure();
 
   const { userData } = useAuth();
@@ -346,7 +352,27 @@ const PetPostModal: React.FC<{
               Back to feed
             </Button>
             {(role === Role.Admin || role === Role.ContentCreator) && (
-              <DeleteButtonModal onClose={onClose} postId={postData._id} />
+              <Flex>
+                <Button
+                  h={8}
+                  backgroundColor="white"
+                  onClick={onDeleteConfirmationOpen}
+                  _hover={{}}
+                  leftIcon={
+                    <DeleteIcon marginRight="5px" color="text-secondary" />
+                  }
+                >
+                  <Text textDecoration="underline" color="text-secondary">
+                    Delete
+                  </Text>
+                </Button>
+                <DeletePostModal
+                  isDeleteConfirmationOpen={isDeleteConfirmationOpen}
+                  onDeleteConfirmationClose={onDeleteConfirmationClose}
+                  onClose={onClose}
+                  postId={postData._id}
+                />
+              </Flex>
             )}
           </Stack>
           <Flex direction="row" width="100%">
@@ -499,7 +525,27 @@ const PetPostModal: React.FC<{
                   {name}
                 </Text>
                 {(role === Role.Admin || role === Role.ContentCreator) && (
-                  <DeleteButtonModal onClose={onClose} postId={postData._id} />
+                  <Flex>
+                    <Button
+                      h={8}
+                      backgroundColor="white"
+                      onClick={onDeleteConfirmationOpen}
+                      _hover={{}}
+                      leftIcon={
+                        <DeleteIcon marginRight="5px" color="text-secondary" />
+                      }
+                    >
+                      <Text textDecoration="underline" color="text-secondary">
+                        Delete
+                      </Text>
+                    </Button>
+                    <DeletePostModal
+                      isDeleteConfirmationOpen={isDeleteConfirmationOpen}
+                      onDeleteConfirmationClose={onDeleteConfirmationClose}
+                      onClose={onClose}
+                      postId={postData._id}
+                    />
+                  </Flex>
                 )}
               </Stack>
               <Flex color="white">
