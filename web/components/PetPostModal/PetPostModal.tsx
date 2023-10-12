@@ -3,6 +3,9 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
   Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   Input,
   Modal,
   ModalCloseButton,
@@ -37,6 +40,7 @@ import {
 } from "../../utils/types/post";
 import { trpc } from "../../utils/trpc";
 import { ObjectId } from "mongoose";
+import { useState } from "react";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -45,47 +49,24 @@ type FosterTypeData = {
   }>;
 };
 
+enum QuestionKeys {
+  numOtherDogs = "numOtherDogs",
+  maxDogs = "maxDogs",
+}
+
+type QuestionResponseData = {
+  [key in QuestionKeys]?: string;
+};
+
 const data: FosterTypeData = {
   [FosterType.Return]: [
     {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
       key: "maxDogs",
       title: "What is the maximum number of dogs you are willing to foster?",
     },
     {
       key: "numOtherDogs",
       title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "maxDogs",
-      title: "What is the maximum number of dogs you are willing to foster?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "maxDogs",
-      title: "What is the maximum number of dogs you are willing to foster?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "maxDogs",
-      title: "What is the maximum number of dogs you are willing to foster?",
     },
   ],
   [FosterType.Boarding]: [
@@ -131,8 +112,68 @@ const FosterQuestionnaire = ({
   isFormViewOpen: boolean;
   onFormViewClose: () => void;
 }) => {
-  const toast = useToast();
+  const initialQuestionResponseData: QuestionResponseData = data[
+    fosterType
+  ].reduce(
+    (responses, question) =>
+      ({
+        ...responses,
+        [question.key]: "",
+      } as QuestionResponseData),
+    {}
+  );
+
+  const [fosterQuestionResponses, setfosterQuestionResponses] = useState(
+    initialQuestionResponseData
+  );
   const mutation = trpc.post.offer.useMutation();
+  const toast = useToast();
+
+  function handleSubmission() {
+    let formIsValid = true;
+    for (const [value] of Object.entries(fosterQuestionResponses)) {
+      if (value === "") {
+        formIsValid = false;
+        break;
+      }
+    }
+    if (!formIsValid) {
+      toast({
+        title: "Please complete all required fields.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
+    } else {
+      const offer = {
+        email: "laur3nm90@gmail.com",
+        postOid: postId,
+      };
+      mutation.mutate(offer, {
+        onSuccess: () => {
+          onFormViewClose();
+          toast({
+            title:
+              "Thank you for submitting a foster application with Angels Among Us! You will hear back from us soon!",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+            position: "top",
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Request unsuccessful. Please try again later.",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+            position: "top",
+          });
+        },
+      });
+    }
+  }
 
   return (
     <Modal
@@ -150,11 +191,35 @@ const FosterQuestionnaire = ({
         <ModalCloseButton display={["none", "block"]} mt={6} mr={6} />
         <Flex display={["none", "flex"]} flexDir="column" overflowY="scroll">
           <Flex paddingX={10} flexDir="column" gap={4}>
-            {data[fosterType].map((question) => {
+            {data[fosterType].map(({ key, title }) => {
               return (
-                <Flex key={question.key} flexDir="column" gap={2}>
-                  <Text>{question.title}</Text>
-                  <Input />
+                <Flex key={key} flexDir="column" gap={2}>
+                  <FormControl
+                    isRequired
+                    isInvalid={
+                      fosterQuestionResponses[
+                        key as keyof typeof QuestionKeys
+                      ] === ""
+                    }
+                  >
+                    <FormLabel>{title}</FormLabel>
+                    <Input
+                      bgColor={"#FAFBFC"}
+                      value={
+                        fosterQuestionResponses[
+                          key as keyof typeof QuestionKeys
+                        ]
+                      }
+                      onChange={(event) => {
+                        setfosterQuestionResponses({
+                          ...fosterQuestionResponses,
+                          [key as keyof typeof QuestionKeys]:
+                            event.target.value,
+                        });
+                      }}
+                    />
+                    <FormErrorMessage>Field required.</FormErrorMessage>
+                  </FormControl>
                 </Flex>
               );
             })}
@@ -164,7 +229,9 @@ const FosterQuestionnaire = ({
           <Button variant="outline-secondary" mr={3} onClick={onFormViewClose}>
             Cancel
           </Button>
-          <Button variant="solid-primary">Submit</Button>
+          <Button variant="solid-primary" onClick={handleSubmission}>
+            Submit
+          </Button>
         </ModalFooter>
         <Flex
           direction="column"
@@ -187,11 +254,35 @@ const FosterQuestionnaire = ({
           </Stack>
           <ModalHeader>Foster Questionnaire</ModalHeader>
           <Flex paddingX={6} flexDir="column" gap={4} overflowY="scroll">
-            {data[fosterType].map((question) => {
+            {data[fosterType].map(({ key, title }) => {
               return (
-                <Flex key={question.key} flexDir="column" gap={2}>
-                  <Text>{question.title}</Text>
-                  <Input />
+                <Flex key={key} flexDir="column" gap={2}>
+                  <FormControl
+                    isRequired
+                    isInvalid={
+                      fosterQuestionResponses[
+                        key as keyof typeof QuestionKeys
+                      ] === ""
+                    }
+                  >
+                    <FormLabel>{title}</FormLabel>
+                    <Input
+                      bgColor={"#FAFBFC"}
+                      value={
+                        fosterQuestionResponses[
+                          key as keyof typeof QuestionKeys
+                        ]
+                      }
+                      onChange={(event) => {
+                        setfosterQuestionResponses({
+                          ...fosterQuestionResponses,
+                          [key as keyof typeof QuestionKeys]:
+                            event.target.value,
+                        });
+                      }}
+                    />
+                    <FormErrorMessage>Field required.</FormErrorMessage>
+                  </FormControl>
                 </Flex>
               );
             })}
@@ -202,36 +293,7 @@ const FosterQuestionnaire = ({
               width="full"
               paddingY={5}
               borderRadius="full"
-              onClick={() => {
-                const offer = {
-                  email: "laurenm90@gmail.com",
-                  postOid: postId,
-                };
-                console.log(`handler ${offer.postOid}`);
-
-                mutation.mutate(offer, {
-                  onSuccess: () => {
-                    onFormViewClose();
-                    toast({
-                      title:
-                        "Thank you for submitting a foster application with Angels Among Us! You will hear back from us soon!",
-                      status: "success",
-                      duration: 9000,
-                      isClosable: true,
-                      position: "top",
-                    });
-                  },
-                  onError: () => {
-                    toast({
-                      title: "Request unsuccessful",
-                      status: "error",
-                      duration: 9000,
-                      isClosable: true,
-                      position: "top",
-                    });
-                  },
-                });
-              }}
+              onClick={handleSubmission}
             >
               Submit
             </Button>
