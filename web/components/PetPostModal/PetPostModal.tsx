@@ -131,8 +131,8 @@ const FosterQuestionnaire = ({
 
   function handleSubmission() {
     let formIsValid = true;
-    for (const [value] of Object.entries(fosterQuestionResponses)) {
-      if (value === "") {
+    for (const [key] of Object.entries(fosterQuestionResponses)) {
+      if (fosterQuestionResponses[key as keyof typeof QuestionKeys] === "") {
         formIsValid = false;
         break;
       }
