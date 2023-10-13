@@ -1,4 +1,4 @@
-import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
@@ -353,6 +353,19 @@ const PetPostModal: React.FC<{
             </Button>
             {(role === Role.Admin || role === Role.ContentCreator) && (
               <Flex>
+                <Button
+                  h={8}
+                  backgroundColor="white"
+                  onClick={() => {}}
+                  _hover={{}}
+                  leftIcon={
+                    <EditIcon marginRight="5px" color="text-secondary" />
+                  }
+                >
+                  <Text textDecoration="underline" color="text-secondary">
+                    Edit
+                  </Text>
+                </Button>
                 <Button
                   h={8}
                   backgroundColor="white"
