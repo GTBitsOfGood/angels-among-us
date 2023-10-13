@@ -298,7 +298,7 @@ export const postRouter = router({
         }
       }, {});
 
-      let completeFilter = {
+      let noncoveredFilter = {
         breed: { $in: postFilterSchema.breed },
         type: { $in: postFilterSchema.type },
         age: { $in: postFilterSchema.age },
@@ -323,6 +323,12 @@ export const postRouter = router({
         houseTrained: { $in: houseTrained },
         spayNeuterStatus: { $in: spayNeuterStatus },
       };
+      let completeFilter;
+      if (input.covered != undefined) {
+        completeFilter = { ...noncoveredFilter, covered: input.covered };
+      } else {
+        completeFilter = noncoveredFilter;
+      }
       const filteredPosts = await getFilteredPosts(completeFilter);
       return filteredPosts.map((p: IPost) => {
         return {
