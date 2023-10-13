@@ -168,8 +168,9 @@ export const postRouter = router({
       }
       try {
         const post = await getPost(input.postOid, true);
-        // const email = fosterTypeEmails[post.type];
-        const email = "laur3nm90@gmail.com";
+        const email = process.env.production
+          ? fosterTypeEmails[post.type]
+          : input.email;
         let count = 0;
         const maxTries = 3;
         while (true) {

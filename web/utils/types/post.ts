@@ -345,35 +345,9 @@ export interface IPost {
   attachments: string[];
 }
 
-export interface IPostWithId {
+export interface IFeedPost extends IPost {
   _id: ObjectId;
-  date: Date;
-  name: string;
-  description: string;
-  petKind: PetKind;
-  type: FosterType;
-  size: Size;
-  breed: Breed[];
-  gender: Gender;
-  age: Age;
-  temperament: Temperament[];
-  medical: Medical[];
-  behavioral: Behavioral[];
-  houseTrained: Trained;
-  crateTrained: Trained;
-  spayNeuterStatus: Trained;
-  getsAlongWithMen: Trained;
-  getsAlongWithWomen: Trained;
-  getsAlongWithOlderKids: Trained;
-  getsAlongWithYoungKids: Trained;
-  getsAlongWithLargeDogs: Trained;
-  getsAlongWithSmallDogs: Trained;
-  getsAlongWithCats: Trained;
-  covered: boolean;
-  pending: boolean;
-  attachments: string[];
 }
-
 export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
   attachments: AttachmentInfo[];
 };
