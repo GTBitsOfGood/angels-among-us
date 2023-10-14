@@ -217,7 +217,7 @@ const FosterQuestionnaire = ({
 
   const QuestionInputFields = ({ fosterType }: { fosterType: FosterType }) => {
     return (
-      <Flex paddingX={6} flexDir="column" gap={{ sm: 4 }} overflowY="scroll">
+      <Flex paddingX={6} flexDir="column" gap={[5, 7]}>
         {data[fosterType].map(({ key, title }) => {
           return (
             <Flex key={key} flexDir="column" gap={2}>
@@ -247,25 +247,35 @@ const FosterQuestionnaire = ({
       onClose={onFormViewClose}
       isCentered
       scrollBehavior="inside"
-      size={["full", "xl"]}
+      size={["full", "l"]}
     >
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader display={["none", "block"]} px={10} mt={4}>
-          Foster Questionnaire
+      <ModalContent
+        padding={{ lg: 8 }}
+        height={{ lg: 650 }}
+        width={{ lg: 650 }}
+      >
+        <ModalHeader display={["none", "block"]} mt={4}>
+          <Text size={"xl"}> Foster Questionnaire</Text>
         </ModalHeader>
-        <ModalCloseButton display={["none", "block"]} mt={6} mr={6} />
-        <Flex display={["none", "block"]}>
-          <QuestionInputFields fosterType={fosterType}></QuestionInputFields>
+        <Flex display={["none", "block"]} overflowY={"scroll"}>
+          <ModalCloseButton display={["none", "block"]} mt={6} mr={6} />
+          <Flex alignItems={"center"}>
+            <QuestionInputFields fosterType={fosterType}></QuestionInputFields>
+          </Flex>
+          <ModalFooter display={["none", "block"]} mt={6}>
+            <Flex alignItems={"center"} justifyContent={"center"}>
+              <Button
+                variant="solid-primary"
+                width={"200px"}
+                onClick={handleSubmission}
+              >
+                Submit
+              </Button>
+            </Flex>
+          </ModalFooter>
         </Flex>
-        <ModalFooter display={["none", "flex"]} mb={2}>
-          <Button variant="outline-secondary" mr={3} onClick={onFormViewClose}>
-            Cancel
-          </Button>
-          <Button variant="solid-primary" onClick={handleSubmission}>
-            Submit
-          </Button>
-        </ModalFooter>
+
         <Flex
           direction="column"
           width="100%"
@@ -286,18 +296,20 @@ const FosterQuestionnaire = ({
             <Text>Back to Pet Post</Text>
           </Stack>
           <ModalHeader>Foster Questionnaire</ModalHeader>
-          <QuestionInputFields fosterType={fosterType}></QuestionInputFields>
-          <ModalFooter display={["flex", "none"]} mb={2}>
-            <Button
-              variant="solid-primary"
-              width="full"
-              paddingY={5}
-              borderRadius="full"
-              onClick={handleSubmission}
-            >
-              Submit
-            </Button>
-          </ModalFooter>
+          <Flex direction={"column"} overflowY={"scroll"}>
+            <QuestionInputFields fosterType={fosterType}></QuestionInputFields>
+            <ModalFooter display={["flex", "none"]} mb={2}>
+              <Button
+                variant="solid-primary"
+                width="full"
+                paddingY={5}
+                borderRadius="full"
+                onClick={handleSubmission}
+              >
+                Submit
+              </Button>
+            </ModalFooter>
+          </Flex>
         </Flex>
       </ModalContent>
     </Modal>
