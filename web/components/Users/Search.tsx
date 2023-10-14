@@ -26,25 +26,16 @@ import {
   Breed,
   Gender,
   Age,
-  Temperament,
+  // Temperament,
   GoodWith,
   Medical,
   Behavioral,
 } from "../../utils/types/post";
 import Select from "react-select";
-import { useReducer } from "react";
-
-export type SearchFilters = {
-  type: FosterType[];
-  preferredBreeds: Breed[];
-  size: Size[];
-  age: Age[];
-  gender: Gender[];
-  behavioral: Behavioral[];
-  dogsNotGoodWith: GoodWith[];
-  medical: Medical[];
-  temperament: Temperament[];
-};
+import { ReducerAction } from "../../pages/users";
+import { Dispatch, SetStateAction } from "react";
+import { SearchUsersParams } from "../../db/actions/User";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 
 function Filter(props: {
   desc: string;
@@ -60,43 +51,17 @@ function Filter(props: {
   );
 }
 
-export default function Search() {
-  const initState: SearchFilters = {
-    type: [],
-    preferredBreeds: [],
-    size: [],
-    age: [],
-    gender: [],
-    behavioral: [],
-    dogsNotGoodWith: [],
-    medical: [],
-    temperament: [],
-  };
+type SearchProps = {
+  filters: SearchUsersParams;
+  dispatch: Dispatch<ReducerAction>;
+  setSearched: Dispatch<SetStateAction<boolean>>;
+};
 
-  const [filters, dispatch] = useReducer(
-    (
-      state: SearchFilters,
-      action: {
-        type: "setField" | "clear";
-        key?: keyof SearchFilters;
-        data?: SearchFilters[keyof SearchFilters];
-      }
-    ) => {
-      switch (action.type) {
-        case "setField":
-          return {
-            ...state,
-            [action.key!]: action.data!,
-          };
-        case "clear":
-          return initState;
-        default:
-          throw Error("Unknown action.");
-      }
-    },
-    initState
-  );
-
+export default function Search({
+  filters,
+  dispatch,
+  setSearched,
+}: SearchProps) {
   return (
     <Flex
       direction="column"
@@ -245,7 +210,7 @@ export default function Search() {
                         key: "age",
                         data: (
                           newVals as {
-                            value: Breed;
+                            value: Age;
                             label: string;
                           }[]
                         ).map(({ value }) => value),
@@ -354,22 +319,22 @@ export default function Search() {
                     options={Object.entries(temperamentLabels).map(
                       ([key, val]) => ({ value: key, label: val })
                     )}
-                    onChange={(newVals) =>
-                      dispatch({
-                        type: "setField",
-                        key: "temperament",
-                        data: (
-                          newVals as {
-                            value: Temperament;
-                            label: string;
-                          }[]
-                        ).map(({ value }) => value),
-                      })
-                    }
-                    value={filters?.temperament?.map((t) => ({
-                      value: t as string,
-                      label: temperamentLabels[t],
-                    }))}
+                    // onChange={(newVals) =>
+                    //   dispatch({
+                    //     type: "setField",
+                    //     key: "temperament",
+                    //     data: (
+                    //       newVals as {
+                    //         value: Temperament;
+                    //         label: string;
+                    //       }[]
+                    //     ).map(({ value }) => value),
+                    //   })
+                    // }
+                    // value={filters?.temperament?.map((t) => ({
+                    //   value: t as string,
+                    //   label: temperamentLabels[t],
+                    // }))}
                   />
                 </Filter>
               </GridItem>
@@ -419,10 +384,11 @@ export default function Search() {
               Clear
             </Button>
             <Button
+              onClick={() => setSearched(true)}
               variant="solid-primary"
-              onClick={() => {}}
               width={["100%", "min-content"]}
               paddingX={20}
+              rightIcon={<ArrowForwardIcon />}
             >
               Find Volunteers
             </Button>
