@@ -1,4 +1,4 @@
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
@@ -17,6 +17,7 @@ import {
 import ImageSlider from "./ImageSlider";
 import PetPostListGroup from "./PetPostListGroup";
 import { FosterType } from "../../utils/types/post";
+import { Types } from "mongoose";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -186,6 +187,7 @@ const FosterQuestionnaire = ({
     </Modal>
   );
 };
+
 import {
   fosterTypeLabels,
   behavioralLabels,
@@ -203,17 +205,29 @@ import {
   ageLabels,
   fosterTypeDescriptions,
 } from "../../utils/types/post";
+import { Role } from "../../utils/types/account";
+import { useAuth } from "../../context/auth";
+import DeletePostModal from "./DeletePostModal";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost;
+  postData: IPost & { _id: Types.ObjectId };
 }> = ({ isOpen, onClose, postData }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
     onClose: onFormViewClose,
   } = useDisclosure();
+
+  const {
+    isOpen: isDeleteConfirmationOpen,
+    onOpen: onDeleteConfirmationOpen,
+    onClose: onDeleteConfirmationClose,
+  } = useDisclosure();
+
+  const { userData } = useAuth();
+  const role = userData?.role;
 
   const {
     name,
@@ -323,18 +337,44 @@ const PetPostModal: React.FC<{
           paddingX={12}
           height={"inherit"}
         >
-          <Button
-            h={8}
-            w="fit-content"
-            bgColor="tag-primary-bg"
-            color="text-primary"
-            marginLeft={10}
-            _hover={{ bgColor: "tag-primary-bg" }}
-            leftIcon={<ArrowBackIcon />}
-            onClick={onClose}
-          >
-            Back to feed
-          </Button>
+          <Stack direction="row" justifyContent="space-between">
+            <Button
+              h={8}
+              w="fit-content"
+              bgColor="tag-primary-bg"
+              color="text-primary"
+              marginLeft={10}
+              _hover={{ bgColor: "tag-primary-bg" }}
+              leftIcon={<ArrowBackIcon />}
+              onClick={onClose}
+              id="backToFeedButton"
+            >
+              Back to feed
+            </Button>
+            {(role === Role.Admin || role === Role.ContentCreator) && (
+              <Flex>
+                <Button
+                  h={8}
+                  backgroundColor="white"
+                  onClick={onDeleteConfirmationOpen}
+                  _hover={{}}
+                  leftIcon={
+                    <DeleteIcon marginRight="5px" color="text-secondary" />
+                  }
+                >
+                  <Text textDecoration="underline" color="text-secondary">
+                    Delete
+                  </Text>
+                </Button>
+                <DeletePostModal
+                  isDeleteConfirmationOpen={isDeleteConfirmationOpen}
+                  onDeleteConfirmationClose={onDeleteConfirmationClose}
+                  onClose={onClose}
+                  postId={postData._id}
+                />
+              </Flex>
+            )}
+          </Stack>
           <Flex direction="row" width="100%">
             <Flex
               w="50%"
@@ -476,9 +516,38 @@ const PetPostModal: React.FC<{
             overflowY={"scroll"}
           >
             <Stack direction="column" spacing={4}>
-              <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
-                {name}
-              </Text>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Text fontWeight="bold" fontSize="4xl" fontFamily="sans-serif">
+                  {name}
+                </Text>
+                {(role === Role.Admin || role === Role.ContentCreator) && (
+                  <Flex>
+                    <Button
+                      h={8}
+                      backgroundColor="white"
+                      onClick={onDeleteConfirmationOpen}
+                      _hover={{}}
+                      leftIcon={
+                        <DeleteIcon marginRight="5px" color="text-secondary" />
+                      }
+                    >
+                      <Text textDecoration="underline" color="text-secondary">
+                        Delete
+                      </Text>
+                    </Button>
+                    <DeletePostModal
+                      isDeleteConfirmationOpen={isDeleteConfirmationOpen}
+                      onDeleteConfirmationClose={onDeleteConfirmationClose}
+                      onClose={onClose}
+                      postId={postData._id}
+                    />
+                  </Flex>
+                )}
+              </Stack>
               <Flex color="white">
                 <ImageSlider attachments={attachments}></ImageSlider>
               </Flex>

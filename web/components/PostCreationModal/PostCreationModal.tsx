@@ -180,6 +180,7 @@ const PostCreationModal: React.FC<{
     }
   }
 
+  const [loading, setLoading] = useState(false);
   const [formState, dispatch] = useReducer(reducer, defaultFormState);
 
   const postCreate = trpc.post.create.useMutation();
@@ -342,6 +343,8 @@ const PostCreationModal: React.FC<{
         </ModalBody>
         <ModalFooter>
           <Button
+            isLoading={loading}
+            _hover={loading ? {} : undefined}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={
               isContentView
@@ -367,16 +370,21 @@ const PostCreationModal: React.FC<{
                     }
                   }
                 : () => {
+                    setLoading(true);
                     //TODO: Wait for success to close.
-                    createPost().then(() => {
-                      onClose();
-                      utils.post.invalidate();
-                      setFileArr([]);
-                      setIsContentView(true);
-                      dispatch({
-                        type: "clear",
+                    createPost()
+                      .then(() => {
+                        utils.post.invalidate();
+                        setFileArr([]);
+                        setIsContentView(true);
+                        dispatch({
+                          type: "clear",
+                        });
+                        onClose();
+                      })
+                      .finally(() => {
+                        setLoading(false);
                       });
-                    });
                   }
             }
             width={"125px"}
