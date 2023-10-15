@@ -209,7 +209,6 @@ import { Role } from "../../utils/types/account";
 import { useAuth } from "../../context/auth";
 import DeletePostModal from "./DeletePostModal";
 import EditPostModal from "./EditPostModal";
-import { useEffect } from "react";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;

@@ -6,18 +6,16 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
-  Flex,
   Box,
   useToast,
   ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import {
   Age,
-  AttachmentInfo,
   Behavioral,
   Breed,
   FosterType,
@@ -164,7 +162,6 @@ const EditPostModal: React.FC<{
     getsAlongWithWomen,
     getsAlongWithMen,
     getsAlongWithCats,
-    attachments,
   } = postData;
 
   const defaultFormState = {
@@ -209,82 +206,88 @@ const EditPostModal: React.FC<{
   }
 
   const [formState, dispatch] = useReducer(reducer, defaultFormState);
+  const reset = () => dispatch({ type: "clear" });
 
-  const postCreate = trpc.post.create.useMutation();
-  const postFinalize = trpc.post.finalize.useMutation();
+  useEffect(() => {
+    reset();
+  }, [postData]);
+
+  const postUpdate = trpc.post.updateDetails.useMutation();
+  //   const postFinalize = trpc.post.finalize.useMutation();
 
   const editPost = async () => {
-    const files: AttachmentInfo[] = await Promise.all(
-      fileArr.map(async (file) => {
-        const key = file.name;
-        if (file.type.includes("image/")) {
-          const url = URL.createObjectURL(file);
-          return new Promise((resolve) => {
-            const image = new Image();
-            image.onload = () => {
-              URL.revokeObjectURL(url);
-              resolve({
-                type: "image",
-                key,
-                length: image.height,
-                width: image.width,
-              });
-            };
-            image.src = url;
-          });
-        } else {
-          return {
-            type: "video",
-            key,
-          };
-        }
-      })
-    );
+    // const files: AttachmentInfo[] = await Promise.all(
+    //     fileArr.map(async (file) => {
+    //         const key = file.name;
+    //         if (file.type.includes("image/")) {
+    //             const url = URL.createObjectURL(file);
+    //             return new Promise((resolve) => {
+    //                 const image = new Image();
+    //                 image.onload = () => {
+    //                     URL.revokeObjectURL(url);
+    //                     resolve({
+    //                         type: "image",
+    //                         key,
+    //                         length: image.height,
+    //                         width: image.width,
+    //                     });
+    //                 };
+    //                 image.src = url;
+    //             });
+    //         } else {
+    //             return {
+    //                 type: "video",
+    //                 key,
+    //             };
+    //         }
+    //     })
+    // );
     try {
-      const creationInfo = await postCreate.mutateAsync({
-        ...(formState as z.output<typeof formSchema>),
-        attachments: files,
+      await postUpdate.mutateAsync({
+        _id: postData._id,
+        updateFields: { ...(formState as z.output<typeof formSchema>) },
+        // attachments: files,
       });
-      const oid = creationInfo._id;
-      const uploadInfo = creationInfo.attachments;
+      // const oid = creationInfo._id;
+      // const uploadInfo = creationInfo.attachments;
 
-      for (let i = 0; i < fileArr.length; i++) {
-        const file = fileArr[i];
-        await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
-      }
+      // for (let i = 0; i < fileArr.length; i++) {
+      //     const file = fileArr[i];
+      //     await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
+      // }
 
-      const postInfo = await postFinalize.mutateAsync({
-        _id: oid,
-      });
+      // const postInfo = await postFinalize.mutateAsync({
+      //     _id: oid,
+      // });
 
-      console.log(JSON.stringify(postInfo));
+      // console.log(JSON.stringify(postInfo));
     } catch (e) {
       //TODO: Delete pending post on error
       throw e;
     }
   };
 
-  const uploadFile = async (url: string, file: File) => {
-    let count = 0;
-    const maxTries = 3;
-    while (true) {
-      const uploadResp = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "content-length": `${file.size}`,
-        },
-        body: await file.arrayBuffer(),
-      });
+  // const uploadFile = async (url: string, file: File) => {
+  //     let count = 0;
+  //     const maxTries = 3;
+  //     while (true) {
+  //         const uploadResp = await fetch(url, {
+  //             method: "PUT",
+  //             headers: {
+  //                 "content-length": `${file.size}`,
+  //             },
+  //             body: await file.arrayBuffer(),
+  //         });
 
-      if (uploadResp.status === 200) {
-        return;
-      }
+  //         if (uploadResp.status === 200) {
+  //             return;
+  //         }
 
-      if (uploadResp.status === 500 && count++ === maxTries) {
-        throw new Error("Error uploading images.");
-      }
-    }
-  };
+  //         if (uploadResp.status === 500 && count++ === maxTries) {
+  //             throw new Error("Error uploading images.");
+  //         }
+  //     }
+  // };
 
   return (
     <Modal
@@ -336,6 +339,19 @@ const EditPostModal: React.FC<{
         </ModalBody>
         <ModalFooter>
           <Button
+            variant={"outline-secondary"}
+            mr={4}
+            onClick={() => {
+              onClose();
+            }}
+            width={"125px"}
+            height={"50px"}
+          >
+            <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
+              Cancel
+            </Text>
+          </Button>
+          <Button
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={
               isContentView
@@ -377,7 +393,7 @@ const EditPostModal: React.FC<{
             height={"50px"}
           >
             <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
-              {isContentView ? "Next" : "Post"}
+              {isContentView ? "Next" : "Save"}
             </Text>
           </Button>
         </ModalFooter>
