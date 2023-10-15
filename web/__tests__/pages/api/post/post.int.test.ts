@@ -2,15 +2,13 @@ declare var global: any;
 
 import { readFileSync } from "fs";
 import { createRandomPost } from "../../../../db/actions/__mocks__/Post";
-import { deleteAttachments } from "../../../../db/actions/Post";
 import { consts } from "../../../../utils/consts";
 import storageClient from "../../../../db/storageConnect";
 import mongoose, { ConnectOptions } from "mongoose";
 import { appRouter } from "../../../../server/routers/_app";
 import { createContextInner } from "../../../../server/context";
 import Post from "../../../../db/models/Post";
-import { Behavioral, Breed, GoodWith } from "../../../../utils/types/post";
-
+import { GoodWith } from "../../../../utils/types/post";
 
 const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
 const videoData = readFileSync("./__tests__/assets/video.mp4");
@@ -71,7 +69,7 @@ describe("[API] Post - Integration Test", () => {
   afterAll(async () => {
     await mongoose.connection.close();
   });
-  
+
   describe("post.delete", () => {
     let caller: ReturnType<typeof appRouter.createCaller>;
 
@@ -158,7 +156,7 @@ describe("[API] Post - Integration Test", () => {
     });
   });
 
-describe("post.getFilteredPosts", () => {
+  describe("post.getFilteredPosts", () => {
     let caller: ReturnType<typeof appRouter.createCaller>;
     const attachmentBodyMap = {
       "no-resize.png": noResizeData,
@@ -291,3 +289,4 @@ describe("post.getFilteredPosts", () => {
       expect(uncoveredPosts.length).toBe(numUncovered);
     });
   });
+});
