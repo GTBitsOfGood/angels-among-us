@@ -6,7 +6,7 @@ import mongoose, { ConnectOptions } from "mongoose";
 import { appRouter } from "../../../../server/routers/_app";
 import { createContextInner } from "../../../../server/context";
 import Post from "../../../../db/models/Post";
-import { GoodWith } from "../../../../utils/types/post";
+import { Behavioral, Breed, GoodWith } from "../../../../utils/types/post";
 
 const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
 const videoData = readFileSync("./__tests__/assets/video.mp4");
@@ -92,7 +92,7 @@ describe("[API] Post - Integration Test", () => {
       await Post.deleteMany({});
     });
 
-    test("basic covered-uncovered", async () => {
+    test("singleton covered-uncovered", async () => {
       const coveredPost = createRandomPost();
       coveredPost["covered"] = true;
       let id = new mongoose.Types.ObjectId();
@@ -142,6 +142,63 @@ describe("[API] Post - Integration Test", () => {
       });
       expect(uncoveredPosts).not.toBeNull();
       expect(uncoveredPosts.length).toBe(1);
+    });
+
+    test("random covered-uncovered", async () => {
+      let randomPost = createRandomPost();
+      const numPosts = Math.ceil(Math.random() * 10);
+      let numCovered = 0;
+      let numUncovered = 0;
+      let createPost;
+      for (let i = 0; i < numPosts; i++) {
+        const curr = Math.floor(Math.random() * 2);
+        if (curr == 0) {
+          randomPost.covered = false;
+          numUncovered++;
+        } else {
+          randomPost.covered = true;
+          numCovered++;
+        }
+        const id = new mongoose.Types.ObjectId();
+        createPost = await Post.create({
+          ...randomPost,
+          _id: id,
+          attachments,
+        });
+        expect(createPost).not.toBeNull();
+      }
+      let goodWithArray = [];
+      for (const goodWithKey in goodWithMap) {
+        if (createPost[goodWithKey] == "yes") {
+          goodWithArray.push(goodWithMap[goodWithKey]);
+        }
+      }
+      const postFilterSchema = {
+        type: [randomPost.type],
+        breed: randomPost.breed,
+        age: [randomPost.age],
+        size: [randomPost.size],
+        gender: [randomPost.gender],
+        behavioral: randomPost.behavioral,
+        goodWith: goodWithArray,
+      };
+      const allPosts = await caller.post.getFilteredPosts({
+        postFilterSchema: postFilterSchema,
+      });
+      expect(allPosts).not.toBeNull();
+      expect(allPosts.length).toBe(numPosts);
+      const coveredPosts = await caller.post.getFilteredPosts({
+        postFilterSchema: postFilterSchema,
+        covered: true,
+      });
+      expect(coveredPosts).not.toBeNull();
+      expect(coveredPosts.length).toBe(numCovered);
+      const uncoveredPosts = await caller.post.getFilteredPosts({
+        postFilterSchema: postFilterSchema,
+        covered: false,
+      });
+      expect(uncoveredPosts).not.toBeNull();
+      expect(uncoveredPosts.length).toBe(numUncovered);
     });
   });
 });
