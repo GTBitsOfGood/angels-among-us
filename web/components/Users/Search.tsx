@@ -121,6 +121,7 @@ export default function Search({
                       value: type as string,
                       label: fosterTypeLabels[type],
                     }))}
+                    placeholder={`Ex: ${fosterTypeLabels.temporary}`}
                   />
                 </Filter>
               </Flex>
@@ -157,6 +158,7 @@ export default function Search({
                       value: medical as string,
                       label: medicalLabels[medical],
                     }))}
+                    placeholder={`Ex: ${medicalLabels.parvo}`}
                   />
                 </Filter>
               </Flex>
@@ -190,6 +192,7 @@ export default function Search({
                       value: breed as string,
                       label: breedLabels[breed],
                     }))}
+                    placeholder={`Ex: ${breedLabels.australianShepherd}`}
                   />
                 </Filter>
               </GridItem>
@@ -218,6 +221,7 @@ export default function Search({
                       value: age as string,
                       label: ageLabels[age],
                     }))}
+                    placeholder={`Select an age category...`}
                   />
                 </Filter>
               </GridItem>
@@ -246,6 +250,7 @@ export default function Search({
                       value: size as string,
                       label: sizeLabels[size],
                     }))}
+                    placeholder={`Select a dog size category...`}
                   />
                 </Filter>
               </GridItem>
@@ -274,6 +279,7 @@ export default function Search({
                       value: gender as string,
                       label: genderLabels[gender],
                     }))}
+                    placeholder={`Select a gender category...`}
                   />
                 </Filter>
               </GridItem>
@@ -306,6 +312,7 @@ export default function Search({
                       value: goodWith as string,
                       label: goodWithLabels[goodWith],
                     }))}
+                    placeholder={`Ex: ${goodWithLabels.women}`}
                   />
                 </Filter>
               </GridItem>
@@ -333,6 +340,7 @@ export default function Search({
                       value: b as string,
                       label: behavioralLabels[b],
                     }))}
+                    placeholder={`Ex: ${behavioralLabels.separationAnxiety}`}
                   />
                 </Filter>
               </GridItem>

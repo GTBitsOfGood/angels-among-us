@@ -48,6 +48,7 @@ function Label(props: React.PropsWithChildren): JSX.Element {
 
 export default function Results({ filters, setSearched }: ResultsProps) {
   const users = trpc.user.searchUsers.useQuery({ searchParams: filters });
+  console.log(users);
 
   return (
     <Flex
@@ -92,7 +93,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
       </Box>
 
       <Flex
-        // width="100%"
+        width="100%"
         direction="row"
         wrap="wrap"
         gap={5}

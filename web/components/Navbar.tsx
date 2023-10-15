@@ -185,9 +185,14 @@ export default function Navbar() {
             <Text>Feed</Text>
           </Link>
           {role === Role.Admin && (
-            <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
-              <Text>Access Management</Text>
-            </Link>
+            <>
+              <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
+                <Text>Access Management</Text>
+              </Link>
+              <Link as={NextLink} href={Pages.USERS}>
+                <Text>Search Users</Text>
+              </Link>
+            </>
           )}
           <Link as={NextLink} href={Pages.RESOURCES}>
             <Text>Resources</Text>
@@ -207,13 +212,18 @@ export default function Navbar() {
               <Text>Feed</Text>
             </Link>
             {role === Role.Admin && (
-              <Link
-                as={NextLink}
-                href={Pages.ACCESS_MANAGEMENT}
-                onClick={onMenuClose}
-              >
-                <Text>Access Management</Text>
-              </Link>
+              <>
+                <Link
+                  as={NextLink}
+                  href={Pages.ACCESS_MANAGEMENT}
+                  onClick={onMenuClose}
+                >
+                  <Text>Access Management</Text>
+                </Link>
+                <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
+                  <Text>Search Users</Text>
+                </Link>
+              </>
             )}
             <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
               <Text>Resources</Text>
