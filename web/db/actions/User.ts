@@ -6,7 +6,6 @@ import {
 } from "mongoose";
 import User from "../models/User";
 import { IUser } from "../../utils/types/user";
-import { Role } from "../../utils/types/account";
 import {
   Age,
   Behavioral,
@@ -90,7 +89,7 @@ function createFilterQuery(
   searchParams: SearchUsersParams
 ): FilterQuery<IUser> {
   const filter: FilterQuery<IUser> = {
-    haveCompletedOnboarding: true,
+    hasCompletedOnboarding: true,
     disabled: false,
   };
 
