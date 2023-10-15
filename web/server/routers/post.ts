@@ -1,14 +1,15 @@
 import { TRPCError } from "@trpc/server";
-import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   createPost,
+  deletePost,
   finalizePost,
   getPost,
   getAllPosts,
   updatePostDetails,
   updatePostStatus,
   getFilteredPosts,
+  getAttachments,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -22,15 +23,17 @@ import {
   Medical,
   Behavioral,
   Trained,
-  Status,
   PetKind,
   IPost,
 } from "../../utils/types/post";
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
+import { Types } from "mongoose";
 
-const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
+const zodOidType = z.custom<Types.ObjectId>(
+  (item) => String(item).length == 24
+);
 
 const postSchema = z.object({
   name: z.string(),
@@ -118,7 +121,7 @@ export const postRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return getPost(input._id);
+      return getPost(input._id, true);
     }),
   create: procedure.input(postSchema).mutation(async ({ input }) => {
     const session = await Post.startSession();
@@ -166,7 +169,7 @@ export const postRouter = router({
         });
       }
       try {
-        const post = await getPost(input.postOid);
+        const post = await getPost(input.postOid, true);
         const email = fosterTypeEmails[post.type];
         let count = 0;
         const maxTries = 3;
@@ -197,6 +200,27 @@ export const postRouter = router({
           });
       }
       return { success: true };
+    }),
+  delete: procedure
+    .input(
+      z.object({
+        postOid: zodOidType,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        return await deletePost(input.postOid);
+      } catch (e) {
+        console.error(e);
+        if (e instanceof TRPCError) {
+          throw e;
+        } else {
+          throw new TRPCError({
+            message: "Internal Server Error",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+      }
     }),
   finalize: procedure
     .input(
@@ -259,6 +283,15 @@ export const postRouter = router({
       });
     }
   }),
+  getAttachments: procedure
+    .input(
+      z.object({
+        _id: zodOidType,
+      })
+    )
+    .query(async ({ input }) => {
+      return getAttachments(input._id);
+    }),
   getFilteredPosts: procedure
     .input(
       z.object({
@@ -330,14 +363,6 @@ export const postRouter = router({
         completeFilter = noncoveredFilter;
       }
       const filteredPosts = await getFilteredPosts(completeFilter);
-      return filteredPosts.map((p: IPost) => {
-        return {
-          attachments: p.attachments,
-          date: p.date,
-          name: p.name,
-          tag: p.type,
-          description: p.description,
-        };
-      });
+      return filteredPosts;
     }),
 });

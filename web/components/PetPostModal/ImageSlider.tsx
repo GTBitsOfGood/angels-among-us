@@ -2,28 +2,9 @@ import { Flex, Image } from "@chakra-ui/react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
+import DefaultDog from "../../public/dog.svg";
 
-const SlideData = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-
-  {
-    image:
-      "https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1601979031925-424e53b6caaa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1591160690555-5debfba289f0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-];
-
-const ImageSlider = () => {
+function ImageSlider(props: { attachments: Array<string> }) {
   return (
     <Carousel
       axis="horizontal"
@@ -41,7 +22,7 @@ const ImageSlider = () => {
             left={0}
             p={3}
             alignItems="center"
-            maxHeight={["50vh", "75vh"]}
+            maxHeight={["50vh", "65vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <FaArrowCircleLeft size={30} />
@@ -60,7 +41,7 @@ const ImageSlider = () => {
             right={0}
             p={3}
             alignItems="center"
-            maxHeight={["50vh", "75vh"]}
+            maxHeight={["50vh", "65vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <FaArrowCircleRight size={30} />
@@ -69,22 +50,49 @@ const ImageSlider = () => {
         );
       }}
     >
-      {SlideData.map((slide) => {
-        return (
-          <Image
-            key={slide.image}
-            src={slide.image}
-            borderRadius="15px"
-            objectFit="cover"
-            width="full"
-            height="full"
-            maxHeight={["50vh", "75vh"]}
-            alt=""
-          />
-        );
-      })}
+      {/* TODO: Account for Videos */}
+      {props.attachments.length > 0
+        ? props.attachments?.map((slide) => {
+            return (
+              <Flex
+                justifyContent={"center"}
+                alignItems={"center"}
+                bgColor={"tag-primary-bg"}
+                borderRadius="15px"
+                overflow={"hidden"}
+                minHeight={["40vh", "65vh"]}
+                key={slide}
+                paddingX={0}
+              >
+                <Image
+                  src={slide}
+                  objectFit={"cover"}
+                  verticalAlign={"true"}
+                  align="center"
+                  maxHeight={["40vh", "65vh"]}
+                  alt=""
+                />
+              </Flex>
+            );
+          })
+        : [
+            <Flex
+              key={"default"}
+              direction={"column"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              borderRadius="15px"
+              minHeight={["40vh", "65vh"]}
+              minWidth={{ lg: "20vw" }}
+              width={"100%"}
+              paddingBottom={10}
+              bgColor={"#DDDDDD"}
+            >
+              <DefaultDog fill="white" height={"50%"} width={"50%"} />
+            </Flex>,
+          ]}
     </Carousel>
   );
-};
+}
 
 export default ImageSlider;

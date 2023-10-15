@@ -1,5 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   updateAccount,
@@ -21,8 +20,6 @@ const emailInput = {
 const searchInput = z.object({
   searchSubject: z.string(),
 });
-
-const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
 export const accountRouter = router({
   modify: procedure
@@ -218,7 +215,9 @@ export const accountRouter = router({
     session.startTransaction();
     try {
       const { searchSubject } = input;
-      const accounts = await searchAccounts(searchSubject, session);
+      const accounts = searchSubject
+        ? await searchAccounts(searchSubject, session)
+        : await findAll();
       session.commitTransaction();
       return accounts as IAccount[];
     } catch (e) {

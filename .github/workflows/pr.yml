@@ -2,10 +2,11 @@ name: "coverage"
 on:
   pull_request:
     branches:
-      - staging
+      - "*"
 jobs:
   coverage:
     runs-on: ubuntu-latest
+    environment: development
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -13,13 +14,16 @@ jobs:
       - name: Generate coverage report
         id: coverage
         uses: ArtiomTr/jest-coverage-report-action@v2
+        env:
+          STORAGE_BUCKET_NAME: ${{ secrets.STORAGE_BUCKET_NAME }}
+          STORAGE_S3_ENDPOINT: ${{ secrets.STORAGE_S3_ENDPOINT }}
+          STORAGE_S3_REGION: ${{ secrets.STORAGE_S3_REGION }}
+          STORAGE_KEY_ID: ${{ secrets.STORAGE_KEY_ID }}
+          STORAGE_APPLICATION_KEY: ${{ secrets.STORAGE_APPLICATION_KEY }}
+          STORAGE_BUCKET_URL: ${{ secrets.STORAGE_BUCKET_URL }}
         with:
           working-directory: web
           test-script: yarn jest --coverage --collectCoverageFrom='./**/*.{ts,tsx}'
           package-manager: yarn
-          output: comment, report-markdown
-
-      - name: Markdown comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          message: ${{ steps.coverage.outputs.report }}
+          output: comment
+          annotations: none

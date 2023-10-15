@@ -1,18 +1,38 @@
-import { ClientSession, ObjectId, UpdateQuery } from "mongoose";
+import { ClientSession, Types, UpdateQuery } from "mongoose";
 import { faker } from "@faker-js/faker";
 import { IUser } from "../../../utils/types/user";
 import { Role } from "../../../utils/types/account";
+import {
+  Age,
+  Behavioral,
+  Breed,
+  FosterType,
+  Gender,
+  GoodWith,
+  Medical,
+  Size,
+} from "../../../utils/types/post";
+var mongoose = require("mongoose");
 
 faker.seed(0);
 
-function createRandomUser(): IUser & { _id: ObjectId } {
+function createRandomUser(): IUser & { _id: Types.ObjectId } {
   return {
-    _id: faker.string.alphanumeric(24) as unknown as ObjectId,
+    _id: new mongoose.Types.ObjectId(),
     email: faker.internet.email(),
     name: faker.person.fullName(),
     uid: faker.string.alphanumeric(28),
     role: faker.helpers.arrayElement(Object.values(Role)),
-    disabled: faker.datatype.boolean(),
+    disabled: false,
+    hasCompletedOnboarding: true,
+    type: faker.helpers.arrayElements(Object.values(FosterType)),
+    size: faker.helpers.arrayElements(Object.values(Size)),
+    preferredBreeds: faker.helpers.arrayElements(Object.values(Breed)),
+    gender: faker.helpers.arrayElements(Object.values(Gender)),
+    age: faker.helpers.arrayElements(Object.values(Age)),
+    dogsNotGoodWith: faker.helpers.arrayElements(Object.values(GoodWith)),
+    medical: faker.helpers.arrayElements(Object.values(Medical)),
+    behavioral: faker.helpers.arrayElements(Object.values(Behavioral)),
   };
 }
 

@@ -13,6 +13,7 @@ export const callingUser: IUser = {
   uid: faker.string.alphanumeric(28),
   role: faker.helpers.arrayElement(Object.values(Role)),
   disabled: faker.datatype.boolean(),
+  hasCompletedOnboarding: false,
 };
 
 interface CreateInnerContextOptions extends Partial<CreateNextContextOptions> {
