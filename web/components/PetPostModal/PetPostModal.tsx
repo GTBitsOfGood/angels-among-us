@@ -208,6 +208,8 @@ import {
 import { Role } from "../../utils/types/account";
 import { useAuth } from "../../context/auth";
 import DeletePostModal from "./DeletePostModal";
+import EditPostModal from "./EditPostModal";
+import { useEffect } from "react";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
@@ -224,6 +226,12 @@ const PetPostModal: React.FC<{
     isOpen: isDeleteConfirmationOpen,
     onOpen: onDeleteConfirmationOpen,
     onClose: onDeleteConfirmationClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditFormOpen,
+    onOpen: onEditFormOpen,
+    onClose: onEditFormClose,
   } = useDisclosure();
 
   const { userData } = useAuth();
@@ -356,7 +364,7 @@ const PetPostModal: React.FC<{
                 <Button
                   h={8}
                   backgroundColor="white"
-                  onClick={() => {}}
+                  onClick={onEditFormOpen}
                   _hover={{}}
                   leftIcon={
                     <EditIcon marginRight="5px" color="text-secondary" />
@@ -366,6 +374,11 @@ const PetPostModal: React.FC<{
                     Edit
                   </Text>
                 </Button>
+                <EditPostModal
+                  isOpen={isEditFormOpen}
+                  onClose={onEditFormClose}
+                  postData={postData}
+                />
                 <Button
                   h={8}
                   backgroundColor="white"
