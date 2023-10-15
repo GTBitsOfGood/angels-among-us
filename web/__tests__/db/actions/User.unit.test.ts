@@ -54,14 +54,35 @@ describe("[DB] User - Unit Test", () => {
   describe("searchUsers", () => {
     test("happy", async () => {
       const searchParams: SearchUsersParams = {
-        role: Role.Volunteer,
         type: [FosterType.OwnerSurrender],
         size: [Size.M],
-        preferredBreeds: [Breed.Malamute],
       };
       const data = await searchUsers(searchParams);
-      expect(data).not.toBeNull();
-      if (data) expect(data.length).toBeGreaterThan(0);
+
+      const expected = randomUsers
+        .filter(
+          (user) =>
+            user.type?.includes(FosterType.OwnerSurrender) &&
+            user.size?.includes(Size.M)
+        )
+        .map(({ _id, ...user }) => user);
+
+      expect(data!.length).toBe(expected.length);
+      expect(data).toMatchObject(expected);
+    });
+    test("empty array", async () => {
+      const searchParams: SearchUsersParams = {
+        type: [FosterType.Return],
+        size: [],
+      };
+      const data = await searchUsers(searchParams);
+
+      const expected = randomUsers
+        .filter((user) => user.type?.includes(FosterType.Return))
+        .map(({ _id, ...user }) => user);
+
+      expect(data!.length).toBe(expected.length);
+      expect(data).toMatchObject(expected);
     });
   });
 });
