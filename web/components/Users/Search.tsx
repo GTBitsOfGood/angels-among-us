@@ -19,14 +19,12 @@ import {
   medicalLabels,
   sizeLabels,
   goodWithLabels,
-  temperamentLabels,
   behavioralLabels,
   FosterType,
   Size,
   Breed,
   Gender,
   Age,
-  // Temperament,
   GoodWith,
   Medical,
   Behavioral,
@@ -308,33 +306,6 @@ export default function Search({
                       value: goodWith as string,
                       label: goodWithLabels[goodWith],
                     }))}
-                  />
-                </Filter>
-              </GridItem>
-              <GridItem>
-                <Filter desc="Able to foster dogs with these temperaments:">
-                  <Select
-                    closeMenuOnSelect={false}
-                    isMulti
-                    options={Object.entries(temperamentLabels).map(
-                      ([key, val]) => ({ value: key, label: val })
-                    )}
-                    // onChange={(newVals) =>
-                    //   dispatch({
-                    //     type: "setField",
-                    //     key: "temperament",
-                    //     data: (
-                    //       newVals as {
-                    //         value: Temperament;
-                    //         label: string;
-                    //       }[]
-                    //     ).map(({ value }) => value),
-                    //   })
-                    // }
-                    // value={filters?.temperament?.map((t) => ({
-                    //   value: t as string,
-                    //   label: temperamentLabels[t],
-                    // }))}
                   />
                 </Filter>
               </GridItem>
