@@ -12,7 +12,6 @@ import {
   medicalLabels,
   sizeLabels,
   goodWithLabels,
-  // temperamentLabels,
   behavioralLabels,
 } from "../../utils/types/post";
 
@@ -22,7 +21,6 @@ type ResultsProps = {
 };
 
 const filterLabels: Record<keyof SearchUsersParams, any> = {
-  role: [],
   type: fosterTypeLabels,
   size: sizeLabels,
   preferredBreeds: breedLabels,
@@ -74,7 +72,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
       >
         Back to Search
       </Button>
-      <Heading size="md" marginTop={3}>
+      <Heading size="md" marginTop={[3, 0]}>
         Search Results
       </Heading>
       <Box outline="2px solid gray" borderRadius={20} padding={5} width="100%">
@@ -94,7 +92,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
       </Box>
 
       <Flex
-        width="100%"
+        // width="100%"
         direction="row"
         wrap="wrap"
         gap={5}
@@ -108,7 +106,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
             padding={2}
             justifyContent="center"
             overflowX="auto"
-            maxWidth={["100%", "500px"]}
+            width={["100%", "400px"]}
           >
             <Flex direction="column">
               <Heading size="md">{user.name}</Heading>
@@ -118,7 +116,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
               </Text>
               <Text whiteSpace="nowrap" textOverflow="ellipsis">
                 <b>Preferred Email: </b>
-                {user.preferredEmail}
+                {user.preferredEmail ?? user.email}
               </Text>
             </Flex>
           </Box>
