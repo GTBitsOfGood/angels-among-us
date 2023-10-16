@@ -24,7 +24,6 @@ import {
   Behavioral,
   Trained,
   PetKind,
-  IPost,
 } from "../../utils/types/post";
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
@@ -99,8 +98,6 @@ const postFilterSchema = z.object({
   gender: z.array(z.nativeEnum(Gender)),
   goodWith: z.array(z.nativeEnum(GoodWith)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Trained).optional(),
-  spayNeuterStatus: z.nativeEnum(Trained).optional(),
 });
 
 const goodWithMap: Record<GoodWith, string> = {
@@ -301,12 +298,6 @@ export const postRouter = router({
     )
     .query(async ({ input }) => {
       const postFilterSchema = input.postFilterSchema;
-      const houseTrained = postFilterSchema.houseTrained
-        ? [postFilterSchema.houseTrained]
-        : Object.values(Trained);
-      const spayNeuterStatus = postFilterSchema.spayNeuterStatus
-        ? [postFilterSchema.spayNeuterStatus]
-        : Object.values(Trained);
       const notAllowedBehavioral = Object.values(Behavioral).filter(
         (obj) => !postFilterSchema.behavioral.includes(obj)
       );
@@ -331,7 +322,7 @@ export const postRouter = router({
         }
       }, {});
 
-      let noncoveredFilter = {
+      const baseFilter = {
         breed: { $in: postFilterSchema.breed },
         type: { $in: postFilterSchema.type },
         age: { $in: postFilterSchema.age },
@@ -353,14 +344,12 @@ export const postRouter = router({
         getsAlongWithYoungKids: {
           $in: getsAlongWith["getsAlongWithYoungKids"],
         },
-        houseTrained: { $in: houseTrained },
-        spayNeuterStatus: { $in: spayNeuterStatus },
       };
       let completeFilter;
-      if (input.covered != undefined) {
-        completeFilter = { ...noncoveredFilter, covered: input.covered };
+      if (input.covered !== undefined) {
+        completeFilter = { ...baseFilter, covered: input.covered };
       } else {
-        completeFilter = noncoveredFilter;
+        completeFilter = baseFilter;
       }
       const filteredPosts = await getFilteredPosts(completeFilter);
       return filteredPosts;

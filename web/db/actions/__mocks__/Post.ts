@@ -53,3 +53,7 @@ export function createRandomPost(): IPendingPost {
     attachments: [],
   };
 }
+
+export const randomPosts = Array.from({ length: 10 }).map(() =>
+  createRandomPost()
+);

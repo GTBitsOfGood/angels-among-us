@@ -1,14 +1,25 @@
 declare var global: any;
 
 import { readFileSync } from "fs";
-import { createRandomPost } from "../../../../db/actions/__mocks__/Post";
+import {
+  createRandomPost,
+  randomPosts,
+} from "../../../../db/actions/__mocks__/Post";
 import { consts } from "../../../../utils/consts";
 import storageClient from "../../../../db/storageConnect";
 import mongoose, { ConnectOptions } from "mongoose";
 import { appRouter } from "../../../../server/routers/_app";
 import { createContextInner } from "../../../../server/context";
 import Post from "../../../../db/models/Post";
-import { GoodWith } from "../../../../utils/types/post";
+import {
+  Age,
+  Behavioral,
+  Breed,
+  FosterType,
+  Gender,
+  GoodWith,
+  Size,
+} from "../../../../utils/types/post";
 
 const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
 const videoData = readFileSync("./__tests__/assets/video.mp4");
@@ -158,15 +169,6 @@ describe("[API] Post - Integration Test", () => {
 
   describe("post.getFilteredPosts", () => {
     let caller: ReturnType<typeof appRouter.createCaller>;
-    const attachmentBodyMap = {
-      "no-resize.png": noResizeData,
-      "video.mp4": videoData,
-    } as const;
-    const attachments: Array<keyof typeof attachmentBodyMap> = [
-      "no-resize.png",
-      "video.mp4",
-    ];
-
     beforeAll(async () => {
       caller = await simulateAuthenticatedSession();
     });
@@ -181,112 +183,101 @@ describe("[API] Post - Integration Test", () => {
     });
 
     test("singleton covered-uncovered", async () => {
-      const coveredPost = createRandomPost();
-      coveredPost["covered"] = true;
-      let id = new mongoose.Types.ObjectId();
+      const post = createRandomPost();
+      const coveredId = new mongoose.Types.ObjectId();
       const createCoveredPost = await Post.create({
-        ...coveredPost,
-        _id: id,
-        attachments,
+        ...post,
+        _id: coveredId,
+        covered: true,
       });
       expect(createCoveredPost).not.toBeNull();
-      coveredPost["covered"] = false;
-      id = new mongoose.Types.ObjectId();
+      const uncoveredId = new mongoose.Types.ObjectId();
       const createUncoveredPost = await Post.create({
-        ...coveredPost,
-        _id: id,
-        attachments,
+        ...post,
+        _id: uncoveredId,
+        covered: false,
       });
       expect(createUncoveredPost).not.toBeNull();
-      let goodWithArray = [];
-      for (const goodWithKey in goodWithMap) {
-        if (createCoveredPost[goodWithKey] == "yes") {
-          goodWithArray.push(goodWithMap[goodWithKey]);
-        }
-      }
-      const postFilterSchema = {
-        type: [coveredPost.type],
-        breed: coveredPost.breed,
-        age: [coveredPost.age],
-        size: [coveredPost.size],
-        gender: [coveredPost.gender],
-        behavioral: coveredPost.behavioral,
-        goodWith: goodWithArray,
+      const postFilters = {
+        type: Object.values(FosterType),
+        breed: Object.values(Breed),
+        age: Object.values(Age),
+        size: Object.values(Size),
+        gender: Object.values(Gender),
+        behavioral: Object.values(Behavioral),
+        goodWith: [],
       };
       const filteredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilterSchema,
+        postFilterSchema: postFilters,
       });
       expect(filteredPosts).not.toBeNull();
       expect(filteredPosts.length).toBe(2);
       const coveredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilterSchema,
+        postFilterSchema: postFilters,
         covered: true,
       });
       expect(coveredPosts).not.toBeNull();
       expect(coveredPosts.length).toBe(1);
+      expect(coveredPosts[0]._id).toMatchObject(coveredId);
       const uncoveredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilterSchema,
+        postFilterSchema: postFilters,
         covered: false,
       });
       expect(uncoveredPosts).not.toBeNull();
       expect(uncoveredPosts.length).toBe(1);
+      expect(uncoveredPosts[0]._id).toMatchObject(uncoveredId);
     });
 
     test("random covered-uncovered", async () => {
-      let randomPost = createRandomPost();
-      const numPosts = Math.ceil(Math.random() * 10);
-      let numCovered = 0;
-      let numUncovered = 0;
+      const randPosts = randomPosts;
+      let allIds = [];
+      let covered = [];
+      let uncovered = [];
       let createPost;
-      for (let i = 0; i < numPosts; i++) {
-        const curr = Math.floor(Math.random() * 2);
-        if (curr == 0) {
-          randomPost.covered = false;
-          numUncovered++;
-        } else {
-          randomPost.covered = true;
-          numCovered++;
-        }
+      for (let i = 0; i < 10; i++) {
         const id = new mongoose.Types.ObjectId();
+        allIds.push(id.toString());
+        randPosts[i].covered
+          ? covered.push(id.toString())
+          : uncovered.push(id.toString());
         createPost = await Post.create({
-          ...randomPost,
+          ...randPosts[i],
           _id: id,
-          attachments,
         });
         expect(createPost).not.toBeNull();
       }
-      let goodWithArray = [];
-      for (const goodWithKey in goodWithMap) {
-        if (createPost[goodWithKey] == "yes") {
-          goodWithArray.push(goodWithMap[goodWithKey]);
-        }
-      }
-      const postFilterSchema = {
-        type: [randomPost.type],
-        breed: randomPost.breed,
-        age: [randomPost.age],
-        size: [randomPost.size],
-        gender: [randomPost.gender],
-        behavioral: randomPost.behavioral,
-        goodWith: goodWithArray,
+      const postFilters = {
+        type: Object.values(FosterType),
+        breed: Object.values(Breed),
+        age: Object.values(Age),
+        size: Object.values(Size),
+        gender: Object.values(Gender),
+        behavioral: Object.values(Behavioral),
+        goodWith: [],
       };
       const allPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilterSchema,
+        postFilterSchema: postFilters,
       });
       expect(allPosts).not.toBeNull();
-      expect(allPosts.length).toBe(numPosts);
+      expect(allPosts.length).toBe(randPosts.length);
+      let expected = allPosts.map(({ _id, ...user }) => _id.toString());
+      expect(expected).toEqual(expect.arrayContaining(allIds));
       const coveredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilterSchema,
+        postFilterSchema: postFilters,
         covered: true,
       });
       expect(coveredPosts).not.toBeNull();
-      expect(coveredPosts.length).toBe(numCovered);
+      expect(coveredPosts.length).toBe(covered.length);
+      expected = coveredPosts.map(({ _id, ...user }) => _id.toString());
+      expect(expected).toEqual(expect.arrayContaining(covered));
       const uncoveredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilterSchema,
+        postFilterSchema: postFilters,
         covered: false,
       });
       expect(uncoveredPosts).not.toBeNull();
-      expect(uncoveredPosts.length).toBe(numUncovered);
+      expect(uncoveredPosts.length).toBe(uncovered.length);
+      expected = uncoveredPosts.map(({ _id, ...user }) => _id.toString());
+      expect(expected).toEqual(expect.arrayContaining(uncovered));
     });
   });
 });
