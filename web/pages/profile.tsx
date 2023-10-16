@@ -48,7 +48,7 @@ function Profile() {
     data: NonNullable<typeof userData>
   ): Omit<
     NonNullable<IUser>,
-    "email" | "name" | "uid" | "role" | "disabled" | "hasCompletedOnboarding"
+    "email" | "uid" | "role" | "disabled" | "hasCompletedOnboarding"
   > {
     const {
       email,
@@ -163,7 +163,14 @@ function Profile() {
                       placeholder={
                         userData?.name ?? user?.displayName ?? undefined
                       }
-                      disabled={true}
+                      onChange={(e) =>
+                        dispatch({
+                          type: "setField",
+                          key: "name",
+                          data: e.target.value,
+                        })
+                        }
+                      disabled={!editing}
                     ></Input>
                   </Stack>
                   <Stack direction="column">
@@ -177,7 +184,19 @@ function Profile() {
                 <Stack direction={"column"} spacing={5} width={["100%", "50%"]}>
                   <Stack direction="column">
                     <Text fontWeight="medium">Preferred Email</Text>
-                    <Input placeholder={""} disabled={!editing}></Input>
+                    <Input 
+                    placeholder={
+                        userData?.preferredEmail ?? undefined
+                      }
+                    onChange={
+                      (e) =>
+                        dispatch({
+                          type: "setField",
+                          key: "preferredEmail",
+                          data: e.target.value,
+                        })
+                    }
+                    disabled={!editing}></Input>
                   </Stack>
                   <Stack direction="column">
                     <Text fontWeight="medium">
