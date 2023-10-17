@@ -136,6 +136,9 @@ const data: FosterTypeData = {
   ],
 };
 
+/**TODO
+ * Refactor component to eliminate duplicated form input logic.
+ **/
 const FosterQuestionnaire = ({
   fosterType,
   postId,
