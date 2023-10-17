@@ -38,10 +38,10 @@ import {
   fosterTypeDescriptions,
 } from "../../utils/types/post";
 import { trpc } from "../../utils/trpc";
-import { ObjectId } from "mongoose";
 import { useState } from "react";
 import { z } from "zod";
 import { useAuth } from "../../context/auth";
+import { Schema } from "mongoose";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -143,7 +143,7 @@ const FosterQuestionnaire = ({
   onFormViewClose,
 }: {
   fosterType: FosterType;
-  postId: ObjectId;
+  postId: Schema.Types.ObjectId;
   isFormViewOpen: boolean;
   onFormViewClose: () => void;
 }) => {
@@ -196,10 +196,6 @@ const FosterQuestionnaire = ({
             duration: 9000,
             isClosable: true,
             position: "top",
-            containerStyle: {
-              background: "#C6E3F9",
-              border: "20px",
-            },
           });
         },
         onError: () => {
@@ -215,39 +211,13 @@ const FosterQuestionnaire = ({
     }
   }
 
-  const QuestionInputFields = ({ fosterType }: { fosterType: FosterType }) => {
-    return (
-      <Flex paddingX={6} flexDir="column" gap={[5, 7]}>
-        {data[fosterType].map(({ key, title }) => {
-          return (
-            <Flex key={key} flexDir="column" gap={2}>
-              <FormControl isRequired>
-                <FormLabel>{title}</FormLabel>
-                <Input
-                  bgColor={"#FAFBFC"}
-                  value={fosterQuestionResponses[key]}
-                  onChange={(event) => {
-                    setfosterQuestionResponses({
-                      ...fosterQuestionResponses,
-                      [key]: event.target.value,
-                    });
-                  }}
-                />
-              </FormControl>
-            </Flex>
-          );
-        })}
-      </Flex>
-    );
-  };
-
   return (
     <Modal
       isOpen={isFormViewOpen}
       onClose={onFormViewClose}
       isCentered
       scrollBehavior="inside"
-      size={["full", "l"]}
+      size={{ base: "full", lg: "2xl" }}
     >
       <ModalOverlay />
       <ModalContent
@@ -261,7 +231,27 @@ const FosterQuestionnaire = ({
         <Flex display={["none", "block"]} overflowY={"scroll"}>
           <ModalCloseButton display={["none", "block"]} mt={6} mr={6} />
           <Flex alignItems={"center"}>
-            <QuestionInputFields fosterType={fosterType}></QuestionInputFields>
+            <Flex paddingX={6} flexDir="column" gap={[5, 7]}>
+              {data[fosterType].map(({ key, title }) => {
+                return (
+                  <Flex key={key} flexDir="column" gap={2}>
+                    <FormControl isRequired>
+                      <FormLabel>{title}</FormLabel>
+                      <Input
+                        bgColor={"#FAFBFC"}
+                        value={fosterQuestionResponses[key]}
+                        onChange={(event) => {
+                          setfosterQuestionResponses({
+                            ...fosterQuestionResponses,
+                            [key]: event.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Flex>
+                );
+              })}
+            </Flex>
           </Flex>
           <ModalFooter display={["none", "block"]} mt={6}>
             <Flex alignItems={"center"} justifyContent={"center"}>
@@ -297,7 +287,27 @@ const FosterQuestionnaire = ({
           </Stack>
           <ModalHeader>Foster Questionnaire</ModalHeader>
           <Flex direction={"column"} overflowY={"scroll"}>
-            <QuestionInputFields fosterType={fosterType}></QuestionInputFields>
+            <Flex paddingX={6} flexDir="column" gap={[5, 7]}>
+              {data[fosterType].map(({ key, title }) => {
+                return (
+                  <Flex key={key} flexDir="column" gap={2}>
+                    <FormControl isRequired>
+                      <FormLabel>{title}</FormLabel>
+                      <Input
+                        bgColor={"#FAFBFC"}
+                        value={fosterQuestionResponses[key]}
+                        onChange={(event) => {
+                          setfosterQuestionResponses({
+                            ...fosterQuestionResponses,
+                            [key]: event.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Flex>
+                );
+              })}
+            </Flex>{" "}
             <ModalFooter display={["flex", "none"]} mb={2}>
               <Button
                 variant="solid-primary"
