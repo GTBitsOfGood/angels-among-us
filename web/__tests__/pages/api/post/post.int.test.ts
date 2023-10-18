@@ -20,7 +20,6 @@ import {
   GoodWith,
   Size,
 } from "../../../../utils/types/post";
-import { userAgentFromString } from "next/server";
 
 const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
 const videoData = readFileSync("./__tests__/assets/video.mp4");
@@ -232,7 +231,7 @@ describe("[API] Post - Integration Test", () => {
     test("random covered-uncovered", async () => {
       const response = await Post.insertMany(randomPosts);
       expect(response).not.toBeNull();
-      expect(response.length).toBe(10);
+      expect(response.length).toBe(randomPosts.length);
       const postFilters = {
         type: Object.values(FosterType),
         breed: Object.values(Breed),
