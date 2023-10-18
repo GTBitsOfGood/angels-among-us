@@ -129,6 +129,16 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
 7. Navigate to `localhost:3000` using your web browser. Click "Sign in with Google" and log into using the email you used to make the `account` document.
 
+## Testing
+
+We use [jest](https://jestjs.io/docs/getting-started) for testing. See the `web/__tests__` directory for our unit and integration tests. Currently, our tests are mostly limited to testing backend functionality.
+
+To run all test suites, navigate to the `web` directory and run `yarn jest`. To generate a coverage report, run:
+
+```zsh
+yarn jest --coverage --collectCoverageFrom='./**/*.{ts,tsx}'
+```
+
 ## Code Formatting
 
 Install and enable [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) in VSCode. This repository is also configured with a pre-commit hook that automatically formats any code you commit to ensure formatting consistency throughout the codebase.

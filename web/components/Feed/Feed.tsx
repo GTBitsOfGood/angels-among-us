@@ -373,8 +373,6 @@ function Feed(props: {
   const feedPosts: (IPost & { _id: Types.ObjectId })[] | undefined =
     trpc.post.getFilteredPosts.useQuery(getQueryFilters(selectedFilters)).data;
 
-  console.log(feedPosts);
-
   const [modalPostIndex, setModalPostIndex] = useState(0);
 
   const mainContent = (
