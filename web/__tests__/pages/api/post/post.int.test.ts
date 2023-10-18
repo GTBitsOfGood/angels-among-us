@@ -230,8 +230,7 @@ describe("[API] Post - Integration Test", () => {
     });
 
     test("random covered-uncovered", async () => {
-      const randPosts = randomPosts;
-      const response = await Post.insertMany(randPosts);
+      const response = await Post.insertMany(randomPosts);
       expect(response).not.toBeNull();
       expect(response.length).toBe(10);
       const postFilters = {
@@ -247,12 +246,12 @@ describe("[API] Post - Integration Test", () => {
         postFilterSchema: postFilters,
       });
       expect(allPosts).not.toBeNull();
-      expect(allPosts.length).toBe(randPosts.length);
+      expect(allPosts.length).toBe(randomPosts.length);
       let expected = allPosts.map((post) => {
         const { _id, __v, pending, ...postWithoutId } = post._doc;
         return postWithoutId;
       });
-      expect(expected).toEqual(expect.arrayContaining(randPosts));
+      expect(expected).toEqual(expect.arrayContaining(randomPosts));
       const coveredPosts = await caller.post.getFilteredPosts({
         postFilterSchema: postFilters,
         covered: true,
