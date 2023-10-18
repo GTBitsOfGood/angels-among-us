@@ -100,6 +100,23 @@ const postFilterSchema = z.object({
   behavioral: z.array(z.nativeEnum(Behavioral)),
 });
 
+interface PostFilter {
+  breed: { $in: string[] };
+  type: { $in: string[] };
+  age: { $in: string[] };
+  size: { $in: string[] };
+  gender: { $in: string[] };
+  behavioral: { $nin: string[] };
+  getsAlongWithCats: { $in: Trained };
+  getsAlongWithLargeDogs: { $in: Trained };
+  getsAlongWithMen: { $in: Trained };
+  getsAlongWithOlderKids: { $in: Trained };
+  getsAlongWithSmallDogs: { $in: Trained };
+  getsAlongWithWomen: { $in: Trained };
+  getsAlongWithYoungKids: { $in: Trained };
+  covered?: boolean;
+}
+
 const goodWithMap: Record<GoodWith, string> = {
   [GoodWith.Cats]: "getsAlongWithCats",
   [GoodWith.LargeDogs]: "getsAlongWithLargeDogs",
@@ -297,9 +314,9 @@ export const postRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const postFilterSchema = input.postFilterSchema;
+      const postFilters = input.postFilterSchema;
       const notAllowedBehavioral = Object.values(Behavioral).filter(
-        (obj) => !postFilterSchema.behavioral.includes(obj)
+        (obj) => !postFilters.behavioral.includes(obj)
       );
 
       /**
@@ -310,7 +327,7 @@ export const postRouter = router({
       const getsAlongWith: Record<string, Trained> = Object.values(
         GoodWith
       ).reduce((acc, curr) => {
-        if (postFilterSchema.goodWith.includes(curr)) {
+        if (postFilters.goodWith.includes(curr)) {
           return { ...acc, ...{ [goodWithMap[curr]]: [Trained.Yes] } };
         } else {
           return {
@@ -322,12 +339,12 @@ export const postRouter = router({
         }
       }, {});
 
-      const baseFilter = {
-        breed: { $in: postFilterSchema.breed },
-        type: { $in: postFilterSchema.type },
-        age: { $in: postFilterSchema.age },
-        size: { $in: postFilterSchema.size },
-        gender: { $in: postFilterSchema.gender },
+      const baseFilter: PostFilter = {
+        breed: { $in: postFilters.breed },
+        type: { $in: postFilters.type },
+        age: { $in: postFilters.age },
+        size: { $in: postFilters.size },
+        gender: { $in: postFilters.gender },
         behavioral: { $nin: notAllowedBehavioral },
         getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
         getsAlongWithLargeDogs: {
@@ -345,13 +362,10 @@ export const postRouter = router({
           $in: getsAlongWith["getsAlongWithYoungKids"],
         },
       };
-      let completeFilter;
       if (input.covered !== undefined) {
-        completeFilter = { ...baseFilter, covered: input.covered };
-      } else {
-        completeFilter = baseFilter;
+        baseFilter.covered = input.covered;
       }
-      const filteredPosts = await getFilteredPosts(completeFilter);
+      const filteredPosts = await getFilteredPosts(baseFilter);
       return filteredPosts;
     }),
 });

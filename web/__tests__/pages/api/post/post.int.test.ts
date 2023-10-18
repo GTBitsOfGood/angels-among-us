@@ -20,6 +20,7 @@ import {
   GoodWith,
   Size,
 } from "../../../../utils/types/post";
+import { userAgentFromString } from "next/server";
 
 const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
 const videoData = readFileSync("./__tests__/assets/video.mp4");
@@ -230,22 +231,9 @@ describe("[API] Post - Integration Test", () => {
 
     test("random covered-uncovered", async () => {
       const randPosts = randomPosts;
-      let allIds = [];
-      let covered = [];
-      let uncovered = [];
-      let createPost;
-      for (let i = 0; i < 10; i++) {
-        const id = new mongoose.Types.ObjectId();
-        allIds.push(id.toString());
-        randPosts[i].covered
-          ? covered.push(id.toString())
-          : uncovered.push(id.toString());
-        createPost = await Post.create({
-          ...randPosts[i],
-          _id: id,
-        });
-        expect(createPost).not.toBeNull();
-      }
+      const response = await Post.insertMany(randPosts);
+      expect(response).not.toBeNull();
+      expect(response.length).toBe(10);
       const postFilters = {
         type: Object.values(FosterType),
         breed: Object.values(Breed),
@@ -260,24 +248,37 @@ describe("[API] Post - Integration Test", () => {
       });
       expect(allPosts).not.toBeNull();
       expect(allPosts.length).toBe(randPosts.length);
-      let expected = allPosts.map(({ _id, ...user }) => _id.toString());
-      expect(expected).toEqual(expect.arrayContaining(allIds));
+      let expected = allPosts.map((post) => {
+        const { _id, __v, pending, ...postWithoutId } = post._doc;
+        return postWithoutId;
+      });
+      expect(expected).toEqual(expect.arrayContaining(randPosts));
       const coveredPosts = await caller.post.getFilteredPosts({
         postFilterSchema: postFilters,
         covered: true,
       });
       expect(coveredPosts).not.toBeNull();
-      expect(coveredPosts.length).toBe(covered.length);
-      expected = coveredPosts.map(({ _id, ...user }) => _id.toString());
-      expect(expected).toEqual(expect.arrayContaining(covered));
+      const expectedCoveredPosts = randomPosts.filter((post) => post.covered);
+      expected = coveredPosts.map((post) => {
+        const { _id, __v, pending, ...postWithoutMisc } = post._doc;
+        return postWithoutMisc;
+      });
+      expect(coveredPosts.length).toBe(expected.length);
+      expect(expected).toEqual(expect.arrayContaining(expectedCoveredPosts));
       const uncoveredPosts = await caller.post.getFilteredPosts({
         postFilterSchema: postFilters,
         covered: false,
       });
       expect(uncoveredPosts).not.toBeNull();
-      expect(uncoveredPosts.length).toBe(uncovered.length);
-      expected = uncoveredPosts.map(({ _id, ...user }) => _id.toString());
-      expect(expected).toEqual(expect.arrayContaining(uncovered));
+      const expectedUncoveredPosts = randomPosts.filter(
+        (post) => !post.covered
+      );
+      expected = uncoveredPosts.map((post) => {
+        const { _id, __v, pending, ...postWithoutMisc } = post._doc;
+        return postWithoutMisc;
+      });
+      expect(expected.length).toBe(expectedUncoveredPosts.length);
+      expect(expected).toEqual(expect.arrayContaining(expectedUncoveredPosts));
     });
   });
 });
