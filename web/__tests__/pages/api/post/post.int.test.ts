@@ -183,21 +183,15 @@ describe("[API] Post - Integration Test", () => {
     });
 
     test("singleton covered-uncovered", async () => {
-      const post = createRandomPost();
-      const coveredId = new mongoose.Types.ObjectId();
-      const createCoveredPost = await Post.create({
-        ...post,
-        _id: coveredId,
-        covered: true,
-      });
+      const coveredPost = { ...createRandomPost(), covered: true };
+      const uncoveredPost = { ...createRandomPost(), covered: false };
+
+      const createCoveredPost = await Post.create(coveredPost);
       expect(createCoveredPost).not.toBeNull();
-      const uncoveredId = new mongoose.Types.ObjectId();
-      const createUncoveredPost = await Post.create({
-        ...post,
-        _id: uncoveredId,
-        covered: false,
-      });
+
+      const createUncoveredPost = await Post.create(uncoveredPost);
       expect(createUncoveredPost).not.toBeNull();
+
       const postFilters = {
         type: Object.values(FosterType),
         breed: Object.values(Breed),
@@ -207,31 +201,37 @@ describe("[API] Post - Integration Test", () => {
         behavioral: Object.values(Behavioral),
         goodWith: [],
       };
+
       const filteredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilters,
+        postFilters,
       });
-      expect(filteredPosts).not.toBeNull();
       expect(filteredPosts.length).toBe(2);
+
       const coveredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilters,
+        postFilters,
         covered: true,
       });
-      expect(coveredPosts).not.toBeNull();
       expect(coveredPosts.length).toBe(1);
-      expect(coveredPosts[0]._id).toMatchObject(coveredId);
+      expect(coveredPosts[0]).toMatchObject(coveredPost);
+
       const uncoveredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilters,
+        postFilters,
         covered: false,
       });
-      expect(uncoveredPosts).not.toBeNull();
       expect(uncoveredPosts.length).toBe(1);
-      expect(uncoveredPosts[0]._id).toMatchObject(uncoveredId);
+      expect(uncoveredPosts[0]).toMatchObject(uncoveredPost);
     });
 
     test("random covered-uncovered", async () => {
       const response = await Post.insertMany(randomPosts);
       expect(response).not.toBeNull();
       expect(response.length).toBe(randomPosts.length);
+
+      const serializedPosts = randomPosts.map((post) => ({
+        ...post,
+        _id: post._id.toString(),
+      }));
+
       const postFilters = {
         type: Object.values(FosterType),
         breed: Object.values(Breed),
@@ -241,42 +241,40 @@ describe("[API] Post - Integration Test", () => {
         behavioral: Object.values(Behavioral),
         goodWith: [],
       };
+
       const allPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilters,
+        postFilters,
       });
       expect(allPosts).not.toBeNull();
       expect(allPosts.length).toBe(randomPosts.length);
-      let expected = allPosts.map((post) => {
-        const { _id, __v, pending, ...postWithoutId } = post._doc;
-        return postWithoutId;
-      });
-      expect(expected).toEqual(expect.arrayContaining(randomPosts));
-      const coveredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilters,
-        covered: true,
-      });
+
+      const coveredPosts = (
+        await caller.post.getFilteredPosts({
+          postFilters,
+          covered: true,
+        })
+      ).map((post) => ({ ...post._doc, _id: post._id.toString() }));
+      const expectedCoveredPosts = serializedPosts
+        .filter((post) => post.covered)
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+
       expect(coveredPosts).not.toBeNull();
-      const expectedCoveredPosts = randomPosts.filter((post) => post.covered);
-      expected = coveredPosts.map((post) => {
-        const { _id, __v, pending, ...postWithoutMisc } = post._doc;
-        return postWithoutMisc;
-      });
-      expect(coveredPosts.length).toBe(expected.length);
-      expect(expected).toEqual(expect.arrayContaining(expectedCoveredPosts));
-      const uncoveredPosts = await caller.post.getFilteredPosts({
-        postFilterSchema: postFilters,
-        covered: false,
-      });
+      expect(coveredPosts.length).toBe(expectedCoveredPosts.length);
+      expect(coveredPosts).toMatchObject(expectedCoveredPosts);
+
+      const uncoveredPosts = (
+        await caller.post.getFilteredPosts({
+          postFilters,
+          covered: false,
+        })
+      ).map((post) => ({ ...post._doc, _id: post._id.toString() }));
       expect(uncoveredPosts).not.toBeNull();
-      const expectedUncoveredPosts = randomPosts.filter(
-        (post) => !post.covered
-      );
-      expected = uncoveredPosts.map((post) => {
-        const { _id, __v, pending, ...postWithoutMisc } = post._doc;
-        return postWithoutMisc;
-      });
-      expect(expected.length).toBe(expectedUncoveredPosts.length);
-      expect(expected).toEqual(expect.arrayContaining(expectedUncoveredPosts));
+
+      const expectedUncoveredPosts = serializedPosts
+        .filter((post) => !post.covered)
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+      expect(uncoveredPosts.length).toBe(expectedUncoveredPosts.length);
+      expect(uncoveredPosts).toMatchObject(expectedUncoveredPosts);
     });
   });
 });

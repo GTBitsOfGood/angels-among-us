@@ -24,11 +24,12 @@ import {
   Behavioral,
   Trained,
   PetKind,
+  IPost,
 } from "../../utils/types/post";
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 
 const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24
@@ -99,23 +100,6 @@ const postFilterSchema = z.object({
   goodWith: z.array(z.nativeEnum(GoodWith)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
 });
-
-interface PostFilter {
-  breed: { $in: string[] };
-  type: { $in: string[] };
-  age: { $in: string[] };
-  size: { $in: string[] };
-  gender: { $in: string[] };
-  behavioral: { $nin: string[] };
-  getsAlongWithCats: { $in: Trained };
-  getsAlongWithLargeDogs: { $in: Trained };
-  getsAlongWithMen: { $in: Trained };
-  getsAlongWithOlderKids: { $in: Trained };
-  getsAlongWithSmallDogs: { $in: Trained };
-  getsAlongWithWomen: { $in: Trained };
-  getsAlongWithYoungKids: { $in: Trained };
-  covered?: boolean;
-}
 
 const goodWithMap: Record<GoodWith, string> = {
   [GoodWith.Cats]: "getsAlongWithCats",
@@ -309,12 +293,12 @@ export const postRouter = router({
   getFilteredPosts: procedure
     .input(
       z.object({
-        postFilterSchema: postFilterSchema,
+        postFilters: postFilterSchema,
         covered: z.optional(z.boolean()),
       })
     )
     .query(async ({ input }) => {
-      const postFilters = input.postFilterSchema;
+      const postFilters = input.postFilters;
       const notAllowedBehavioral = Object.values(Behavioral).filter(
         (obj) => !postFilters.behavioral.includes(obj)
       );
@@ -339,7 +323,7 @@ export const postRouter = router({
         }
       }, {});
 
-      const baseFilter: PostFilter = {
+      const baseFilter: FilterQuery<IPost> = {
         breed: { $in: postFilters.breed },
         type: { $in: postFilters.type },
         age: { $in: postFilters.age },
@@ -361,6 +345,7 @@ export const postRouter = router({
         getsAlongWithYoungKids: {
           $in: getsAlongWith["getsAlongWithYoungKids"],
         },
+        pending: false,
       };
       if (input.covered !== undefined) {
         baseFilter.covered = input.covered;

@@ -369,7 +369,7 @@ function Feed(props: {
 
   const feedPosts: (IPost & { _id: Types.ObjectId })[] | undefined =
     trpc.post.getFilteredPosts.useQuery({
-      postFilterSchema: getQueryFilters(selectedFilters),
+      postFilters: getQueryFilters(selectedFilters),
     }).data;
 
   const [modalPostIndex, setModalPostIndex] = useState(0);
