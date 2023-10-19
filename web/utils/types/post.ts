@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Types } from "mongoose";
 
 export enum PetKind {
   Dog = "dog",
@@ -346,7 +346,7 @@ export interface IPost {
 }
 
 export interface IFeedPost extends IPost {
-  _id: Schema.Types.ObjectId;
+  _id: Types.ObjectId;
 }
 export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
   attachments: AttachmentInfo[];

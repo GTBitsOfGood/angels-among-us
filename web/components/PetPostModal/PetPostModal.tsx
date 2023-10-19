@@ -41,7 +41,7 @@ import { trpc } from "../../utils/trpc";
 import { useState } from "react";
 import { z } from "zod";
 import { useAuth } from "../../context/auth";
-import { Schema } from "mongoose";
+import { Types } from "mongoose";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -146,7 +146,7 @@ const FosterQuestionnaire = ({
   onFormViewClose,
 }: {
   fosterType: FosterType;
-  postId: Schema.Types.ObjectId;
+  postId: Types.ObjectId;
   isFormViewOpen: boolean;
   onFormViewClose: () => void;
 }) => {

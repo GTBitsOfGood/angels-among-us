@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 import { z } from "zod";
 import {
   createPost,
@@ -25,13 +25,14 @@ import {
   Behavioral,
   Trained,
   PetKind,
-  IPost,
 } from "../../utils/types/post";
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
 
-const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
+const zodOidType = z.custom<Types.ObjectId>(
+  (item) => String(item).length == 24
+);
 
 const postSchema = z.object({
   name: z.string(),
@@ -184,7 +185,7 @@ export const postRouter = router({
             });
             break;
           } catch (e) {
-            if (count++ == maxTries) {
+            if (++count == maxTries) {
               throw new TRPCError({
                 message: "Unable to send Email.",
                 code: "INTERNAL_SERVER_ERROR",

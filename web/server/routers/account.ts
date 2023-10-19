@@ -1,5 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   updateAccount,
@@ -21,8 +20,6 @@ const emailInput = {
 const searchInput = z.object({
   searchSubject: z.string(),
 });
-
-const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
 
 export const accountRouter = router({
   modify: procedure
