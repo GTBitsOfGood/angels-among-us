@@ -1,14 +1,15 @@
 import { TRPCError } from "@trpc/server";
-import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
   createPost,
+  deletePost,
   finalizePost,
   getPost,
   getAllPosts,
   updatePostDetails,
   updatePostStatus,
   getFilteredPosts,
+  getAttachments,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -22,15 +23,17 @@ import {
   Medical,
   Behavioral,
   Trained,
-  Status,
   PetKind,
   IPost,
 } from "../../utils/types/post";
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
+import { FilterQuery, Types } from "mongoose";
 
-const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
+const zodOidType = z.custom<Types.ObjectId>(
+  (item) => String(item).length == 24
+);
 
 const postSchema = z.object({
   name: z.string(),
@@ -96,8 +99,6 @@ const postFilterSchema = z.object({
   gender: z.array(z.nativeEnum(Gender)),
   goodWith: z.array(z.nativeEnum(GoodWith)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Trained).optional(),
-  spayNeuterStatus: z.nativeEnum(Trained).optional(),
 });
 
 const goodWithMap: Record<GoodWith, string> = {
@@ -118,7 +119,7 @@ export const postRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return getPost(input._id);
+      return getPost(input._id, true);
     }),
   create: procedure.input(postSchema).mutation(async ({ input }) => {
     const session = await Post.startSession();
@@ -166,7 +167,7 @@ export const postRouter = router({
         });
       }
       try {
-        const post = await getPost(input.postOid);
+        const post = await getPost(input.postOid, true);
         const email = fosterTypeEmails[post.type];
         let count = 0;
         const maxTries = 3;
@@ -197,6 +198,27 @@ export const postRouter = router({
           });
       }
       return { success: true };
+    }),
+  delete: procedure
+    .input(
+      z.object({
+        postOid: zodOidType,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        return await deletePost(input.postOid);
+      } catch (e) {
+        console.error(e);
+        if (e instanceof TRPCError) {
+          throw e;
+        } else {
+          throw new TRPCError({
+            message: "Internal Server Error",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+      }
     }),
   finalize: procedure
     .input(
@@ -259,17 +281,26 @@ export const postRouter = router({
       });
     }
   }),
-  getFilteredPosts: procedure
-    .input(postFilterSchema)
+  getAttachments: procedure
+    .input(
+      z.object({
+        _id: zodOidType,
+      })
+    )
     .query(async ({ input }) => {
-      const houseTrained = input.houseTrained
-        ? [input.houseTrained]
-        : Object.values(Trained);
-      const spayNeuterStatus = input.spayNeuterStatus
-        ? [input.spayNeuterStatus]
-        : Object.values(Trained);
+      return getAttachments(input._id);
+    }),
+  getFilteredPosts: procedure
+    .input(
+      z.object({
+        postFilters: postFilterSchema,
+        covered: z.optional(z.boolean()),
+      })
+    )
+    .query(async ({ input }) => {
+      const postFilters = input.postFilters;
       const notAllowedBehavioral = Object.values(Behavioral).filter(
-        (obj) => !input.behavioral.includes(obj)
+        (obj) => !postFilters.behavioral.includes(obj)
       );
 
       /**
@@ -280,7 +311,7 @@ export const postRouter = router({
       const getsAlongWith: Record<string, Trained> = Object.values(
         GoodWith
       ).reduce((acc, curr) => {
-        if (input.goodWith.includes(curr)) {
+        if (postFilters.goodWith.includes(curr)) {
           return { ...acc, ...{ [goodWithMap[curr]]: [Trained.Yes] } };
         } else {
           return {
@@ -292,12 +323,12 @@ export const postRouter = router({
         }
       }, {});
 
-      let completeFilter = {
-        breed: { $in: input.breed },
-        type: { $in: input.type },
-        age: { $in: input.age },
-        size: { $in: input.size },
-        gender: { $in: input.gender },
+      const baseFilter: FilterQuery<IPost> = {
+        breed: { $in: postFilters.breed },
+        type: { $in: postFilters.type },
+        age: { $in: postFilters.age },
+        size: { $in: postFilters.size },
+        gender: { $in: postFilters.gender },
         behavioral: { $nin: notAllowedBehavioral },
         getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
         getsAlongWithLargeDogs: {
@@ -314,18 +345,12 @@ export const postRouter = router({
         getsAlongWithYoungKids: {
           $in: getsAlongWith["getsAlongWithYoungKids"],
         },
-        houseTrained: { $in: houseTrained },
-        spayNeuterStatus: { $in: spayNeuterStatus },
+        pending: false,
       };
-      const filteredPosts = await getFilteredPosts(completeFilter);
-      return filteredPosts.map((p: IPost) => {
-        return {
-          attachments: p.attachments,
-          date: p.date,
-          name: p.name,
-          tag: p.type,
-          description: p.description,
-        };
-      });
+      if (input.covered !== undefined) {
+        baseFilter.covered = input.covered;
+      }
+      const filteredPosts = await getFilteredPosts(baseFilter);
+      return filteredPosts;
     }),
 });

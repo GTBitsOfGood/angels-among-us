@@ -7,7 +7,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useReducer } from "react";
+import { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { useAuth } from "../../context/auth";
 import { PossibleTypes } from "../../pages/onboarding";
 import { trpc } from "../../utils/trpc";
@@ -19,16 +19,15 @@ import {
   FosterType,
   Gender,
   GoodWith,
+  IPost,
   Size,
-  Status,
-  Temperament,
-  Trained,
 } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
 import PetPostModal from "../PetPostModal/PetPostModal";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
+import { Types } from "mongoose";
 
 export type FilterGroup = {
   title: string;
@@ -65,8 +64,6 @@ export type QueryFilter = {
   gender: Gender[];
   behavioral: Behavioral[];
   goodWith: GoodWith[];
-  houseTrained: Trained;
-  spayNeuterStatus: Trained;
 };
 
 const filterGroups: FilterGroup[] = [
@@ -221,33 +218,6 @@ const filterGroups: FilterGroup[] = [
         dropdown: false,
         allSelected: true,
       },
-      {
-        key: "temperament",
-        description: "Temperaments",
-        options: [
-          { value: Temperament.Friendly, label: "Friendly" },
-          { value: Temperament.Scared, label: "Scared" },
-          { value: Temperament.Active, label: "Active" },
-          { value: Temperament.Calm, label: "Calm" },
-        ],
-        dropdown: false,
-        allSelected: true,
-      },
-    ],
-  },
-  {
-    title: "Medical Information",
-    filters: [
-      {
-        key: "medicalInfo",
-        description: "Dogs that are:",
-        options: [
-          { value: Trained.Yes, label: "House Trained" },
-          { value: Trained.Yes, label: "Spayed/Neutered" },
-        ],
-        dropdown: false,
-        allSelected: false,
-      },
     ],
   },
 ] satisfies FilterGroup[];
@@ -269,22 +239,6 @@ const parseOptArr = (
     : [...opts.filter((f) => prefArr?.includes(f.value))];
 
 /**
- * Parse filter options array containing Status types based on user preferences
- * @param {Option[]} opts array of all possible options
- * @param {(Status | undefined)[]} statArr array of status enums
- * @param {boolean} inverse whether to invert the user preferences
- * @returns {Option[]} status enums converted into Option type
- */
-const parseStatusArr = (
-  opts: Option[],
-  statArr: (Status | undefined)[],
-  inverse: boolean = false
-): Option[] =>
-  inverse
-    ? opts.filter((opt, idx) => !(statArr[idx] === Status.Yes))
-    : opts.filter((opt, idx) => statArr[idx] === Status.Yes);
-
-/**
  * Imports user preferences and maps them to the feed filters
  * @param {IUser | null} userData user data
  * @returns {SelectedFilters | null} preferred filters
@@ -304,15 +258,6 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
     goodWith: (opts: Option[]) =>
       parseOptArr(opts, userData.dogsNotGoodWith, true),
     behavioral: (opts: Option[]) => parseOptArr(opts, userData.behavioral),
-    temperament: (opts: Option[]) => parseOptArr(opts, userData.temperament),
-
-    // medicalInfo has no 1:1 map with DB fields and also has non-unique filter values (Status.Yes/No)
-    medicalInfo: (opts: Option[]) =>
-      parseStatusArr(
-        opts,
-        [userData.houseTrained, userData.spayNeuterStatus],
-        true
-      ),
   };
 
   const filters = filterGroups.reduce((acc, curr) => {
@@ -337,25 +282,8 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
  */
 function getQueryFilters(selectedFilters: SelectedFilters) {
   const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
-    if (curr === "medicalInfo") {
-      const keys: Record<string, string> = {
-        "House Trained": "houseTrained",
-        "Spayed/Neutered": "spayNeuterStatus",
-      };
-      const filterVals: Record<string, PossibleTypes | undefined> =
-        selectedFilters[curr].reduce((a, c) => {
-          return { ...a, [keys[c.label]]: c.value };
-        }, {});
-      for (const k of Object.keys(keys)) {
-        if (!(keys[k] in filterVals)) {
-          filterVals[keys[k]] = undefined;
-        }
-      }
-      return { ...acc, ...filterVals };
-    } else {
-      const filterVals = selectedFilters[curr].map((v) => v.value);
-      return { ...acc, [curr]: filterVals };
-    }
+    const filterVals = selectedFilters[curr].map((v) => v.value);
+    return { ...acc, [curr]: filterVals };
   }, {});
   return queryFilters as QueryFilter;
 }
@@ -439,9 +367,12 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts = trpc.post.getFilteredPosts.useQuery(
-    getQueryFilters(selectedFilters)
-  ).data;
+  const feedPosts: (IPost & { _id: Types.ObjectId })[] | undefined =
+    trpc.post.getFilteredPosts.useQuery({
+      postFilters: getQueryFilters(selectedFilters),
+    }).data;
+
+  const [modalPostIndex, setModalPostIndex] = useState(0);
 
   const mainContent = (
     <Flex
@@ -568,7 +499,10 @@ function Feed(props: {
             {feedPosts?.map((p, ind) => {
               return (
                 <Box
-                  onClick={onPostViewOpen}
+                  onClick={() => {
+                    setModalPostIndex(ind);
+                    onPostViewOpen();
+                  }}
                   _hover={{ cursor: "pointer" }}
                   key={ind}
                 >
@@ -680,7 +614,13 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      <PetPostModal isOpen={isPostViewOpen} onClose={onPostViewClose} />
+      {feedPosts && feedPosts.length > 0 && (
+        <PetPostModal
+          isOpen={isPostViewOpen}
+          onClose={onPostViewClose}
+          postData={feedPosts[modalPostIndex]}
+        />
+      )}
     </>
   );
 }

@@ -31,12 +31,9 @@ const userPreferencesSchema = z.object({
   restrictedBreeds: z.array(z.nativeEnum(Breed)),
   gender: z.array(z.nativeEnum(Gender)),
   age: z.array(z.nativeEnum(Age)),
-  temperament: z.array(z.nativeEnum(Temperament)),
   dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Status),
-  spayNeuterStatus: z.nativeEnum(Status),
 });
 
 const userSchema: z.ZodType<
@@ -54,12 +51,9 @@ const userSchema: z.ZodType<
   preferredBreeds: z.array(z.nativeEnum(Breed)),
   gender: z.array(z.nativeEnum(Gender)),
   age: z.array(z.nativeEnum(Age)),
-  temperament: z.array(z.nativeEnum(Temperament)),
   dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Status),
-  spayNeuterStatus: z.nativeEnum(Status),
 });
 
 export const userRouter = router({
@@ -164,37 +158,36 @@ export const userRouter = router({
         });
       }
     }),
-    searchUsers: procedure
-      .input(
-        z.object({
-          searchParams: z.object({
+  searchUsers: procedure
+    .input(
+      z.object({
+        searchParams: z
+          .object({
             role: z.nativeEnum(Role),
             type: z.array(z.nativeEnum(FosterType)),
             size: z.array(z.nativeEnum(Size)),
             preferredBreeds: z.array(z.nativeEnum(Breed)),
             gender: z.array(z.nativeEnum(Gender)),
             age: z.array(z.nativeEnum(Age)),
-            temperament: z.array(z.nativeEnum(Temperament)),
             dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
             medical: z.array(z.nativeEnum(Medical)),
             behavioral: z.array(z.nativeEnum(Behavioral)),
-            houseTrained: z.nativeEnum(Status),
-            spayNeuterStatus: z.nativeEnum(Status),
-          }).partial(),
-        })
-      )
-      .query(async ({ input }) => {
-        try {
-          const { searchParams } = input;
-          const res = await searchUsers(searchParams);
-          return { data: res };
-        } catch (e) {
-          if (e instanceof TRPCError) throw e;
-          else
-            throw new TRPCError({
-              message: "Internal Server Error",
-              code: "INTERNAL_SERVER_ERROR",
-            });
-        }
-      }),
+          })
+          .partial(),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const { searchParams } = input;
+        const res = await searchUsers(searchParams);
+        return { data: res };
+      } catch (e) {
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            message: "Internal Server Error",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+      }
+    }),
 });
