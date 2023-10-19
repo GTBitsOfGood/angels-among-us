@@ -113,6 +113,7 @@ function Home() {
   }
 
   if (authorized) {
+    document.title = "Feed";
     return (
       <Feed
         filterDisplayed={filterDisplayed}
@@ -120,6 +121,8 @@ function Home() {
       />
     );
   }
+
+  document.title = "Login";
 
   return (
     <Flex height="100vh" bgColor="black">
