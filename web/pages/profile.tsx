@@ -36,28 +36,66 @@ import pageAccessHOC from "../components/HOC/PageAccess";
 import { IUser } from "../utils/types/user";
 import { trpc } from "../utils/trpc";
 import Section from "../components/Profile/Section";
+import { z } from "zod";
+
+type OptionalKeys<T extends object> = Exclude<
+  {
+    [K in keyof T]: T extends Record<K, T[K]> ? never : K;
+  }[keyof T],
+  undefined
+>;
+
+const emailValidation = z.string().transform((val, ctx) => {
+  if (val.length === 0) {
+    return val;
+  }
+  if (!z.string().email().safeParse(val).success) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Invalid email address.",
+    });
+    return z.NEVER;
+  }
+  return val;
+});
+
+const profileSchema = z.object({
+  name: z.string().min(1, { message: "Name must not be empty." }),
+  preferredEmail: emailValidation,
+  type: z.array(z.nativeEnum(FosterType)),
+  size: z.array(z.nativeEnum(Size)),
+  restrictedBreeds: z.array(z.nativeEnum(Breed)),
+  preferredBreeds: z.array(z.nativeEnum(Breed)),
+  gender: z.array(z.nativeEnum(Gender)),
+  age: z.array(z.nativeEnum(Age)),
+  dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
+  medical: z.array(z.nativeEnum(Medical)),
+  behavioral: z.array(z.nativeEnum(Behavioral)),
+});
 
 function Profile() {
   const { user, userData, refetchUserData } = useAuth();
   const [editing, setEditing] = useState(false);
+
   const toast = useToast();
 
   function pruneUserData(
     data: NonNullable<typeof userData>
-  ): Omit<
-    NonNullable<IUser>,
-    "email" | "name" | "uid" | "role" | "disabled" | "hasCompletedOnboarding"
-  > {
+  ): Pick<IUser, OptionalKeys<IUser>> {
     const {
       email,
-      name,
       uid,
       role,
       disabled,
       hasCompletedOnboarding,
       ...initialState
     } = data;
-    return initialState;
+
+    return {
+      name: user?.displayName ?? "",
+      preferredEmail: "",
+      ...initialState,
+    };
   }
 
   const initialFormState = userData ? pruneUserData(userData) : {};
@@ -158,10 +196,15 @@ function Profile() {
                   <Stack direction="column">
                     <Text fontWeight="medium">Name</Text>
                     <Input
-                      placeholder={
-                        userData?.name ?? user?.displayName ?? undefined
+                      value={preferences.name}
+                      onChange={(e) =>
+                        dispatch({
+                          type: "setField",
+                          key: "name",
+                          data: e.target.value,
+                        })
                       }
-                      disabled={true}
+                      disabled={!editing}
                     ></Input>
                   </Stack>
                   <Stack direction="column">
@@ -175,7 +218,17 @@ function Profile() {
                 <Stack direction={"column"} spacing={5} width={["100%", "50%"]}>
                   <Stack direction="column">
                     <Text fontWeight="medium">Preferred Email</Text>
-                    <Input placeholder={""} disabled={!editing}></Input>
+                    <Input
+                      value={preferences.preferredEmail}
+                      onChange={(e) =>
+                        dispatch({
+                          type: "setField",
+                          key: "preferredEmail",
+                          data: e.target.value,
+                        })
+                      }
+                      disabled={!editing}
+                    ></Input>
                   </Stack>
                   <Stack direction="column">
                     <Text fontWeight="medium">
@@ -488,9 +541,33 @@ function Profile() {
           variant="solid-primary"
           width={["50%", "100%"]}
           onClick={async () => {
+            const parse = profileSchema.safeParse(preferences);
+            if (!parse.success) {
+              toast({
+                title: "Error",
+                description: parse.error.issues
+                  .map((issue) => issue.message)
+                  .join("\r\n"),
+                containerStyle: {
+                  whiteSpace: "pre-line",
+                },
+                status: "error",
+                duration: 4000,
+                isClosable: true,
+                position: "top",
+              });
+              return;
+            }
+            const prunedPreferences = { ...preferences };
+            Object.keys(prunedPreferences).forEach(
+              (k) =>
+                prunedPreferences[k as OptionalKeys<IUser>] === "" &&
+                delete prunedPreferences[k as OptionalKeys<IUser>]
+            );
+
             const req = await updatePreferences.mutateAsync({
               uid: userData!.uid,
-              updateFields: preferences,
+              updateFields: prunedPreferences,
             });
             if (req.success) {
               setEditing(false);
@@ -498,7 +575,7 @@ function Profile() {
               toast({
                 title: "Request unsuccessful",
                 status: "error",
-                duration: 9000,
+                duration: 4000,
                 isClosable: true,
                 position: "top",
               });
