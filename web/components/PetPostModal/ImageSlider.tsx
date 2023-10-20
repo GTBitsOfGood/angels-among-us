@@ -50,7 +50,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
         );
       }}
     >
-      {/* TODO: Account for Videos */}
+      {/* Implement video previews */}
       {props.attachments.length > 0
         ? props.attachments?.map((slide) => {
             return (
