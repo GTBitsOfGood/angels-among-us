@@ -1,11 +1,12 @@
 import { faker } from "@faker-js/faker";
+import { Types } from "mongoose";
 import {
   Age,
   Behavioral,
   Breed,
   FosterType,
   Gender,
-  IPendingPost,
+  IPost,
   Medical,
   PetKind,
   Size,
@@ -13,8 +14,9 @@ import {
   Trained,
 } from "../../../utils/types/post";
 
-export function createRandomPost(): IPendingPost {
+export function createRandomPost(): IPost & { _id: Types.ObjectId } {
   return {
+    _id: new Types.ObjectId(),
     date: faker.date.past(),
     name: faker.person.fullName(),
     description: faker.lorem.sentence(),
@@ -51,5 +53,10 @@ export function createRandomPost(): IPendingPost {
     getsAlongWithCats: faker.helpers.arrayElement(Object.values(Trained)),
     covered: faker.datatype.boolean(),
     attachments: [],
+    pending: false,
   };
 }
+
+export const randomPosts = Array.from({ length: 10 }).map(() =>
+  createRandomPost()
+);

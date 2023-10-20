@@ -6,7 +6,6 @@ import {
 } from "mongoose";
 import User from "../models/User";
 import { IUser } from "../../utils/types/user";
-import { Role } from "../../utils/types/account";
 import {
   Age,
   Behavioral,
@@ -15,8 +14,6 @@ import {
   Gender,
   GoodWith,
   Size,
-  Status,
-  Temperament,
   Medical,
 } from "../../utils/types/post";
 
@@ -78,68 +75,55 @@ async function updateUserByUid(
 }
 
 export interface SearchUsersParams {
-  role?: Role;
   type?: FosterType[];
   size?: Size[];
   preferredBreeds?: Breed[];
   gender?: Gender[];
   age?: Age[];
-  temperament?: Temperament[];
   dogsNotGoodWith?: GoodWith[];
   medical?: Medical[];
   behavioral?: Behavioral[];
-  houseTrained?: Status;
-  spayNeuterStatus?: Status;
 }
 
 function createFilterQuery(
   searchParams: SearchUsersParams
 ): FilterQuery<IUser> {
   const filter: FilterQuery<IUser> = {
-    haveCompletedOnboarding: true,
+    hasCompletedOnboarding: true,
     disabled: false,
   };
 
-  const fieldMap = {
-    role: searchParams.role,
+  const fieldMap: Record<
+    keyof SearchUsersParams,
+    FilterQuery<IUser>[keyof IUser]
+  > = {
     type: { $all: searchParams.type },
     size: { $all: searchParams.size },
     preferredBreeds: { $all: searchParams.preferredBreeds },
     gender: { $all: searchParams.gender },
     age: { $all: searchParams.age },
-    temperament: { $all: searchParams.temperament },
     dogsNotGoodWith: { $all: searchParams.dogsNotGoodWith },
     medical: { $all: searchParams.medical },
     behavioral: { $all: searchParams.behavioral },
-    houseTrained: searchParams.houseTrained,
-    spayNeuterStatus: searchParams.spayNeuterStatus,
   };
 
-  return Object.entries(fieldMap).reduce((acc, [key, value]) => {
-    if (value) {
-      acc[key] = value;
-    }
-    return acc;
-  }, filter);
+  return Object.entries(searchParams).reduce(
+    (acc, [key, val]: [string, SearchUsersParams[keyof SearchUsersParams]]) => {
+      if (val && val.length > 0) {
+        acc[key] = fieldMap[key as keyof typeof fieldMap];
+      }
+      return acc;
+    },
+    filter
+  );
 }
 
 async function searchUsers(
   searchParams: SearchUsersParams,
   session?: ClientSession
-): Promise<IUser[] | null> {
+): Promise<IUser[]> {
   const filter = createFilterQuery(searchParams);
-
-  const res = await User.find(filter, { _id: 0, __v: 0 }, { session });
-
-  if (!res || res.length === 0) {
-    return await User.find(
-      { haveCompletedOnboarding: true, disabled: false },
-      { _id: 0, __v: 0 },
-      { session }
-    );
-  }
-
-  return res;
+  return await User.find(filter, { _id: 0, __v: 0 }, { session }).exec();
 }
 
 export {

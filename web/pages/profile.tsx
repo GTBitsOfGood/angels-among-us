@@ -26,12 +26,10 @@ import {
   genderLabels,
   GoodWith,
   goodWithLabels,
+  Medical,
+  medicalLabels,
   Size,
   sizeLabels,
-  Status,
-  statusLabels,
-  Temperament,
-  temperamentLabels,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
 import pageAccessHOC from "../components/HOC/PageAccess";
@@ -423,96 +421,38 @@ function Profile() {
                   />
                 </Stack>
               </Stack>
-              <Stack direction="row">
-                <Stack direction="column" width={["100%", "50%"]}>
-                  <Text fontWeight="medium">
-                    Able to foster dogs with these temperaments:
-                  </Text>
-                  <Select
-                    closeMenuOnSelect={false}
-                    onChange={(newVals) =>
-                      dispatch({
-                        type: "setField",
-                        key: "temperament",
-                        data: (
-                          newVals as {
-                            value: Temperament;
-                            label: string;
-                          }[]
-                        ).map(({ value }) => value),
-                      })
-                    }
-                    value={preferences?.temperament?.map((temperament) => ({
-                      value: temperament as string,
-                      label: temperamentLabels[temperament],
-                    }))}
-                    isDisabled={!editing}
-                    isMulti
-                    options={Object.entries(temperamentLabels).map(
-                      ([key, val]) => ({ value: key, label: val })
-                    )}
-                  />
-                </Stack>
-              </Stack>
             </Stack>
           </Section>
           <Section heading="Medical Information">
             <Stack direction="column" width="100%" spacing={5}>
               <Stack direction={["column", "row"]} spacing={5}>
                 <Stack direction="column" width={["100%", "50%"]}>
-                  <Text fontWeight="medium">
-                    Able to foster dogs not house trained...
-                  </Text>
+                  <Text fontWeight="medium">Medical Capability</Text>
                   <Select
-                    onChange={(newVal) =>
+                    isMulti
+                    onChange={(newVals) =>
                       dispatch({
                         type: "setField",
-                        key: "houseTrained",
-                        data: newVal!.value,
+                        key: "medical",
+                        data: (
+                          newVals as {
+                            value: Medical;
+                            label: string;
+                          }[]
+                        ).map(({ value }) => value),
                       })
                     }
-                    value={
-                      preferences.houseTrained
-                        ? {
-                            value: preferences.houseTrained,
-                            label: statusLabels[preferences.houseTrained],
-                          }
-                        : undefined
-                    }
-                    isDisabled={!editing}
-                    options={Object.entries(statusLabels).map(([key, val]) => ({
-                      value: key as Status,
-                      label: val,
+                    value={preferences?.medical?.map((medical) => ({
+                      value: medical as string,
+                      label: medicalLabels[medical],
                     }))}
+                    isDisabled={!editing}
+                    options={Object.entries(medicalLabels).map(
+                      ([key, val]) => ({ value: key, label: val })
+                    )}
                   />
                 </Stack>
-                <Stack direction="column" width={["100%", "50%"]}>
-                  <Text fontWeight="medium">
-                    Able to foster dogs not spayed or neutered...
-                  </Text>
-                  <Select
-                    onChange={(newVal) =>
-                      dispatch({
-                        type: "setField",
-                        key: "spayNeuterStatus",
-                        data: newVal!.value,
-                      })
-                    }
-                    value={
-                      preferences.spayNeuterStatus
-                        ? {
-                            value: preferences.spayNeuterStatus,
-                            label: statusLabels[preferences.spayNeuterStatus],
-                          }
-                        : undefined
-                    }
-                    isDisabled={!editing}
-                    options={Object.entries(statusLabels).map(([key, val]) => ({
-                      value: key as Status,
-                      label: val,
-                    }))}
-                  />
-                </Stack>
+                <Stack direction="column" width={["100%", "50%"]}></Stack>
               </Stack>
             </Stack>
           </Section>
