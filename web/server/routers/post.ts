@@ -184,7 +184,7 @@ export const postRouter = router({
             });
             break;
           } catch (e) {
-            if (count++ == maxTries) {
+            if (++count == maxTries) {
               throw new TRPCError({
                 message: "Unable to send Email.",
                 code: "INTERNAL_SERVER_ERROR",

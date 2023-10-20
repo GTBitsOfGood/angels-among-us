@@ -24,6 +24,7 @@ import { trpc } from "../../utils/trpc";
 import { useState } from "react";
 import { z } from "zod";
 import { Types } from "mongoose";
+import { useAuth } from "../../context/auth";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -329,7 +330,6 @@ import {
   fosterTypeDescriptions,
 } from "../../utils/types/post";
 import { Role } from "../../utils/types/account";
-import { useAuth } from "../../context/auth";
 import DeletePostModal from "./DeletePostModal";
 
 const PetPostModal: React.FC<{
