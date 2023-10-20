@@ -131,7 +131,8 @@ const EditPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   postData: IPost & { _id: Types.ObjectId };
-}> = ({ isOpen, onClose, postData }) => {
+  attachments: string[];
+}> = ({ isOpen, onClose, postData, attachments }) => {
   const toast = useToast();
   const utils = trpc.useContext();
 
@@ -211,6 +212,31 @@ const EditPostModal: React.FC<{
   useEffect(() => {
     reset();
   }, [postData]);
+
+  useEffect(() => {
+    const convertFiles = async () => {
+      let fileObjects = [];
+      for (const fileUrl of attachments) {
+        try {
+          const response = await fetch(fileUrl);
+          const blob = await response.blob();
+
+          // You can customize the file name and type as needed
+          const fileName = "image.jpg";
+          const fileType = "image/jpeg";
+
+          const file = new File([blob], fileName, { type: fileType });
+          fileObjects.push(file);
+        } catch (error) {
+          console.error(
+            `Error converting ${fileUrl} to a File object: ${error}`
+          );
+        }
+      }
+      return fileObjects;
+    };
+    convertFiles().then((files) => setFileArr(files));
+  }, [attachments]);
 
   const postUpdate = trpc.post.updateDetails.useMutation();
   //   const postFinalize = trpc.post.finalize.useMutation();
@@ -315,7 +341,7 @@ const EditPostModal: React.FC<{
                 onClick={isContentView ? onClose : () => setIsContentView(true)}
                 mb={4}
               >
-                Back to Post
+                {isContentView ? "Back to Post" : "Back to Edit Post content"}
               </Button>
               <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
                 Edit Post
@@ -381,7 +407,7 @@ const EditPostModal: React.FC<{
                     editPost().then(() => {
                       onClose();
                       utils.post.invalidate();
-                      setFileArr([]);
+                      setFileArr(fileArr);
                       setIsContentView(true);
                       dispatch({
                         type: "clear",

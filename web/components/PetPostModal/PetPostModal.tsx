@@ -377,6 +377,7 @@ const PetPostModal: React.FC<{
                   isOpen={isEditFormOpen}
                   onClose={onEditFormClose}
                   postData={postData}
+                  attachments={attachments}
                 />
                 <Button
                   h={8}
