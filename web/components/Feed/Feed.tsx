@@ -28,6 +28,7 @@ import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
 import { Types } from "mongoose";
+import Select from "react-select";
 
 export type FilterGroup = {
   title: string;
@@ -308,7 +309,8 @@ function Feed(props: {
   const { userData } = useAuth();
   const role = userData?.role;
 
-  const [hideCovered, setHideCovered] = useState(false);
+  const [displayCovered, setDisplayCovered] = useState(undefined);
+  const [placeholder, setPlaceholder] = useState("Showing all posts");
 
   function getInitialFilters(): SelectedFilters {
     return filterGroups.reduce((acc, curr) => {
@@ -373,6 +375,7 @@ function Feed(props: {
   const feedPosts: (IPost & { _id: Types.ObjectId })[] | undefined =
     trpc.post.getFilteredPosts.useQuery({
       postFilters: getQueryFilters(selectedFilters),
+      covered: role === Role.Volunteer ? false : displayCovered,
     }).data;
 
   const [modalPostIndex, setModalPostIndex] = useState(0);
@@ -455,22 +458,56 @@ function Feed(props: {
                 Use My Preferences
               </Button>
             </Flex>
-            <Button
-              width="min-content"
+            <Flex
               marginTop={2}
-              variant="outline-primary"
-              borderWidth="thin"
-              onClick={() => {
-                setHideCovered(!hideCovered);
-              }}
               display={
                 role === Role.Admin || role === Role.ContentCreator
                   ? "flex"
                   : "none"
               }
             >
-              {hideCovered ? "Show" : "Hide"} Covered Posts
-            </Button>
+              <Select
+                controlShouldRenderValue={false}
+                placeholder={placeholder}
+                hideSelectedOptions={false}
+                isClearable={false}
+                maxMenuHeight={180}
+                menuPortalTarget={document.body}
+                styles={{
+                  menu: (provided) => ({
+                    ...provided,
+                    zIndex: 9999,
+                  }),
+                  menuPortal: (provided) => ({
+                    ...provided,
+                    zIndex: 9999,
+                  }),
+                  control: (baseStyles) => ({
+                    ...baseStyles,
+                    minWidth: 200,
+                    border: "1px solid #D9D9D9",
+                    boxShadow: "none",
+                    "&:hover": {
+                      border: "1px solid gray",
+                    },
+                    borderRadius: "10px",
+                  }),
+                  option: (provided, state) => ({
+                    ...provided,
+                    backgroundColor: state.isSelected ? "#57a0d5" : "white",
+                  }),
+                }}
+                options={[
+                  { value: undefined, label: "all posts" },
+                  { value: true, label: "only covered posts" },
+                  { value: false, label: "only uncovered posts" },
+                ]}
+                onChange={(event: any) => {
+                  setDisplayCovered(event.value);
+                  setPlaceholder("Showing " + event.label);
+                }}
+              />
+            </Flex>
           </Flex>
           {filterGroups.map((val) => {
             return (
@@ -525,7 +562,7 @@ function Feed(props: {
                   _hover={{ cursor: "pointer" }}
                   key={ind}
                 >
-                  <FeedPostCard post={p} hideCovered={hideCovered} />
+                  <FeedPostCard post={p} />
                 </Box>
               );
             })}

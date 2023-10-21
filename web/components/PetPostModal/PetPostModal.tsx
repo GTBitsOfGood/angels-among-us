@@ -1,4 +1,9 @@
-import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  DeleteIcon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
@@ -208,7 +213,7 @@ import {
 import { Role } from "../../utils/types/account";
 import { useAuth } from "../../context/auth";
 import DeletePostModal from "./DeletePostModal";
-import MarkCoveredButton from "./MarkCoveredButton";
+import MarkCoveredModal from "./MarkCoveredModal";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
@@ -226,6 +231,16 @@ const PetPostModal: React.FC<{
     onOpen: onDeleteConfirmationOpen,
     onClose: onDeleteConfirmationClose,
   } = useDisclosure();
+
+  const {
+    isOpen: isCoveredConfirmationOpen,
+    onOpen: onCoveredConfirmationOpen,
+    onClose: onCoveredConfirmationClose,
+  } = useDisclosure();
+
+  const coveredButtonColor = postData.covered
+    ? "text-primary"
+    : "text-secondary";
 
   const { userData } = useAuth();
   const role = userData?.role;
@@ -339,25 +354,44 @@ const PetPostModal: React.FC<{
           height={"inherit"}
         >
           <Stack direction="row" justifyContent="space-between">
-            <Stack direction="row" justifyContent="space-between">
-              <Button
-                h={8}
-                w="fit-content"
-                bgColor="tag-primary-bg"
-                color="text-primary"
-                marginLeft={10}
-                _hover={{ bgColor: "tag-primary-bg" }}
-                leftIcon={<ArrowBackIcon />}
-                onClick={onClose}
-                id="backToFeedButton"
-              >
-                Back to feed
-              </Button>
+            <Button
+              h={8}
+              w="fit-content"
+              bgColor="tag-primary-bg"
+              color="text-primary"
+              marginLeft={10}
+              _hover={{ bgColor: "tag-primary-bg" }}
+              leftIcon={<ArrowBackIcon />}
+              onClick={onClose}
+              id="backToFeedButton"
+            >
+              Back to feed
+            </Button>
+            <Flex>
               {(role === Role.Admin || role === Role.ContentCreator) && (
-                <MarkCoveredButton
-                  postId={postData._id}
-                  isCovered={postData.covered}
-                />
+                <Button
+                  h={8}
+                  backgroundColor="white"
+                  onClick={onCoveredConfirmationOpen}
+                  _hover={{}}
+                  leftIcon={
+                    postData.covered ? (
+                      <ViewIcon color={coveredButtonColor} />
+                    ) : (
+                      <ViewOffIcon color={coveredButtonColor} />
+                    )
+                  }
+                >
+                  <Text textDecoration="underline" color={coveredButtonColor}>
+                    {postData.covered ? "Uncover Post" : "Mark as Covered"}
+                  </Text>
+                  <MarkCoveredModal
+                    isCoveredConfirmationOpen={isCoveredConfirmationOpen}
+                    onCoveredConfirmationClose={onCoveredConfirmationClose}
+                    postId={postData._id}
+                    isCovered={postData.covered}
+                  />
+                </Button>
               )}
               {(role === Role.Admin || role === Role.ContentCreator) && (
                 <Flex>
@@ -382,7 +416,7 @@ const PetPostModal: React.FC<{
                   />
                 </Flex>
               )}
-            </Stack>
+            </Flex>
           </Stack>
           <Flex direction="row" width="100%">
             <Flex

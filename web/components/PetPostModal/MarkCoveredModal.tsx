@@ -7,45 +7,29 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
-  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import { trpc } from "../../utils/trpc";
 import { Types } from "mongoose";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
-function MarkCoveredButton(props: {
+function MarkCoveredModal(props: {
+  isCoveredConfirmationOpen: boolean;
+  onCoveredConfirmationClose: () => void;
   postId: Types.ObjectId;
   isCovered: boolean;
 }) {
-  const { postId, isCovered } = props;
+  const {
+    isCoveredConfirmationOpen,
+    onCoveredConfirmationClose,
+    postId,
+    isCovered,
+  } = props;
   const mutation = trpc.post.updateStatus.useMutation();
   const utils = trpc.useContext();
   const toast = useToast();
-  const {
-    isOpen: isCoveredConfirmationOpen,
-    onOpen: onCoveredConfirmationOpen,
-    onClose: onCoveredConfirmationClose,
-  } = useDisclosure();
-
-  const color = isCovered ? "text-primary" : "text-secondary";
 
   return (
     <Flex>
-      <Button
-        h={8}
-        backgroundColor="white"
-        onClick={onCoveredConfirmationOpen}
-        _hover={{}}
-        leftIcon={
-          isCovered ? <ViewIcon color={color} /> : <ViewOffIcon color={color} />
-        }
-      >
-        <Text textDecoration="underline" color={color}>
-          {isCovered ? "Uncover Post" : "Mark as Covered"}
-        </Text>
-      </Button>
       <Modal
         isOpen={isCoveredConfirmationOpen}
         onClose={onCoveredConfirmationClose}
@@ -108,4 +92,4 @@ function MarkCoveredButton(props: {
   );
 }
 
-export default MarkCoveredButton;
+export default MarkCoveredModal;

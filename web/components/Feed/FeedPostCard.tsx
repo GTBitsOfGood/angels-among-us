@@ -2,8 +2,6 @@ import { Card, Center, Flex, Image, Text } from "@chakra-ui/react";
 import DefaultDog from "../../public/dog.svg";
 import dayjs from "dayjs";
 import { fosterTypeLabels, IPost } from "../../utils/types/post";
-import { useAuth } from "../../context/auth";
-import { Role } from "../../utils/types/account";
 
 function DefaultDogImage() {
   return (
@@ -32,11 +30,8 @@ function DefaultDogImage() {
 //   description: string;
 // };
 
-function FeedPostCard(props: { post: IPost; hideCovered: boolean }) {
-  const { post, hideCovered } = props;
-
-  const { userData } = useAuth();
-  const role = userData?.role;
+function FeedPostCard(props: { post: IPost }) {
+  const { post } = props;
 
   let firstImage;
   const imageExtensions = new Set<string>(["png", "jpeg", "jpg"]);
@@ -55,17 +50,7 @@ function FeedPostCard(props: { post: IPost; hideCovered: boolean }) {
     .toString();
 
   return (
-    <Flex
-      position="relative"
-      display={
-        ((role === Role.Admin || role === Role.ContentCreator) &&
-          (!post.covered || !hideCovered)) ||
-        (role === Role.Volunteer && !post.covered)
-          ? "flex"
-          : "none"
-      }
-      marginBottom={4}
-    >
+    <Flex position="relative" marginBottom={4}>
       <Card
         paddingX={{ base: "12px", lg: "16px" }}
         paddingY={{ base: "16px", lg: "20px" }}
