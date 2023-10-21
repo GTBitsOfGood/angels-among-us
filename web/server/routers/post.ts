@@ -29,7 +29,7 @@ import {
 import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 
 const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24
@@ -99,8 +99,6 @@ const postFilterSchema = z.object({
   gender: z.array(z.nativeEnum(Gender)),
   goodWith: z.array(z.nativeEnum(GoodWith)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Trained).optional(),
-  spayNeuterStatus: z.nativeEnum(Trained).optional(),
 });
 
 const goodWithMap: Record<GoodWith, string> = {
@@ -293,16 +291,16 @@ export const postRouter = router({
       return getAttachments(input._id);
     }),
   getFilteredPosts: procedure
-    .input(postFilterSchema)
+    .input(
+      z.object({
+        postFilters: postFilterSchema,
+        covered: z.optional(z.boolean()),
+      })
+    )
     .query(async ({ input }) => {
-      const houseTrained = input.houseTrained
-        ? [input.houseTrained]
-        : Object.values(Trained);
-      const spayNeuterStatus = input.spayNeuterStatus
-        ? [input.spayNeuterStatus]
-        : Object.values(Trained);
+      const postFilters = input.postFilters;
       const notAllowedBehavioral = Object.values(Behavioral).filter(
-        (obj) => !input.behavioral.includes(obj)
+        (obj) => !postFilters.behavioral.includes(obj)
       );
 
       /**
@@ -313,7 +311,7 @@ export const postRouter = router({
       const getsAlongWith: Record<string, Trained> = Object.values(
         GoodWith
       ).reduce((acc, curr) => {
-        if (input.goodWith.includes(curr)) {
+        if (postFilters.goodWith.includes(curr)) {
           return { ...acc, ...{ [goodWithMap[curr]]: [Trained.Yes] } };
         } else {
           return {
@@ -325,12 +323,12 @@ export const postRouter = router({
         }
       }, {});
 
-      let completeFilter = {
-        breed: { $in: input.breed },
-        type: { $in: input.type },
-        age: { $in: input.age },
-        size: { $in: input.size },
-        gender: { $in: input.gender },
+      const baseFilter: FilterQuery<IPost> = {
+        breed: { $in: postFilters.breed },
+        type: { $in: postFilters.type },
+        age: { $in: postFilters.age },
+        size: { $in: postFilters.size },
+        gender: { $in: postFilters.gender },
         behavioral: { $nin: notAllowedBehavioral },
         getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
         getsAlongWithLargeDogs: {
@@ -347,10 +345,12 @@ export const postRouter = router({
         getsAlongWithYoungKids: {
           $in: getsAlongWith["getsAlongWithYoungKids"],
         },
-        houseTrained: { $in: houseTrained },
-        spayNeuterStatus: { $in: spayNeuterStatus },
+        pending: false,
       };
-      const filteredPosts = await getFilteredPosts(completeFilter);
+      if (input.covered !== undefined) {
+        baseFilter.covered = input.covered;
+      }
+      const filteredPosts = await getFilteredPosts(baseFilter);
       return filteredPosts;
     }),
 });

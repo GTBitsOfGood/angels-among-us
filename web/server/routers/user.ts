@@ -23,6 +23,8 @@ import {
 import { IUser } from "../../utils/types/user";
 
 const userPreferencesSchema = z.object({
+  preferredEmail: z.string().email().optional(),
+  name: z.string().optional(),
   type: z.array(z.nativeEnum(FosterType)),
   size: z.array(z.nativeEnum(Size)),
   preferredBreeds: z.array(z.nativeEnum(Breed)),
