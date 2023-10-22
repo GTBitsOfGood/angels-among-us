@@ -29,7 +29,6 @@ export const authRouter = router({
             message: "Not authenticated",
           });
         }
-
         const user = await findUserByEmail(ctx.session.email);
         const account = await findAccount(ctx.session.email);
 
@@ -38,6 +37,8 @@ export const authRouter = router({
           const document = await updateUserByUid(ctx.session.uid, {
             role: account.role,
             disabled: false,
+            name: ctx.session.name,
+            picture: ctx.session.picture,
           });
 
           return {
