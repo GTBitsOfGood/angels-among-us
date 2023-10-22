@@ -1,1 +1,0 @@
-{"mongoUri":"mongodb://127.0.0.1:50868,127.0.0.1:50869,127.0.0.1:50870/?replicaSet=testset","mongoDBName":"jest"}
