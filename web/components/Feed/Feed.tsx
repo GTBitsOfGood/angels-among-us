@@ -377,7 +377,7 @@ function Feed(props: {
   const mainContent = (
     <Flex
       className="feed"
-      backgroundColor="bg-primary"
+      backgroundColor={{ base: "white", lg: "bg-primary" }}
       justifyContent="center"
       height="100vh"
     >
@@ -387,30 +387,11 @@ function Feed(props: {
           base: document.getElementById("navbar")?.offsetHeight + "px",
           lg: "100px",
         }}
-        marginBottom="50px"
+        marginBottom={{ base: "0px", lg: "50px" }}
         marginX={{ base: "0px", lg: "40px" }}
         direction={{ base: "column", lg: "row" }}
         flex={{ base: "1", lg: "0" }}
       >
-        <Flex
-          display={{ base: "flex", lg: "none" }}
-          backgroundColor="#FFFFFF"
-          padding="10px"
-          direction="row"
-          justifyContent="flex-end"
-        >
-          <Button
-            variant="solid-primary"
-            onClick={() => {
-              setFilterDisplayed(!filterDisplayed);
-            }}
-            fontWeight="normal"
-            height="36px"
-            borderRadius="10px"
-          >
-            Filter By
-          </Button>
-        </Flex>
         <Flex
           width="25vw"
           borderRadius="10px"
@@ -469,10 +450,11 @@ function Feed(props: {
           minHeight="0" // To prevent mobile view column flexbox blowout (flex: 1 doesn't respect parent's max height)
           flex="1"
           borderRadius={{ base: "0px", lg: "10px" }}
-          backgroundColor={{ base: "bg-primary", lg: "#F9F8F8" }}
+          backgroundColor={{ base: "white", lg: "#F9F8F8" }}
           direction="column"
           alignItems="center"
           padding="20px"
+          paddingBottom={{ base: "0px", lg: "0px" }}
         >
           <Flex
             w="100%"
@@ -482,11 +464,12 @@ function Feed(props: {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Text fontWeight="bold" fontSize="18px" ml="8px">
+            <Text fontWeight="bold" fontSize="20px" ml="8px">
               Latest Posts
             </Text>
             {userData?.role !== Role.Volunteer && (
               <Button
+                display={{ base: "none", lg: "flex" }}
                 variant="solid-primary"
                 leftIcon={<AddIcon />}
                 onClick={onPostCreationOpen}
@@ -494,6 +477,17 @@ function Feed(props: {
                 Add new post
               </Button>
             )}
+            <Button
+              display={{ base: "flex", lg: "none" }}
+              variant="solid-primary"
+              onClick={() => {
+                setFilterDisplayed(!filterDisplayed);
+              }}
+              height="36px"
+              borderRadius="10px"
+            >
+              Filter By
+            </Button>
           </Flex>
           <Stack spacing={5} overflowY="auto">
             {feedPosts?.map((p, ind) => {
@@ -510,6 +504,7 @@ function Feed(props: {
                 </Box>
               );
             })}
+            <Flex></Flex>
           </Stack>
         </Flex>
       </Stack>
