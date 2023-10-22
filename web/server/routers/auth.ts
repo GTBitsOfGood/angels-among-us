@@ -83,6 +83,7 @@ export const authRouter = router({
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred",
+            cause: e,
           });
       }
     }),

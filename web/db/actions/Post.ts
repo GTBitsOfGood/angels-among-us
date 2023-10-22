@@ -191,7 +191,7 @@ async function getAttachments(oid: Types.ObjectId) {
 }
 
 async function getFilteredPosts(filter: FilterQuery<IPost>) {
-  const posts = await Post.find(filter).sort({ date: -1 });
+  const posts = await Post.find(filter, { __v: 0 }).sort({ date: -1 }).exec();
   posts.forEach(
     (post) =>
       (post.attachments = post.attachments.map(
