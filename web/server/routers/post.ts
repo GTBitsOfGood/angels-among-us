@@ -119,7 +119,15 @@ export const postRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return getPost(input._id, true);
+      try {
+        return getPost(input._id, true);
+      } catch (e) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+          cause: e,
+        });
+      }
     }),
   create: procedure.input(postSchema).mutation(async ({ input }) => {
     const session = await Post.startSession();
@@ -137,10 +145,11 @@ export const postRouter = router({
       return post;
     } catch (e) {
       await session.abortTransaction();
-      console.error(e);
+
       throw new TRPCError({
         message: "Internal Server Error",
         code: "INTERNAL_SERVER_ERROR",
+        cause: e,
       });
     }
   }),
@@ -164,6 +173,7 @@ export const postRouter = router({
         throw new TRPCError({
           message: "An unexpected error occured.",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
       try {
@@ -185,6 +195,7 @@ export const postRouter = router({
               throw new TRPCError({
                 message: "Unable to send Email.",
                 code: "INTERNAL_SERVER_ERROR",
+                cause: e,
               });
             }
           }
@@ -195,6 +206,7 @@ export const postRouter = router({
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred.",
+            cause: e,
           });
       }
       return { success: true };
@@ -209,13 +221,13 @@ export const postRouter = router({
       try {
         return await deletePost(input.postOid);
       } catch (e) {
-        console.error(e);
         if (e instanceof TRPCError) {
           throw e;
         } else {
           throw new TRPCError({
             message: "Internal Server Error",
             code: "INTERNAL_SERVER_ERROR",
+            cause: e,
           });
         }
       }
@@ -233,6 +245,7 @@ export const postRouter = router({
         throw new TRPCError({
           message: "All attachments not uploaded",
           code: "PRECONDITION_FAILED",
+          cause: e,
         });
       }
     }),
@@ -251,6 +264,7 @@ export const postRouter = router({
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
@@ -268,6 +282,7 @@ export const postRouter = router({
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
@@ -278,6 +293,7 @@ export const postRouter = router({
       throw new TRPCError({
         message: "Internal Server Error",
         code: "INTERNAL_SERVER_ERROR",
+        cause: e,
       });
     }
   }),
@@ -288,7 +304,15 @@ export const postRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return getAttachments(input._id);
+      try {
+        return getAttachments(input._id);
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred",
+          cause: e,
+        });
+      }
     }),
   getFilteredPosts: procedure
     .input(
@@ -350,7 +374,16 @@ export const postRouter = router({
       if (input.covered !== undefined) {
         baseFilter.covered = input.covered;
       }
-      const filteredPosts = await getFilteredPosts(baseFilter);
-      return filteredPosts;
+
+      try {
+        const filteredPosts = await getFilteredPosts(baseFilter);
+        return filteredPosts;
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred.",
+          cause: e,
+        });
+      }
     }),
 });
