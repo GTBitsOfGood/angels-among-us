@@ -166,13 +166,13 @@ function Home() {
           height="100%"
           position="absolute"
           right={0}
-          width={["100%", "800px"]}
+          width={["100%", "auto"]}
           maxWidth="100%"
           paddingX={["0", "50px"]}
         >
           <Stack
             direction="column"
-            alignItems={["center", "center"]}
+            alignItems="center"
             width={["80%", "500px"]}
             spacing="6"
           >
