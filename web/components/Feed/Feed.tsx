@@ -6,7 +6,6 @@ import {
   Stack,
   Text,
   useDisclosure,
-  useMediaQuery,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { useAuth } from "../../context/auth";
@@ -375,9 +374,6 @@ function Feed(props: {
 
   const [modalPostIndex, setModalPostIndex] = useState(0);
 
-  const isMobile = !useMediaQuery("(min-width: 62em)")[0];
-  console.log(isMobile);
-
   const filter = (
     <Flex direction="column" width="100%" padding="0px">
       <Flex justifyContent="flex-end" margin="12px" marginTop="0px" gap="8px">
@@ -529,7 +525,7 @@ function Feed(props: {
               display={{ base: "flex", lg: "none" }}
               variant={filterDisplayed ? "outline-secondary" : "solid-primary"}
               onClick={() => {
-                if (isMobile) setFilterDisplayed(!filterDisplayed);
+                setFilterDisplayed(!filterDisplayed);
               }}
               height="36px"
               borderRadius="10px"
@@ -543,7 +539,8 @@ function Feed(props: {
             <Stack
               spacing={5}
               overflowY="auto"
-              margin={{ base: "0px 10px", lg: "0px" }}
+              padding={{ base: "0px 10px", lg: "0px" }}
+              minWidth="100%"
             >
               {feedPosts?.map((p, ind) => {
                 return (
