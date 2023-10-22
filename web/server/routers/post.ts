@@ -30,6 +30,8 @@ import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
 import { FilterQuery, Types } from "mongoose";
+import { emailTemplate } from "../../email/email-template";
+import inlineCss from "inline-css";
 
 const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24
@@ -161,8 +163,9 @@ export const postRouter = router({
       })
     )
     .mutation(async ({ input }) => {
+      let user;
       try {
-        const user = await findUserByEmail(input.email);
+        user = await findUserByEmail(input.email);
         if (!user) {
           throw new TRPCError({
             message: "No user with given email exists.",
@@ -181,13 +184,16 @@ export const postRouter = router({
         const email = fosterTypeEmails[post.type];
         let count = 0;
         const maxTries = 3;
+        const emailBody = emailTemplate(post, user);
+        const options = { url: "www.angelsrescue.org" };
         while (true) {
           try {
+            const emailFormatted = await inlineCss(emailBody, options);
             const info = await transporter.sendMail({
               from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
               to: email,
               subject: "Someone is ready to foster your dog!",
-              text: "User has signed up to foster dog, a stray dog.",
+              html: emailFormatted,
             });
             break;
           } catch (e) {
