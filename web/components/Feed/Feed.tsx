@@ -6,6 +6,7 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useReducer, useState } from "react";
 import { useAuth } from "../../context/auth";
@@ -374,7 +375,55 @@ function Feed(props: {
 
   const [modalPostIndex, setModalPostIndex] = useState(0);
 
-  const mainContent = (
+  const isMobile = !useMediaQuery("(min-width: 62em)")[0];
+  console.log(isMobile);
+
+  const filter = (
+    <Flex direction="column" width="100%" padding="0px">
+      <Flex justifyContent="flex-end" margin="12px" marginTop="0px" gap="8px">
+        <Button
+          variant="outline-secondary"
+          onClick={() => {
+            setSelectedFilters({
+              type: "reset",
+              filter: filterGroups[0].filters[0],
+              ind: 0,
+              event: [],
+            });
+          }}
+        >
+          Clear All
+        </Button>
+        <Button
+          onClick={() => {
+            setSelectedFilters({
+              type: "useprefs",
+              filter: filterGroups[0].filters[0],
+              ind: 0,
+              event: [],
+            });
+          }}
+          variant="solid-primary"
+        >
+          Use My Preferences
+        </Button>
+      </Flex>
+      <Flex direction="column">
+        {filterGroups.map((val) => {
+          return (
+            <FeedFilterGroup
+              key={val.title}
+              filterGroup={val}
+              selectedFilters={selectedFilters}
+              setSelectedFilters={setSelectedFilters}
+            />
+          );
+        })}
+      </Flex>
+    </Flex>
+  );
+
+  return (
     <Flex
       className="feed"
       backgroundColor={{ base: "white", lg: "bg-primary" }}
@@ -406,8 +455,6 @@ function Feed(props: {
           <Flex justifyContent="flex-end" margin="12px" gap="8px">
             <Button
               variant="outline-secondary"
-              fontWeight="normal"
-              borderWidth="thin"
               onClick={() => {
                 setSelectedFilters({
                   type: "reset",
@@ -429,7 +476,6 @@ function Feed(props: {
                 });
               }}
               variant="solid-primary"
-              fontWeight="normal"
             >
               Use My Preferences
             </Button>
@@ -453,7 +499,7 @@ function Feed(props: {
           backgroundColor={{ base: "white", lg: "#F9F8F8" }}
           direction="column"
           alignItems="center"
-          padding="20px"
+          padding={{ base: "0px", lg: "20px" }}
           paddingBottom={{ base: "0px", lg: "0px" }}
         >
           <Flex
@@ -463,9 +509,11 @@ function Feed(props: {
             dir="row"
             alignItems="center"
             justifyContent="space-between"
+            padding={{ base: "20px", lg: "0px" }}
+            paddingBottom="0px"
           >
             <Text fontWeight="bold" fontSize="20px" ml="8px">
-              Latest Posts
+              {filterDisplayed ? "Filter By:" : "Latest Posts"}
             </Text>
             {userData?.role !== Role.Volunteer && (
               <Button
@@ -479,132 +527,43 @@ function Feed(props: {
             )}
             <Button
               display={{ base: "flex", lg: "none" }}
-              variant="solid-primary"
+              variant={filterDisplayed ? "outline-secondary" : "solid-primary"}
               onClick={() => {
-                setFilterDisplayed(!filterDisplayed);
+                if (isMobile) setFilterDisplayed(!filterDisplayed);
               }}
               height="36px"
               borderRadius="10px"
             >
-              Filter By
+              {filterDisplayed ? "Close" : "Filter By"}
             </Button>
           </Flex>
-          <Stack spacing={5} overflowY="auto">
-            {feedPosts?.map((p, ind) => {
-              return (
-                <Box
-                  onClick={() => {
-                    setModalPostIndex(ind);
-                    onPostViewOpen();
-                  }}
-                  _hover={{ cursor: "pointer" }}
-                  key={ind}
-                >
-                  <FeedPostCard post={p} />
-                </Box>
-              );
-            })}
-            <Flex></Flex>
-          </Stack>
+          {filterDisplayed ? (
+            filter
+          ) : (
+            <Stack
+              spacing={5}
+              overflowY="auto"
+              margin={{ base: "0px 10px", lg: "0px" }}
+            >
+              {feedPosts?.map((p, ind) => {
+                return (
+                  <Box
+                    onClick={() => {
+                      setModalPostIndex(ind);
+                      onPostViewOpen();
+                    }}
+                    _hover={{ cursor: "pointer" }}
+                    key={ind}
+                  >
+                    <FeedPostCard post={p} />
+                  </Box>
+                );
+              })}
+              <Flex></Flex>
+            </Stack>
+          )}
         </Flex>
       </Stack>
-    </Flex>
-  );
-
-  const filter = (
-    <Flex
-      className="filter"
-      backgroundColor="#DFDFDF"
-      height="fit-content"
-      minHeight="100vh"
-      width="inherit"
-      direction="column"
-    >
-      <Flex
-        backgroundColor="#FFFFFF"
-        padding="10px"
-        direction="row"
-        justifyContent="flex-end"
-        marginTop={document.getElementById("navbar")?.offsetHeight + "px"}
-        borderBottomWidth="2px"
-        borderBottomColor="#000000"
-      >
-        <Button
-          variant="outline-secondary"
-          onClick={() => {
-            setFilterDisplayed(!filterDisplayed);
-          }}
-          borderWidth="thin"
-          fontWeight="normal"
-        >
-          Close
-        </Button>
-      </Flex>
-      <Flex
-        backgroundColor="#FFFFFF"
-        direction="column"
-        height="fit-content"
-        width="inherit"
-      >
-        <Text
-          fontWeight="semibold"
-          margin="16px"
-          marginBottom="0px"
-          marginLeft="30px"
-          fontSize="20px"
-        >
-          Filter By:
-        </Text>
-        <Flex justifyContent="flex-end" margin="12px" gap="8px">
-          <Button
-            variant="outline-secondary"
-            fontWeight="normal"
-            borderWidth="thin"
-            onClick={() => {
-              setSelectedFilters({
-                type: "reset",
-                filter: filterGroups[0].filters[0],
-                ind: 0,
-                event: [],
-              });
-            }}
-          >
-            Clear All
-          </Button>
-          <Button
-            onClick={() => {
-              setSelectedFilters({
-                type: "useprefs",
-                filter: filterGroups[0].filters[0],
-                ind: 0,
-                event: [],
-              });
-            }}
-            variant="solid-primary"
-            fontWeight="normal"
-          >
-            Use My Preferences
-          </Button>
-        </Flex>
-        <Flex direction="column">
-          {filterGroups.map((val) => {
-            return (
-              <FeedFilterGroup
-                key={val.title}
-                filterGroup={val}
-                selectedFilters={selectedFilters}
-                setSelectedFilters={setSelectedFilters}
-              />
-            );
-          })}
-        </Flex>
-      </Flex>
-    </Flex>
-  );
-
-  return (
-    <>
-      {filterDisplayed ? filter : mainContent}
       <PostCreationModal
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
@@ -616,7 +575,7 @@ function Feed(props: {
           postData={feedPosts[modalPostIndex]}
         />
       )}
-    </>
+    </Flex>
   );
 }
 
