@@ -39,33 +39,33 @@ export const FormSlide: React.FC<{
 }> = ({ formState, dispatchFormState }) => {
   return (
     <Stack dir="col" spacing={5}>
-      <FormControl>
-        <FormLabel>Name of the Pet</FormLabel>
-        <Input
-          value={formState.name}
-          onChange={(e) =>
-            dispatchFormState({
-              type: "setField",
-              key: "name",
-              data: e.target.value,
-            })
-          }
-        />
-      </FormControl>
-      <FormControl className="descriptionForm">
-        <FormLabel>Description</FormLabel>
-        <Textarea
-          value={formState.description}
-          onChange={(e) =>
-            dispatchFormState({
-              type: "setField",
-              key: "description",
-              data: e.target.value,
-            })
-          }
-        />
-      </FormControl>
-      <Stack direction={"row"} spacing={10}>
+      <Grid gridTemplateColumns="1fr 1fr" rowGap="15px" columnGap="30px">
+        <FormControl gridColumn="span 2">
+          <FormLabel>Name of the Pet</FormLabel>
+          <Input
+            value={formState.name}
+            onChange={(e) =>
+              dispatchFormState({
+                type: "setField",
+                key: "name",
+                data: e.target.value,
+              })
+            }
+          />
+        </FormControl>
+        <FormControl className="descriptionForm" gridColumn="span 2">
+          <FormLabel>Description</FormLabel>
+          <Textarea
+            value={formState.description}
+            onChange={(e) =>
+              dispatchFormState({
+                type: "setField",
+                key: "description",
+                data: e.target.value,
+              })
+            }
+          />
+        </FormControl>
         <FormControl className="genderForm" width="100%">
           <FormLabel>Gender</FormLabel>
           <Select
@@ -91,8 +91,6 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-      </Stack>
-      <Stack direction={"row"} spacing={10}>
         <FormControl className="ageForm" maxW="450px">
           <FormLabel>Age</FormLabel>
           <Select
@@ -143,8 +141,6 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-      </Stack>
-      <Stack direction={"row"} spacing={10}>
         <FormControl className="sizeForm" maxW="450px">
           <FormLabel>Size</FormLabel>
           <Select
@@ -193,31 +189,29 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-      </Stack>
-      <FormControl className="breedForm">
-        <FormLabel>Breed</FormLabel>
-        <Select
-          isMulti
-          closeMenuOnSelect={false}
-          value={formState.breed.map((val) => ({
-            value: val as string,
-            label: breedLabels[val],
-          }))}
-          styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
-          options={Object.entries(breedLabels).map(([k, v]) => ({
-            value: k,
-            label: v,
-          }))}
-          onChange={(e) =>
-            dispatchFormState({
-              type: "setField",
-              key: "breed",
-              data: e!.map(({ value }) => value) as Breed[],
-            })
-          }
-        />
-      </FormControl>
-      <Stack direction={"row"} spacing={10}>
+        <FormControl className="breedForm" gridColumn="span 2">
+          <FormLabel>Breed</FormLabel>
+          <Select
+            isMulti
+            closeMenuOnSelect={false}
+            value={formState.breed.map((val) => ({
+              value: val as string,
+              label: breedLabels[val],
+            }))}
+            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            options={Object.entries(breedLabels).map(([k, v]) => ({
+              value: k,
+              label: v,
+            }))}
+            onChange={(e) =>
+              dispatchFormState({
+                type: "setField",
+                key: "breed",
+                data: e!.map(({ value }) => value) as Breed[],
+              })
+            }
+          />
+        </FormControl>
         <FormControl className="medicalForm" maxW="450px">
           <FormLabel>Medical</FormLabel>
           <Select
@@ -264,11 +258,12 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-      </Stack>
+      </Grid>
       <Box>
         <Grid
           templateColumns={{ base: "repeat(3, 1fr)", md: "repeat(3, 1fr)" }}
-          gap={5}
+          columnGap="30px"
+          rowGap="30px"
         >
           <Box>
             <Text>House Trained</Text>
@@ -339,14 +334,6 @@ export const FormSlide: React.FC<{
             <Picker
               field="getsAlongWithSmallDogs"
               val={formState.getsAlongWithSmallDogs}
-              dispatchFormState={dispatchFormState}
-            />
-          </Box>
-          <Box>
-            <Text>Gets along with cats</Text>
-            <Picker
-              field="getsAlongWithCats"
-              val={formState.getsAlongWithCats}
               dispatchFormState={dispatchFormState}
             />
           </Box>
