@@ -13,6 +13,7 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostListGroup from "./PetPostListGroup";
@@ -105,11 +106,46 @@ const FosterQuestionnaire = ({
   fosterType,
   isFormViewOpen,
   onFormViewClose,
+  postId,
 }: {
   fosterType: FosterType;
   isFormViewOpen: boolean;
   onFormViewClose: () => void;
+  postId: Types.ObjectId;
 }) => {
+  const mutation = trpc.user.addToAppliedTo.useMutation();
+  const { user } = useAuth();
+  const toast = useToast();
+  const utils = trpc.useContext();
+
+  function submitQuestionnaire() {
+    mutation.mutate(
+      {
+        uid: user!.uid,
+        postId: postId.toString(),
+      },
+      {
+        onSuccess: () => {
+          utils.user.invalidate();
+          onFormViewClose();
+        },
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Questionnaire submission was unsuccessful",
+            containerStyle: {
+              whiteSpace: "pre-line",
+            },
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "top",
+          });
+        },
+      }
+    );
+  }
+
   return (
     <Modal
       isOpen={isFormViewOpen}
@@ -140,7 +176,9 @@ const FosterQuestionnaire = ({
           <Button variant="outline-secondary" mr={3} onClick={onFormViewClose}>
             Cancel
           </Button>
-          <Button variant="solid-primary">Submit</Button>
+          <Button variant="solid-primary" onClick={() => submitQuestionnaire()}>
+            Submit
+          </Button>
         </ModalFooter>
         <Flex
           direction="column"
@@ -178,6 +216,7 @@ const FosterQuestionnaire = ({
               width="full"
               paddingY={5}
               borderRadius="full"
+              onClick={() => submitQuestionnaire()}
             >
               Submit
             </Button>
@@ -208,12 +247,14 @@ import {
 import { Role } from "../../utils/types/account";
 import { useAuth } from "../../context/auth";
 import DeletePostModal from "./DeletePostModal";
+import { trpc } from "../../utils/trpc";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   postData: IPost & { _id: Types.ObjectId };
-}> = ({ isOpen, onClose, postData }) => {
+  appliedTo: boolean;
+}> = ({ isOpen, onClose, postData, appliedTo }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
@@ -470,17 +511,28 @@ const PetPostModal: React.FC<{
             paddingRight={8}
           >
             <Button
-              variant="solid-primary"
+              variant={appliedTo ? "solid-secondary" : "solid-primary"}
               width={60}
               borderRadius={"20px"}
               onClick={onFormViewOpen}
+              _hover={
+                appliedTo
+                  ? {}
+                  : {
+                      borderColor: "btn-outline-primary-border",
+                      color: "text-primary",
+                      backgroundColor: "white",
+                    }
+              }
+              cursor={appliedTo ? "initial" : "auto"}
             >
-              Foster Me!
+              {appliedTo ? "Applied" : "Foster Me!"}
             </Button>
             <FosterQuestionnaire
               fosterType={FosterType.Return}
               isFormViewOpen={isFormViewOpen}
               onFormViewClose={onFormViewClose}
+              postId={postData._id}
             />
           </Flex>
         </Stack>

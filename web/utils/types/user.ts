@@ -27,4 +27,5 @@ export interface IUser {
   dogsNotGoodWith?: GoodWith[];
   medical?: Medical[];
   behavioral?: Behavioral[];
+  appliedTo?: string[];
 }

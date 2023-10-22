@@ -50,6 +50,7 @@ function FeedPostCard(props: { post: IPost }) {
     .toString();
 
   return (
+    //TODO: display applied to cards differently
     <Card
       marginBottom="0px"
       paddingX={{ base: "12px", lg: "16px" }}

@@ -196,4 +196,25 @@ export const userRouter = router({
           });
       }
     }),
+  addToAppliedTo: procedure
+    .input(
+      z.object({
+        uid: z.string(),
+        postId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        await updateUserByUid(input.uid, {
+          $push: { appliedTo: input.postId },
+        });
+        return { success: true };
+      } catch (e) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+          cause: e,
+        });
+      }
+    }),
 });

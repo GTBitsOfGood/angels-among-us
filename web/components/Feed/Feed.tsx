@@ -307,6 +307,9 @@ function Feed(props: {
 
   const { userData } = useAuth();
 
+  const appliedTo = trpc.user.get.useQuery({ uid: userData!.uid }).data
+    ?.appliedTo;
+
   function getInitialFilters(): SelectedFilters {
     return filterGroups.reduce((acc, curr) => {
       const group = curr.filters.reduce((a, c) => {
@@ -619,6 +622,11 @@ function Feed(props: {
           isOpen={isPostViewOpen}
           onClose={onPostViewClose}
           postData={feedPosts[modalPostIndex]}
+          appliedTo={
+            appliedTo
+              ? appliedTo.includes(feedPosts[modalPostIndex]._id.toString())
+              : false
+          }
         />
       )}
     </>
