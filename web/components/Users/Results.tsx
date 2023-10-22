@@ -4,6 +4,8 @@ import {
   Button,
   Center,
   Flex,
+  Grid,
+  GridItem,
   Heading,
   Spinner,
   Text,
@@ -111,22 +113,21 @@ export default function Results({ filters, setSearched }: ResultsProps) {
         width="200%"
       />
 
-      <Flex
-        width="100%"
-        direction="row"
-        wrap="wrap"
+      <Grid
+        gridTemplateColumns={["1fr", "repeat(auto-fit, minmax(300px, 1fr))"]}
         gap={5}
         justifyContent="center"
+        maxWidth="100%"
       >
         {users?.data?.data?.map((user) => (
-          <Box
+          <GridItem
             key={user.uid}
             outline="1px solid gray"
             borderRadius={10}
             padding={2}
             justifyContent="center"
             overflowX="auto"
-            width={["100%", "400px"]}
+            width="100%"
           >
             <Flex direction="column">
               <Heading size="md">{user.name}</Heading>
@@ -139,9 +140,9 @@ export default function Results({ filters, setSearched }: ResultsProps) {
                 {user.preferredEmail ?? user.email}
               </Text>
             </Flex>
-          </Box>
+          </GridItem>
         ))}
-      </Flex>
+      </Grid>
     </Flex>
   );
 }
