@@ -218,7 +218,7 @@ import MarkCoveredModal from "./MarkCoveredModal";
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost & { _id: Types.ObjectId } & { _id: Types.ObjectId };
+  postData: IPost & { _id: Types.ObjectId };
 }> = ({ isOpen, onClose, postData }) => {
   const {
     isOpen: isFormViewOpen,
