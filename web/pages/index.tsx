@@ -139,15 +139,12 @@ function Home() {
       </Head>
       <Flex height="100vh" bgColor="black">
         <Flex
-          display={["flex", "none"]}
+          display="flex"
           position="absolute"
-          height="50%"
+          height={["50%", "100%"]}
           bottom={0}
         >
-          <Image src={backgroundImage.src} objectFit="cover" />
-        </Flex>
-        <Flex display={["none", "flex"]}>
-          <Image src={backgroundImage.src} />
+          <Image src={backgroundImage.src} objectFit="cover" alt="Dog" />
         </Flex>
 
         <Link
@@ -164,18 +161,19 @@ function Home() {
           />
         </Link>
         <Flex
-          bgColor={["none", "black"]}
           justifyContent={["center", "flex-start"]}
           alignItems="center"
           height="100%"
           position="absolute"
           right={0}
-          width={["100%", "50%"]}
+          width={["100%", "800px"]}
+          maxWidth="100%"
+          paddingX={["0", "50px"]}
         >
           <Stack
             direction="column"
             alignItems={["center", "center"]}
-            width={["80%", "60%"]}
+            width={["80%", "500px"]}
             spacing="6"
           >
             <Image
