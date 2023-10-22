@@ -114,7 +114,6 @@ function FeedPostCard(props: { post: IPost }) {
         position="absolute"
         width={{ lg: "52vw" }}
         height={"100%"}
-        zIndex={2}
         top={0}
         right={0}
         opacity={post.covered ? "30%" : "0%"}
