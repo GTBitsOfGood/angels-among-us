@@ -337,6 +337,14 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
+          <Box>
+            <Text>Gets along with cats</Text>
+            <Picker
+              field="getsAlongWithCats"
+              val={formState.getsAlongWithCats}
+              dispatchFormState={dispatchFormState}
+            />
+          </Box>
         </Grid>
       </Box>
     </Stack>
