@@ -256,7 +256,7 @@ const PostCreationModal: React.FC<{
         return;
       }
 
-      if (uploadResp.status === 500 && count++ === maxTries) {
+      if (uploadResp.status === 500 && ++count === maxTries) {
         throw new Error("Error uploading images.");
       }
     }
