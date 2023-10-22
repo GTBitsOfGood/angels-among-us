@@ -7,6 +7,7 @@ import {
   Text,
   Box,
   Textarea,
+  Grid,
 } from "@chakra-ui/react";
 import {
   Age,
@@ -264,9 +265,12 @@ export const FormSlide: React.FC<{
           />
         </FormControl>
       </Stack>
-      <Stack dir="col" spacing={10} pt={2}>
-        <Stack direction="row" spacing={10}>
-          <Box flex={1}>
+      <Box>
+        <Grid
+          templateColumns={{ base: "repeat(3, 1fr)", md: "repeat(3, 1fr)" }}
+          gap={5}
+        >
+          <Box>
             <Text>House Trained</Text>
             <Picker
               field="houseTrained"
@@ -274,7 +278,7 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-          <Box flex={1}>
+          <Box>
             <Text>Crate Trained</Text>
             <Picker
               field="crateTrained"
@@ -282,7 +286,7 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-          <Box flex={1}>
+          <Box>
             <Text>Spay/Neuter Status</Text>
             <Picker
               field="spayNeuterStatus"
@@ -290,9 +294,7 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-        </Stack>
-        <Stack direction="row" spacing={10}>
-          <Box flex={1}>
+          <Box>
             <Text>Gets along with men</Text>
             <Picker
               field="getsAlongWithMen"
@@ -300,7 +302,7 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-          <Box flex={1}>
+          <Box>
             <Text>Gets along with women</Text>
             <Picker
               field="getsAlongWithWomen"
@@ -308,7 +310,7 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-          <Box flex={1}>
+          <Box>
             <Text>Gets along with older kids</Text>
             <Picker
               field="getsAlongWithOlderKids"
@@ -316,9 +318,7 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-        </Stack>
-        <Stack direction="row" spacing={10}>
-          <Box flex={1}>
+          <Box>
             <Text>Gets along with young kids</Text>
             <Picker
               field="getsAlongWithYoungKids"
@@ -326,7 +326,7 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-          <Box flex={1}>
+          <Box>
             <Text>Gets along with large dogs</Text>
             <Picker
               field="getsAlongWithLargeDogs"
@@ -334,7 +334,7 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-          <Box flex={1}>
+          <Box>
             <Text>Gets along with small dogs</Text>
             <Picker
               field="getsAlongWithSmallDogs"
@@ -342,16 +342,16 @@ export const FormSlide: React.FC<{
               dispatchFormState={dispatchFormState}
             />
           </Box>
-        </Stack>
-        <Box w="12.7rem">
-          <Text>Gets along with cats</Text>
-          <Picker
-            field="getsAlongWithCats"
-            val={formState.getsAlongWithCats}
-            dispatchFormState={dispatchFormState}
-          />
-        </Box>
-      </Stack>
+          <Box>
+            <Text>Gets along with cats</Text>
+            <Picker
+              field="getsAlongWithCats"
+              val={formState.getsAlongWithCats}
+              dispatchFormState={dispatchFormState}
+            />
+          </Box>
+        </Grid>
+      </Box>
     </Stack>
   );
 };
