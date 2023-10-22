@@ -2,7 +2,9 @@ import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Center,
   Flex,
+  Spinner,
   Stack,
   Text,
   useDisclosure,
@@ -29,6 +31,7 @@ import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
 import { Types } from "mongoose";
 import Select from "react-select";
+import useDebounce from "../../hooks/useDebounce";
 
 export type FilterGroup = {
   title: string;
@@ -377,6 +380,7 @@ function Feed(props: {
       postFilters: getQueryFilters(selectedFilters),
       covered: role === Role.Volunteer ? false : displayCovered,
     }).data;
+  const [debouncedFeedPosts, isUpdating] = useDebounce(feedPosts, 400);
 
   const [modalPostIndex, setModalPostIndex] = useState(0);
 
@@ -551,22 +555,28 @@ function Feed(props: {
               </Button>
             )}
           </Flex>
-          <Stack overflowY="auto" spacing={0}>
-            {feedPosts?.map((p, ind) => {
-              return (
-                <Box
-                  onClick={() => {
-                    setModalPostIndex(ind);
-                    onPostViewOpen();
-                  }}
-                  _hover={{ cursor: "pointer" }}
-                  key={ind}
-                >
-                  <FeedPostCard post={p} />
-                </Box>
-              );
-            })}
-          </Stack>
+          {isUpdating ? (
+            <Center height="75%" width="100%">
+              <Spinner size="xl" />
+            </Center>
+          ) : (
+            <Stack overflowY="auto" spacing={0}>
+              {debouncedFeedPosts?.map((p, ind) => {
+                return (
+                  <Box
+                    onClick={() => {
+                      setModalPostIndex(ind);
+                      onPostViewOpen();
+                    }}
+                    _hover={{ cursor: "pointer" }}
+                    key={ind}
+                  >
+                    <FeedPostCard post={p} />
+                  </Box>
+                );
+              })}
+            </Stack>
+          )}
         </Flex>
       </Stack>
     </Flex>
@@ -670,11 +680,11 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      {feedPosts && feedPosts.length > 0 && (
+      {debouncedFeedPosts && debouncedFeedPosts.length > 0 && (
         <PetPostModal
           isOpen={isPostViewOpen}
           onClose={onPostViewClose}
-          postData={feedPosts[modalPostIndex]}
+          postData={debouncedFeedPosts[modalPostIndex]}
         />
       )}
     </>
