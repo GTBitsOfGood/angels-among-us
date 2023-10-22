@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Divider,
   Flex,
   Grid,
   GridItem,
@@ -79,8 +78,8 @@ export default function Search({
         width="100%"
       >
         <Stack align="center" marginBottom={15}>
-          <Text>Filter Options</Text>
-          <Divider borderColor="gray.400" />
+          {/* <Text>Filter Options</Text>
+          <Divider borderColor="gray.400" /> */}
           <Text alignSelf="start">
             Fill out at least one field to filter for volunteers that match
             those options:

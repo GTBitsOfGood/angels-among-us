@@ -1,5 +1,13 @@
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Heading,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import { SearchUsersParams } from "../../db/actions/User";
 import { PossibleTypes } from "../../pages/onboarding";
@@ -50,7 +58,11 @@ export default function Results({ filters, setSearched }: ResultsProps) {
   const users = trpc.user.searchUsers.useQuery({ searchParams: filters });
   console.log(users);
 
-  return (
+  return users.isLoading ? (
+    <Center w="100%" h="100%">
+      <Spinner size="xl" />
+    </Center>
+  ) : (
     <Flex
       direction="column"
       display="flex"
@@ -58,6 +70,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
       height="100%"
       padding={5}
       overflowY="auto"
+      overflowX="hidden"
       align="center"
       gap={5}
       position="relative"
@@ -76,7 +89,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
       <Heading size="md" marginTop={[3, 0]}>
         Search Results
       </Heading>
-      <Box outline="2px solid gray" borderRadius={20} padding={5} width="100%">
+      <Box borderRadius={20} padding={5} width="100%">
         <Text>
           Showing filter results for volunteers that can handle dogs that
           are/have:
@@ -91,6 +104,12 @@ export default function Results({ filters, setSearched }: ResultsProps) {
           )}
         </Flex>
       </Box>
+      <Box
+        marginTop="-20px"
+        bgColor="btn-solid-primary-bg"
+        height="10px"
+        width="200%"
+      />
 
       <Flex
         width="100%"
@@ -111,11 +130,11 @@ export default function Results({ filters, setSearched }: ResultsProps) {
           >
             <Flex direction="column">
               <Heading size="md">{user.name}</Heading>
-              <Text whiteSpace="nowrap" textOverflow="ellipsis">
+              <Text wordBreak="break-all">
                 <b>Email: </b>
                 {user.email}
               </Text>
-              <Text whiteSpace="nowrap" textOverflow="ellipsis">
+              <Text wordBreak="break-all">
                 <b>Preferred Email: </b>
                 {user.preferredEmail ?? user.email}
               </Text>
