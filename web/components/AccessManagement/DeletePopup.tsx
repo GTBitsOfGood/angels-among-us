@@ -54,7 +54,7 @@ function DeletePopup(props: PropertyType) {
       <Button
         variant="outline-primary-inverted"
         onClick={onOpen}
-        disabled={itemsToDelete.length === 0}
+        isDisabled={itemsToDelete.length === 0}
       >
         Delete Selected Items
       </Button>
