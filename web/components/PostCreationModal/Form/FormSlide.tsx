@@ -21,8 +21,6 @@ import {
   genderLabels,
   Medical,
   medicalLabels,
-  PetKind,
-  petKindLabels,
   Size,
   sizeLabels,
   Temperament,
@@ -67,33 +65,7 @@ export const FormSlide: React.FC<{
         />
       </FormControl>
       <Stack direction={"row"} spacing={10}>
-        <FormControl className="petKindForm" maxW="450px">
-          <FormLabel>What kind of pet?</FormLabel>
-          <Select
-            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
-            value={
-              formState.petKind
-                ? {
-                    value: formState.petKind as string,
-                    label: petKindLabels[formState.petKind],
-                  }
-                : undefined
-            }
-            options={Object.entries(petKindLabels).map(([k, v]) => ({
-              value: k,
-              label: v,
-            }))}
-            onChange={(e) =>
-              dispatchFormState({
-                type: "setField",
-                key: "petKind",
-                data: e!.value as PetKind,
-              })
-            }
-            required
-          />
-        </FormControl>
-        <FormControl className="genderForm" maxW="450px">
+        <FormControl className="genderForm" width="100%">
           <FormLabel>Gender</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
