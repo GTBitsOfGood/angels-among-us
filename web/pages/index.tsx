@@ -122,8 +122,7 @@ function Home() {
     );
   }
 
-  document.title = "Login";
-
+  document.title = "Angels Among Us Pet Rescue Placements Platform";
   return (
     <Flex height="100vh" bgColor="black">
       <Flex

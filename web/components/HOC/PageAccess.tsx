@@ -17,6 +17,14 @@ const pageAccess: Record<Pages, Set<Role>> = {
   [Pages.RESOURCES]: unrestricted,
 };
 
+const pageTitles: Record<Pages, string> = {
+  [Pages.ONBOARDING]: "Onboarding",
+  [Pages.ACCESS_MANAGEMENT]: "Access Management",
+  [Pages.PROFILE]: "Profile",
+  [Pages.FEED]: "Feed",
+  [Pages.RESOURCES]: "Resources",
+};
+
 const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {
   const WrappedComponent = (props: P) => {
     const router = useRouter();
@@ -38,6 +46,8 @@ const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {
     if (!authorized) {
       return <PageNotFoundError />;
     }
+
+    document.title = pageTitles[router.pathname as Pages];
 
     if (pageAccess[router.pathname as Pages].has(role!)) {
       return <Component {...props} />;
