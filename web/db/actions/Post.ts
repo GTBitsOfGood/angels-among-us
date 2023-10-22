@@ -172,7 +172,7 @@ async function updatePostDetails(
 async function updatePostStatus(oid: Types.ObjectId, session?: ClientSession) {
   return await Post.findOneAndUpdate(
     { _id: oid },
-    [{ $set: { covered: { $not: "$covered" } } }],
+    [{ $set: { covered: { $not: "$covered" }, date: new Date() } }],
     { session: session }
   );
 }
