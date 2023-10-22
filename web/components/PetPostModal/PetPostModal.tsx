@@ -3,6 +3,8 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   Input,
   Modal,
   ModalCloseButton,
@@ -13,11 +15,16 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostListGroup from "./PetPostListGroup";
 import { FosterType } from "../../utils/types/post";
+import { trpc } from "../../utils/trpc";
+import { useState } from "react";
+import { z } from "zod";
 import { Types } from "mongoose";
+import { useAuth } from "../../context/auth";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
@@ -26,122 +33,225 @@ type FosterTypeData = {
   }>;
 };
 
+type QuestionResponseData = {
+  [key: string]: string;
+};
+
+const numOtherDogs = {
+  key: "numOtherDogs",
+  title: "How many other fosters and personal dogs do you have?",
+};
+
+const unexpectedMedical = {
+  key: "unexpectedMedical",
+  title:
+    "If unexpected medical issues arise are you able to continue to foster?",
+};
+
+const travelPlans = {
+  key: "travelPlans",
+  title: "Do you have travel plans within the next month?",
+};
+
+const hasCat = {
+  key: "hasCat",
+  title: "Do you have a cat?",
+};
+
+const fencedYard = {
+  key: "fencedYard",
+  title: "Do you have a fenced yard? If so, what type of fence?",
+};
+
+const childAge = {
+  key: "childAge",
+  title:
+    "How old are the children living in the home or that would regularly be interacting with the foster dog?",
+};
+
+const timeUnattended = {
+  key: "timeUnattended",
+  title: "How many hours a day would the pet be alone/unattended?",
+};
+
+const canQuarantine = {
+  key: "canQuarantine",
+  title: "Are you able to quarantine?",
+};
+
 const data: FosterTypeData = {
   [FosterType.Return]: [
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "maxDogs",
-      title: "What is the maximum number of dogs you are willing to foster?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "maxDogs",
-      title: "What is the maximum number of dogs you are willing to foster?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "maxDogs",
-      title: "What is the maximum number of dogs you are willing to foster?",
-    },
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-    {
-      key: "maxDogs",
-      title: "What is the maximum number of dogs you are willing to foster?",
-    },
+    numOtherDogs,
+    unexpectedMedical,
+    travelPlans,
+    hasCat,
+    fencedYard,
+    childAge,
+    timeUnattended,
   ],
-  [FosterType.Boarding]: [
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-  ],
-  [FosterType.Temporary]: [
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
-  ],
+  [FosterType.Boarding]: [numOtherDogs, hasCat, fencedYard, childAge],
+  [FosterType.Temporary]: [numOtherDogs, hasCat, fencedYard, childAge],
   [FosterType.Shelter]: [
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
+    numOtherDogs,
+    canQuarantine,
+    unexpectedMedical,
+    travelPlans,
+    hasCat,
+    timeUnattended,
   ],
   [FosterType.FosterMove]: [
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
+    numOtherDogs,
+    unexpectedMedical,
+    travelPlans,
+    hasCat,
+    canQuarantine,
+    fencedYard,
+    childAge,
+    timeUnattended,
   ],
   [FosterType.OwnerSurrender]: [
-    {
-      key: "numOtherDogs",
-      title: "How many other fosters and personal dogs do you have?",
-    },
+    numOtherDogs,
+    canQuarantine,
+    unexpectedMedical,
+    travelPlans,
+    hasCat,
+    timeUnattended,
   ],
 };
 
+/**TODO
+ * Refactor component to eliminate duplicated form input logic.
+ **/
 const FosterQuestionnaire = ({
   fosterType,
+  postId,
   isFormViewOpen,
   onFormViewClose,
 }: {
   fosterType: FosterType;
+  postId: Types.ObjectId;
   isFormViewOpen: boolean;
   onFormViewClose: () => void;
 }) => {
+  const initialQuestionResponseData: QuestionResponseData = data[
+    fosterType
+  ].reduce(
+    (responses, question) =>
+      ({
+        ...responses,
+        [question.key]: "",
+      } as QuestionResponseData),
+    {}
+  );
+
+  const [fosterQuestionResponses, setfosterQuestionResponses] = useState(
+    initialQuestionResponseData
+  );
+
+  const formSchema = z.record(
+    z.string().min(1, { message: "All fields required." })
+  );
+
+  const { userData } = useAuth();
+  const mutation = trpc.post.offer.useMutation();
+  const toast = useToast();
+
+  function handleSubmission() {
+    const formValidation = formSchema.safeParse(fosterQuestionResponses);
+    if (!formValidation.success) {
+      toast({
+        title: formValidation.error.issues[0].message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
+    } else {
+      const offer = {
+        email: userData?.email ?? "",
+        postOid: postId,
+      };
+      mutation.mutate(offer, {
+        onSuccess: () => {
+          toast.closeAll();
+          onFormViewClose();
+          toast({
+            description:
+              "Thank you for submitting a foster application with Angels Among Us! You will hear back from us soon!",
+            status: "info",
+            duration: 9000,
+            isClosable: true,
+            position: "top",
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Request unsuccessful. Please try again later.",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+            position: "top",
+          });
+        },
+      });
+    }
+  }
+
   return (
     <Modal
       isOpen={isFormViewOpen}
       onClose={onFormViewClose}
       isCentered
       scrollBehavior="inside"
-      size={["full", "xl"]}
+      size={{ base: "full", lg: "2xl" }}
     >
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader display={["none", "block"]} px={10} mt={4}>
-          Foster Questionnaire
+      <ModalContent
+        padding={{ lg: 8 }}
+        height={{ lg: 650 }}
+        width={{ lg: 650 }}
+      >
+        <ModalHeader display={["none", "block"]} mt={4}>
+          <Text size={"xl"}> Foster Questionnaire</Text>
         </ModalHeader>
-        <ModalCloseButton display={["none", "block"]} mt={6} mr={6} />
-        <Flex display={["none", "flex"]} flexDir="column" overflowY="scroll">
-          <Flex paddingX={10} flexDir="column" gap={4}>
-            {data[fosterType].map((question) => {
-              return (
-                <Flex key={question.key} flexDir="column" gap={2}>
-                  <Text>{question.title}</Text>
-                  <Input />
-                </Flex>
-              );
-            })}
+        <Flex display={["none", "block"]} overflowY={"scroll"}>
+          <ModalCloseButton display={["none", "block"]} mt={6} mr={6} />
+          <Flex alignItems={"center"}>
+            <Flex paddingX={6} flexDir="column" gap={[5, 7]}>
+              {data[fosterType].map(({ key, title }) => {
+                return (
+                  <Flex key={key} flexDir="column" gap={2}>
+                    <FormControl isRequired>
+                      <FormLabel>{title}</FormLabel>
+                      <Input
+                        bgColor={"#FAFBFC"}
+                        value={fosterQuestionResponses[key]}
+                        onChange={(event) => {
+                          setfosterQuestionResponses({
+                            ...fosterQuestionResponses,
+                            [key]: event.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Flex>
+                );
+              })}
+            </Flex>
           </Flex>
+          <ModalFooter display={["none", "block"]} mt={6}>
+            <Flex alignItems={"center"} justifyContent={"center"}>
+              <Button
+                variant="solid-primary"
+                width={"200px"}
+                onClick={handleSubmission}
+              >
+                Submit
+              </Button>
+            </Flex>
+          </ModalFooter>
         </Flex>
-        <ModalFooter display={["none", "flex"]} mb={2}>
-          <Button variant="outline-secondary" mr={3} onClick={onFormViewClose}>
-            Cancel
-          </Button>
-          <Button variant="solid-primary">Submit</Button>
-        </ModalFooter>
+
         <Flex
           direction="column"
           width="100%"
@@ -162,26 +272,40 @@ const FosterQuestionnaire = ({
             <Text>Back to Pet Post</Text>
           </Stack>
           <ModalHeader>Foster Questionnaire</ModalHeader>
-          <Flex paddingX={6} flexDir="column" gap={4} overflowY="scroll">
-            {data[fosterType].map((question) => {
-              return (
-                <Flex key={question.key} flexDir="column" gap={2}>
-                  <Text>{question.title}</Text>
-                  <Input />
-                </Flex>
-              );
-            })}
+          <Flex direction={"column"} overflowY={"scroll"}>
+            <Flex paddingX={6} flexDir="column" gap={[5, 7]}>
+              {data[fosterType].map(({ key, title }) => {
+                return (
+                  <Flex key={key} flexDir="column" gap={2}>
+                    <FormControl isRequired>
+                      <FormLabel>{title}</FormLabel>
+                      <Input
+                        bgColor={"#FAFBFC"}
+                        value={fosterQuestionResponses[key]}
+                        onChange={(event) => {
+                          setfosterQuestionResponses({
+                            ...fosterQuestionResponses,
+                            [key]: event.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Flex>
+                );
+              })}
+            </Flex>{" "}
+            <ModalFooter display={["flex", "none"]} mb={2}>
+              <Button
+                variant="solid-primary"
+                width="full"
+                paddingY={5}
+                borderRadius="full"
+                onClick={handleSubmission}
+              >
+                Submit
+              </Button>
+            </ModalFooter>
           </Flex>
-          <ModalFooter display={["flex", "none"]} mb={2}>
-            <Button
-              variant="solid-primary"
-              width="full"
-              paddingY={5}
-              borderRadius="full"
-            >
-              Submit
-            </Button>
-          </ModalFooter>
         </Flex>
       </ModalContent>
     </Modal>
@@ -206,7 +330,6 @@ import {
   fosterTypeDescriptions,
 } from "../../utils/types/post";
 import { Role } from "../../utils/types/account";
-import { useAuth } from "../../context/auth";
 import DeletePostModal from "./DeletePostModal";
 
 const PetPostModal: React.FC<{
@@ -478,7 +601,8 @@ const PetPostModal: React.FC<{
               Foster Me!
             </Button>
             <FosterQuestionnaire
-              fosterType={FosterType.Return}
+              fosterType={type}
+              postId={postData._id}
               isFormViewOpen={isFormViewOpen}
               onFormViewClose={onFormViewClose}
             />
