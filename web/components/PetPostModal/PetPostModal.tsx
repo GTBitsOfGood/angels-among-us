@@ -15,6 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Stack,
   Text,
   useDisclosure,
@@ -197,7 +198,6 @@ import {
   fosterTypeLabels,
   behavioralLabels,
   spayNeuterStatusLabels,
-  IPost,
   medicalLabels,
   crateTrainedLabels,
   houseTrainedLabels,
@@ -214,12 +214,13 @@ import { Role } from "../../utils/types/account";
 import { useAuth } from "../../context/auth";
 import DeletePostModal from "./DeletePostModal";
 import MarkCoveredModal from "./MarkCoveredModal";
+import { trpc } from "../../utils/trpc";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost & { _id: Types.ObjectId };
-}> = ({ isOpen, onClose, postData }) => {
+  postId: Types.ObjectId;
+}> = ({ isOpen, onClose, postId }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
@@ -238,12 +239,32 @@ const PetPostModal: React.FC<{
     onClose: onCoveredConfirmationClose,
   } = useDisclosure();
 
+  const { data: postData, isLoading } = trpc.post.get.useQuery({ _id: postId });
+  const { userData } = useAuth();
+  const role = userData?.role;
+
+  if (isLoading) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        size={"full"}
+        onClose={onClose}
+        scrollBehavior={"inside"}
+      >
+        <ModalContent>
+          <Spinner size="xl" />
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  if (!postData) {
+    return <div>no</div>;
+  }
+
   const coveredButtonColor = postData.covered
     ? "text-primary"
     : "text-secondary";
-
-  const { userData } = useAuth();
-  const role = userData?.role;
 
   const {
     name,
@@ -388,7 +409,7 @@ const PetPostModal: React.FC<{
                   <MarkCoveredModal
                     isCoveredConfirmationOpen={isCoveredConfirmationOpen}
                     onCoveredConfirmationClose={onCoveredConfirmationClose}
-                    postId={postData._id}
+                    postId={postId}
                     isCovered={postData.covered}
                   />
                 </Button>
@@ -412,7 +433,7 @@ const PetPostModal: React.FC<{
                     isDeleteConfirmationOpen={isDeleteConfirmationOpen}
                     onDeleteConfirmationClose={onDeleteConfirmationClose}
                     onClose={onClose}
-                    postId={postData._id}
+                    postId={postId}
                   />
                 </Flex>
               )}
@@ -586,7 +607,7 @@ const PetPostModal: React.FC<{
                       isDeleteConfirmationOpen={isDeleteConfirmationOpen}
                       onDeleteConfirmationClose={onDeleteConfirmationClose}
                       onClose={onClose}
-                      postId={postData._id}
+                      postId={postId}
                     />
                   </Flex>
                 )}

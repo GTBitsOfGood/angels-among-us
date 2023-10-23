@@ -168,6 +168,12 @@ export const postRouter = router({
       }
       try {
         const post = await getPost(input.postOid, true);
+        if (!post) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No post with given id exists.",
+          });
+        }
         const email = fosterTypeEmails[post.type];
         let count = 0;
         const maxTries = 3;

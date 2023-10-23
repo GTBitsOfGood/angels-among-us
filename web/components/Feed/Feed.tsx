@@ -30,8 +30,8 @@ import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
 import { Types } from "mongoose";
-import Select from "react-select";
 import useDebounce from "../../hooks/useDebounce";
+import FeedCoveredDropdown from "./FeedCoveredDropdown";
 
 export type FilterGroup = {
   title: string;
@@ -312,8 +312,9 @@ function Feed(props: {
   const { userData } = useAuth();
   const role = userData?.role;
 
-  const [displayCovered, setDisplayCovered] = useState(undefined);
-  const [placeholder, setPlaceholder] = useState("Showing all posts");
+  const [displayCovered, setDisplayCovered] = useState<boolean | undefined>(
+    undefined
+  );
 
   function getInitialFilters(): SelectedFilters {
     return filterGroups.reduce((acc, curr) => {
@@ -382,7 +383,7 @@ function Feed(props: {
     }).data;
   const [debouncedFeedPosts, isUpdating] = useDebounce(feedPosts, 400);
 
-  const [modalPostIndex, setModalPostIndex] = useState(0);
+  const [modalPostId, setModalPostId] = useState<Types.ObjectId | null>(null);
 
   const mainContent = (
     <Flex
@@ -462,56 +463,6 @@ function Feed(props: {
                 Use My Preferences
               </Button>
             </Flex>
-            <Flex
-              marginTop={2}
-              display={
-                role === Role.Admin || role === Role.ContentCreator
-                  ? "flex"
-                  : "none"
-              }
-            >
-              <Select
-                controlShouldRenderValue={false}
-                placeholder={placeholder}
-                hideSelectedOptions={false}
-                isClearable={false}
-                maxMenuHeight={180}
-                menuPortalTarget={document.body}
-                styles={{
-                  menu: (provided) => ({
-                    ...provided,
-                    zIndex: 9999,
-                  }),
-                  menuPortal: (provided) => ({
-                    ...provided,
-                    zIndex: 9999,
-                  }),
-                  control: (baseStyles) => ({
-                    ...baseStyles,
-                    minWidth: 200,
-                    border: "1px solid #D9D9D9",
-                    boxShadow: "none",
-                    "&:hover": {
-                      border: "1px solid gray",
-                    },
-                    borderRadius: "10px",
-                  }),
-                  option: (provided, state) => ({
-                    ...provided,
-                    backgroundColor: state.isSelected ? "#57a0d5" : "white",
-                  }),
-                }}
-                options={[
-                  { value: undefined, label: "all posts" },
-                  { value: true, label: "only covered posts" },
-                  { value: false, label: "only uncovered posts" },
-                ]}
-                onChange={(event: any) => {
-                  setDisplayCovered(event.value);
-                  setPlaceholder("Showing " + event.label);
-                }}
-              />
-            </Flex>
           </Flex>
           {filterGroups.map((val) => {
             return (
@@ -537,14 +488,30 @@ function Feed(props: {
           <Flex
             w="100%"
             h="min-content"
-            mb="20px"
+            // mb="20px"
             dir="row"
             alignItems="center"
             justifyContent="space-between"
           >
-            <Text fontWeight="bold" fontSize="18px" ml="8px">
-              Latest Posts
-            </Text>
+            <Flex alignItems="center">
+              <Text fontWeight="bold" fontSize="18px" pl={2} pr={4}>
+                Latest Posts
+              </Text>
+              <Flex
+                display={{
+                  base: "none",
+                  md:
+                    role === Role.Admin || role === Role.ContentCreator
+                      ? "flex"
+                      : "none",
+                }}
+              >
+                <FeedCoveredDropdown
+                  displayCovered={displayCovered}
+                  setDisplayCovered={setDisplayCovered}
+                />
+              </Flex>
+            </Flex>
             {userData?.role !== Role.Volunteer && (
               <Button
                 variant="solid-primary"
@@ -555,21 +522,34 @@ function Feed(props: {
               </Button>
             )}
           </Flex>
+          <Flex
+            display={{
+              base: "flex",
+              md: "none",
+            }}
+            pt={2}
+            w="100%"
+          >
+            <FeedCoveredDropdown
+              displayCovered={displayCovered}
+              setDisplayCovered={setDisplayCovered}
+            />
+          </Flex>
           {isUpdating ? (
             <Center height="75%" width="100%">
               <Spinner size="xl" />
             </Center>
           ) : (
-            <Stack overflowY="auto" spacing={0}>
-              {debouncedFeedPosts?.map((p, ind) => {
+            <Stack overflowY="auto" spacing={0} w="100%" mt={4}>
+              {debouncedFeedPosts?.map((p) => {
                 return (
                   <Box
                     onClick={() => {
-                      setModalPostIndex(ind);
+                      setModalPostId(p._id);
                       onPostViewOpen();
                     }}
                     _hover={{ cursor: "pointer" }}
-                    key={ind}
+                    key={p._id.toString()}
                   >
                     <FeedPostCard post={p} />
                   </Box>
@@ -680,11 +660,11 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      {debouncedFeedPosts && debouncedFeedPosts.length > 0 && (
+      {debouncedFeedPosts && debouncedFeedPosts.length > 0 && modalPostId && (
         <PetPostModal
           isOpen={isPostViewOpen}
           onClose={onPostViewClose}
-          postData={debouncedFeedPosts[modalPostIndex]}
+          postId={modalPostId}
         />
       )}
     </>
