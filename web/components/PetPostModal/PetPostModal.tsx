@@ -37,6 +37,19 @@ type QuestionResponseData = {
   [key: string]: string;
 };
 
+const questionsRecord = {
+  numOtherDogs: "How many other fosters and personal dogs do you have?",
+  unexpectedMedical:
+    "If unexpected medical issues arise are you able to continue to foster?",
+  travelPlans: "Do you have travel plans within the next month?",
+  hasCat: "Do you have a cat?",
+  fencedYard: "Do you have a fenced yard? If so, what type of fence?",
+  childAge:
+    "How old are the children living in the home or that would regularly be interacting with the foster dog?",
+  timeUnattended: "How many hours a day would the pet be alone/unattended?",
+  canQuarantine: "Are you able to quarantine?",
+};
+
 const numOtherDogs = {
   key: "numOtherDogs",
   title: "How many other fosters and personal dogs do you have?",
@@ -167,9 +180,17 @@ const FosterQuestionnaire = ({
         position: "top",
       });
     } else {
+      const formData = formValidation.data;
+      const questionAnswerData = Object.entries(formData).map(
+        ([key, answer]) => ({
+          key: questionsRecord[key as keyof typeof questionsRecord],
+          answer,
+        })
+      );
       const offer = {
         email: userData?.email ?? "",
         postOid: postId,
+        responses: questionAnswerData,
       };
       mutation.mutate(offer, {
         onSuccess: () => {

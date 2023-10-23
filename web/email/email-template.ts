@@ -46,7 +46,12 @@ function bestAttachment(post: IPost) {
   }
 }
 
-export function emailTemplate(post: IPost, user: IUser) {
+interface Response {
+  key: string;
+  answer: string;
+}
+
+export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
   return `<!DOCTYPE html>
         <html>
           <head>
@@ -422,30 +427,21 @@ export function emailTemplate(post: IPost, user: IUser) {
                     </td>
                   </tr>
                 </table>
-              </div>
-              <div class="questionnaire-responses">
-                <p class="medium-weight-text font-24px">
-                  Foster Questionnaire Responses
-                </p>
-                <div class="question">
-                  <p class="medium-weight-text question-title">Placeholder Question</p>
-                  <p class="question-response">Response to question</p>
                 </div>
-                <div class="question">
-                  <p class="medium-weight-text question-title">Placeholder Question</p>
-                  <p class="question-response">Response to question</p>
-                </div>
-                <div class="question">
-                  <p class="medium-weight-text question-title">Placeholder Question</p>
-                  <p class="question-response">Response to question</p>
-                </div>
-                <div class="question">
-                  <p class="medium-weight-text question-title">Placeholder Question</p>
-                  <p class="question-response">Response to question</p>
-                </div>
-                <div class="question">
-                  <p class="medium-weight-text question-title">Placeholder Question</p>
-                  <p class="question-response">Response to question</p>
+                <div class="questionnaire-responses">
+                  <p class="medium-weight-text font-24px">
+                    Foster Questionnaire Responses
+                  </p>
+                  ${responses
+                    .map(
+                      (response) => `
+                    <div class="question">
+                      <p class="medium-weight-text question-title">${response.key}</p>
+                      <p class="question-response">${response.answer}</p>
+                    </div>
+                  `
+                    )
+                    .join("")}
                 </div>
               </div>
             </div>

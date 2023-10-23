@@ -37,6 +37,11 @@ const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24
 );
 
+const questionnaireSchema = z.object({
+  key: z.string(),
+  answer: z.string(),
+});
+
 const postSchema = z.object({
   name: z.string(),
   description: z.string(),
@@ -160,6 +165,7 @@ export const postRouter = router({
       z.object({
         email: z.string(),
         postOid: zodOidType,
+        responses: z.array(questionnaireSchema),
       })
     )
     .mutation(async ({ input }) => {
@@ -187,7 +193,7 @@ export const postRouter = router({
             : input.email;
         let count = 0;
         const maxTries = 3;
-        const emailBody = emailTemplate(post, user);
+        const emailBody = emailTemplate(post, user, input.responses);
         const options = { url: "www.angelsrescue.org" };
         while (true) {
           try {
