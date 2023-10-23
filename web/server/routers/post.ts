@@ -181,7 +181,10 @@ export const postRouter = router({
       }
       try {
         const post = await getPost(input.postOid, true);
-        const email = fosterTypeEmails[post.type];
+        const email =
+          process.env.CONTEXT === "production"
+            ? fosterTypeEmails[post.type]
+            : input.email;
         let count = 0;
         const maxTries = 3;
         const emailBody = emailTemplate(post, user);
@@ -197,7 +200,7 @@ export const postRouter = router({
             });
             break;
           } catch (e) {
-            if (count++ == maxTries) {
+            if (++count == maxTries) {
               throw new TRPCError({
                 message: "Unable to send Email.",
                 code: "INTERNAL_SERVER_ERROR",

@@ -148,6 +148,11 @@ export default function Navbar() {
       flexDir="column"
       position="absolute"
       top={0}
+      borderBottom={{
+        base: isMenuOpen ? "1px solid" : "none",
+        lg: "none",
+      }}
+      borderBottomColor={{ base: "text-secondary" }}
     >
       <Flex
         direction="row"

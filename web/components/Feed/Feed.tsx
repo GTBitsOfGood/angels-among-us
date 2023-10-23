@@ -374,10 +374,55 @@ function Feed(props: {
 
   const [modalPostIndex, setModalPostIndex] = useState(0);
 
-  const mainContent = (
+  const filter = (
+    <Flex direction="column" width="100%" padding="0px">
+      <Flex justifyContent="flex-end" margin="12px" marginTop="0px" gap="8px">
+        <Button
+          variant="outline-secondary"
+          onClick={() => {
+            setSelectedFilters({
+              type: "reset",
+              filter: filterGroups[0].filters[0],
+              ind: 0,
+              event: [],
+            });
+          }}
+        >
+          Clear All
+        </Button>
+        <Button
+          onClick={() => {
+            setSelectedFilters({
+              type: "useprefs",
+              filter: filterGroups[0].filters[0],
+              ind: 0,
+              event: [],
+            });
+          }}
+          variant="solid-primary"
+        >
+          Use My Preferences
+        </Button>
+      </Flex>
+      <Flex direction="column">
+        {filterGroups.map((val) => {
+          return (
+            <FeedFilterGroup
+              key={val.title}
+              filterGroup={val}
+              selectedFilters={selectedFilters}
+              setSelectedFilters={setSelectedFilters}
+            />
+          );
+        })}
+      </Flex>
+    </Flex>
+  );
+
+  return (
     <Flex
       className="feed"
-      backgroundColor="bg-primary"
+      backgroundColor={{ base: "white", lg: "bg-primary" }}
       justifyContent="center"
       height="100vh"
     >
@@ -387,30 +432,11 @@ function Feed(props: {
           base: document.getElementById("navbar")?.offsetHeight + "px",
           lg: "100px",
         }}
-        marginBottom="50px"
+        marginBottom={{ base: "0px", lg: "50px" }}
         marginX={{ base: "0px", lg: "40px" }}
         direction={{ base: "column", lg: "row" }}
         flex={{ base: "1", lg: "0" }}
       >
-        <Flex
-          display={{ base: "flex", lg: "none" }}
-          backgroundColor="#FFFFFF"
-          padding="10px"
-          direction="row"
-          justifyContent="flex-end"
-        >
-          <Button
-            variant="solid-primary"
-            onClick={() => {
-              setFilterDisplayed(!filterDisplayed);
-            }}
-            fontWeight="normal"
-            height="36px"
-            borderRadius="10px"
-          >
-            Filter By
-          </Button>
-        </Flex>
         <Flex
           width="25vw"
           borderRadius="10px"
@@ -425,8 +451,6 @@ function Feed(props: {
           <Flex justifyContent="flex-end" margin="12px" gap="8px">
             <Button
               variant="outline-secondary"
-              fontWeight="normal"
-              borderWidth="thin"
               onClick={() => {
                 setSelectedFilters({
                   type: "reset",
@@ -448,7 +472,6 @@ function Feed(props: {
                 });
               }}
               variant="solid-primary"
-              fontWeight="normal"
             >
               Use My Preferences
             </Button>
@@ -469,10 +492,11 @@ function Feed(props: {
           minHeight="0" // To prevent mobile view column flexbox blowout (flex: 1 doesn't respect parent's max height)
           flex="1"
           borderRadius={{ base: "0px", lg: "10px" }}
-          backgroundColor={{ base: "bg-primary", lg: "#F9F8F8" }}
+          backgroundColor={{ base: "white", lg: "#F9F8F8" }}
           direction="column"
           alignItems="center"
-          padding="20px"
+          padding={{ base: "0px", lg: "20px" }}
+          paddingBottom={{ base: "0px", lg: "0px" }}
         >
           <Flex
             w="100%"
@@ -481,12 +505,15 @@ function Feed(props: {
             dir="row"
             alignItems="center"
             justifyContent="space-between"
+            padding={{ base: "20px", lg: "0px" }}
+            paddingBottom="0px"
           >
-            <Text fontWeight="bold" fontSize="18px" ml="8px">
-              Latest Posts
+            <Text fontWeight="bold" fontSize="20px" ml="8px">
+              {filterDisplayed ? "Filter By:" : "Latest Posts"}
             </Text>
             {userData?.role !== Role.Volunteer && (
               <Button
+                display={{ base: "none", lg: "flex" }}
                 variant="solid-primary"
                 leftIcon={<AddIcon />}
                 onClick={onPostCreationOpen}
@@ -494,122 +521,46 @@ function Feed(props: {
                 Add new post
               </Button>
             )}
+            <Button
+              display={{ base: "flex", lg: "none" }}
+              variant={filterDisplayed ? "outline-secondary" : "solid-primary"}
+              onClick={() => {
+                setFilterDisplayed(!filterDisplayed);
+              }}
+              height="36px"
+              borderRadius="10px"
+            >
+              {filterDisplayed ? "Close" : "Filter By"}
+            </Button>
           </Flex>
-          <Stack spacing={5} overflowY="auto">
-            {feedPosts?.map((p, ind) => {
-              return (
-                <Box
-                  onClick={() => {
-                    setModalPostIndex(ind);
-                    onPostViewOpen();
-                  }}
-                  _hover={{ cursor: "pointer" }}
-                  key={ind}
-                >
-                  <FeedPostCard post={p} />
-                </Box>
-              );
-            })}
-          </Stack>
+          {filterDisplayed ? (
+            filter
+          ) : (
+            <Stack
+              spacing={5}
+              overflowY="auto"
+              padding={{ base: "0px 10px", lg: "0px" }}
+              minWidth="100%"
+            >
+              {feedPosts?.map((p, ind) => {
+                return (
+                  <Box
+                    onClick={() => {
+                      setModalPostIndex(ind);
+                      onPostViewOpen();
+                    }}
+                    _hover={{ cursor: "pointer" }}
+                    key={ind}
+                  >
+                    <FeedPostCard post={p} />
+                  </Box>
+                );
+              })}
+              <Flex></Flex>
+            </Stack>
+          )}
         </Flex>
       </Stack>
-    </Flex>
-  );
-
-  const filter = (
-    <Flex
-      className="filter"
-      backgroundColor="#DFDFDF"
-      height="fit-content"
-      minHeight="100vh"
-      width="inherit"
-      direction="column"
-    >
-      <Flex
-        backgroundColor="#FFFFFF"
-        padding="10px"
-        direction="row"
-        justifyContent="flex-end"
-        marginTop={document.getElementById("navbar")?.offsetHeight + "px"}
-        borderBottomWidth="2px"
-        borderBottomColor="#000000"
-      >
-        <Button
-          variant="outline-secondary"
-          onClick={() => {
-            setFilterDisplayed(!filterDisplayed);
-          }}
-          borderWidth="thin"
-          fontWeight="normal"
-        >
-          Close
-        </Button>
-      </Flex>
-      <Flex
-        backgroundColor="#FFFFFF"
-        direction="column"
-        height="fit-content"
-        width="inherit"
-      >
-        <Text
-          fontWeight="semibold"
-          margin="16px"
-          marginBottom="0px"
-          marginLeft="30px"
-          fontSize="20px"
-        >
-          Filter By:
-        </Text>
-        <Flex justifyContent="flex-end" margin="12px" gap="8px">
-          <Button
-            variant="outline-secondary"
-            fontWeight="normal"
-            borderWidth="thin"
-            onClick={() => {
-              setSelectedFilters({
-                type: "reset",
-                filter: filterGroups[0].filters[0],
-                ind: 0,
-                event: [],
-              });
-            }}
-          >
-            Clear All
-          </Button>
-          <Button
-            onClick={() => {
-              setSelectedFilters({
-                type: "useprefs",
-                filter: filterGroups[0].filters[0],
-                ind: 0,
-                event: [],
-              });
-            }}
-            variant="solid-primary"
-            fontWeight="normal"
-          >
-            Use My Preferences
-          </Button>
-        </Flex>
-        <Flex direction="column">
-          {filterGroups.map((val) => {
-            return (
-              <FeedFilterGroup
-                key={val.title}
-                filterGroup={val}
-                selectedFilters={selectedFilters}
-                setSelectedFilters={setSelectedFilters}
-              />
-            );
-          })}
-        </Flex>
-      </Flex>
-    </Flex>
-  );
-
-  return (
-    <>
-      {filterDisplayed ? filter : mainContent}
       <PostCreationModal
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
@@ -621,7 +572,7 @@ function Feed(props: {
           postData={feedPosts[modalPostIndex]}
         />
       )}
-    </>
+    </Flex>
   );
 }
 
