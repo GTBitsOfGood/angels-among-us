@@ -28,7 +28,6 @@ import {
 import ImageSlider from "./ImageSlider";
 import PetPostListGroup from "./PetPostListGroup";
 import { FosterType } from "../../utils/types/post";
-import { trpc } from "../../utils/trpc";
 import { useState } from "react";
 import { z } from "zod";
 import { Types } from "mongoose";
@@ -152,7 +151,7 @@ const FosterQuestionnaire = ({
     {}
   );
 
-  const [fosterQuestionResponses, setfosterQuestionResponses] = useState(
+  const [fosterQuestionResponses, setFosterQuestionResponses] = useState(
     initialQuestionResponseData
   );
 
@@ -160,7 +159,7 @@ const FosterQuestionnaire = ({
     z.string().min(1, { message: "All fields required." })
   );
 
-  const { userData } = useAuth();
+  const { userData, refetchUserData } = useAuth();
   const mutation = trpc.post.offer.useMutation();
   const toast = useToast();
 
@@ -181,6 +180,7 @@ const FosterQuestionnaire = ({
       };
       mutation.mutate(offer, {
         onSuccess: () => {
+          refetchUserData!();
           toast.closeAll();
           onFormViewClose();
           toast({
@@ -235,7 +235,7 @@ const FosterQuestionnaire = ({
                         bgColor={"#FAFBFC"}
                         value={fosterQuestionResponses[key]}
                         onChange={(event) => {
-                          setfosterQuestionResponses({
+                          setFosterQuestionResponses({
                             ...fosterQuestionResponses,
                             [key]: event.target.value,
                           });
@@ -259,7 +259,6 @@ const FosterQuestionnaire = ({
             </Flex>
           </ModalFooter>
         </Flex>
-
         <Flex
           direction="column"
           width="100%"
@@ -291,7 +290,7 @@ const FosterQuestionnaire = ({
                         bgColor={"#FAFBFC"}
                         value={fosterQuestionResponses[key]}
                         onChange={(event) => {
-                          setfosterQuestionResponses({
+                          setFosterQuestionResponses({
                             ...fosterQuestionResponses,
                             [key]: event.target.value,
                           });
@@ -338,13 +337,15 @@ import {
 } from "../../utils/types/post";
 import { Role } from "../../utils/types/account";
 import DeletePostModal from "./DeletePostModal";
+import { trpc } from "../../utils/trpc";
 import MarkCoveredModal from "./MarkCoveredModal";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   postId: Types.ObjectId;
-}> = ({ isOpen, onClose, postId }) => {
+  appliedTo: boolean;
+}> = ({ isOpen, onClose, postId, appliedTo }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
@@ -679,19 +680,23 @@ const PetPostModal: React.FC<{
             paddingRight={8}
           >
             <Button
-              variant="solid-primary"
+              isDisabled={appliedTo}
+              variant={appliedTo ? "solid-secondary" : "solid-primary"}
               width={60}
               borderRadius={"20px"}
               onClick={onFormViewOpen}
+              _hover={
+                appliedTo
+                  ? {}
+                  : {
+                      borderColor: "btn-outline-primary-border",
+                      color: "text-primary",
+                      backgroundColor: "white",
+                    }
+              }
             >
-              Foster Me!
+              {appliedTo ? "Applied" : "Foster Me!"}
             </Button>
-            <FosterQuestionnaire
-              fosterType={type}
-              postId={postId}
-              isFormViewOpen={isFormViewOpen}
-              onFormViewClose={onFormViewClose}
-            />
           </Flex>
         </Stack>
         <Flex direction="column" width="100%" display={["flex", "none"]}>
@@ -839,15 +844,22 @@ const PetPostModal: React.FC<{
             bgColor={"white"}
           >
             <Button
+              isDisabled={appliedTo}
               variant="solid-primary"
               width={"100%"}
               borderRadius={"20px"}
               onClick={onFormViewOpen}
             >
-              Foster Me!
+              {appliedTo ? "Applied" : "Foster Me!"}
             </Button>
           </Flex>
         </ModalFooter>
+        <FosterQuestionnaire
+          fosterType={type}
+          postId={postId}
+          isFormViewOpen={isFormViewOpen}
+          onFormViewClose={onFormViewClose}
+        />
       </ModalContent>
     </Modal>
   );

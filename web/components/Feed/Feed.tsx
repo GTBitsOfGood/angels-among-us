@@ -25,7 +25,7 @@ import {
   IPost,
   Size,
 } from "../../utils/types/post";
-import { IUser } from "../../utils/types/user";
+import { SerializedUser } from "../../utils/types/user";
 import PetPostModal from "../PetPostModal/PetPostModal";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
@@ -245,10 +245,12 @@ const parseOptArr = (
 
 /**
  * Imports user preferences and maps them to the feed filters
- * @param {IUser | null} userData user data
+ * @param {SerializedUser | null} userData user data
  * @returns {SelectedFilters | null} preferred filters
  */
-function getPrefFilters(userData: IUser | null): SelectedFilters | null {
+function getPrefFilters(
+  userData: SerializedUser | null
+): SelectedFilters | null {
   if (!userData) {
     return null;
   }
@@ -311,7 +313,9 @@ function Feed(props: {
   } = useDisclosure();
 
   const { userData } = useAuth();
+
   const role = userData?.role;
+  const userAppliedToSet = new Set(userData?.appliedTo ?? []);
 
   const [displayCovered, setDisplayCovered] = useState<boolean | undefined>(
     undefined
@@ -633,6 +637,7 @@ function Feed(props: {
           isOpen={isPostViewOpen}
           onClose={onPostViewClose}
           postId={modalPostId}
+          appliedTo={userAppliedToSet.has(modalPostId.toString())}
         />
       )}
     </Flex>

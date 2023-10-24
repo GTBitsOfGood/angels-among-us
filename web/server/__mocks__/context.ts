@@ -14,6 +14,7 @@ export const callingUser: IUser = {
   role: faker.helpers.arrayElement(Object.values(Role)),
   disabled: faker.datatype.boolean(),
   hasCompletedOnboarding: false,
+  appliedTo: [],
 };
 
 interface CreateInnerContextOptions extends Partial<CreateNextContextOptions> {
