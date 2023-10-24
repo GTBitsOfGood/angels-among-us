@@ -28,7 +28,7 @@ const propertyLabels = {
   getsAlongWithCats: "Cats",
 } as Record<keyof IPost, string>;
 
-function goodWith(post: IPost, isGood: boolean) {
+function findGoodOrNotGoodWith(post: IPost, isGood: boolean) {
   const check = isGood ? Trained.Yes : Trained.No;
   const retArr = Object.keys(propertyLabels)
     .filter((propertyName) => post[propertyName as keyof IPost] === check)
@@ -36,14 +36,15 @@ function goodWith(post: IPost, isGood: boolean) {
   return retArr;
 }
 
-function bestAttachment(post: IPost) {
+function findBestAttachment(post: IPost) {
   const attachments = post.attachments;
   const imageExtensions = /\.(jpg|jpeg|png)$/i;
   for (let i = 0; i < attachments.length; i++) {
-    if (imageExtensions.test(attachments[i])) {
+    if (imageExtensions.test(attachments[i].toLowerCase())) {
       return attachments[i];
     }
   }
+  return null;
 }
 
 interface Response {
@@ -51,7 +52,11 @@ interface Response {
   answer: string;
 }
 
-export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
+export function populateEmailTemplate(
+  post: IPost,
+  user: IUser,
+  responses: Response[]
+) {
   return `<!DOCTYPE html>
         <html>
           <head>
@@ -222,7 +227,6 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
             <img class="logo" src="https://i.imgur.com/Frk3oH3.png" />
           </div>
               <p class="medium-weight-text font-24px congrats-text">
-                Congratulations!<br />
                 There is a new foster application for the dog below to review.
               </p>
               <table class="pet-info">
@@ -231,9 +235,8 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                     <img
                       class="pet-image"
                       src=${
-                        post.attachments && bestAttachment(post)
-                          ? bestAttachment(post)
-                          : "https://i.imgur.com/X36GXXo.png"
+                        findBestAttachment(post) ??
+                        "https://i.imgur.com/X36GXXo.png"
                       }
                     />
                   </td>
@@ -257,17 +260,15 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                   </tr>
                   <tr>
                     <td>Name:</td>
-                    <td>${user.name}</td>
+                    <td>${user.name ?? "Unspecified"}</td>
                   </tr>
                   <tr>
                     <td>Email:</td>
-                    <td>${user.email}</td>
+                    <td>${user.email ?? "Unspecified"}</td>
                   </tr>
                   <tr>
                     <td>Preferred Email:</td>
-                    <td>${
-                      user.preferredEmail ? user.preferredEmail : user.email
-                    }</td>
+                    <td>${user.preferredEmail ?? "Unspecified"}</td>
                   </tr>
                 </table>
               </div>
@@ -281,8 +282,8 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                   <tr>
                     <td>Foster Type:</td>
                     <td>${
-                      user.type && user.type.length != 0
-                        ? user.type.length == Object.keys(FosterType).length
+                      user.type && user.type.length !== 0
+                        ? user.type.length === Object.keys(FosterType).length
                           ? "All"
                           : user.type
                               .map((item) => fosterTypeLabels[item])
@@ -294,8 +295,8 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                   <tr>
                     <td>Size:</td>
                     <td>${
-                      user.size && user.size.length != 0
-                        ? user.size.length == Object.keys(Size).length
+                      user.size && user.size.length !== 0
+                        ? user.size.length === Object.keys(Size).length
                           ? "All"
                           : user.size.map((size) => sizeLabels[size]).join(", ")
                         : "None"
@@ -307,7 +308,8 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                     <td>
                       <p class="font-20px">Preferred Breeds:</p>
                       ${
-                        user.preferredBreeds && user.preferredBreeds.length != 0
+                        user.preferredBreeds &&
+                        user.preferredBreeds.length !== 0
                           ? user.preferredBreeds
                               .map((breed) => breedLabels[breed])
                               .join(", ")
@@ -317,7 +319,7 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                       <p class="font-20px space-above">Restricted Breeds:</p>
                       ${
                         user.restrictedBreeds &&
-                        user.restrictedBreeds.length != 0
+                        user.restrictedBreeds.length !== 0
                           ? user.restrictedBreeds
                               .map((breed) => breedLabels[breed])
                               .join(", ")
@@ -331,8 +333,8 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                   <tr>
                     <td>Gender:</td>
                     <td>${
-                      user.gender && user.gender.length != 0
-                        ? user.gender.length == Object.keys(Gender).length
+                      user.gender && user.gender.length !== 0
+                        ? user.gender.length === Object.keys(Gender).length
                           ? "All"
                           : user.gender
                               .map((gender) => genderLabels[gender])
@@ -344,8 +346,8 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                   <tr>
                     <td>Age:</td>
                     <td>${
-                      user.age && user.age.length != 0
-                        ? user.age.length == Object.keys(Age).length
+                      user.age && user.age.length !== 0
+                        ? user.age.length === Object.keys(Age).length
                           ? "All"
                           : user.age.map((age) => ageLabels[age]).join(", ")
                         : "None"
@@ -357,8 +359,9 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                     <td>
                       <p class="font-20px">Can foster dogs NOT good with:</p>
                       ${
-                        user.dogsNotGoodWith && user.dogsNotGoodWith.length != 0
-                          ? user.dogsNotGoodWith.length ==
+                        user.dogsNotGoodWith &&
+                        user.dogsNotGoodWith.length !== 0
+                          ? user.dogsNotGoodWith.length ===
                             Object.keys(GoodWith).length
                             ? "All"
                             : user.dogsNotGoodWith
@@ -369,9 +372,9 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                     </td>
                     <td>
                       <p class="font-20px">Dog is NOT good with:</p>
-                      ${goodWith(post, false).join(", ")}
+                      ${findGoodOrNotGoodWith(post, false).join(", ")}
                       <p class="font-20px space-above">Dog is good with:</p>
-                      ${goodWith(post, true).join(", ")}
+                      ${findGoodOrNotGoodWith(post, true).join(", ")}
                     </td>
                   </tr>
                   <tr>
@@ -379,8 +382,8 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                     <td>
                       <p class="font-20px">Able to foster dogs with:</p>
                       ${
-                        user.medical && user.medical.length != 0
-                          ? user.medical.length == Object.keys(Medical).length
+                        user.medical && user.medical.length !== 0
+                          ? user.medical.length === Object.keys(Medical).length
                             ? "All"
                             : user.medical
                                 .map((med) => medicalLabels[med])
@@ -391,7 +394,7 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                     <td>
                       <p class="font-20px">Dog has:</p>
                       ${
-                        post.medical && post.medical.length != 0
+                        post.medical && post.medical.length !== 0
                           ? post.medical
                               .map((med) => medicalLabels[med])
                               .join(", ")
@@ -404,8 +407,8 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                     <td>
                       <p class="font-20px">Able to foster dogs with:</p>
                       ${
-                        user.behavioral && user.behavioral.length != 0
-                          ? user.behavioral.length == 6
+                        user.behavioral && user.behavioral.length !== 0
+                          ? user.behavioral.length === 6
                             ? "All"
                             : user.behavioral
                                 .map(
@@ -418,7 +421,7 @@ export function emailTemplate(post: IPost, user: IUser, responses: Response[]) {
                     <td>
                       <p class="font-20px">Dog has:</p>
                       ${
-                        post.behavioral && post.behavioral.length != 0
+                        post.behavioral && post.behavioral.length !== 0
                           ? post.behavioral
                               .map((behavioral) => behavioralLabels[behavioral])
                               .join(", ")

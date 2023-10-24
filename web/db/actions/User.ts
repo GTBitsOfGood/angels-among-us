@@ -48,7 +48,7 @@ async function findUserByUid(
 async function findUserByEmail(
   email: string,
   session?: ClientSession
-): Promise<HydratedDocument<IUser> | null> {
+): Promise<IUser | null> {
   return await User.findOne({ email }, { _id: 0, __v: 0 }, { session });
 }
 

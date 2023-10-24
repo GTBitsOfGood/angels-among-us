@@ -30,17 +30,19 @@ import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
 import { FilterQuery, Types } from "mongoose";
-import { emailTemplate } from "../../email/email-template";
+import { populateEmailTemplate } from "../../email/email-template";
 import inlineCss from "inline-css";
 
 const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24
 );
 
-const questionnaireSchema = z.object({
-  key: z.string(),
-  answer: z.string(),
-});
+const questionnaireSchema = z.array(
+  z.object({
+    key: z.string(),
+    answer: z.string(),
+  })
+);
 
 const postSchema = z.object({
   name: z.string(),
@@ -165,13 +167,12 @@ export const postRouter = router({
       z.object({
         email: z.string(),
         postOid: zodOidType,
-        responses: z.array(questionnaireSchema),
+        responses: questionnaireSchema,
       })
     )
     .mutation(async ({ input }) => {
-      let user;
       try {
-        user = await findUserByEmail(input.email);
+        const user = await findUserByEmail(input.email);
         if (!user) {
           throw new Error("No user with given email exists");
         }
@@ -183,17 +184,21 @@ export const postRouter = router({
           process.env.CONTEXT === "production"
             ? fosterTypeEmails[post.type]
             : input.email;
+
+        const emailBody = populateEmailTemplate(post, user, input.responses);
+
         let count = 0;
         const maxTries = 3;
-        const emailBody = emailTemplate(post, user, input.responses);
         const options = { url: "www.angelsrescue.org" };
         while (true) {
           try {
             const emailFormatted = await inlineCss(emailBody, options);
-            const info = await transporter.sendMail({
+            await transporter.sendMail({
               from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
               to: email,
-              subject: "Someone is ready to foster your dog!",
+              subject: `[APPLICATION] ${user.name ?? "Volunteer"} <> ${
+                post.name
+              }`,
               html: emailFormatted,
             });
             break;

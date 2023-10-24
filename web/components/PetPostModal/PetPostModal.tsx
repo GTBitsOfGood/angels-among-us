@@ -35,108 +35,124 @@ import { useAuth } from "../../context/auth";
 
 type FosterTypeData = {
   [key in FosterType]: Array<{
-    key: string;
-    title: string;
+    key: keyof typeof KEY_QUESTION_MAP;
+    title: typeof KEY_QUESTION_MAP[keyof typeof KEY_QUESTION_MAP];
   }>;
 };
 
 type QuestionResponseData = {
-  [key: string]: string;
+  [key in keyof typeof KEY_QUESTION_MAP]?: string;
 };
 
-const questionsRecord = {
-  numOtherDogs: "How many other fosters and personal dogs do you have?",
-  unexpectedMedical:
-    "If unexpected medical issues arise are you able to continue to foster?",
-  travelPlans: "Do you have travel plans within the next month?",
-  hasCat: "Do you have a cat?",
-  fencedYard: "Do you have a fenced yard? If so, what type of fence?",
-  childAge:
-    "How old are the children living in the home or that would regularly be interacting with the foster dog?",
-  timeUnattended: "How many hours a day would the pet be alone/unattended?",
-  canQuarantine: "Are you able to quarantine?",
+const NUM_OTHER_DOGS_KEY = "numOtherDogs";
+const NUM_OTHER_DOGS_QUESTION =
+  "How many other fosters and personal dogs do you have?";
+
+const UNEXPECTED_MEDICAL_KEY = "unexpectedMedical";
+const UNEXPECTED_MEDICAL_QUESTION =
+  "If unexpected medical issues arise are you able to continue to foster?";
+
+const HAS_CAT_KEY = "hasCat";
+const HAS_CAT_QUESTION = "Do you have a cat?";
+
+const TRAVEL_PLANS_KEY = "travelPlans";
+const TRAVEL_PLANS_QUESTION = "Do you have travel plans within the next month?";
+
+const FENCED_YARD_KEY = "fencedYard";
+const FENCED_YARD_QUESTION =
+  "Do you have a fenced yard? If so, what type of fence?";
+
+const CHILD_AGE_KEY = "childAge";
+const CHILD_AGE_QUESTION =
+  "How old are the children living in the home or that would regularly be interacting with the foster dog?";
+
+const TIME_UNATTENDED_KEY = "timeUnattended";
+const TIME_UNATTENDED_QUESTION =
+  "How many hours a day would the pet be alone/unattended?";
+
+const CAN_QUARANTINE_KEY = "canQuarantine";
+const CAN_QUARANTINE_QUESTION = "Are you able to quarantine?";
+
+const KEY_QUESTION_MAP = {
+  [NUM_OTHER_DOGS_KEY]: NUM_OTHER_DOGS_QUESTION,
+  [UNEXPECTED_MEDICAL_KEY]: UNEXPECTED_MEDICAL_QUESTION,
+  [HAS_CAT_KEY]: HAS_CAT_QUESTION,
+  [TRAVEL_PLANS_KEY]: TRAVEL_PLANS_QUESTION,
+  [FENCED_YARD_KEY]: FENCED_YARD_QUESTION,
+  [CHILD_AGE_KEY]: CHILD_AGE_QUESTION,
+  [TIME_UNATTENDED_KEY]: TIME_UNATTENDED_QUESTION,
+  [CAN_QUARANTINE_KEY]: CAN_QUARANTINE_QUESTION,
 };
 
-const numOtherDogs = {
-  key: "numOtherDogs",
-  title: "How many other fosters and personal dogs do you have?",
-};
+const RETURN_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
+  NUM_OTHER_DOGS_KEY,
+  UNEXPECTED_MEDICAL_KEY,
+  TRAVEL_PLANS_KEY,
+  HAS_CAT_KEY,
+  FENCED_YARD_KEY,
+  CHILD_AGE_KEY,
+  TIME_UNATTENDED_KEY,
+];
 
-const unexpectedMedical = {
-  key: "unexpectedMedical",
-  title:
-    "If unexpected medical issues arise are you able to continue to foster?",
-};
+const BOARDING_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
+  NUM_OTHER_DOGS_KEY,
+  HAS_CAT_KEY,
+  FENCED_YARD_KEY,
+  CHILD_AGE_KEY,
+];
 
-const travelPlans = {
-  key: "travelPlans",
-  title: "Do you have travel plans within the next month?",
-};
+const TEMPORARY_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
+  NUM_OTHER_DOGS_KEY,
+  HAS_CAT_KEY,
+  FENCED_YARD_KEY,
+  CHILD_AGE_KEY,
+];
 
-const hasCat = {
-  key: "hasCat",
-  title: "Do you have a cat?",
-};
+const SHELTER_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
+  NUM_OTHER_DOGS_KEY,
+  CAN_QUARANTINE_KEY,
+  UNEXPECTED_MEDICAL_KEY,
+  TRAVEL_PLANS_KEY,
+  HAS_CAT_KEY,
+  TIME_UNATTENDED_KEY,
+];
 
-const fencedYard = {
-  key: "fencedYard",
-  title: "Do you have a fenced yard? If so, what type of fence?",
-};
+const FOSTER_MOVE_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
+  NUM_OTHER_DOGS_KEY,
+  UNEXPECTED_MEDICAL_KEY,
+  TRAVEL_PLANS_KEY,
+  HAS_CAT_KEY,
+  CAN_QUARANTINE_KEY,
+  FENCED_YARD_KEY,
+  CHILD_AGE_KEY,
+  TIME_UNATTENDED_KEY,
+];
 
-const childAge = {
-  key: "childAge",
-  title:
-    "How old are the children living in the home or that would regularly be interacting with the foster dog?",
-};
+const OWNER_SURRENDER_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
+  NUM_OTHER_DOGS_KEY,
+  CAN_QUARANTINE_KEY,
+  UNEXPECTED_MEDICAL_KEY,
+  TRAVEL_PLANS_KEY,
+  HAS_CAT_KEY,
+  TIME_UNATTENDED_KEY,
+];
 
-const timeUnattended = {
-  key: "timeUnattended",
-  title: "How many hours a day would the pet be alone/unattended?",
-};
-
-const canQuarantine = {
-  key: "canQuarantine",
-  title: "Are you able to quarantine?",
-};
+function keysToData(
+  keys: (keyof typeof KEY_QUESTION_MAP)[]
+): FosterTypeData[keyof FosterTypeData] {
+  return keys.map((k) => ({
+    key: k,
+    title: KEY_QUESTION_MAP[k],
+  }));
+}
 
 const data: FosterTypeData = {
-  [FosterType.Return]: [
-    numOtherDogs,
-    unexpectedMedical,
-    travelPlans,
-    hasCat,
-    fencedYard,
-    childAge,
-    timeUnattended,
-  ],
-  [FosterType.Boarding]: [numOtherDogs, hasCat, fencedYard, childAge],
-  [FosterType.Temporary]: [numOtherDogs, hasCat, fencedYard, childAge],
-  [FosterType.Shelter]: [
-    numOtherDogs,
-    canQuarantine,
-    unexpectedMedical,
-    travelPlans,
-    hasCat,
-    timeUnattended,
-  ],
-  [FosterType.FosterMove]: [
-    numOtherDogs,
-    unexpectedMedical,
-    travelPlans,
-    hasCat,
-    canQuarantine,
-    fencedYard,
-    childAge,
-    timeUnattended,
-  ],
-  [FosterType.OwnerSurrender]: [
-    numOtherDogs,
-    canQuarantine,
-    unexpectedMedical,
-    travelPlans,
-    hasCat,
-    timeUnattended,
-  ],
+  [FosterType.Return]: keysToData(RETURN_KEYS),
+  [FosterType.Boarding]: keysToData(BOARDING_KEYS),
+  [FosterType.Temporary]: keysToData(TEMPORARY_KEYS),
+  [FosterType.Shelter]: keysToData(SHELTER_KEYS),
+  [FosterType.FosterMove]: keysToData(FOSTER_MOVE_KEYS),
+  [FosterType.OwnerSurrender]: keysToData(OWNER_SURRENDER_KEYS),
 };
 
 /**TODO
@@ -190,7 +206,7 @@ const FosterQuestionnaire = ({
       const formData = formValidation.data;
       const questionAnswerData = Object.entries(formData).map(
         ([key, answer]) => ({
-          key: questionsRecord[key as keyof typeof questionsRecord],
+          key: KEY_QUESTION_MAP[key as keyof typeof KEY_QUESTION_MAP],
           answer,
         })
       );
