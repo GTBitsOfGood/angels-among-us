@@ -10,7 +10,7 @@ import React, {
 import nookies from "nookies";
 import { auth } from "../utils/firebase/firebaseClient";
 import { trpc } from "../utils/trpc";
-import { IUser } from "../utils/types/user";
+import { IUser, SerializedUser } from "../utils/types/user";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { Pages } from "../utils/consts";
@@ -22,7 +22,7 @@ const AuthContext = createContext<{
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>> | null;
   authError: string | null;
-  userData: IUser | null;
+  userData: SerializedUser | null;
   refetchUserData: (() => Promise<QueryObserverResult<any>>) | null;
 }>({
   authorized: false,

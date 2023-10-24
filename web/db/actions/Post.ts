@@ -14,11 +14,9 @@ import { captureException } from "@sentry/nextjs";
 
 type UploadInfo = Record<string, string>;
 
-async function getPost(
-  oid: Types.ObjectId,
-  publicAttachmentUrls: boolean
-): Promise<IPost & { _id: string; __v: number }> {
-  const post = await Post.findById(oid).exec();
+async function getPost(oid: Types.ObjectId, publicAttachmentUrls: boolean) {
+  const post: (IPost & { _id: Types.ObjectId; __v: number }) | null =
+    await Post.findById(oid).exec();
   if (publicAttachmentUrls && post) {
     post.attachments = post.attachments.map((attachment: string) => {
       return `${consts.storageBucketURL}/${attachment}`;
@@ -119,6 +117,9 @@ async function deleteAttachments(keysToDelete: string[]) {
 
 async function deletePost(id: Types.ObjectId) {
   const post = await getPost(id, false);
+  if (!post) {
+    throw new Error("Post to be deleted could not be found");
+  }
   try {
     await deleteAttachments(post.attachments);
   } catch (e) {
@@ -172,7 +173,7 @@ async function updatePostDetails(
 async function updatePostStatus(oid: Types.ObjectId, session?: ClientSession) {
   return await Post.findOneAndUpdate(
     { _id: oid },
-    [{ $set: { covered: { $not: "$covered" } } }],
+    [{ $set: { covered: { $not: "$covered" }, date: new Date() } }],
     { session: session }
   );
 }

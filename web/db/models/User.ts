@@ -140,9 +140,9 @@ const userSchema = new Schema<IUser>({
     required: false,
   },
   appliedTo: {
-    type: [{ type: String }],
-    default: undefined,
-    required: false,
+    type: [{ type: Schema.Types.ObjectId }],
+    default: [],
+    required: true,
   },
 });
 

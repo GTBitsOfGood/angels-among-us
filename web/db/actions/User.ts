@@ -18,7 +18,7 @@ import {
 } from "../../utils/types/post";
 
 async function createUser(
-  user: IUser,
+  user: Omit<IUser, "appliedTo">,
   session?: ClientSession
 ): Promise<IUser> {
   const document = new User(user);
