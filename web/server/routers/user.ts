@@ -14,11 +14,9 @@ import {
   Breed,
   Gender,
   Age,
-  Temperament,
   GoodWith,
   Medical,
   Behavioral,
-  Status,
 } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
 
@@ -29,26 +27,6 @@ const userPreferencesSchema = z.object({
   size: z.array(z.nativeEnum(Size)),
   preferredBreeds: z.array(z.nativeEnum(Breed)),
   restrictedBreeds: z.array(z.nativeEnum(Breed)),
-  gender: z.array(z.nativeEnum(Gender)),
-  age: z.array(z.nativeEnum(Age)),
-  dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
-  medical: z.array(z.nativeEnum(Medical)),
-  behavioral: z.array(z.nativeEnum(Behavioral)),
-});
-
-const userSchema: z.ZodType<
-  Required<Omit<IUser, "name">> | Partial<Pick<IUser, "name">>
-> = z.object({
-  uid: z.string(),
-  email: z.string().email(),
-  role: z.nativeEnum(Role),
-  disabled: z.boolean(),
-  hasCompletedOnboarding: z.boolean(),
-  name: z.string().optional(),
-  type: z.nativeEnum(FosterType),
-  size: z.nativeEnum(Size),
-  restrictedBreeds: z.array(z.nativeEnum(Breed)),
-  preferredBreeds: z.array(z.nativeEnum(Breed)),
   gender: z.array(z.nativeEnum(Gender)),
   age: z.array(z.nativeEnum(Age)),
   dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),

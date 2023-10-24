@@ -10,7 +10,7 @@ import React, {
 import nookies from "nookies";
 import { auth } from "../utils/firebase/firebaseClient";
 import { trpc } from "../utils/trpc";
-import { IUser, SerializedUser } from "../utils/types/user";
+import { SerializedUser } from "../utils/types/user";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { Pages } from "../utils/consts";
