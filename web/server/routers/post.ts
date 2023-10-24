@@ -26,7 +26,7 @@ import {
   PetKind,
   IPost,
 } from "../../utils/types/post";
-import { findUserByEmail } from "../../db/actions/User";
+import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
 import { FilterQuery, Types } from "mongoose";
@@ -173,20 +173,12 @@ export const postRouter = router({
       try {
         user = await findUserByEmail(input.email);
         if (!user) {
-          throw new TRPCError({
-            message: "No user with given email exists.",
-            code: "BAD_REQUEST",
-          });
+          throw new Error("No user with given email exists");
         }
-      } catch (e) {
-        throw new TRPCError({
-          message: "An unexpected error occured.",
-          code: "INTERNAL_SERVER_ERROR",
-          cause: e,
-        });
-      }
-      try {
         const post = await getPost(input.postOid, true);
+        if (!post) {
+          throw new Error("No post with given id exists.");
+        }
         const email =
           process.env.CONTEXT === "production"
             ? fosterTypeEmails[post.type]
@@ -215,6 +207,9 @@ export const postRouter = router({
             }
           }
         }
+        await updateUserByUid(user.uid, {
+          $push: { appliedTo: input.postOid },
+        });
       } catch (e) {
         if (e instanceof TRPCError) throw e;
         else

@@ -139,6 +139,11 @@ const userSchema = new Schema<IUser>({
     default: undefined,
     required: false,
   },
+  appliedTo: {
+    type: [{ type: Schema.Types.ObjectId }],
+    default: [],
+    required: true,
+  },
 });
 
 export default mongoose.models.User || mongoose.model("User", userSchema);

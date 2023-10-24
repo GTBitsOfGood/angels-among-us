@@ -11,7 +11,7 @@ import {
   GoodWith,
   Status,
 } from "../../utils/types/post";
-import { IUser } from "../../utils/types/user";
+import { IUser, SerializedUser } from "../../utils/types/user";
 
 // Mock authentication
 jest.mock("../../context/auth", () => ({
@@ -74,13 +74,14 @@ const checkFilters = (
  */
 describe("[Feed] Import User Preferences - Unit Test", () => {
   // Generate user profile baseline that maps to zero feed filter options
-  const dummyUser: IUser = {
+  const dummyUser = {
     email: "",
     uid: "",
     role: Role.Volunteer,
     disabled: false,
     hasCompletedOnboarding: true,
     dogsNotGoodWith: Object.values(GoodWith),
+    appliedTo: [],
   };
 
   test("null userdata", () => {
@@ -95,7 +96,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
   });
 
   test("1 pet type", () => {
-    const userData: IUser = {
+    const userData: SerializedUser = {
       ...dummyUser,
       type: [FosterType.Boarding],
     };
@@ -111,7 +112,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
   });
 
   test("2 pet breeds", () => {
-    const userData: IUser = {
+    const userData: SerializedUser = {
       ...dummyUser,
       restrictedBreeds: [Breed.AmericanEskimo, Breed.Beagle],
     };
@@ -132,7 +133,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
   });
 
   test("2 dogsNotGoodWith", () => {
-    const userData: IUser = {
+    const userData: SerializedUser = {
       ...dummyUser,
       dogsNotGoodWith: [GoodWith.Men, GoodWith.Women],
     };

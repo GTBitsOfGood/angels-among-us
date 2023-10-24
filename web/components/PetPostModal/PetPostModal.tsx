@@ -1,10 +1,17 @@
-import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  DeleteIcon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
+  Center,
   Flex,
   FormControl,
   FormLabel,
+  Heading,
   Input,
   Modal,
   ModalCloseButton,
@@ -12,6 +19,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Stack,
   Text,
   useDisclosure,
@@ -20,7 +28,6 @@ import {
 import ImageSlider from "./ImageSlider";
 import PetPostListGroup from "./PetPostListGroup";
 import { FosterType } from "../../utils/types/post";
-import { trpc } from "../../utils/trpc";
 import { useState } from "react";
 import { z } from "zod";
 import { Types } from "mongoose";
@@ -157,7 +164,7 @@ const FosterQuestionnaire = ({
     {}
   );
 
-  const [fosterQuestionResponses, setfosterQuestionResponses] = useState(
+  const [fosterQuestionResponses, setFosterQuestionResponses] = useState(
     initialQuestionResponseData
   );
 
@@ -165,7 +172,7 @@ const FosterQuestionnaire = ({
     z.string().min(1, { message: "All fields required." })
   );
 
-  const { userData } = useAuth();
+  const { userData, refetchUserData } = useAuth();
   const mutation = trpc.post.offer.useMutation();
   const toast = useToast();
 
@@ -194,6 +201,7 @@ const FosterQuestionnaire = ({
       };
       mutation.mutate(offer, {
         onSuccess: () => {
+          refetchUserData!();
           toast.closeAll();
           onFormViewClose();
           toast({
@@ -248,7 +256,7 @@ const FosterQuestionnaire = ({
                         bgColor={"#FAFBFC"}
                         value={fosterQuestionResponses[key]}
                         onChange={(event) => {
-                          setfosterQuestionResponses({
+                          setFosterQuestionResponses({
                             ...fosterQuestionResponses,
                             [key]: event.target.value,
                           });
@@ -272,7 +280,6 @@ const FosterQuestionnaire = ({
             </Flex>
           </ModalFooter>
         </Flex>
-
         <Flex
           direction="column"
           width="100%"
@@ -304,7 +311,7 @@ const FosterQuestionnaire = ({
                         bgColor={"#FAFBFC"}
                         value={fosterQuestionResponses[key]}
                         onChange={(event) => {
-                          setfosterQuestionResponses({
+                          setFosterQuestionResponses({
                             ...fosterQuestionResponses,
                             [key]: event.target.value,
                           });
@@ -337,7 +344,6 @@ import {
   fosterTypeLabels,
   behavioralLabels,
   spayNeuterStatusLabels,
-  IPost,
   medicalLabels,
   crateTrainedLabels,
   houseTrainedLabels,
@@ -352,12 +358,15 @@ import {
 } from "../../utils/types/post";
 import { Role } from "../../utils/types/account";
 import DeletePostModal from "./DeletePostModal";
+import { trpc } from "../../utils/trpc";
+import MarkCoveredModal from "./MarkCoveredModal";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost & { _id: Types.ObjectId };
-}> = ({ isOpen, onClose, postData }) => {
+  postId: Types.ObjectId;
+  appliedTo: boolean;
+}> = ({ isOpen, onClose, postId, appliedTo }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
@@ -370,8 +379,59 @@ const PetPostModal: React.FC<{
     onClose: onDeleteConfirmationClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isCoveredConfirmationOpen,
+    onOpen: onCoveredConfirmationOpen,
+    onClose: onCoveredConfirmationClose,
+  } = useDisclosure();
+
+  const { data: postData, isLoading } = trpc.post.get.useQuery({ _id: postId });
   const { userData } = useAuth();
   const role = userData?.role;
+
+  if (isLoading) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        size={"full"}
+        onClose={onClose}
+        scrollBehavior={"inside"}
+      >
+        <ModalContent w="100%" h="100%">
+          <ModalCloseButton />
+          <Center w="100%" h="100%">
+            <Spinner size="xl" />
+          </Center>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  if (!postData || (role === Role.Volunteer && postData.covered)) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        size={"full"}
+        onClose={onClose}
+        scrollBehavior={"inside"}
+      >
+        <ModalContent w="100%" h="100%">
+          <ModalCloseButton />
+          <Center w="100%" h="100%">
+            <Flex direction="column">
+              <Heading size="sm">
+                Sorry, we are unable to find the post you are looking for.
+              </Heading>
+            </Flex>
+          </Center>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  const coveredButtonColor = postData.covered
+    ? "text-primary"
+    : "text-secondary";
 
   const {
     name,
@@ -495,29 +555,56 @@ const PetPostModal: React.FC<{
             >
               Back to feed
             </Button>
-            {(role === Role.Admin || role === Role.ContentCreator) && (
-              <Flex>
+            <Flex>
+              {(role === Role.Admin || role === Role.ContentCreator) && (
                 <Button
                   h={8}
                   backgroundColor="white"
-                  onClick={onDeleteConfirmationOpen}
+                  onClick={onCoveredConfirmationOpen}
                   _hover={{}}
                   leftIcon={
-                    <DeleteIcon marginRight="5px" color="text-secondary" />
+                    postData.covered ? (
+                      <ViewIcon color={coveredButtonColor} />
+                    ) : (
+                      <ViewOffIcon color={coveredButtonColor} />
+                    )
                   }
                 >
-                  <Text textDecoration="underline" color="text-secondary">
-                    Delete
+                  <Text textDecoration="underline" color={coveredButtonColor}>
+                    {postData.covered ? "Uncover Post" : "Mark as Covered"}
                   </Text>
+                  <MarkCoveredModal
+                    isCoveredConfirmationOpen={isCoveredConfirmationOpen}
+                    onCoveredConfirmationClose={onCoveredConfirmationClose}
+                    postId={postId}
+                    isCovered={postData.covered}
+                  />
                 </Button>
-                <DeletePostModal
-                  isDeleteConfirmationOpen={isDeleteConfirmationOpen}
-                  onDeleteConfirmationClose={onDeleteConfirmationClose}
-                  onClose={onClose}
-                  postId={postData._id}
-                />
-              </Flex>
-            )}
+              )}
+              {(role === Role.Admin || role === Role.ContentCreator) && (
+                <Flex>
+                  <Button
+                    h={8}
+                    backgroundColor="white"
+                    onClick={onDeleteConfirmationOpen}
+                    _hover={{}}
+                    leftIcon={
+                      <DeleteIcon marginRight="5px" color="text-secondary" />
+                    }
+                  >
+                    <Text textDecoration="underline" color="text-secondary">
+                      Delete
+                    </Text>
+                  </Button>
+                  <DeletePostModal
+                    isDeleteConfirmationOpen={isDeleteConfirmationOpen}
+                    onDeleteConfirmationClose={onDeleteConfirmationClose}
+                    onClose={onClose}
+                    postId={postId}
+                  />
+                </Flex>
+              )}
+            </Flex>
           </Stack>
           <Flex direction="row" width="100%">
             <Flex
@@ -614,19 +701,23 @@ const PetPostModal: React.FC<{
             paddingRight={8}
           >
             <Button
-              variant="solid-primary"
+              isDisabled={appliedTo}
+              variant={appliedTo ? "solid-secondary" : "solid-primary"}
               width={60}
               borderRadius={"20px"}
               onClick={onFormViewOpen}
+              _hover={
+                appliedTo
+                  ? {}
+                  : {
+                      borderColor: "btn-outline-primary-border",
+                      color: "text-primary",
+                      backgroundColor: "white",
+                    }
+              }
             >
-              Foster Me!
+              {appliedTo ? "Applied" : "Foster Me!"}
             </Button>
-            <FosterQuestionnaire
-              fosterType={type}
-              postId={postData._id}
-              isFormViewOpen={isFormViewOpen}
-              onFormViewClose={onFormViewClose}
-            />
           </Flex>
         </Stack>
         <Flex direction="column" width="100%" display={["flex", "none"]}>
@@ -688,7 +779,7 @@ const PetPostModal: React.FC<{
                       isDeleteConfirmationOpen={isDeleteConfirmationOpen}
                       onDeleteConfirmationClose={onDeleteConfirmationClose}
                       onClose={onClose}
-                      postId={postData._id}
+                      postId={postId}
                     />
                   </Flex>
                 )}
@@ -707,7 +798,6 @@ const PetPostModal: React.FC<{
                 </Text>
               </Stack>
             </Stack>
-
             <Stack direction="column" width="100%" spacing={4}>
               <Flex width="100%" direction={"column"}>
                 <PetPostListGroup title={"Main Characteristics"} tags={[]} />
@@ -775,15 +865,22 @@ const PetPostModal: React.FC<{
             bgColor={"white"}
           >
             <Button
+              isDisabled={appliedTo}
               variant="solid-primary"
               width={"100%"}
               borderRadius={"20px"}
               onClick={onFormViewOpen}
             >
-              Foster Me!
+              {appliedTo ? "Applied" : "Foster Me!"}
             </Button>
           </Flex>
         </ModalFooter>
+        <FosterQuestionnaire
+          fosterType={type}
+          postId={postId}
+          isFormViewOpen={isFormViewOpen}
+          onFormViewClose={onFormViewClose}
+        />
       </ModalContent>
     </Modal>
   );
