@@ -48,6 +48,7 @@ function FeedCoveredDropdown(props: {
         option: (provided, state) => ({
           ...provided,
           backgroundColor: state.isSelected ? "#57a0d5" : "white",
+          "&:hover": { backgroundColor: "#57a0d5" },
           fontSize: "14px",
         }),
         placeholder: (baseStyles) => ({

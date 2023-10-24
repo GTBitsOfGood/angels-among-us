@@ -66,9 +66,10 @@ function AccountCard(props: PropertyType) {
       borderRadius="12px"
       borderWidth={1}
       borderColor="#BBBBBB"
-      width={{ sm: "90%", md: "90%", lg: "100%" }}
+      maxW={{ sm: "90%", md: "90%", lg: "100%" }}
+      maxH={"44px"}
     >
-      <HStack justifyContent={"space-between"} minH={"43px"} padding="12px">
+      <HStack justifyContent={"space-between"} minH={"43px"} paddingX="12px">
         <Flex
           justifyContent={"space-between"}
           alignItems={"center"}
@@ -79,7 +80,7 @@ function AccountCard(props: PropertyType) {
             fontWeight={"400"}
             fontSize={"16px"}
             lineHeight={"19px"}
-            maxWidth={"60%"}
+            maxWidth={"70%"}
           >
             {account.email}
           </Text>

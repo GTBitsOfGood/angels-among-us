@@ -70,6 +70,7 @@ export const accountRouter = router({
           throw new TRPCError({
             message: "Internal Server Error",
             code: "INTERNAL_SERVER_ERROR",
+            cause: e,
           });
       }
     }),
@@ -102,6 +103,7 @@ export const accountRouter = router({
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
@@ -154,6 +156,7 @@ export const accountRouter = router({
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred",
+            cause: e,
           });
         }
       }
@@ -189,6 +192,7 @@ export const accountRouter = router({
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred",
+            cause: e,
           });
       }
     }),
@@ -206,6 +210,7 @@ export const accountRouter = router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "An unexpected error occured",
+          cause: e,
         });
     }
   }),
@@ -227,6 +232,7 @@ export const accountRouter = router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "An unexpected error occured",
+          cause: e,
         });
     }
   }),
