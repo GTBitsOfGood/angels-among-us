@@ -144,7 +144,7 @@ export default function Navbar() {
       id="navbar"
       bgColor="white"
       width="100%"
-      zIndex="1"
+      zIndex={10}
       flexDir="column"
       position="absolute"
       top={0}

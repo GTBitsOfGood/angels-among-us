@@ -1,10 +1,17 @@
-import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  DeleteIcon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@chakra-ui/icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
+  Center,
   Flex,
   FormControl,
   FormLabel,
+  Heading,
   Input,
   Modal,
   ModalCloseButton,
@@ -12,6 +19,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Stack,
   Text,
   useDisclosure,
@@ -316,7 +324,6 @@ import {
   fosterTypeLabels,
   behavioralLabels,
   spayNeuterStatusLabels,
-  IPost,
   medicalLabels,
   crateTrainedLabels,
   houseTrainedLabels,
@@ -331,12 +338,13 @@ import {
 } from "../../utils/types/post";
 import { Role } from "../../utils/types/account";
 import DeletePostModal from "./DeletePostModal";
+import MarkCoveredModal from "./MarkCoveredModal";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost & { _id: Types.ObjectId };
-}> = ({ isOpen, onClose, postData }) => {
+  postId: Types.ObjectId;
+}> = ({ isOpen, onClose, postId }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
@@ -349,8 +357,59 @@ const PetPostModal: React.FC<{
     onClose: onDeleteConfirmationClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isCoveredConfirmationOpen,
+    onOpen: onCoveredConfirmationOpen,
+    onClose: onCoveredConfirmationClose,
+  } = useDisclosure();
+
+  const { data: postData, isLoading } = trpc.post.get.useQuery({ _id: postId });
   const { userData } = useAuth();
   const role = userData?.role;
+
+  if (isLoading) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        size={"full"}
+        onClose={onClose}
+        scrollBehavior={"inside"}
+      >
+        <ModalContent w="100%" h="100%">
+          <ModalCloseButton />
+          <Center w="100%" h="100%">
+            <Spinner size="xl" />
+          </Center>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  if (!postData || (role === Role.Volunteer && postData.covered)) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        size={"full"}
+        onClose={onClose}
+        scrollBehavior={"inside"}
+      >
+        <ModalContent w="100%" h="100%">
+          <ModalCloseButton />
+          <Center w="100%" h="100%">
+            <Flex direction="column">
+              <Heading size="sm">
+                Sorry, we are unable to find the post you are looking for.
+              </Heading>
+            </Flex>
+          </Center>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  const coveredButtonColor = postData.covered
+    ? "text-primary"
+    : "text-secondary";
 
   const {
     name,
@@ -474,29 +533,56 @@ const PetPostModal: React.FC<{
             >
               Back to feed
             </Button>
-            {(role === Role.Admin || role === Role.ContentCreator) && (
-              <Flex>
+            <Flex>
+              {(role === Role.Admin || role === Role.ContentCreator) && (
                 <Button
                   h={8}
                   backgroundColor="white"
-                  onClick={onDeleteConfirmationOpen}
+                  onClick={onCoveredConfirmationOpen}
                   _hover={{}}
                   leftIcon={
-                    <DeleteIcon marginRight="5px" color="text-secondary" />
+                    postData.covered ? (
+                      <ViewIcon color={coveredButtonColor} />
+                    ) : (
+                      <ViewOffIcon color={coveredButtonColor} />
+                    )
                   }
                 >
-                  <Text textDecoration="underline" color="text-secondary">
-                    Delete
+                  <Text textDecoration="underline" color={coveredButtonColor}>
+                    {postData.covered ? "Uncover Post" : "Mark as Covered"}
                   </Text>
+                  <MarkCoveredModal
+                    isCoveredConfirmationOpen={isCoveredConfirmationOpen}
+                    onCoveredConfirmationClose={onCoveredConfirmationClose}
+                    postId={postId}
+                    isCovered={postData.covered}
+                  />
                 </Button>
-                <DeletePostModal
-                  isDeleteConfirmationOpen={isDeleteConfirmationOpen}
-                  onDeleteConfirmationClose={onDeleteConfirmationClose}
-                  onClose={onClose}
-                  postId={postData._id}
-                />
-              </Flex>
-            )}
+              )}
+              {(role === Role.Admin || role === Role.ContentCreator) && (
+                <Flex>
+                  <Button
+                    h={8}
+                    backgroundColor="white"
+                    onClick={onDeleteConfirmationOpen}
+                    _hover={{}}
+                    leftIcon={
+                      <DeleteIcon marginRight="5px" color="text-secondary" />
+                    }
+                  >
+                    <Text textDecoration="underline" color="text-secondary">
+                      Delete
+                    </Text>
+                  </Button>
+                  <DeletePostModal
+                    isDeleteConfirmationOpen={isDeleteConfirmationOpen}
+                    onDeleteConfirmationClose={onDeleteConfirmationClose}
+                    onClose={onClose}
+                    postId={postId}
+                  />
+                </Flex>
+              )}
+            </Flex>
           </Stack>
           <Flex direction="row" width="100%">
             <Flex
@@ -602,7 +688,7 @@ const PetPostModal: React.FC<{
             </Button>
             <FosterQuestionnaire
               fosterType={type}
-              postId={postData._id}
+              postId={postId}
               isFormViewOpen={isFormViewOpen}
               onFormViewClose={onFormViewClose}
             />
@@ -667,7 +753,7 @@ const PetPostModal: React.FC<{
                       isDeleteConfirmationOpen={isDeleteConfirmationOpen}
                       onDeleteConfirmationClose={onDeleteConfirmationClose}
                       onClose={onClose}
-                      postId={postData._id}
+                      postId={postId}
                     />
                   </Flex>
                 )}
@@ -686,7 +772,6 @@ const PetPostModal: React.FC<{
                 </Text>
               </Stack>
             </Stack>
-
             <Stack direction="column" width="100%" spacing={4}>
               <Flex width="100%" direction={"column"}>
                 <PetPostListGroup title={"Main Characteristics"} tags={[]} />
