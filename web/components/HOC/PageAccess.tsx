@@ -13,7 +13,7 @@ const restricted = new Set([Role.Admin]);
 const pageAccess: Record<Pages, Set<Role>> = {
   [Pages.ONBOARDING]: unrestricted,
   [Pages.ACCESS_MANAGEMENT]: restricted,
-  [Pages.PROFILE]: new Set(),
+  [Pages.PROFILE]: unrestricted,
   [Pages.FEED]: unrestricted,
   [Pages.RESOURCES]: unrestricted,
 };
