@@ -30,9 +30,18 @@ import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
 import { FilterQuery, Types } from "mongoose";
+import { populateEmailTemplate } from "../../email/email-template";
+import inlineCss from "inline-css";
 
 const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24
+);
+
+const questionnaireSchema = z.array(
+  z.object({
+    key: z.string(),
+    answer: z.string(),
+  })
 );
 
 const postSchema = z.object({
@@ -158,6 +167,7 @@ export const postRouter = router({
       z.object({
         email: z.string(),
         postOid: zodOidType,
+        responses: questionnaireSchema,
       })
     )
     .mutation(async ({ input }) => {
@@ -174,15 +184,22 @@ export const postRouter = router({
           process.env.CONTEXT === "production"
             ? fosterTypeEmails[post.type]
             : input.email;
+
+        const emailBody = populateEmailTemplate(post, user, input.responses);
+
         let count = 0;
         const maxTries = 3;
+        const options = { url: "www.angelsrescue.org" };
         while (true) {
           try {
-            const info = await transporter.sendMail({
+            const emailFormatted = await inlineCss(emailBody, options);
+            await transporter.sendMail({
               from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
               to: email,
-              subject: "Someone is ready to foster your dog!",
-              text: "User has signed up to foster dog, a stray dog.",
+              subject: `[APPLICATION] ${user.name ?? "Volunteer"} <> ${
+                post.name
+              }`,
+              html: emailFormatted,
             });
             break;
           } catch (e) {
