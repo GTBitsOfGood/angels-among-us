@@ -739,24 +739,25 @@ const PetPostModal: React.FC<{
         <Flex direction="column" width="100%" display={["flex", "none"]}>
           <Flex
             width="100%"
-            paddingLeft={4}
             top={0}
             position="sticky"
             paddingTop={6}
             bgColor="white"
             zIndex={3}
           >
-            <Stack
-              direction="row"
+            <Button
+              h={8}
+              w="fit-content"
+              bgColor="tag-primary-bg"
+              color="text-primary"
+              marginLeft={5}
+              _hover={{ bgColor: "tag-primary-bg" }}
+              leftIcon={<ArrowBackIcon />}
               onClick={onClose}
-              spacing={2}
-              color="text-secondary"
-              alignItems="center"
-              fontWeight="semibold"
+              id="backToFeedButton"
             >
-              <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
-              <Text>Back to Pet Feed</Text>
-            </Stack>
+              Back to feed
+            </Button>
           </Flex>
           <Stack
             direction="column"
