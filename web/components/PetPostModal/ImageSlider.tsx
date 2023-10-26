@@ -1,4 +1,4 @@
-import { Flex, Image, Icon } from "@chakra-ui/react";
+import { Flex, Image, Circle } from "@chakra-ui/react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
@@ -7,11 +7,8 @@ import { useState } from "react";
 
 function ImageSlider(props: { attachments: Array<string> }) {
   const videoTypes = new Set(["mp4", "mov"]);
-  const indicatorStates = props.attachments.map((slide) => {
-    let fileType = slide?.split(".")?.slice(-1);
-    return videoTypes.has(fileType[0]?.toLowerCase());
-  });
-  const [hideIndicators, setHideIndicators] = useState(indicatorStates[0]);
+  const [slideIndex, setSlideIndex] = useState(0);
+
   return (
     <Carousel
       axis="horizontal"
@@ -56,38 +53,31 @@ function ImageSlider(props: { attachments: Array<string> }) {
           </Flex>
         );
       }}
-      onChange={(index) => setHideIndicators(indicatorStates[index])}
+      onChange={(index) => setSlideIndex(index)}
+      showIndicators={
+        !videoTypes.has(
+          props.attachments[slideIndex].split(".").pop()!.toLowerCase()
+        )
+      }
       renderIndicator={(onClickHandler, isSelected, index) => {
-        const imageSlideIndicatorStyle = {
-          marginLeft: 15,
-          color: "#FFFFFF80",
-          cursor: "pointer",
-        };
-        let style = isSelected
-          ? { ...imageSlideIndicatorStyle, color: "#FFFFFF" }
-          : { ...imageSlideIndicatorStyle };
-        return hideIndicators ? (
-          <></>
-        ) : (
-          <>
-            <Icon
-              viewBox="0 0 200 200"
-              style={style}
-              onClick={onClickHandler}
-              key={index}
-            >
-              <path
-                fill="currentColor"
-                d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
-              />
-            </Icon>
-          </>
+        return (
+          <Circle
+            key={index}
+            display="inline-block"
+            onClick={onClickHandler}
+            cursor="pointer"
+            size={3}
+            marginX={2}
+            bg={isSelected ? "white" : "whiteAlpha.600"}
+          />
         );
       }}
     >
       {props.attachments.length > 0
-        ? props.attachments?.map((slide, index) => {
-            const isVideoType = indicatorStates[index];
+        ? props.attachments?.map((attachment) => {
+            const isVideoType = videoTypes.has(
+              attachment.split(".").pop()!.toString()
+            );
             return (
               <Flex
                 justifyContent={"center"}
@@ -96,7 +86,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
                 borderRadius="15px"
                 overflow={"hidden"}
                 height={["40vh", "65vh"]}
-                key={slide}
+                key={attachment}
                 paddingX={0}
               >
                 {isVideoType ? (
@@ -105,20 +95,32 @@ function ImageSlider(props: { attachments: Array<string> }) {
                     justifyContent={"center"}
                     height={["40vh", "65vh"]}
                     width={["94%", "96%"]}
-                    marginTop={10}
                   >
-                    <iframe
-                      src={slide}
-                      key={slide}
-                      height={"100%"}
-                      width={"100%"}
-                      allowFullScreen={true}
-                    ></iframe>
+                    <Flex
+                      w="100%"
+                      h="100%"
+                      overflow="hidden"
+                      pos="absolute"
+                      direction="row"
+                      justifyContent="center"
+                    >
+                      <video
+                        style={{
+                          objectFit: "contain",
+                          width: "auto",
+                          height: "100%",
+                        }}
+                        controls
+                        controlsList="nodownload"
+                      >
+                        <source src={attachment} />
+                      </video>
+                    </Flex>
                   </Flex>
                 ) : (
                   <Image
-                    src={slide}
-                    key={slide}
+                    key={attachment}
+                    src={attachment}
                     objectFit={"cover"}
                     verticalAlign={"true"}
                     align="center"
