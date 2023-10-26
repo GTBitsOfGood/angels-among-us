@@ -1,10 +1,17 @@
-import { Flex, Image } from "@chakra-ui/react";
+import { Flex, Image, Icon } from "@chakra-ui/react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 import DefaultDog from "../../public/dog.svg";
+import { useState } from "react";
 
 function ImageSlider(props: { attachments: Array<string> }) {
+  const videoTypes = new Set(["mp4", "mov"]);
+  const indicatorStates = props.attachments.map((slide) => {
+    let fileType = slide?.split(".")?.slice(-1);
+    return videoTypes.has(fileType[0]?.toLowerCase());
+  });
+  const [hideIndicators, setHideIndicators] = useState(indicatorStates[0]);
   return (
     <Carousel
       axis="horizontal"
@@ -49,25 +56,50 @@ function ImageSlider(props: { attachments: Array<string> }) {
           </Flex>
         );
       }}
+      onChange={(index) => setHideIndicators(indicatorStates[index])}
+      renderIndicator={(onClickHandler, isSelected, index) => {
+        const imageSlideIndicatorStyle = {
+          marginLeft: 15,
+          color: "#FFFFFF80",
+          cursor: "pointer",
+        };
+        let style = isSelected
+          ? { ...imageSlideIndicatorStyle, color: "#FFFFFF" }
+          : { ...imageSlideIndicatorStyle };
+        return hideIndicators ? (
+          <></>
+        ) : (
+          <>
+            <Icon
+              viewBox="0 0 200 200"
+              style={style}
+              onClick={onClickHandler}
+              key={index}
+            >
+              <path
+                fill="currentColor"
+                d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
+              />
+            </Icon>
+          </>
+        );
+      }}
     >
       {props.attachments.length > 0
-        ? props.attachments?.map((slide) => {
+        ? props.attachments?.map((slide, index) => {
+            const isVideoType = indicatorStates[index];
             return (
               <Flex
                 justifyContent={"center"}
                 alignItems={"center"}
-                bgColor={
-                  slide.slice(slide.length - 3) === "mp4"
-                    ? "black"
-                    : "tag-primary-bg"
-                }
+                bgColor={isVideoType ? "black" : "tag-primary-bg"}
                 borderRadius="15px"
                 overflow={"hidden"}
                 height={["40vh", "65vh"]}
                 key={slide}
                 paddingX={0}
               >
-                {slide.slice(slide.length - 3) === "mp4" ? (
+                {isVideoType ? (
                   <Flex
                     alignItems={"center"}
                     justifyContent={"center"}
@@ -80,6 +112,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
                       key={slide}
                       height={"100%"}
                       width={"100%"}
+                      allowFullScreen={true}
                     ></iframe>
                   </Flex>
                 ) : (
