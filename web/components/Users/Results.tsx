@@ -86,14 +86,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
   );
 
   return (
-    <Flex
-      direction="column"
-      width="100%"
-      height="100%"
-      justifyContent="space-between"
-      align="center"
-      gap={5}
-    >
+    <Flex direction="column" width="100%" minH="100%" gap={5}>
       <Stack spacing={5} w="100%">
         <Heading size="lg" alignSelf="start">
           Search Results
@@ -121,13 +114,13 @@ export default function Results({ filters, setSearched }: ResultsProps) {
           <Text fontStyle="italic">No filters selected</Text>
         )}
         <Divider />
-
+      </Stack>
+      <Flex maxW="100%" flex={1} overflowY="scroll">
         <Grid
           gridTemplateColumns={["1fr", "repeat(auto-fit, minmax(300px, 1fr))"]}
           gap={5}
           justifyContent="center"
-          maxWidth="100%"
-          overflowY="auto"
+          w="100%"
         >
           {users?.data?.map((user) => (
             <GridItem
@@ -170,7 +163,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
             </GridItem>
           ))}
         </Grid>
-      </Stack>
+      </Flex>
       <Button
         alignSelf="flex-start"
         onClick={() => setSearched(false)}
