@@ -222,6 +222,7 @@ function Home() {
               </Button>
             </Stack>
           </Stack>
+          <Flex flex="0 1 0" width="200px" />
           <Stack
             direction="row"
             width="48%"

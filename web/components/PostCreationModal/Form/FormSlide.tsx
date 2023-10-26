@@ -166,29 +166,6 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="temperamentForm" maxW="450px">
-          <FormLabel>Temperament</FormLabel>
-          <Select
-            isMulti
-            closeMenuOnSelect={false}
-            value={formState.temperament.map((val) => ({
-              value: val as string,
-              label: temperamentLabels[val],
-            }))}
-            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
-            options={Object.entries(temperamentLabels).map(([k, v]) => ({
-              value: k,
-              label: v,
-            }))}
-            onChange={(e) =>
-              dispatchFormState({
-                type: "setField",
-                key: "temperament",
-                data: e!.map(({ value }) => value) as Temperament[],
-              })
-            }
-          />
-        </FormControl>
         <FormControl className="breedForm" gridColumn="span 2">
           <FormLabel>Breed</FormLabel>
           <Select
@@ -208,6 +185,29 @@ export const FormSlide: React.FC<{
                 type: "setField",
                 key: "breed",
                 data: e!.map(({ value }) => value) as Breed[],
+              })
+            }
+          />
+        </FormControl>
+        <FormControl className="temperamentForm" maxW="450px">
+          <FormLabel>Temperament</FormLabel>
+          <Select
+            isMulti
+            closeMenuOnSelect={false}
+            value={formState.temperament.map((val) => ({
+              value: val as string,
+              label: temperamentLabels[val],
+            }))}
+            styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            options={Object.entries(temperamentLabels).map(([k, v]) => ({
+              value: k,
+              label: v,
+            }))}
+            onChange={(e) =>
+              dispatchFormState({
+                type: "setField",
+                key: "temperament",
+                data: e!.map(({ value }) => value) as Temperament[],
               })
             }
           />

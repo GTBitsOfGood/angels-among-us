@@ -20,6 +20,11 @@ const userSchema = new Schema<IUser>({
     unique: true,
     index: true,
   },
+  picture: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
   preferredEmail: {
     type: String,
     required: false,

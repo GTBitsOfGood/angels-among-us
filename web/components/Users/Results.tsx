@@ -1,13 +1,15 @@
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
-  Box,
   Button,
   Center,
+  Divider,
   Flex,
   Grid,
+  Image,
   GridItem,
   Heading,
   Spinner,
+  Stack,
   Text,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
@@ -30,7 +32,18 @@ type ResultsProps = {
   setSearched: Dispatch<SetStateAction<boolean>>;
 };
 
-const filterLabels: Record<keyof SearchUsersParams, any> = {
+const keyLabels: Record<keyof SearchUsersParams, string> = {
+  type: "Foster type",
+  size: "Size",
+  preferredBreeds: "Preferred breeds",
+  gender: "Gender",
+  age: "Age",
+  dogsNotGoodWith: "Able to foster dogs not good with",
+  medical: "Medical",
+  behavioral: "Behavioral",
+};
+
+const filterLabels: Record<keyof SearchUsersParams, Record<any, string>> = {
   type: fosterTypeLabels,
   size: sizeLabels,
   preferredBreeds: breedLabels,
@@ -43,106 +56,129 @@ const filterLabels: Record<keyof SearchUsersParams, any> = {
 
 function Label(props: React.PropsWithChildren): JSX.Element {
   return (
-    <Text
-      backgroundColor="#C6E3F9"
-      width="fit-content"
-      paddingX="10px"
-      paddingY="5px"
-      borderRadius="2"
+    <Flex
+      backgroundColor="tag-primary-bg"
+      paddingX={2}
+      paddingY={1}
+      borderRadius={8}
       fontSize="14px"
     >
       {props.children}
-    </Text>
+    </Flex>
   );
 }
 
 export default function Results({ filters, setSearched }: ResultsProps) {
-  const users = trpc.user.searchUsers.useQuery({ searchParams: filters });
-  console.log(users);
+  const { isLoading, data: users } = trpc.user.searchUsers.useQuery({
+    searchParams: filters,
+  });
 
-  return users.isLoading ? (
-    <Center w="100%" h="100%">
-      <Spinner size="xl" />
-    </Center>
-  ) : (
+  if (isLoading) {
+    return (
+      <Center w="100%" h="100%">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  const flattenedFilters = Object.entries(filters).filter(
+    ([_, v]) => v.length !== 0
+  );
+
+  return (
     <Flex
       direction="column"
-      display="flex"
       width="100%"
       height="100%"
-      padding={5}
-      overflowY="auto"
-      overflowX="hidden"
+      justifyContent="space-between"
       align="center"
       gap={5}
-      position="relative"
     >
-      <Button
-        onClick={() => setSearched(false)}
-        position="absolute"
-        left={0}
-        top={0}
-        leftIcon={<ArrowBackIcon />}
-        variant="ghost"
-        color="gray.400"
-      >
-        Back to Search
-      </Button>
-      <Heading size="md" marginTop={[3, 0]}>
-        Search Results
-      </Heading>
-      <Box borderRadius={20} padding={5} width="100%">
-        <Text>
-          Showing filter results for volunteers that can handle dogs that
-          are/have:
-        </Text>
-        <Flex gap={2} wrap="wrap">
-          {Object.entries(filters).map(([k, v]) =>
-            v.map((filter: PossibleTypes) => (
-              <Label key={filter}>
-                {filterLabels[k as keyof SearchUsersParams][filter]}
+      <Stack spacing={5} w="100%">
+        <Heading size="lg" alignSelf="start">
+          Search Results
+        </Heading>
+        <Text>Showing results for the following search criteria:</Text>
+        {flattenedFilters.length > 0 ? (
+          <Flex gap={2} wrap="wrap">
+            {flattenedFilters.map(([k, v]) => (
+              <Label key={k}>
+                <Text fontWeight="semibold" pr={1}>
+                  {`${keyLabels[k as keyof SearchUsersParams]}:`}
+                </Text>
+                <Text>
+                  {v
+                    .map(
+                      (filter: PossibleTypes) =>
+                        filterLabels[k as keyof SearchUsersParams][filter]
+                    )
+                    .join(", ")}
+                </Text>
               </Label>
-            ))
-          )}
-        </Flex>
-      </Box>
-      <Box
-        marginTop="-20px"
-        bgColor="btn-solid-primary-bg"
-        height="10px"
-        width="200%"
-      />
+            ))}
+          </Flex>
+        ) : (
+          <Text fontStyle="italic">No filters selected</Text>
+        )}
+        <Divider />
 
-      <Grid
-        gridTemplateColumns={["1fr", "repeat(auto-fit, minmax(300px, 1fr))"]}
-        gap={5}
-        justifyContent="center"
-        maxWidth="100%"
+        <Grid
+          gridTemplateColumns={["1fr", "repeat(auto-fit, minmax(300px, 1fr))"]}
+          gap={5}
+          justifyContent="center"
+          maxWidth="100%"
+          overflowY="auto"
+        >
+          {users?.data?.map((user) => (
+            <GridItem
+              key={user.uid}
+              display="flex"
+              alignItems="stretch"
+              border="1px solid"
+              borderColor="gray.300"
+              borderRadius={12}
+              padding={2}
+            >
+              <Grid
+                templateColumns={{
+                  base: "0 max-content",
+                  sm: "1fr max-content",
+                }}
+                gap={2}
+              >
+                <GridItem h={0} minHeight="100%">
+                  <Image
+                    w="100%"
+                    h="100%"
+                    borderRadius={100}
+                    src={user.picture ?? "/profile.jpeg"}
+                    objectFit="cover"
+                  />
+                </GridItem>
+                <GridItem wordBreak="break-all">
+                  <Heading size="sm">{user.name}</Heading>
+                  <Text fontSize="sm" wordBreak="break-all">
+                    <b>Email: </b>
+                    {user.email}
+                  </Text>
+                  <Text fontSize="sm" wordBreak="break-all">
+                    <b>Preferred Email: </b>
+                    {user.preferredEmail ?? "Unspecified"}
+                  </Text>
+                </GridItem>
+              </Grid>
+            </GridItem>
+          ))}
+        </Grid>
+      </Stack>
+      <Button
+        alignSelf="flex-start"
+        onClick={() => setSearched(false)}
+        leftIcon={<ArrowBackIcon />}
+        variant="outline-secondary"
       >
-        {users?.data?.data?.map((user) => (
-          <GridItem
-            key={user.uid}
-            outline="1px solid gray"
-            borderRadius={10}
-            padding={2}
-            justifyContent="center"
-            overflowX="auto"
-            width="100%"
-          >
-            <Flex direction="column">
-              <Heading size="md">{user.name}</Heading>
-              <Text wordBreak="break-all">
-                <b>Email: </b>
-                {user.email}
-              </Text>
-              <Text wordBreak="break-all">
-                <b>Preferred Email: </b>
-                {user.preferredEmail ?? user.email}
-              </Text>
-            </Flex>
-          </GridItem>
-        ))}
-      </Grid>
+        Back to search
+      </Button>
     </Flex>
   );
 }

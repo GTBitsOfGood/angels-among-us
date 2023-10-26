@@ -37,8 +37,8 @@ export const authRouter = router({
           const document = await updateUserByUid(ctx.session.uid, {
             role: account.role,
             disabled: false,
-            name: ctx.session.name,
-            picture: ctx.session.picture,
+            ...(!user.name && { name: ctx.session.name }),
+            ...(!user.picture && { picture: ctx.session.picture }),
           });
 
           return {
@@ -64,6 +64,8 @@ export const authRouter = router({
             role: account.role,
             hasCompletedOnboarding: false,
             disabled: false,
+            name: ctx.session.name,
+            picture: ctx.session.picture,
           });
           return {
             user: document,

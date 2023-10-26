@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Flex,
   Grid,
@@ -64,27 +63,17 @@ export default function Search({
       direction="column"
       width="100%"
       height="100%"
-      padding={5}
-      overflowY="auto"
       align="center"
       gap={5}
+      justifyContent="space-between"
     >
-      <Heading size="md">Search by Filters</Heading>
-      <Box
-        outline="2px solid gray"
-        borderRadius={20}
-        flex="1"
-        padding={5}
-        width="100%"
-      >
-        <Stack align="center" marginBottom={15}>
-          {/* <Text>Filter Options</Text>
-          <Divider borderColor="gray.400" /> */}
-          <Text alignSelf="start">
-            Fill out at least one field to filter for volunteers that match
-            those options:
-          </Text>
-        </Stack>
+      <Stack spacing={5} w="100%" overflowY="auto">
+        <Heading size="lg" alignSelf="start">
+          Search by Filters
+        </Heading>
+        <Text alignSelf="start">
+          Fill out fields to filter for volunteers the specified options:
+        </Text>
         <Stack
           direction="column"
           spacing={5}
@@ -345,34 +334,34 @@ export default function Search({
               </GridItem>
             </Grid>
           </Stack>
-          <Flex
-            width="100%"
-            direction={["column", "row"]}
-            gap={5}
-            justifyContent="end"
-          >
-            <Button
-              onClick={() => {
-                dispatch({ type: "clear" });
-              }}
-              variant="outline-secondary"
-              width={["100%", "min-content"]}
-              paddingX={20}
-            >
-              Clear
-            </Button>
-            <Button
-              onClick={() => setSearched(true)}
-              variant="solid-primary"
-              width={["100%", "min-content"]}
-              paddingX={20}
-              rightIcon={<ArrowForwardIcon />}
-            >
-              Find Volunteers
-            </Button>
-          </Flex>
         </Stack>
-      </Box>
+      </Stack>
+      <Flex
+        width="100%"
+        direction={["column", "row"]}
+        gap={5}
+        justifyContent="end"
+      >
+        <Button
+          onClick={() => {
+            dispatch({ type: "clear" });
+          }}
+          variant="outline-secondary"
+          width={["100%", "min-content"]}
+          paddingX={20}
+        >
+          Clear
+        </Button>
+        <Button
+          onClick={() => setSearched(true)}
+          variant="solid-primary"
+          width={["100%", "min-content"]}
+          paddingX={20}
+          rightIcon={<ArrowForwardIcon />}
+        >
+          Find volunteers
+        </Button>
+      </Flex>
     </Flex>
   );
 }

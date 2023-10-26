@@ -43,7 +43,7 @@ function Users() {
   );
 
   return (
-    <Panel width="80%">
+    <Panel>
       {searched ? (
         <Results filters={filters} setSearched={setSearched} />
       ) : (

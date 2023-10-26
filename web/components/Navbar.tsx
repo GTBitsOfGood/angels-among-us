@@ -195,7 +195,7 @@ export default function Navbar() {
                 <Text>Access Management</Text>
               </Link>
               <Link as={NextLink} href={Pages.USERS}>
-                <Text>Search Users</Text>
+                <Text>Volunteer Search</Text>
               </Link>
             </>
           )}
@@ -226,7 +226,7 @@ export default function Navbar() {
                   <Text>Access Management</Text>
                 </Link>
                 <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
-                  <Text>Search Users</Text>
+                  <Text>Volunteer Search</Text>
                 </Link>
               </>
             )}
