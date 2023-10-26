@@ -5,6 +5,7 @@ import {
   ListObjectsCommand,
   PutObjectCommand,
   DeleteObjectsCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { consts } from "../../utils/consts";
@@ -90,7 +91,44 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
   return `${consts.baseUrl}/api/resizedUpload/${token}`;
 }
 
+// Deletes all attachments from post given post id
+async function deleteAllAttachments(oid: string) {
+  let numTries = 0;
+  const maxTries = 3;
+  const post = await Post.findById(oid).exec();
+  const uploadedObjects = await storageClient.listObjectsV2({
+    Bucket: consts.storageBucket,
+    Prefix: `${oid.toString()}`,
+  });
+  if (!uploadedObjects.Contents) {
+    return;
+  }
+  const objectsToDelete = uploadedObjects.Contents.map((content) => ({
+    Key: content.Key,
+  }));
+  const deleteObjectsCommand = new DeleteObjectsCommand({
+    Bucket: consts.storageBucket,
+    Delete: { Objects: objectsToDelete },
+  });
+  try {
+    const returned = await storageClient.send(deleteObjectsCommand);
+    console.log(returned);
+    if (returned.Deleted?.length === objectsToDelete.length) {
+      return { success: true };
+    } else {
+      throw new Error("Attachments were not successfully deleted.");
+    }
+  } catch (e) {
+    console.log(e);
+    //TODO: Write cron job to mark unsuccessful deletions to delete later
+    if (++numTries == maxTries) {
+      throw e;
+    }
+  }
+}
+
 async function deleteAttachments(keysToDelete: string[]) {
+  console.log(keysToDelete);
   let numTries = 0;
   const maxTries = 3;
   const objectsToDelete = keysToDelete.map((keyToDelete) => ({
@@ -164,9 +202,31 @@ async function updatePostDetails(
   update: UpdateQuery<IPost>,
   session?: ClientSession
 ) {
-  return await Post.findOneAndUpdate({ _id: oid }, update, {
-    session: session,
-  });
+  const pending = update.attachments.length != 0;
+  let updatedPost = await Post.findOneAndUpdate(
+    { _id: oid },
+    { ...update, attachments: [], pending },
+    {
+      session: session,
+    }
+  );
+  const postId = updatedPost._id;
+  const status = await deleteAllAttachments(postId);
+  const uploadInfo = await getAttachmentUploadURLs(
+    postId,
+    update as IPendingPost
+  );
+  updatedPost = await Post.findOneAndUpdate(
+    { _id: postId },
+    {
+      attachments: Object.keys(uploadInfo),
+    },
+    { session: session, returnDocument: "after" }
+  );
+  return {
+    ...updatedPost.toObject(),
+    attachments: uploadInfo,
+  };
 }
 
 async function updatePostStatus(oid: Types.ObjectId, session?: ClientSession) {

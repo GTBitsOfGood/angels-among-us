@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { z, ZodArray } from "zod";
 import {
   createPost,
   deletePost,
@@ -246,10 +246,22 @@ export const postRouter = router({
       })
     )
     .mutation(async ({ input }) => {
+      const session = await Post.startSession();
+      session.startTransaction();
       try {
-        await updatePostDetails(input._id, input.updateFields);
-        return { success: true };
+        const updatedPost = await updatePostDetails(input._id, {
+          ...input.updateFields,
+        });
+        await session.commitTransaction();
+        return {
+          id: input._id,
+          post: updatedPost,
+          attachments: updatedPost.attachments,
+          success: true,
+        };
       } catch (e) {
+        await session.abortTransaction();
+        console.error(e);
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",

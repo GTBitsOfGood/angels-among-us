@@ -16,6 +16,7 @@ import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import {
   Age,
+  AttachmentInfo,
   Behavioral,
   Breed,
   FosterType,
@@ -239,81 +240,86 @@ const EditPostModal: React.FC<{
   }, [attachments]);
 
   const postUpdate = trpc.post.updateDetails.useMutation();
-  //   const postFinalize = trpc.post.finalize.useMutation();
+  const postFinalize = trpc.post.finalize.useMutation();
 
   const editPost = async () => {
-    // const files: AttachmentInfo[] = await Promise.all(
-    //     fileArr.map(async (file) => {
-    //         const key = file.name;
-    //         if (file.type.includes("image/")) {
-    //             const url = URL.createObjectURL(file);
-    //             return new Promise((resolve) => {
-    //                 const image = new Image();
-    //                 image.onload = () => {
-    //                     URL.revokeObjectURL(url);
-    //                     resolve({
-    //                         type: "image",
-    //                         key,
-    //                         length: image.height,
-    //                         width: image.width,
-    //                     });
-    //                 };
-    //                 image.src = url;
-    //             });
-    //         } else {
-    //             return {
-    //                 type: "video",
-    //                 key,
-    //             };
-    //         }
-    //     })
-    // );
+    const files: AttachmentInfo[] = await Promise.all(
+      fileArr.map(async (file) => {
+        const key = file.name;
+        if (file.type.includes("image/")) {
+          const url = URL.createObjectURL(file);
+          return new Promise((resolve) => {
+            const image = new Image();
+            image.onload = () => {
+              URL.revokeObjectURL(url);
+              resolve({
+                type: "image",
+                key,
+                length: image.height,
+                width: image.width,
+              });
+            };
+            image.src = url;
+          });
+        } else {
+          return {
+            type: "video",
+            key,
+          };
+        }
+      })
+    );
+
     try {
-      await postUpdate.mutateAsync({
+      const creationInfo = await postUpdate.mutateAsync({
         _id: postData._id,
-        updateFields: { ...(formState as z.output<typeof formSchema>) },
-        // attachments: files,
+        updateFields: {
+          ...(formState as z.output<typeof formSchema>),
+          attachments: files,
+        },
       });
-      // const oid = creationInfo._id;
-      // const uploadInfo = creationInfo.attachments;
+      const oid = creationInfo.id;
+      const uploadInfo = creationInfo.attachments;
 
-      // for (let i = 0; i < fileArr.length; i++) {
-      //     const file = fileArr[i];
-      //     await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
-      // }
+      console.log(`uploadInfo: ${JSON.stringify(uploadInfo)}`);
 
-      // const postInfo = await postFinalize.mutateAsync({
-      //     _id: oid,
-      // });
+      for (let i = 0; i < fileArr.length; i++) {
+        const file = fileArr[i];
+        await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
+      }
 
-      // console.log(JSON.stringify(postInfo));
+      const postInfo = await postFinalize.mutateAsync({
+        _id: new Types.ObjectId(oid),
+      });
+
+      console.log(JSON.stringify(postInfo));
     } catch (e) {
       //TODO: Delete pending post on error
       throw e;
     }
   };
 
-  // const uploadFile = async (url: string, file: File) => {
-  //     let count = 0;
-  //     const maxTries = 3;
-  //     while (true) {
-  //         const uploadResp = await fetch(url, {
-  //             method: "PUT",
-  //             headers: {
-  //                 "content-length": `${file.size}`,
-  //             },
-  //             body: await file.arrayBuffer(),
-  //         });
+  const uploadFile = async (url: string, file: File) => {
+    let count = 0;
+    const maxTries = 3;
+    while (true) {
+      const uploadResp = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "content-length": `${file.size}`,
+        },
+        body: await file.arrayBuffer(),
+      });
 
-  //         if (uploadResp.status === 200) {
-  //             return;
-  //         }
+      if (uploadResp.status === 200) {
+        return;
+      }
 
-  //         if (uploadResp.status === 500 && count++ === maxTries) {
-  //             throw new Error("Error uploading images.");
-  //         }
-  //     }
-  // };
+      if (uploadResp.status === 500 && count++ === maxTries) {
+        throw new Error("Error uploading images.");
+      }
+    }
+  };
 
   return (
     <Modal
