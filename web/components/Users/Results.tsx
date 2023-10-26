@@ -149,7 +149,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
                   />
                 </GridItem>
                 <GridItem wordBreak="break-all">
-                  <Heading size="sm">{user.name}</Heading>
+                  <Heading size="sm">{user.name ?? "Volunteer"}</Heading>
                   <Text fontSize="sm" wordBreak="break-all">
                     <b>Email: </b>
                     {user.email}
