@@ -16,6 +16,7 @@ const pageAccess: Record<Pages, Set<Role>> = {
   [Pages.PROFILE]: unrestricted,
   [Pages.FEED]: unrestricted,
   [Pages.RESOURCES]: unrestricted,
+  [Pages.USERS]: restricted,
 };
 
 const pageTitles: Record<Pages, string> = {
@@ -24,6 +25,7 @@ const pageTitles: Record<Pages, string> = {
   [Pages.PROFILE]: "Profile",
   [Pages.FEED]: "Feed",
   [Pages.RESOURCES]: "Resources",
+  [Pages.USERS]: "Volunteer Search",
 };
 
 const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {

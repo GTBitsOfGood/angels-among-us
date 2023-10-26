@@ -12,7 +12,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import Select from "react-select";
+import Select, { components } from "react-select";
 import {
   Age,
   ageLabels,
@@ -130,6 +130,22 @@ function Profile() {
     },
   });
 
+  const MultiValueLabel = (props: any) => {
+    return (
+      <components.MultiValueLabel
+        {...props}
+        innerProps={{
+          ...props.innerProps,
+          css: { ...props.innerProps.css, paddingRight: 6 },
+        }}
+      />
+    );
+  };
+  const MultiValueRemove = (props: any) => {
+    if (!editing) return null;
+    return <components.MultiValueRemove {...props} />;
+  };
+
   return (
     <Flex
       display={"flex"}
@@ -235,6 +251,7 @@ function Profile() {
                       Which types of fosters can you help with?
                     </Text>
                     <Select
+                      components={{ MultiValueLabel, MultiValueRemove }}
                       closeMenuOnSelect={false}
                       onChange={(newVals) =>
                         dispatch({
@@ -269,6 +286,7 @@ function Profile() {
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Breed Restrictions</Text>
                   <Select
+                    components={{ MultiValueLabel, MultiValueRemove }}
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
                       dispatch({
@@ -297,6 +315,7 @@ function Profile() {
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Breed Preferences</Text>
                   <Select
+                    components={{ MultiValueLabel, MultiValueRemove }}
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
                       dispatch({
@@ -327,6 +346,7 @@ function Profile() {
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Age Capability</Text>
                   <Select
+                    components={{ MultiValueLabel, MultiValueRemove }}
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
                       dispatch({
@@ -355,6 +375,7 @@ function Profile() {
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Dog Size Capability</Text>
                   <Select
+                    components={{ MultiValueLabel, MultiValueRemove }}
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
                       dispatch({
@@ -385,6 +406,7 @@ function Profile() {
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Gender Capability</Text>
                   <Select
+                    components={{ MultiValueLabel, MultiValueRemove }}
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
                       dispatch({
@@ -422,6 +444,7 @@ function Profile() {
                     Able to foster dogs NOT good with:
                   </Text>
                   <Select
+                    components={{ MultiValueLabel, MultiValueRemove }}
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
                       dispatch({
@@ -449,6 +472,7 @@ function Profile() {
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Able to foster dogs with:</Text>
                   <Select
+                    components={{ MultiValueLabel, MultiValueRemove }}
                     closeMenuOnSelect={false}
                     onChange={(newVals) =>
                       dispatch({
@@ -482,6 +506,7 @@ function Profile() {
                 <Stack direction="column" width={["100%", "50%"]}>
                   <Text fontWeight="medium">Medical Capability</Text>
                   <Select
+                    components={{ MultiValueLabel, MultiValueRemove }}
                     isMulti
                     onChange={(newVals) =>
                       dispatch({

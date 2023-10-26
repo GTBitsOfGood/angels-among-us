@@ -266,7 +266,7 @@ const PostCreationModal: React.FC<{
     <Modal
       onClose={onClose}
       isOpen={isOpen}
-      closeOnOverlayClick={false}
+      closeOnOverlayClick={true}
       blockScrollOnMount
       scrollBehavior="inside"
     >

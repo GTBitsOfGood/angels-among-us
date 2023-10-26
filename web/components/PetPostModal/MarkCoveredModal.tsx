@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { trpc } from "../../utils/trpc";
 import { Types } from "mongoose";
+import { useState } from "react";
 
 function MarkCoveredModal(props: {
   isCoveredConfirmationOpen: boolean;
@@ -25,6 +26,7 @@ function MarkCoveredModal(props: {
     isCovered,
   } = props;
   const mutation = trpc.post.updateStatus.useMutation();
+  const [loading, setLoading] = useState(false);
   const utils = trpc.useContext();
   const toast = useToast();
 
@@ -55,32 +57,39 @@ function MarkCoveredModal(props: {
               Cancel
             </Button>
             <Button
+              isLoading={loading}
               variant="solid-primary"
               width={32}
               borderRadius={16}
-              onClick={() => {
-                mutation.mutate(
-                  { _id: postId },
-                  {
-                    onSuccess: () => {
-                      utils.post.invalidate();
-                    },
-                    onError: () => {
-                      toast({
-                        title: "Error",
-                        description: "Changing covered status was unsuccessful",
-                        containerStyle: {
-                          whiteSpace: "pre-line",
-                        },
-                        status: "error",
-                        duration: 5000,
-                        isClosable: true,
-                        position: "top",
-                      });
-                    },
-                  }
-                );
-                onCoveredConfirmationClose();
+              onClick={async () => {
+                setLoading(true);
+                mutation
+                  .mutateAsync(
+                    { _id: postId },
+                    {
+                      onSuccess: () => {
+                        utils.post.invalidate();
+                      },
+                      onError: () => {
+                        toast({
+                          title: "Error",
+                          description:
+                            "Changing covered status was unsuccessful",
+                          containerStyle: {
+                            whiteSpace: "pre-line",
+                          },
+                          status: "error",
+                          duration: 5000,
+                          isClosable: true,
+                          position: "top",
+                        });
+                      },
+                    }
+                  )
+                  .finally(() => {
+                    onCoveredConfirmationClose();
+                    setLoading(false);
+                  });
               }}
             >
               Confirm
