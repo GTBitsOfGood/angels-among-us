@@ -1,3 +1,5 @@
+import { UploadInfo } from "../../db/actions/Post";
+
 export enum PetKind {
   Dog = "dog",
   Cat = "cat",
@@ -345,4 +347,10 @@ export interface IPost {
 
 export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
   attachments: AttachmentInfo[];
+};
+
+export type IPendingUpdatePost = Omit<IPendingPost, "covered" | "date">;
+
+export type IPendingFinalizePost = Omit<IPost, "attachments"> & {
+  attachments: UploadInfo;
 };

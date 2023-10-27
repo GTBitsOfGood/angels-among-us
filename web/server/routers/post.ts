@@ -242,29 +242,23 @@ export const postRouter = router({
     .input(
       z.object({
         _id: zodOidType,
-        updateFields: postSchema.partial(),
+        updateFields: postSchema,
       })
     )
     .mutation(async ({ input }) => {
-      const session = await Post.startSession();
-      session.startTransaction();
       try {
         const updatedPost = await updatePostDetails(input._id, {
           ...input.updateFields,
         });
-        await session.commitTransaction();
         return {
-          id: input._id,
           post: updatedPost,
           attachments: updatedPost.attachments,
-          success: true,
         };
       } catch (e) {
-        await session.abortTransaction();
-        console.error(e);
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
@@ -361,6 +355,7 @@ export const postRouter = router({
         },
         houseTrained: { $in: houseTrained },
         spayNeuterStatus: { $in: spayNeuterStatus },
+        pending: false,
       };
       const filteredPosts = await getFilteredPosts(completeFilter);
       return filteredPosts;

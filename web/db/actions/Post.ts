@@ -1,6 +1,11 @@
 import { ClientSession, FilterQuery, Types, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
-import { IPendingPost, IPost } from "../../utils/types/post";
+import {
+  IPendingFinalizePost,
+  IPendingPost,
+  IPendingUpdatePost,
+  IPost,
+} from "../../utils/types/post";
 import {
   ListObjectsCommand,
   PutObjectCommand,
@@ -13,7 +18,7 @@ import { sign } from "jsonwebtoken";
 import storageClient from "../storageConnect";
 import { captureException } from "@sentry/nextjs";
 
-type UploadInfo = Record<string, string>;
+export type UploadInfo = Record<string, string>;
 
 async function getPost(
   oid: Types.ObjectId,
@@ -57,7 +62,7 @@ async function createPost(post: IPendingPost, session?: ClientSession) {
 
 async function getAttachmentUploadURLs(
   postId: Types.ObjectId,
-  post: IPendingPost
+  post: IPendingPost | IPendingUpdatePost
 ): Promise<UploadInfo> {
   const attachmentURLs: Record<string, string> = {};
   for (let i = 0; i < post.attachments.length; i++) {
@@ -91,11 +96,17 @@ async function getResizedUploadUrl(uuid: string): Promise<string> {
   return `${consts.baseUrl}/api/resizedUpload/${token}`;
 }
 
-// Deletes all attachments from post given post id
-async function deleteAllAttachments(oid: string) {
+/**
+ * Deletes all attachments from a post given its _id. Deletes objects from storage bucket using
+ * prefix of post id, **not** the post's attachments array.
+ * @param oid post _id
+ * @returns void if successful
+ * @throws Deletion error
+ */
+async function deleteAllAttachments(oid: Types.ObjectId) {
   let numTries = 0;
   const maxTries = 3;
-  const post = await Post.findById(oid).exec();
+
   const uploadedObjects = await storageClient.listObjectsV2({
     Bucket: consts.storageBucket,
     Prefix: `${oid.toString()}`,
@@ -112,15 +123,12 @@ async function deleteAllAttachments(oid: string) {
   });
   try {
     const returned = await storageClient.send(deleteObjectsCommand);
-    console.log(returned);
     if (returned.Deleted?.length === objectsToDelete.length) {
-      return { success: true };
+      return;
     } else {
       throw new Error("Attachments were not successfully deleted.");
     }
   } catch (e) {
-    console.log(e);
-    //TODO: Write cron job to mark unsuccessful deletions to delete later
     if (++numTries == maxTries) {
       throw e;
     }
@@ -128,7 +136,6 @@ async function deleteAllAttachments(oid: string) {
 }
 
 async function deleteAttachments(keysToDelete: string[]) {
-  console.log(keysToDelete);
   let numTries = 0;
   const maxTries = 3;
   const objectsToDelete = keysToDelete.map((keyToDelete) => ({
@@ -199,25 +206,23 @@ async function finalizePost(id: Types.ObjectId, session?: ClientSession) {
 
 async function updatePostDetails(
   oid: Types.ObjectId,
-  update: UpdateQuery<IPost>,
+  update: IPendingUpdatePost,
   session?: ClientSession
-) {
-  const pending = update.attachments.length != 0;
-  let updatedPost = await Post.findOneAndUpdate(
-    { _id: oid },
-    { ...update, attachments: [], pending },
+): Promise<IPendingFinalizePost> {
+  await Post.findByIdAndUpdate(
+    oid,
+    { ...update, attachments: [], pending: true },
     {
       session: session,
     }
   );
-  const postId = updatedPost._id;
-  const status = await deleteAllAttachments(postId);
-  const uploadInfo = await getAttachmentUploadURLs(
-    postId,
-    update as IPendingPost
-  );
-  updatedPost = await Post.findOneAndUpdate(
-    { _id: postId },
+
+  if (update.attachments.length > 0) {
+    await deleteAllAttachments(oid);
+  }
+  const uploadInfo = await getAttachmentUploadURLs(oid, update);
+  const updatedPost = await Post.findOneAndUpdate(
+    { _id: oid },
     {
       attachments: Object.keys(uploadInfo),
     },

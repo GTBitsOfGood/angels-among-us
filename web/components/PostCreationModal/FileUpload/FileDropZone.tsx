@@ -14,11 +14,6 @@ function FileDropZone(props: PropsType) {
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
-      console.log("REJECTIONS");
-      console.log(fileRejections);
-      console.log("ACCEPTED");
-      console.log(acceptedFiles);
-
       if (fileRejections.length > 0) {
         setShowAlert(true);
       } else setShowAlert(false);
@@ -44,8 +39,10 @@ function FileDropZone(props: PropsType) {
     onDrop,
     maxFiles: 6 - fileArr.length,
     accept: {
-      "image/*": [".jpg", ".jpeg", ".png"],
-      "video/*": [".mp4", ".mov"],
+      "image/jpeg": [".jpeg", ".jpg"],
+      "image/png": [".png"],
+      "video/mp4": [".mp4"],
+      "video/quicktime": [".mov"],
     },
   });
 

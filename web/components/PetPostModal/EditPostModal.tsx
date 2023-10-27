@@ -137,6 +137,7 @@ const EditPostModal: React.FC<{
   const toast = useToast();
   const utils = trpc.useContext();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [isContentView, setIsContentView] = useState(true);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
@@ -271,30 +272,26 @@ const EditPostModal: React.FC<{
     );
 
     try {
-      const creationInfo = await postUpdate.mutateAsync({
+      const updateInfo = await postUpdate.mutateAsync({
         _id: postData._id,
         updateFields: {
           ...(formState as z.output<typeof formSchema>),
           attachments: files,
         },
       });
-      const oid = creationInfo.id;
-      const uploadInfo = creationInfo.attachments;
 
-      console.log(`uploadInfo: ${JSON.stringify(uploadInfo)}`);
+      const uploadInfo = updateInfo.attachments;
 
       for (let i = 0; i < fileArr.length; i++) {
         const file = fileArr[i];
-        await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
+        await uploadFile(uploadInfo[`${postData._id}/${file.name}`], file);
       }
 
-      const postInfo = await postFinalize.mutateAsync({
-        _id: new Types.ObjectId(oid),
+      await postFinalize.mutateAsync({
+        _id: postData._id,
       });
-
-      console.log(JSON.stringify(postInfo));
     } catch (e) {
-      //TODO: Delete pending post on error
+      //TODO: Handle pending post on error
       throw e;
     }
   };
@@ -315,7 +312,7 @@ const EditPostModal: React.FC<{
         return;
       }
 
-      if (uploadResp.status === 500 && count++ === maxTries) {
+      if (uploadResp.status === 500 && ++count === maxTries) {
         throw new Error("Error uploading images.");
       }
     }
@@ -384,6 +381,7 @@ const EditPostModal: React.FC<{
             </Text>
           </Button>
           <Button
+            isLoading={isLoading}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={
               isContentView
@@ -410,15 +408,18 @@ const EditPostModal: React.FC<{
                   }
                 : () => {
                     //TODO: Wait for success to close.
-                    editPost().then(() => {
-                      onClose();
-                      utils.post.invalidate();
-                      setFileArr(fileArr);
-                      setIsContentView(true);
-                      dispatch({
-                        type: "clear",
-                      });
-                    });
+                    setIsLoading(true);
+                    editPost()
+                      .then(() => {
+                        utils.post.invalidate();
+                        onClose();
+                        setFileArr(fileArr);
+                        setIsContentView(true);
+                        dispatch({
+                          type: "clear",
+                        });
+                      })
+                      .finally(() => setIsLoading(false));
                   }
             }
             width={"125px"}
