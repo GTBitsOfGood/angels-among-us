@@ -322,7 +322,6 @@ export interface IPost {
   date: Date;
   name: string;
   description: string;
-  petKind: PetKind;
   type: FosterType;
   size: Size;
   breed: Breed[];

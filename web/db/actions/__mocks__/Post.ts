@@ -8,7 +8,6 @@ import {
   Gender,
   IPost,
   Medical,
-  PetKind,
   Size,
   Temperament,
   Trained,
@@ -20,7 +19,6 @@ export function createRandomPost(): IPost & { _id: Types.ObjectId } {
     date: faker.date.past(),
     name: faker.person.fullName(),
     description: faker.lorem.sentence(),
-    petKind: faker.helpers.arrayElement(Object.values(PetKind)),
     type: faker.helpers.arrayElement(Object.values(FosterType)),
     size: faker.helpers.arrayElement(Object.values(Size)),
     breed: faker.helpers.uniqueArray(

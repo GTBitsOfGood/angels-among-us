@@ -23,7 +23,6 @@ import {
   FosterType,
   Gender,
   Medical,
-  PetKind,
   Size,
   Temperament,
   Trained,
@@ -80,10 +79,6 @@ const formSchema = z.object({
   description: z
     .string()
     .transform((val, ctx) => stringEmptyValidation(val, ctx, "Description")),
-  petKind: z
-    .nativeEnum(PetKind, { required_error: "Pet kind required." })
-    .nullable()
-    .transform((val, ctx) => nullValidation(val, ctx, "Pet kind")),
   gender: z
     .nativeEnum(Gender, { required_error: "Gender required." })
     .nullable()
@@ -143,7 +138,6 @@ const PostCreationModal: React.FC<{
   const defaultFormState = {
     name: "",
     description: "",
-    petKind: null,
     gender: null,
     age: null,
     type: null,

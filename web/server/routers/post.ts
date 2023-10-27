@@ -23,7 +23,6 @@ import {
   Medical,
   Behavioral,
   Trained,
-  PetKind,
   IPost,
 } from "../../utils/types/post";
 import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
@@ -47,7 +46,6 @@ const questionnaireSchema = z.array(
 const postSchema = z.object({
   name: z.string(),
   description: z.string(),
-  petKind: z.nativeEnum(PetKind),
   type: z.nativeEnum(FosterType),
   size: z.nativeEnum(Size),
   breed: z.array(z.nativeEnum(Breed)),

@@ -77,7 +77,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
       {props.attachments.length > 0
         ? props.attachments?.map((attachment) => {
             const isVideoType = videoTypes.has(
-              attachment.split(".").pop()!.toString()
+              attachment.split(".").pop()!.toLowerCase()
             );
             return (
               <Flex

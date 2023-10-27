@@ -22,7 +22,6 @@ import {
   FosterType,
   Gender,
   Medical,
-  PetKind,
   SerializedPost,
   Size,
   Temperament,
@@ -80,10 +79,6 @@ const formSchema = z.object({
   description: z
     .string()
     .transform((val, ctx) => stringEmptyValidation(val, ctx, "Description")),
-  petKind: z
-    .nativeEnum(PetKind, { required_error: "Pet kind required." })
-    .nullable()
-    .transform((val, ctx) => nullValidation(val, ctx, "Pet kind")),
   gender: z
     .nativeEnum(Gender, { required_error: "Gender required." })
     .nullable()
@@ -147,7 +142,6 @@ const EditPostModal: React.FC<{
   const {
     name,
     description,
-    petKind,
     type,
     size,
     age,
@@ -171,7 +165,6 @@ const EditPostModal: React.FC<{
   const defaultFormState = {
     name,
     description,
-    petKind,
     gender,
     age,
     type,

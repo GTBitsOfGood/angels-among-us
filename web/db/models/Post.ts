@@ -12,7 +12,6 @@ import {
   Behavioral,
   Trained,
   Status,
-  PetKind,
 } from "../../utils/types/post";
 const { Schema } = mongoose;
 
@@ -20,11 +19,6 @@ const postSchema = new Schema<IPost>({
   date: { type: Date, default: Date.now },
   name: { type: String, required: true },
   description: { type: String, required: true },
-  petKind: {
-    type: String,
-    required: true,
-    enum: Object.values(PetKind),
-  },
   type: {
     type: String,
     required: true,
