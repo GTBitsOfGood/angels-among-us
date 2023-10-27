@@ -1,14 +1,25 @@
 declare var global: any;
 
 import { readFileSync } from "fs";
-import { createRandomPost } from "../../../../db/actions/__mocks__/Post";
-import { deleteAttachments } from "../../../../db/actions/Post";
+import {
+  createRandomPost,
+  randomPosts,
+} from "../../../../db/actions/__mocks__/Post";
 import { consts } from "../../../../utils/consts";
 import storageClient from "../../../../db/storageConnect";
 import mongoose, { ConnectOptions } from "mongoose";
 import { appRouter } from "../../../../server/routers/_app";
 import { createContextInner } from "../../../../server/context";
 import Post from "../../../../db/models/Post";
+import {
+  Age,
+  Behavioral,
+  Breed,
+  FosterType,
+  Gender,
+  GoodWith,
+  Size,
+} from "../../../../utils/types/post";
 
 const noResizeData = readFileSync("./__tests__/assets/no-resize.png");
 const videoData = readFileSync("./__tests__/assets/video.mp4");
@@ -24,6 +35,16 @@ async function simulateAuthenticatedSession() {
   const caller = appRouter.createCaller(context);
   return caller;
 }
+
+const goodWithMap: Record<string, GoodWith> = {
+  getsAlongWithCats: GoodWith.Cats,
+  getsAlongWithLargeDogs: GoodWith.LargeDogs,
+  getsAlongWithMen: GoodWith.Men,
+  getsAlongWithOlderKids: GoodWith.OlderChildren,
+  getsAlongWithSmallDogs: GoodWith.SmallDogs,
+  getsAlongWithWomen: GoodWith.Women,
+  getsAlongWithYoungKids: GoodWith.YoungChildren,
+} as const;
 
 /**
  * Tests post API endpoints and integration with db. DB actions hit an
@@ -143,6 +164,117 @@ describe("[API] Post - Integration Test", () => {
 
       const post = await Post.findById(id);
       expect(post).toBeNull();
+    });
+  });
+
+  describe("post.getFilteredPosts", () => {
+    let caller: ReturnType<typeof appRouter.createCaller>;
+    beforeAll(async () => {
+      caller = await simulateAuthenticatedSession();
+    });
+
+    beforeEach(async () => {
+      jest.restoreAllMocks();
+    });
+
+    afterEach(async () => {
+      jest.restoreAllMocks();
+      await Post.deleteMany({});
+    });
+
+    test("singleton covered-uncovered", async () => {
+      const coveredPost = { ...createRandomPost(), covered: true };
+      const uncoveredPost = { ...createRandomPost(), covered: false };
+
+      const createCoveredPost = await Post.create(coveredPost);
+      expect(createCoveredPost).not.toBeNull();
+
+      const createUncoveredPost = await Post.create(uncoveredPost);
+      expect(createUncoveredPost).not.toBeNull();
+
+      const postFilters = {
+        type: Object.values(FosterType),
+        breed: Object.values(Breed),
+        age: Object.values(Age),
+        size: Object.values(Size),
+        gender: Object.values(Gender),
+        behavioral: Object.values(Behavioral),
+        goodWith: [],
+      };
+
+      const filteredPosts = await caller.post.getFilteredPosts({
+        postFilters,
+      });
+      expect(filteredPosts.length).toBe(2);
+
+      const coveredPosts = await caller.post.getFilteredPosts({
+        postFilters,
+        covered: true,
+      });
+      expect(coveredPosts.length).toBe(1);
+      expect(coveredPosts[0]).toMatchObject(coveredPost);
+
+      const uncoveredPosts = await caller.post.getFilteredPosts({
+        postFilters,
+        covered: false,
+      });
+      expect(uncoveredPosts.length).toBe(1);
+      expect(uncoveredPosts[0]).toMatchObject(uncoveredPost);
+    });
+
+    test("random covered-uncovered", async () => {
+      const response = await Post.insertMany(randomPosts);
+      expect(response).not.toBeNull();
+      expect(response.length).toBe(randomPosts.length);
+
+      const serializedPosts = randomPosts.map((post) => ({
+        ...post,
+        _id: post._id.toString(),
+      }));
+
+      const postFilters = {
+        type: Object.values(FosterType),
+        breed: Object.values(Breed),
+        age: Object.values(Age),
+        size: Object.values(Size),
+        gender: Object.values(Gender),
+        behavioral: Object.values(Behavioral),
+        goodWith: [],
+      };
+
+      const allPosts = await caller.post.getFilteredPosts({
+        postFilters,
+      });
+      expect(allPosts).not.toBeNull();
+      expect(allPosts.length).toBe(randomPosts.length);
+
+      const coveredPosts = (
+        await caller.post.getFilteredPosts({
+          postFilters,
+          covered: true,
+        })
+      ).map((post) => ({ ...post._doc, _id: post._id.toString() }));
+      const expectedCoveredPosts = serializedPosts
+        .filter((post) => post.covered)
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+      expect(coveredPosts).not.toBeNull();
+      expect(coveredPosts.length).toBe(expectedCoveredPosts.length);
+      expect(coveredPosts).toMatchObject(expectedCoveredPosts);
+
+      const uncoveredPosts = (
+        await caller.post.getFilteredPosts({
+          postFilters,
+          covered: false,
+        })
+      ).map((post) => ({ ...post._doc, _id: post._id.toString() }));
+      expect(uncoveredPosts).not.toBeNull();
+
+      const expectedUncoveredPosts = serializedPosts
+        .filter((post) => !post.covered)
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+      expect(uncoveredPosts.length).toBe(expectedUncoveredPosts.length);
+      expect(uncoveredPosts).toMatchObject(expectedUncoveredPosts);
     });
   });
 });

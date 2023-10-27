@@ -30,6 +30,7 @@ import {
 } from "../../utils/types/post";
 import FileUploadSlide from "./FileUpload/FileUploadSlide";
 import { FormSlide } from "./Form/FormSlide";
+import { Types } from "mongoose";
 
 function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
   if (val === null) {
@@ -213,7 +214,6 @@ const PostCreationModal: React.FC<{
         }
       })
     );
-    console.log(`${JSON.stringify(files)}`);
     try {
       const creationInfo = await postCreate.mutateAsync({
         ...(formState as z.output<typeof formSchema>),
@@ -222,21 +222,24 @@ const PostCreationModal: React.FC<{
       const oid = creationInfo._id;
       const uploadInfo = creationInfo.attachments;
 
-      console.log(`creation: ${JSON.stringify(creationInfo)}`);
-
       for (let i = 0; i < fileArr.length; i++) {
         const file = fileArr[i];
         await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
       }
 
-      const postInfo = await postFinalize.mutateAsync({
-        _id: oid,
+      await postFinalize.mutateAsync({
+        _id: new Types.ObjectId(oid),
       });
-
-      console.log(JSON.stringify(postInfo));
     } catch (e) {
-      //TODO: Delete pending post on error
-      throw e;
+      toast({
+        title: "An error has occurred.",
+        description:
+          "We encountered an issue while processing your request. Please try again.",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -256,7 +259,7 @@ const PostCreationModal: React.FC<{
         return;
       }
 
-      if (uploadResp.status === 500 && count++ === maxTries) {
+      if (uploadResp.status === 500 && ++count === maxTries) {
         throw new Error("Error uploading images.");
       }
     }
@@ -266,7 +269,7 @@ const PostCreationModal: React.FC<{
     <Modal
       onClose={onClose}
       isOpen={isOpen}
-      closeOnOverlayClick={false}
+      closeOnOverlayClick={true}
       blockScrollOnMount
       scrollBehavior="inside"
     >

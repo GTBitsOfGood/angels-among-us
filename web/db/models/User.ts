@@ -20,6 +20,11 @@ const userSchema = new Schema<IUser>({
     unique: true,
     index: true,
   },
+  picture: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
   preferredEmail: {
     type: String,
     required: false,
@@ -138,6 +143,11 @@ const userSchema = new Schema<IUser>({
     ],
     default: undefined,
     required: false,
+  },
+  appliedTo: {
+    type: [{ type: Schema.Types.ObjectId }],
+    default: [],
+    required: true,
   },
 });
 

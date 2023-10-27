@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { Role } from "./account";
 import {
   Age,
@@ -12,6 +13,7 @@ import {
 
 export interface IUser {
   email: string;
+  picture?: string;
   preferredEmail?: string;
   name?: string;
   uid: string;
@@ -27,4 +29,9 @@ export interface IUser {
   dogsNotGoodWith?: GoodWith[];
   medical?: Medical[];
   behavioral?: Behavioral[];
+  appliedTo: Types.ObjectId[];
+}
+
+export interface SerializedUser extends Omit<IUser, "appliedTo"> {
+  appliedTo: string[];
 }

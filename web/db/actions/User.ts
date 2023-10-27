@@ -18,7 +18,7 @@ import {
 } from "../../utils/types/post";
 
 async function createUser(
-  user: IUser,
+  user: Omit<IUser, "appliedTo">,
   session?: ClientSession
 ): Promise<IUser> {
   const document = new User(user);
@@ -48,7 +48,7 @@ async function findUserByUid(
 async function findUserByEmail(
   email: string,
   session?: ClientSession
-): Promise<HydratedDocument<IUser> | null> {
+): Promise<IUser | null> {
   return await User.findOne({ email }, { _id: 0, __v: 0 }, { session });
 }
 

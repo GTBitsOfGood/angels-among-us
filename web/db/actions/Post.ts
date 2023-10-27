@@ -20,11 +20,9 @@ import { captureException } from "@sentry/nextjs";
 
 export type UploadInfo = Record<string, string>;
 
-async function getPost(
-  oid: Types.ObjectId,
-  publicAttachmentUrls: boolean
-): Promise<IPost & { _id: string; __v: number }> {
-  const post = await Post.findById(oid).exec();
+async function getPost(oid: Types.ObjectId, publicAttachmentUrls: boolean) {
+  const post: (IPost & { _id: Types.ObjectId; __v: number }) | null =
+    await Post.findById(oid).exec();
   if (publicAttachmentUrls && post) {
     post.attachments = post.attachments.map((attachment: string) => {
       return `${consts.storageBucketURL}/${attachment}`;
@@ -33,8 +31,11 @@ async function getPost(
   return post;
 }
 
-async function createPost(post: IPendingPost, session?: ClientSession) {
-  const pending = post.attachments.length != 0;
+async function createPost(
+  post: IPendingPost,
+  session?: ClientSession
+): Promise<IPendingFinalizePost> {
+  const pending = post.attachments.length !== 0;
   const createdPost = await Post.create(
     [
       {
@@ -164,6 +165,9 @@ async function deleteAttachments(keysToDelete: string[]) {
 
 async function deletePost(id: Types.ObjectId) {
   const post = await getPost(id, false);
+  if (!post) {
+    throw new Error("Post to be deleted could not be found");
+  }
   try {
     await deleteAttachments(post.attachments);
   } catch (e) {
@@ -185,59 +189,79 @@ async function finalizePost(id: Types.ObjectId, session?: ClientSession) {
   });
   const attachmentKeys = post.attachments.sort();
   if (post.attachments.length == 0) return post;
-  if (
-    !uploadedObjects.Contents ||
-    uploadedObjects.KeyCount !== attachmentKeys.length
-  ) {
-    throw new Error("All posts not successfully uploaded");
-  }
-  const uploadKeys = uploadedObjects.Contents.map((x) => x.Key).sort();
-  for (let i = 0; i < attachmentKeys.length; i++) {
-    if (attachmentKeys[i] !== uploadKeys[i]) {
+
+  try {
+    if (
+      !uploadedObjects.Contents ||
+      uploadedObjects.KeyCount !== attachmentKeys.length
+    ) {
       throw new Error("All posts not successfully uploaded");
     }
+    const uploadKeys = uploadedObjects.Contents.map((x) => x.Key).sort();
+    for (let i = 0; i < attachmentKeys.length; i++) {
+      if (attachmentKeys[i] !== uploadKeys[i]) {
+        throw new Error("All posts not successfully uploaded");
+      }
+    }
+    return await Post.findOneAndUpdate(
+      { _id: id },
+      { pending: false },
+      { session: session, returnDocument: "after" }
+    );
+  } catch (e) {
+    // Error with uploading all attachments, delete new post document and corresponding attachments
+    await deletePost(id);
+    await deleteAllAttachments(id);
+    throw e;
   }
-  return await Post.findOneAndUpdate(
-    { _id: id },
-    { pending: false },
-    { session: session, returnDocument: "after" }
-  );
 }
 
-async function updatePostDetails(
-  oid: Types.ObjectId,
-  update: IPendingUpdatePost,
+/**
+ * Finalizes attachments on new post with updated fields.
+ *
+ * @param oldId existing post document id with old fields (pre-edit)
+ * @param newId newly created post document id with updated fields (post-edit)
+ * @param session transaction session
+ * @returns new finalized post document
+ * @throws on failure to upload or delete attachments (old or new)
+ */
+async function finalizePostEdit(
+  oldId: Types.ObjectId,
+  newId: Types.ObjectId,
   session?: ClientSession
-): Promise<IPendingFinalizePost> {
-  await Post.findByIdAndUpdate(
-    oid,
-    { ...update, attachments: [], pending: true },
-    {
-      session: session,
-    }
-  );
+) {
+  const finalizedPost = await finalizePost(newId, session);
 
-  if (update.attachments.length > 0) {
-    await deleteAllAttachments(oid);
+  try {
+    await deletePost(oldId);
+    await deleteAllAttachments(oldId);
+  } catch (e) {
+    // Error deleting old attachments or document
+    throw new Error(
+      "Failed to delete existing attachments and/or post document."
+    );
+  } finally {
+    return finalizedPost;
   }
-  const uploadInfo = await getAttachmentUploadURLs(oid, update);
-  const updatedPost = await Post.findOneAndUpdate(
-    { _id: oid },
-    {
-      attachments: Object.keys(uploadInfo),
-    },
-    { session: session, returnDocument: "after" }
-  );
-  return {
-    ...updatedPost.toObject(),
-    attachments: uploadInfo,
-  };
 }
 
 async function updatePostStatus(oid: Types.ObjectId, session?: ClientSession) {
   return await Post.findOneAndUpdate(
     { _id: oid },
-    [{ $set: { covered: { $not: "$covered" } } }],
+    [
+      {
+        $set: {
+          covered: { $not: "$covered" },
+          date: {
+            $cond: {
+              if: { $eq: ["$covered", true] }, // modify date only when switching covered: true -> false
+              then: new Date(),
+              else: "$date",
+            },
+          },
+        },
+      },
+    ],
     { session: session }
   );
 }
@@ -256,7 +280,7 @@ async function getAttachments(oid: Types.ObjectId) {
 }
 
 async function getFilteredPosts(filter: FilterQuery<IPost>) {
-  const posts = await Post.find(filter).sort({ date: -1 });
+  const posts = await Post.find(filter, { __v: 0 }).sort({ date: -1 }).exec();
   posts.forEach(
     (post) =>
       (post.attachments = post.attachments.map(
@@ -270,9 +294,9 @@ export {
   getPost,
   createPost,
   deletePost,
-  updatePostDetails,
   updatePostStatus,
   finalizePost,
+  finalizePostEdit,
   getAllPosts,
   getAttachments,
   getFilteredPosts,

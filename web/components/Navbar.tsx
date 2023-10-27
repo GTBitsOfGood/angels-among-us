@@ -144,10 +144,15 @@ export default function Navbar() {
       id="navbar"
       bgColor="white"
       width="100%"
-      zIndex="1"
+      zIndex={10}
       flexDir="column"
       position="absolute"
       top={0}
+      borderBottom={{
+        base: isMenuOpen ? "1px solid" : "none",
+        lg: "none",
+      }}
+      borderBottomColor={{ base: "text-secondary" }}
     >
       <Flex
         direction="row"
@@ -185,9 +190,14 @@ export default function Navbar() {
             <Text>Feed</Text>
           </Link>
           {role === Role.Admin && (
-            <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
-              <Text>Access Management</Text>
-            </Link>
+            <>
+              <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
+                <Text>Access Management</Text>
+              </Link>
+              <Link as={NextLink} href={Pages.USERS}>
+                <Text>Volunteer Search</Text>
+              </Link>
+            </>
           )}
           <Link as={NextLink} href={Pages.RESOURCES}>
             <Text>Resources</Text>
@@ -207,13 +217,18 @@ export default function Navbar() {
               <Text>Feed</Text>
             </Link>
             {role === Role.Admin && (
-              <Link
-                as={NextLink}
-                href={Pages.ACCESS_MANAGEMENT}
-                onClick={onMenuClose}
-              >
-                <Text>Access Management</Text>
-              </Link>
+              <>
+                <Link
+                  as={NextLink}
+                  href={Pages.ACCESS_MANAGEMENT}
+                  onClick={onMenuClose}
+                >
+                  <Text>Access Management</Text>
+                </Link>
+                <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
+                  <Text>Volunteer Search</Text>
+                </Link>
+              </>
             )}
             <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
               <Text>Resources</Text>

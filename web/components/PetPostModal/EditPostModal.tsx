@@ -21,9 +21,9 @@ import {
   Breed,
   FosterType,
   Gender,
-  IPost,
   Medical,
   PetKind,
+  SerializedPost,
   Size,
   Temperament,
   Trained,
@@ -131,9 +131,10 @@ export type Action<K extends keyof FormState, V extends FormState[K]> = {
 const EditPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  postData: IPost & { _id: Types.ObjectId };
+  postData: SerializedPost;
+  setModalPostId: React.SetStateAction<React.Dispatch<Types.ObjectId>>;
   attachments: string[];
-}> = ({ isOpen, onClose, postData, attachments }) => {
+}> = ({ isOpen, onClose, postData, setModalPostId, attachments }) => {
   const toast = useToast();
   const utils = trpc.useContext();
 
@@ -240,8 +241,8 @@ const EditPostModal: React.FC<{
     convertFiles().then((files) => setFileArr(files));
   }, [attachments]);
 
-  const postUpdate = trpc.post.updateDetails.useMutation();
-  const postFinalize = trpc.post.finalize.useMutation();
+  const postUpdate = trpc.post.editPost.useMutation();
+  const postFinalize = trpc.post.finalizeEdit.useMutation();
 
   const editPost = async () => {
     const files: AttachmentInfo[] = await Promise.all(
@@ -272,27 +273,40 @@ const EditPostModal: React.FC<{
     );
 
     try {
+      const oid = new Types.ObjectId(postData._id);
+
       const updateInfo = await postUpdate.mutateAsync({
-        _id: postData._id,
+        _id: oid,
         updateFields: {
           ...(formState as z.output<typeof formSchema>),
           attachments: files,
         },
       });
 
+      const newId = new Types.ObjectId(updateInfo._id);
       const uploadInfo = updateInfo.attachments;
 
       for (let i = 0; i < fileArr.length; i++) {
         const file = fileArr[i];
-        await uploadFile(uploadInfo[`${postData._id}/${file.name}`], file);
+        await uploadFile(uploadInfo[`${updateInfo._id}/${file.name}`], file);
       }
 
-      await postFinalize.mutateAsync({
-        _id: postData._id,
+      const newPost = await postFinalize.mutateAsync({
+        oldId: oid,
+        newId,
       });
+
+      setModalPostId(newPost._id);
     } catch (e) {
-      //TODO: Handle pending post on error
-      throw e;
+      toast({
+        title: "An error has occurred.",
+        description:
+          "We encountered an issue while processing your request. Please try again.",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 

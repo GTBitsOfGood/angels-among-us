@@ -1,10 +1,14 @@
-import { Flex, Image } from "@chakra-ui/react";
+import { Flex, Image, Circle } from "@chakra-ui/react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 import DefaultDog from "../../public/dog.svg";
+import { useState } from "react";
 
 function ImageSlider(props: { attachments: Array<string> }) {
+  const videoTypes = new Set(["mp4", "mov"]);
+  const [slideIndex, setSlideIndex] = useState(0);
+
   return (
     <Carousel
       axis="horizontal"
@@ -21,8 +25,8 @@ function ImageSlider(props: { attachments: Array<string> }) {
             bottom={0}
             left={0}
             p={3}
-            alignItems="center"
-            maxHeight={["50vh", "65vh"]}
+            alignItems="flex-end"
+            maxHeight={["23.5vh", "35.5vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <FaArrowCircleLeft size={30} />
@@ -40,8 +44,8 @@ function ImageSlider(props: { attachments: Array<string> }) {
             bottom={0}
             right={0}
             p={3}
-            alignItems="center"
-            maxHeight={["50vh", "65vh"]}
+            alignItems="flex-end"
+            maxHeight={["23.5vh", "35.5vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <FaArrowCircleRight size={30} />
@@ -49,29 +53,82 @@ function ImageSlider(props: { attachments: Array<string> }) {
           </Flex>
         );
       }}
+      onChange={(index) => setSlideIndex(index)}
+      showIndicators={
+        props.attachments.length > 0 &&
+        !videoTypes.has(
+          props.attachments[slideIndex].split(".").pop()!.toLowerCase()
+        )
+      }
+      renderIndicator={(onClickHandler, isSelected, index) => {
+        return (
+          <Circle
+            key={index}
+            display="inline-block"
+            onClick={onClickHandler}
+            cursor="pointer"
+            size={3}
+            marginX={2}
+            bg={isSelected ? "white" : "whiteAlpha.600"}
+          />
+        );
+      }}
     >
-      {/* TODO: Account for Videos */}
       {props.attachments.length > 0
-        ? props.attachments?.map((slide) => {
+        ? props.attachments?.map((attachment) => {
+            const isVideoType = videoTypes.has(
+              attachment.split(".").pop()!.toString()
+            );
             return (
               <Flex
                 justifyContent={"center"}
                 alignItems={"center"}
-                bgColor={"tag-primary-bg"}
+                bgColor={isVideoType ? "black" : "tag-primary-bg"}
                 borderRadius="15px"
                 overflow={"hidden"}
-                minHeight={["40vh", "65vh"]}
-                key={slide}
+                height={["40vh", "65vh"]}
+                key={attachment}
                 paddingX={0}
               >
-                <Image
-                  src={slide}
-                  objectFit={"cover"}
-                  verticalAlign={"true"}
-                  align="center"
-                  maxHeight={["40vh", "65vh"]}
-                  alt=""
-                />
+                {isVideoType ? (
+                  <Flex
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    height={["40vh", "65vh"]}
+                    width={["94%", "96%"]}
+                  >
+                    <Flex
+                      w="100%"
+                      h="100%"
+                      overflow="hidden"
+                      pos="absolute"
+                      direction="row"
+                      justifyContent="center"
+                    >
+                      <video
+                        style={{
+                          objectFit: "contain",
+                          width: "auto",
+                          height: "100%",
+                        }}
+                        controls
+                        controlsList="nodownload"
+                      >
+                        <source src={attachment} />
+                      </video>
+                    </Flex>
+                  </Flex>
+                ) : (
+                  <Image
+                    key={attachment}
+                    src={attachment}
+                    objectFit={"cover"}
+                    verticalAlign={"true"}
+                    align="center"
+                    maxHeight={["40vh", "65vh"]}
+                    alt=""
+                  />
+                )}
               </Flex>
             );
           })

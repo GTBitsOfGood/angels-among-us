@@ -6,10 +6,10 @@ import {
   finalizePost,
   getPost,
   getAllPosts,
-  updatePostDetails,
   updatePostStatus,
   getFilteredPosts,
   getAttachments,
+  finalizePostEdit,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -26,13 +26,22 @@ import {
   PetKind,
   IPost,
 } from "../../utils/types/post";
-import { findUserByEmail } from "../../db/actions/User";
+import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
-import { Types } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
+import { populateEmailTemplate } from "../../email/email-template";
+import inlineCss from "inline-css";
 
 const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24
+);
+
+const questionnaireSchema = z.array(
+  z.object({
+    key: z.string(),
+    answer: z.string(),
+  })
 );
 
 const postSchema = z.object({
@@ -99,8 +108,6 @@ const postFilterSchema = z.object({
   gender: z.array(z.nativeEnum(Gender)),
   goodWith: z.array(z.nativeEnum(GoodWith)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Trained).optional(),
-  spayNeuterStatus: z.nativeEnum(Trained).optional(),
 });
 
 const goodWithMap: Record<GoodWith, string> = {
@@ -121,7 +128,15 @@ export const postRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return getPost(input._id, true);
+      try {
+        return getPost(input._id, true);
+      } catch (e) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+          cause: e,
+        });
+      }
     }),
   create: procedure.input(postSchema).mutation(async ({ input }) => {
     const session = await Post.startSession();
@@ -139,10 +154,11 @@ export const postRouter = router({
       return post;
     } catch (e) {
       await session.abortTransaction();
-      console.error(e);
+
       throw new TRPCError({
         message: "Internal Server Error",
         code: "INTERNAL_SERVER_ERROR",
+        cause: e,
       });
     }
   }),
@@ -151,52 +167,61 @@ export const postRouter = router({
       z.object({
         email: z.string(),
         postOid: zodOidType,
+        responses: questionnaireSchema,
       })
     )
     .mutation(async ({ input }) => {
       try {
         const user = await findUserByEmail(input.email);
         if (!user) {
-          throw new TRPCError({
-            message: "No user with given email exists.",
-            code: "BAD_REQUEST",
-          });
+          throw new Error("No user with given email exists");
         }
-      } catch (e) {
-        throw new TRPCError({
-          message: "An unexpected error occured.",
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
-      try {
         const post = await getPost(input.postOid, true);
-        const email = fosterTypeEmails[post.type];
+        if (!post) {
+          throw new Error("No post with given id exists.");
+        }
+        const email =
+          process.env.CONTEXT === "production"
+            ? fosterTypeEmails[post.type]
+            : input.email;
+
+        const emailBody = populateEmailTemplate(post, user, input.responses);
+
         let count = 0;
         const maxTries = 3;
+        const options = { url: "www.angelsrescue.org" };
         while (true) {
           try {
-            const info = await transporter.sendMail({
+            const emailFormatted = await inlineCss(emailBody, options);
+            await transporter.sendMail({
               from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
               to: email,
-              subject: "Someone is ready to foster your dog!",
-              text: "User has signed up to foster dog, a stray dog.",
+              subject: `[APPLICATION] ${user.name ?? "Volunteer"} <> ${
+                post.name
+              }`,
+              html: emailFormatted,
             });
             break;
           } catch (e) {
-            if (count++ == maxTries) {
+            if (++count == maxTries) {
               throw new TRPCError({
                 message: "Unable to send Email.",
                 code: "INTERNAL_SERVER_ERROR",
+                cause: e,
               });
             }
           }
         }
+        await updateUserByUid(user.uid, {
+          $push: { appliedTo: input.postOid },
+        });
       } catch (e) {
         if (e instanceof TRPCError) throw e;
         else
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred.",
+            cause: e,
           });
       }
       return { success: true };
@@ -211,13 +236,13 @@ export const postRouter = router({
       try {
         return await deletePost(input.postOid);
       } catch (e) {
-        console.error(e);
         if (e instanceof TRPCError) {
           throw e;
         } else {
           throw new TRPCError({
             message: "Internal Server Error",
             code: "INTERNAL_SERVER_ERROR",
+            cause: e,
           });
         }
       }
@@ -235,10 +260,35 @@ export const postRouter = router({
         throw new TRPCError({
           message: "All attachments not uploaded",
           code: "PRECONDITION_FAILED",
+          cause: e,
         });
       }
     }),
-  updateDetails: procedure
+  finalizeEdit: procedure
+    .input(
+      z.object({
+        oldId: zodOidType,
+        newId: zodOidType,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        return await finalizePostEdit(input.oldId, input.newId);
+      } catch (e) {
+        throw new TRPCError({
+          message: "All attachments not uploaded",
+          code: "PRECONDITION_FAILED",
+          cause: e,
+        });
+      }
+    }),
+  /**
+   * `editPost` does not actually edit the target post id:
+   * - A new post document is created (new _id) with the updated fields (post-edit)
+   * - The updated attachments are uploaded with the new post id as the prefix for the object key
+   * - The old document and its attachments are deleted
+   */
+  editPost: procedure
     .input(
       z.object({
         _id: zodOidType,
@@ -247,13 +297,16 @@ export const postRouter = router({
     )
     .mutation(async ({ input }) => {
       try {
-        const updatedPost = await updatePostDetails(input._id, {
+        const existingPost = await getPost(input._id, false);
+        if (!existingPost) {
+          throw new Error("Unable to find existing post id.");
+        }
+        const newPost = await createPost({
           ...input.updateFields,
+          date: existingPost.date,
+          covered: existingPost.covered,
         });
-        return {
-          post: updatedPost,
-          attachments: updatedPost.attachments,
-        };
+        return newPost;
       } catch (e) {
         throw new TRPCError({
           message: "Internal Server Error",
@@ -276,6 +329,7 @@ export const postRouter = router({
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
@@ -286,6 +340,7 @@ export const postRouter = router({
       throw new TRPCError({
         message: "Internal Server Error",
         code: "INTERNAL_SERVER_ERROR",
+        cause: e,
       });
     }
   }),
@@ -296,19 +351,27 @@ export const postRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return getAttachments(input._id);
+      try {
+        return getAttachments(input._id);
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred",
+          cause: e,
+        });
+      }
     }),
   getFilteredPosts: procedure
-    .input(postFilterSchema)
+    .input(
+      z.object({
+        postFilters: postFilterSchema,
+        covered: z.optional(z.boolean()),
+      })
+    )
     .query(async ({ input }) => {
-      const houseTrained = input.houseTrained
-        ? [input.houseTrained]
-        : Object.values(Trained);
-      const spayNeuterStatus = input.spayNeuterStatus
-        ? [input.spayNeuterStatus]
-        : Object.values(Trained);
+      const postFilters = input.postFilters;
       const notAllowedBehavioral = Object.values(Behavioral).filter(
-        (obj) => !input.behavioral.includes(obj)
+        (obj) => !postFilters.behavioral.includes(obj)
       );
 
       /**
@@ -319,7 +382,7 @@ export const postRouter = router({
       const getsAlongWith: Record<string, Trained> = Object.values(
         GoodWith
       ).reduce((acc, curr) => {
-        if (input.goodWith.includes(curr)) {
+        if (postFilters.goodWith.includes(curr)) {
           return { ...acc, ...{ [goodWithMap[curr]]: [Trained.Yes] } };
         } else {
           return {
@@ -331,12 +394,12 @@ export const postRouter = router({
         }
       }, {});
 
-      let completeFilter = {
-        breed: { $in: input.breed },
-        type: { $in: input.type },
-        age: { $in: input.age },
-        size: { $in: input.size },
-        gender: { $in: input.gender },
+      const baseFilter: FilterQuery<IPost> = {
+        breed: { $in: postFilters.breed },
+        type: { $in: postFilters.type },
+        age: { $in: postFilters.age },
+        size: { $in: postFilters.size },
+        gender: { $in: postFilters.gender },
         behavioral: { $nin: notAllowedBehavioral },
         getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
         getsAlongWithLargeDogs: {
@@ -353,11 +416,21 @@ export const postRouter = router({
         getsAlongWithYoungKids: {
           $in: getsAlongWith["getsAlongWithYoungKids"],
         },
-        houseTrained: { $in: houseTrained },
-        spayNeuterStatus: { $in: spayNeuterStatus },
         pending: false,
       };
-      const filteredPosts = await getFilteredPosts(completeFilter);
-      return filteredPosts;
+      if (input.covered !== undefined) {
+        baseFilter.covered = input.covered;
+      }
+
+      try {
+        const filteredPosts = await getFilteredPosts(baseFilter);
+        return filteredPosts;
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred.",
+          cause: e,
+        });
+      }
     }),
 });
