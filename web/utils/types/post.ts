@@ -1,3 +1,4 @@
+import { UploadInfo } from "../../db/actions/Post";
 import { Types } from "mongoose";
 
 export enum PetKind {
@@ -321,7 +322,6 @@ export interface IPost {
   date: Date;
   name: string;
   description: string;
-  petKind: PetKind;
   type: FosterType;
   size: Size;
   breed: Breed[];
@@ -348,6 +348,18 @@ export interface IPost {
 export interface IFeedPost extends IPost {
   _id: Types.ObjectId;
 }
+
+export type SerializedPost = Omit<IFeedPost, "_id" | "date"> & {
+  _id: string;
+  date: string;
+};
+
 export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
   attachments: AttachmentInfo[];
+};
+
+export type IPendingUpdatePost = Omit<IPendingPost, "covered" | "date">;
+
+export type IPendingFinalizePost = Omit<IFeedPost, "attachments"> & {
+  attachments: UploadInfo;
 };

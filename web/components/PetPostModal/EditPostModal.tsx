@@ -6,13 +6,12 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
-  Flex,
   Box,
   useToast,
   ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import {
@@ -23,12 +22,13 @@ import {
   FosterType,
   Gender,
   Medical,
+  SerializedPost,
   Size,
   Temperament,
   Trained,
 } from "../../utils/types/post";
-import FileUploadSlide from "./FileUpload/FileUploadSlide";
-import { FormSlide } from "./Form/FormSlide";
+import FileUploadSlide from "../PostCreationModal/FileUpload/FileUploadSlide";
+import { FormSlide } from "../PostCreationModal/Form/FormSlide";
 import { Types } from "mongoose";
 
 function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
@@ -123,39 +123,66 @@ export type Action<K extends keyof FormState, V extends FormState[K]> = {
   data?: V;
 };
 
-const PostCreationModal: React.FC<{
+const EditPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-}> = ({ isOpen, onClose }) => {
+  postData: SerializedPost;
+  setModalPostId: React.SetStateAction<React.Dispatch<Types.ObjectId>>;
+  attachments: string[];
+}> = ({ isOpen, onClose, postData, setModalPostId, attachments }) => {
   const toast = useToast();
   const utils = trpc.useContext();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [isContentView, setIsContentView] = useState(true);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
   const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
 
+  const {
+    name,
+    description,
+    type,
+    size,
+    age,
+    spayNeuterStatus,
+    houseTrained,
+    crateTrained,
+    temperament,
+    behavioral,
+    medical,
+    gender,
+    breed,
+    getsAlongWithOlderKids,
+    getsAlongWithYoungKids,
+    getsAlongWithLargeDogs,
+    getsAlongWithSmallDogs,
+    getsAlongWithWomen,
+    getsAlongWithMen,
+    getsAlongWithCats,
+  } = postData;
+
   const defaultFormState = {
-    name: "",
-    description: "",
-    gender: null,
-    age: null,
-    type: null,
-    size: null,
-    breed: [],
-    temperament: [],
-    medical: [],
-    behavioral: [],
-    houseTrained: Trained.Unknown,
-    crateTrained: Trained.Unknown,
-    spayNeuterStatus: Trained.Unknown,
-    getsAlongWithMen: Trained.Unknown,
-    getsAlongWithWomen: Trained.Unknown,
-    getsAlongWithOlderKids: Trained.Unknown,
-    getsAlongWithYoungKids: Trained.Unknown,
-    getsAlongWithLargeDogs: Trained.Unknown,
-    getsAlongWithSmallDogs: Trained.Unknown,
-    getsAlongWithCats: Trained.Unknown,
+    name,
+    description,
+    gender,
+    age,
+    type,
+    size,
+    breed,
+    temperament,
+    spayNeuterStatus,
+    houseTrained,
+    crateTrained,
+    behavioral,
+    medical,
+    getsAlongWithOlderKids,
+    getsAlongWithYoungKids,
+    getsAlongWithLargeDogs,
+    getsAlongWithSmallDogs,
+    getsAlongWithWomen,
+    getsAlongWithMen,
+    getsAlongWithCats,
   };
 
   function reducer<K extends keyof FormState, V extends FormState[K]>(
@@ -175,13 +202,42 @@ const PostCreationModal: React.FC<{
     }
   }
 
-  const [loading, setLoading] = useState(false);
   const [formState, dispatch] = useReducer(reducer, defaultFormState);
+  const reset = () => dispatch({ type: "clear" });
 
-  const postCreate = trpc.post.create.useMutation();
-  const postFinalize = trpc.post.finalize.useMutation();
+  useEffect(() => {
+    reset();
+  }, [postData]);
 
-  const createPost = async () => {
+  useEffect(() => {
+    const convertFiles = async () => {
+      let fileObjects = [];
+      for (const fileUrl of attachments) {
+        try {
+          const response = await fetch(fileUrl);
+          const blob = await response.blob();
+
+          // You can customize the file name and type as needed
+          const fileName = "image.jpg";
+          const fileType = "image/jpeg";
+
+          const file = new File([blob], fileName, { type: fileType });
+          fileObjects.push(file);
+        } catch (error) {
+          console.error(
+            `Error converting ${fileUrl} to a File object: ${error}`
+          );
+        }
+      }
+      return fileObjects;
+    };
+    convertFiles().then((files) => setFileArr(files));
+  }, [attachments]);
+
+  const postUpdate = trpc.post.editPost.useMutation();
+  const postFinalize = trpc.post.finalizeEdit.useMutation();
+
+  const editPost = async () => {
     const files: AttachmentInfo[] = await Promise.all(
       fileArr.map(async (file) => {
         const key = file.name;
@@ -208,22 +264,32 @@ const PostCreationModal: React.FC<{
         }
       })
     );
+
     try {
-      const creationInfo = await postCreate.mutateAsync({
-        ...(formState as z.output<typeof formSchema>),
-        attachments: files,
+      const oid = new Types.ObjectId(postData._id);
+
+      const updateInfo = await postUpdate.mutateAsync({
+        _id: oid,
+        updateFields: {
+          ...(formState as z.output<typeof formSchema>),
+          attachments: files,
+        },
       });
-      const oid = creationInfo._id;
-      const uploadInfo = creationInfo.attachments;
+
+      const newId = new Types.ObjectId(updateInfo._id);
+      const uploadInfo = updateInfo.attachments;
 
       for (let i = 0; i < fileArr.length; i++) {
         const file = fileArr[i];
-        await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
+        await uploadFile(uploadInfo[`${updateInfo._id}/${file.name}`], file);
       }
 
-      await postFinalize.mutateAsync({
-        _id: new Types.ObjectId(oid),
+      const newPost = await postFinalize.mutateAsync({
+        oldId: oid,
+        newId,
       });
+
+      setModalPostId(newPost._id);
     } catch (e) {
       toast({
         title: "An error has occurred.",
@@ -263,7 +329,7 @@ const PostCreationModal: React.FC<{
     <Modal
       onClose={onClose}
       isOpen={isOpen}
-      closeOnOverlayClick={true}
+      closeOnOverlayClick={false}
       blockScrollOnMount
       scrollBehavior="inside"
     >
@@ -285,42 +351,11 @@ const PostCreationModal: React.FC<{
                 onClick={isContentView ? onClose : () => setIsContentView(true)}
                 mb={4}
               >
-                {isContentView ? "Back to feed" : "Back to New Post content"}
+                {isContentView ? "Back to Post" : "Back to Edit Post content"}
               </Button>
               <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
-                Add A New Post
+                Edit Post
               </Text>
-              <Box paddingBottom={5}>
-                {isContentView ? (
-                  <Text>
-                    Fill out the following fields to add a new pet to the Angels
-                    Among Us Foster Feed!
-                  </Text>
-                ) : (
-                  <Flex
-                    direction={"row"}
-                    justifyContent={"space-between"}
-                    maxW={"688px"}
-                    paddingBottom={"20px"}
-                  >
-                    <Text
-                      fontSize={"l"}
-                      textStyle={"semibold"}
-                      color={"#000000"}
-                    >
-                      Select up to 6 photos or video of the pet (one video
-                      limit)
-                    </Text>
-                    <Text
-                      fontSize={"l"}
-                      textStyle={"semibold"}
-                      color={"#8C8C8C"}
-                    >
-                      {fileArr.length}/6
-                    </Text>
-                  </Flex>
-                )}
-              </Box>
             </Box>
             <Box>
               {isContentView ? (
@@ -340,8 +375,20 @@ const PostCreationModal: React.FC<{
         </ModalBody>
         <ModalFooter>
           <Button
-            isLoading={loading}
-            _hover={loading ? {} : undefined}
+            variant={"outline-secondary"}
+            mr={4}
+            onClick={() => {
+              onClose();
+            }}
+            width={"125px"}
+            height={"50px"}
+          >
+            <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
+              Cancel
+            </Text>
+          </Button>
+          <Button
+            isLoading={isLoading}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={
               isContentView
@@ -367,28 +414,26 @@ const PostCreationModal: React.FC<{
                     }
                   }
                 : () => {
-                    setLoading(true);
                     //TODO: Wait for success to close.
-                    createPost()
+                    setIsLoading(true);
+                    editPost()
                       .then(() => {
                         utils.post.invalidate();
-                        setFileArr([]);
+                        onClose();
+                        setFileArr(fileArr);
                         setIsContentView(true);
                         dispatch({
                           type: "clear",
                         });
-                        onClose();
                       })
-                      .finally(() => {
-                        setLoading(false);
-                      });
+                      .finally(() => setIsLoading(false));
                   }
             }
             width={"125px"}
             height={"50px"}
           >
             <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
-              {isContentView ? "Next" : "Post"}
+              {isContentView ? "Next" : "Save"}
             </Text>
           </Button>
         </ModalFooter>
@@ -397,4 +442,4 @@ const PostCreationModal: React.FC<{
   );
 };
 
-export default PostCreationModal;
+export default EditPostModal;

@@ -1,15 +1,15 @@
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { z, ZodArray } from "zod";
 import {
   createPost,
   deletePost,
   finalizePost,
   getPost,
   getAllPosts,
-  updatePostDetails,
   updatePostStatus,
   getFilteredPosts,
   getAttachments,
+  finalizePostEdit,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -23,7 +23,6 @@ import {
   Medical,
   Behavioral,
   Trained,
-  PetKind,
   IPost,
 } from "../../utils/types/post";
 import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
@@ -47,7 +46,6 @@ const questionnaireSchema = z.array(
 const postSchema = z.object({
   name: z.string(),
   description: z.string(),
-  petKind: z.nativeEnum(PetKind),
   type: z.nativeEnum(FosterType),
   size: z.nativeEnum(Size),
   breed: z.array(z.nativeEnum(Breed)),
@@ -264,17 +262,49 @@ export const postRouter = router({
         });
       }
     }),
-  updateDetails: procedure
+  finalizeEdit: procedure
     .input(
       z.object({
-        _id: zodOidType,
-        updateFields: postSchema.partial(),
+        oldId: zodOidType,
+        newId: zodOidType,
       })
     )
     .mutation(async ({ input }) => {
       try {
-        await updatePostDetails(input._id, input.updateFields);
-        return { success: true };
+        return await finalizePostEdit(input.oldId, input.newId);
+      } catch (e) {
+        throw new TRPCError({
+          message: "All attachments not uploaded",
+          code: "PRECONDITION_FAILED",
+          cause: e,
+        });
+      }
+    }),
+  /**
+   * `editPost` does not actually edit the target post id:
+   * - A new post document is created (new _id) with the updated fields (post-edit)
+   * - The updated attachments are uploaded with the new post id as the prefix for the object key
+   * - The old document and its attachments are deleted
+   */
+  editPost: procedure
+    .input(
+      z.object({
+        _id: zodOidType,
+        updateFields: postSchema,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const existingPost = await getPost(input._id, false);
+        if (!existingPost) {
+          throw new Error("Unable to find existing post id.");
+        }
+        const newPost = await createPost({
+          ...input.updateFields,
+          date: existingPost.date,
+          covered: existingPost.covered,
+        });
+        return newPost;
       } catch (e) {
         throw new TRPCError({
           message: "Internal Server Error",

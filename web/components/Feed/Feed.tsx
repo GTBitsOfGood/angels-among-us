@@ -637,6 +637,7 @@ function Feed(props: {
           isOpen={isPostViewOpen}
           onClose={onPostViewClose}
           postId={modalPostId}
+          setModalPostId={setModalPostId}
           appliedTo={userAppliedToSet.has(modalPostId.toString())}
         />
       )}

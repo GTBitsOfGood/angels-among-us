@@ -1,6 +1,7 @@
 import {
   ArrowBackIcon,
   DeleteIcon,
+  EditIcon,
   ViewIcon,
   ViewOffIcon,
 } from "@chakra-ui/icons";
@@ -375,14 +376,16 @@ import {
 import { Role } from "../../utils/types/account";
 import DeletePostModal from "./DeletePostModal";
 import { trpc } from "../../utils/trpc";
+import EditPostModal from "./EditPostModal";
 import MarkCoveredModal from "./MarkCoveredModal";
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   postId: Types.ObjectId;
+  setModalPostId: React.SetStateAction<React.Dispatch<Types.ObjectId>>;
   appliedTo: boolean;
-}> = ({ isOpen, onClose, postId, appliedTo }) => {
+}> = ({ isOpen, onClose, postId, setModalPostId, appliedTo }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
@@ -393,6 +396,12 @@ const PetPostModal: React.FC<{
     isOpen: isDeleteConfirmationOpen,
     onOpen: onDeleteConfirmationOpen,
     onClose: onDeleteConfirmationClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditFormOpen,
+    onOpen: onEditFormOpen,
+    onClose: onEditFormClose,
   } = useDisclosure();
 
   const {
@@ -573,32 +582,50 @@ const PetPostModal: React.FC<{
             </Button>
             <Flex>
               {(role === Role.Admin || role === Role.ContentCreator) && (
-                <Button
-                  h={8}
-                  backgroundColor="white"
-                  onClick={onCoveredConfirmationOpen}
-                  _hover={{}}
-                  leftIcon={
-                    postData.covered ? (
-                      <ViewIcon color={coveredButtonColor} />
-                    ) : (
-                      <ViewOffIcon color={coveredButtonColor} />
-                    )
-                  }
-                >
-                  <Text textDecoration="underline" color={coveredButtonColor}>
-                    {postData.covered ? "Uncover Post" : "Mark as Covered"}
-                  </Text>
-                  <MarkCoveredModal
-                    isCoveredConfirmationOpen={isCoveredConfirmationOpen}
-                    onCoveredConfirmationClose={onCoveredConfirmationClose}
-                    postId={postId}
-                    isCovered={postData.covered}
+                <>
+                  <Button
+                    h={8}
+                    backgroundColor="white"
+                    onClick={onEditFormOpen}
+                    _hover={{}}
+                    leftIcon={
+                      <EditIcon marginRight="5px" color="text-secondary" />
+                    }
+                  >
+                    <Text textDecoration="underline" color="text-secondary">
+                      Edit
+                    </Text>
+                  </Button>
+                  <EditPostModal
+                    isOpen={isEditFormOpen}
+                    onClose={onEditFormClose}
+                    postData={postData}
+                    setModalPostId={setModalPostId}
+                    attachments={attachments}
                   />
-                </Button>
-              )}
-              {(role === Role.Admin || role === Role.ContentCreator) && (
-                <Flex>
+                  <Button
+                    h={8}
+                    backgroundColor="white"
+                    onClick={onCoveredConfirmationOpen}
+                    _hover={{}}
+                    leftIcon={
+                      postData.covered ? (
+                        <ViewIcon color={coveredButtonColor} />
+                      ) : (
+                        <ViewOffIcon color={coveredButtonColor} />
+                      )
+                    }
+                  >
+                    <Text textDecoration="underline" color={coveredButtonColor}>
+                      {postData.covered ? "Uncover Post" : "Mark as Covered"}
+                    </Text>
+                    <MarkCoveredModal
+                      isCoveredConfirmationOpen={isCoveredConfirmationOpen}
+                      onCoveredConfirmationClose={onCoveredConfirmationClose}
+                      postId={postId}
+                      isCovered={postData.covered}
+                    />
+                  </Button>
                   <Button
                     h={8}
                     backgroundColor="white"
@@ -618,7 +645,7 @@ const PetPostModal: React.FC<{
                     onClose={onClose}
                     postId={postId}
                   />
-                </Flex>
+                </>
               )}
             </Flex>
           </Stack>
