@@ -46,24 +46,13 @@ function FileDropZone(props: PropsType) {
     },
   });
 
-  let dropZoneStyle = {
-    width: "688px",
-    height: "435px",
-    border: "1px dashed #000000",
-    borderRadius: "5.82474px",
-  };
-
-  if (fileArr.length > 0) {
-    dropZoneStyle.width = "211px";
-    dropZoneStyle.height = "211px";
-  }
-
   return (
     <Flex
-      width={dropZoneStyle.width}
-      height={dropZoneStyle.height}
-      border={dropZoneStyle.border}
-      borderRadius={dropZoneStyle.borderRadius}
+      flex={1}
+      minW="100%"
+      minH="100%"
+      border="1px dashed gray"
+      borderRadius={8}
       direction={"column"}
       alignItems={"center"}
       justifyContent={"center"}
@@ -99,6 +88,7 @@ function FileDropZone(props: PropsType) {
         </Flex>
       ) : (
         <Flex
+          // p={10}
           direction={"column"}
           alignItems={"center"}
           justifyContent={"center"}
