@@ -331,7 +331,7 @@ const EditPostModal: React.FC<{
       size={{ base: "full", md: "3xl" }}
       onClose={onClose}
       isOpen={isOpen}
-      closeOnOverlayClick={false}
+      closeOnOverlayClick
       blockScrollOnMount
       scrollBehavior="inside"
     >

@@ -44,7 +44,7 @@ export const FormSlide: React.FC<{
         rowGap="15px"
         columnGap="30px"
       >
-        <FormControl gridColumn={{ base: "span 1", md: "span 2" }}>
+        <FormControl gridColumn={{ base: "span 1", md: "span 2" }} isRequired>
           <FormLabel>Name of the pet</FormLabel>
           <Input
             value={formState.name}
@@ -60,6 +60,7 @@ export const FormSlide: React.FC<{
         <FormControl
           className="descriptionForm"
           gridColumn={{ base: "span 1", md: "span 2" }}
+          isRequired
         >
           <FormLabel>Description</FormLabel>
           <Textarea
@@ -73,7 +74,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="genderForm" gridColumn="span 1">
+        <FormControl className="genderForm" gridColumn="span 1" isRequired>
           <FormLabel>Gender</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -98,7 +99,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="ageForm" gridColumn="span 1">
+        <FormControl className="ageForm" gridColumn="span 1" isRequired>
           <FormLabel>Age</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -123,7 +124,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="fosterTypeForm" gridColumn="span 1">
+        <FormControl className="fosterTypeForm" gridColumn="span 1" isRequired>
           <FormLabel>Type of foster</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -148,7 +149,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="sizeForm" gridColumn="span 1">
+        <FormControl className="sizeForm" gridColumn="span 1" isRequired>
           <FormLabel>Size</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -173,7 +174,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="breedForm" gridColumn="span 1">
+        <FormControl className="breedForm" gridColumn="span 1" isRequired>
           <FormLabel>Breed</FormLabel>
           <Select
             isMulti
