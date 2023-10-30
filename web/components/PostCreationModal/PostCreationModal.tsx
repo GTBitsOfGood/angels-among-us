@@ -263,7 +263,7 @@ const PostCreationModal: React.FC<{
 
   return (
     <Modal
-      size={{ sm: "full", md: "3xl" }}
+      size={{ base: "full", md: "3xl" }}
       onClose={onClose}
       isOpen={isOpen}
       closeOnOverlayClick
