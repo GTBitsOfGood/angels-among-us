@@ -10,11 +10,11 @@ import React, {
 import nookies from "nookies";
 import { auth } from "../utils/firebase/firebaseClient";
 import { trpc } from "../utils/trpc";
-import { SerializedUser } from "../utils/types/user";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router";
 import { Pages } from "../utils/consts";
 import { QueryObserverResult } from "@tanstack/react-query";
+import { IUser } from "../utils/types/user";
 
 const AuthContext = createContext<{
   authorized: boolean;
@@ -22,7 +22,7 @@ const AuthContext = createContext<{
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>> | null;
   authError: string | null;
-  userData: SerializedUser | null;
+  userData: IUser | null;
   refetchUserData: (() => Promise<QueryObserverResult<any>>) | null;
 }>({
   authorized: false,

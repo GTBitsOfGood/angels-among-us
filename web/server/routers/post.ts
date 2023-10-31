@@ -10,6 +10,8 @@ import {
   getFilteredPosts,
   getAttachments,
   finalizePostEdit,
+  pushUserAppliedTo,
+  getUserContextualizedPost,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -125,10 +127,11 @@ export const postRouter = router({
         _id: zodOidType,
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       try {
-        return getPost(input._id, true);
+        return getUserContextualizedPost(input._id, ctx.session.uid, true);
       } catch (e) {
+        console.error(e);
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
@@ -145,6 +148,7 @@ export const postRouter = router({
           ...input,
           date: new Date(),
           covered: false,
+          usersAppliedTo: [],
         },
         session
       );
@@ -210,9 +214,7 @@ export const postRouter = router({
             }
           }
         }
-        await updateUserByUid(user.uid, {
-          $push: { appliedTo: input.postOid },
-        });
+        await pushUserAppliedTo(input.postOid, user.uid);
       } catch (e) {
         if (e instanceof TRPCError) throw e;
         else
@@ -303,6 +305,7 @@ export const postRouter = router({
           ...input.updateFields,
           date: existingPost.date,
           covered: existingPost.covered,
+          usersAppliedTo: existingPost.usersAppliedTo,
         });
         return newPost;
       } catch (e) {
@@ -366,7 +369,7 @@ export const postRouter = router({
         covered: z.optional(z.boolean()),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const postFilters = input.postFilters;
       const notAllowedBehavioral = Object.values(Behavioral).filter(
         (obj) => !postFilters.behavioral.includes(obj)
@@ -421,7 +424,10 @@ export const postRouter = router({
       }
 
       try {
-        const filteredPosts = await getFilteredPosts(baseFilter);
+        const filteredPosts = await getFilteredPosts(
+          baseFilter,
+          ctx.session.uid
+        );
         return filteredPosts;
       } catch (e) {
         throw new TRPCError({

@@ -350,7 +350,7 @@ const EditPostModal: React.FC<{
             }}
             onClick={isContentView ? onClose : () => setIsContentView(true)}
           >
-            {isContentView ? "Back to Post" : "Back to Edit Post content"}
+            {isContentView ? "Back to post" : "Back to form content"}
           </Button>
           <Heading size="lg" pt={2}>
             Edit post

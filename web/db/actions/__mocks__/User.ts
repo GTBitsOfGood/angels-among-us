@@ -33,7 +33,6 @@ function createRandomUser(): IUser & { _id: Types.ObjectId } {
     dogsNotGoodWith: faker.helpers.arrayElements(Object.values(GoodWith)),
     medical: faker.helpers.arrayElements(Object.values(Medical)),
     behavioral: faker.helpers.arrayElements(Object.values(Behavioral)),
-    appliedTo: [],
   };
 }
 

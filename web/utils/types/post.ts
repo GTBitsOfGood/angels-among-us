@@ -343,11 +343,13 @@ export interface IPost {
   covered: boolean;
   pending: boolean;
   attachments: string[];
+  usersAppliedTo: string[];
 }
 
-export interface IFeedPost extends IPost {
+export type IFeedPost = Omit<IPost, "usersAppliedTo"> & {
   _id: Types.ObjectId;
-}
+  userAppliedTo: boolean;
+};
 
 export type SerializedPost = Omit<IFeedPost, "_id" | "date"> & {
   _id: string;

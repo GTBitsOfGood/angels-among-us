@@ -2,7 +2,9 @@ declare var global: any;
 
 import { readFileSync } from "fs";
 import {
+  createRandomFeedPost,
   createRandomPost,
+  randomFeedPosts,
   randomPosts,
 } from "../../../../db/actions/__mocks__/Post";
 import { consts } from "../../../../utils/consts";
@@ -183,8 +185,8 @@ describe("[API] Post - Integration Test", () => {
     });
 
     test("singleton covered-uncovered", async () => {
-      const coveredPost = { ...createRandomPost(), covered: true };
-      const uncoveredPost = { ...createRandomPost(), covered: false };
+      const coveredPost = { ...createRandomFeedPost(), covered: true };
+      const uncoveredPost = { ...createRandomFeedPost(), covered: false };
 
       const createCoveredPost = await Post.create(coveredPost);
       expect(createCoveredPost).not.toBeNull();
@@ -223,11 +225,11 @@ describe("[API] Post - Integration Test", () => {
     });
 
     test("random covered-uncovered", async () => {
-      const response = await Post.insertMany(randomPosts);
+      const response = await Post.insertMany(randomFeedPosts);
       expect(response).not.toBeNull();
       expect(response.length).toBe(randomPosts.length);
 
-      const serializedPosts = randomPosts.map((post) => ({
+      const serializedFeedPosts = randomFeedPosts.map((post) => ({
         ...post,
         _id: post._id.toString(),
       }));
@@ -253,8 +255,8 @@ describe("[API] Post - Integration Test", () => {
           postFilters,
           covered: true,
         })
-      ).map((post) => ({ ...post._doc, _id: post._id.toString() }));
-      const expectedCoveredPosts = serializedPosts
+      ).map((post) => ({ ...post, _id: post._id.toString() }));
+      const expectedCoveredPosts = serializedFeedPosts
         .filter((post) => post.covered)
         .sort((a, b) => b.date.getTime() - a.date.getTime());
 
@@ -267,10 +269,10 @@ describe("[API] Post - Integration Test", () => {
           postFilters,
           covered: false,
         })
-      ).map((post) => ({ ...post._doc, _id: post._id.toString() }));
+      ).map((post) => ({ ...post, _id: post._id.toString() }));
       expect(uncoveredPosts).not.toBeNull();
 
-      const expectedUncoveredPosts = serializedPosts
+      const expectedUncoveredPosts = serializedFeedPosts
         .filter((post) => !post.covered)
         .sort((a, b) => b.date.getTime() - a.date.getTime());
       expect(uncoveredPosts.length).toBe(expectedUncoveredPosts.length);

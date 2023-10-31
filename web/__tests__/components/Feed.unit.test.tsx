@@ -11,7 +11,7 @@ import {
   GoodWith,
   Status,
 } from "../../utils/types/post";
-import { IUser, SerializedUser } from "../../utils/types/user";
+import { IUser } from "../../utils/types/user";
 
 // Mock authentication
 jest.mock("../../context/auth", () => ({
@@ -81,7 +81,6 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
     disabled: false,
     hasCompletedOnboarding: true,
     dogsNotGoodWith: Object.values(GoodWith),
-    appliedTo: [],
   };
 
   test("null userdata", () => {
@@ -96,7 +95,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
   });
 
   test("1 pet type", () => {
-    const userData: SerializedUser = {
+    const userData: IUser = {
       ...dummyUser,
       type: [FosterType.Boarding],
     };
@@ -112,7 +111,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
   });
 
   test("2 pet breeds", () => {
-    const userData: SerializedUser = {
+    const userData: IUser = {
       ...dummyUser,
       restrictedBreeds: [Breed.AmericanEskimo, Breed.Beagle],
     };
@@ -133,7 +132,7 @@ describe("[Feed] Import User Preferences - Unit Test", () => {
   });
 
   test("2 dogsNotGoodWith", () => {
-    const userData: SerializedUser = {
+    const userData: IUser = {
       ...dummyUser,
       dogsNotGoodWith: [GoodWith.Men, GoodWith.Women],
     };

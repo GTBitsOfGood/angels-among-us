@@ -1,6 +1,7 @@
 import { ClientSession, FilterQuery, Types, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
 import {
+  IFeedPost,
   IPendingFinalizePost,
   IPendingPost,
   IPendingUpdatePost,
@@ -10,7 +11,6 @@ import {
   ListObjectsCommand,
   PutObjectCommand,
   DeleteObjectsCommand,
-  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { consts } from "../../utils/consts";
@@ -21,8 +21,53 @@ import { captureException } from "@sentry/nextjs";
 export type UploadInfo = Record<string, string>;
 
 async function getPost(oid: Types.ObjectId, publicAttachmentUrls: boolean) {
-  const post: (IPost & { _id: Types.ObjectId; __v: number }) | null =
-    await Post.findById(oid).exec();
+  const post: (IPost & { _id: Types.ObjectId }) | null = await Post.findById(
+    oid,
+    { __v: 0 }
+  ).exec();
+
+  if (publicAttachmentUrls && post) {
+    post.attachments = post.attachments.map((attachment: string) => {
+      return `${consts.storageBucketURL}/${attachment}`;
+    });
+  }
+  return post;
+}
+
+async function getUserContextualizedPost(
+  postId: Types.ObjectId,
+  userUid: string,
+  publicAttachmentUrls: boolean
+) {
+  const posts: IFeedPost[] = await Post.aggregate([
+    {
+      $match: {
+        _id: new Types.ObjectId(postId),
+      },
+    },
+    {
+      $addFields: {
+        userAppliedTo: {
+          $in: [userUid, "$usersAppliedTo"],
+        },
+      },
+    },
+    {
+      $limit: 1,
+    },
+    {
+      $project: {
+        usersAppliedTo: 0,
+        __v: 0,
+      },
+    },
+  ]).exec();
+
+  if (posts.length === 0) {
+    throw new Error("Specified post could not be found.");
+  }
+
+  const post = posts[0];
   if (publicAttachmentUrls && post) {
     post.attachments = post.attachments.map((attachment: string) => {
       return `${consts.storageBucketURL}/${attachment}`;
@@ -266,6 +311,18 @@ async function updatePostStatus(oid: Types.ObjectId, session?: ClientSession) {
   );
 }
 
+async function pushUserAppliedTo(
+  postId: Types.ObjectId,
+  userUid: string,
+  session?: ClientSession
+) {
+  return await Post.findByIdAndUpdate(
+    postId,
+    { $push: { usersAppliedTo: userUid } },
+    { session }
+  );
+}
+
 async function getAllPosts() {
   return await Post.find().sort({ date: -1 });
 }
@@ -279,22 +336,46 @@ async function getAttachments(oid: Types.ObjectId) {
   return attachInfo;
 }
 
-async function getFilteredPosts(filter: FilterQuery<IPost>) {
-  const posts = await Post.find(filter, { __v: 0 }).sort({ date: -1 }).exec();
-  posts.forEach(
-    (post) =>
-      (post.attachments = post.attachments.map(
-        (attachment: string) => `${consts.storageBucketURL}/${attachment}`
-      ))
-  );
+async function getFilteredPosts(filter: FilterQuery<IPost>, userUid: string) {
+  const posts = await Post.aggregate([
+    {
+      $match: filter,
+    },
+    {
+      $addFields: {
+        attachments: {
+          $map: {
+            input: "$attachments",
+            as: "a",
+            in: {
+              $concat: [consts.storageBucketURL, "/", "$$a"],
+            },
+          },
+        },
+        userAppliedTo: {
+          $in: [userUid, "$usersAppliedTo"],
+        },
+      },
+    },
+    {
+      $project: {
+        usersAppliedTo: 0,
+        __v: 0,
+      },
+    },
+  ])
+    .sort({ date: -1 })
+    .exec();
   return posts;
 }
 
 export {
   getPost,
+  getUserContextualizedPost,
   createPost,
   deletePost,
   updatePostStatus,
+  pushUserAppliedTo,
   finalizePost,
   finalizePostEdit,
   getAllPosts,
