@@ -132,7 +132,6 @@ const EditPostModal: React.FC<{
   attachments: string[];
 }> = ({ isOpen, onClose, postData, setModalPostId, attachments }) => {
   const toast = useToast();
-  const utils = trpc.useContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isContentView, setIsContentView] = useState(true);
@@ -417,7 +416,6 @@ const EditPostModal: React.FC<{
                     setIsLoading(true);
                     editPost()
                       .then(() => {
-                        utils.post.invalidate();
                         onClose();
                         setFileArr(fileArr);
                         setIsContentView(true);
