@@ -23,7 +23,7 @@ function EditUploadSlide(props: PropsType) {
   } = props;
 
   return (
-    <Stack overflow={"hidden"} alignItems={"center"}>
+    <Stack alignItems={"center"} minW="100%" minH="100%">
       {fileArr.length === 0 && (
         <FileDropZone
           fileArr={fileArr}
@@ -31,7 +31,13 @@ function EditUploadSlide(props: PropsType) {
           setShowAlert={setShowAlert}
         ></FileDropZone>
       )}
-      <Grid templateColumns="repeat(3, 1fr)" columnGap={"22px"} rowGap={"22px"}>
+      <Grid
+        templateColumns="repeat(3, 1fr)"
+        columnGap={"22px"}
+        rowGap={"22px"}
+        w="100%"
+        h="100%"
+      >
         {fileArr.map((file) => (
           <FilePreview
             key={fileArr.indexOf(file)}

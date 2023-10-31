@@ -1,6 +1,6 @@
 import FileDropZone from "./FileDropZone";
 import FilePreview from "./FilePreview";
-import { Alert, AlertIcon, Grid, Stack } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Grid, Stack } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 
 interface PropsType {
@@ -23,7 +23,7 @@ function FileUploadSlide(props: PropsType) {
   } = props;
 
   return (
-    <Stack overflow={"hidden"} alignItems={"center"}>
+    <Stack alignItems={"center"} minW="100%" minH="100%">
       {fileArr.length === 0 && (
         <FileDropZone
           fileArr={fileArr}
@@ -31,7 +31,13 @@ function FileUploadSlide(props: PropsType) {
           setShowAlert={setShowAlert}
         ></FileDropZone>
       )}
-      <Grid templateColumns="repeat(3, 1fr)" columnGap={"22px"} rowGap={"22px"}>
+      <Grid
+        templateColumns="repeat(3, 1fr)"
+        columnGap={"22px"}
+        rowGap={"22px"}
+        w="100%"
+        h="100%"
+      >
         {fileArr.map((file) => (
           <FilePreview
             key={fileArr.indexOf(file)}
@@ -43,11 +49,13 @@ function FileUploadSlide(props: PropsType) {
           ></FilePreview>
         ))}
         {fileArr.length > 0 && fileArr.length < 6 ? (
-          <FileDropZone
-            fileArr={fileArr}
-            setFileArr={setFileArr}
-            setShowAlert={setShowAlert}
-          ></FileDropZone>
+          <Box w="211px" h="211px">
+            <FileDropZone
+              fileArr={fileArr}
+              setFileArr={setFileArr}
+              setShowAlert={setShowAlert}
+            ></FileDropZone>
+          </Box>
         ) : (
           <></>
         )}
