@@ -39,9 +39,13 @@ export const FormSlide: React.FC<{
 }> = ({ formState, dispatchFormState }) => {
   return (
     <Stack dir="col" spacing={5}>
-      <Grid gridTemplateColumns="1fr 1fr" rowGap="15px" columnGap="30px">
-        <FormControl gridColumn="span 2">
-          <FormLabel>Name of the Pet</FormLabel>
+      <Grid
+        gridTemplateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
+        rowGap="15px"
+        columnGap="30px"
+      >
+        <FormControl gridColumn={{ base: "span 1", md: "span 2" }} isRequired>
+          <FormLabel>Name of the pet</FormLabel>
           <Input
             value={formState.name}
             onChange={(e) =>
@@ -53,7 +57,11 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="descriptionForm" gridColumn="span 2">
+        <FormControl
+          className="descriptionForm"
+          gridColumn={{ base: "span 1", md: "span 2" }}
+          isRequired
+        >
           <FormLabel>Description</FormLabel>
           <Textarea
             value={formState.description}
@@ -66,7 +74,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="genderForm" width="100%">
+        <FormControl className="genderForm" gridColumn="span 1" isRequired>
           <FormLabel>Gender</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -91,7 +99,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="ageForm" maxW="450px">
+        <FormControl className="ageForm" gridColumn="span 1" isRequired>
           <FormLabel>Age</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -116,7 +124,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="fosterTypeForm" maxW="450px">
+        <FormControl className="fosterTypeForm" gridColumn="span 1" isRequired>
           <FormLabel>Type of foster</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -141,7 +149,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="sizeForm" maxW="450px">
+        <FormControl className="sizeForm" gridColumn="span 1" isRequired>
           <FormLabel>Size</FormLabel>
           <Select
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
@@ -166,7 +174,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="breedForm" gridColumn="span 2">
+        <FormControl className="breedForm" gridColumn="span 1" isRequired>
           <FormLabel>Breed</FormLabel>
           <Select
             isMulti
@@ -189,7 +197,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="temperamentForm" maxW="450px">
+        <FormControl className="temperamentForm" gridColumn="span 1">
           <FormLabel>Temperament</FormLabel>
           <Select
             isMulti
@@ -212,7 +220,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="medicalForm" maxW="450px">
+        <FormControl className="medicalForm" gridColumn="span 1">
           <FormLabel>Medical</FormLabel>
           <Select
             isMulti
@@ -235,7 +243,7 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="behavioralForm" maxW="450px">
+        <FormControl className="behavioralForm" gridColumn="span 1">
           <FormLabel>Behavioral</FormLabel>
           <Select
             isMulti
@@ -261,7 +269,11 @@ export const FormSlide: React.FC<{
       </Grid>
       <Box>
         <Grid
-          templateColumns={{ base: "repeat(3, 1fr)", md: "repeat(3, 1fr)" }}
+          templateColumns={{
+            base: "repeat(1, 1fr)",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(3, 1fr)",
+          }}
           columnGap="30px"
           rowGap="30px"
         >

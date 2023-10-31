@@ -11,6 +11,8 @@ import {
   useToast,
   ModalBody,
   ModalFooter,
+  Heading,
+  ModalHeader,
 } from "@chakra-ui/react";
 import { useReducer, useState } from "react";
 import { z } from "zod";
@@ -261,68 +263,54 @@ const PostCreationModal: React.FC<{
 
   return (
     <Modal
+      size={{ base: "full", md: "3xl" }}
       onClose={onClose}
       isOpen={isOpen}
-      closeOnOverlayClick={true}
+      closeOnOverlayClick
       blockScrollOnMount
       scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent p={4} minW="800px" minH="750px">
-        <ModalBody>
-          <Stack>
-            <Box>
-              <Button
-                h={8}
-                w="fit-content"
-                leftIcon={<ArrowBackIcon />}
-                bgColor="#C6E3F9"
-                color="#57A0D5"
-                borderRadius={9}
-                _hover={{
-                  bgColor: "#C6E3F9",
-                }}
-                onClick={isContentView ? onClose : () => setIsContentView(true)}
-                mb={4}
-              >
-                {isContentView ? "Back to feed" : "Back to New Post content"}
-              </Button>
-              <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
-                Add A New Post
-              </Text>
-              <Box paddingBottom={5}>
-                {isContentView ? (
-                  <Text>
-                    Fill out the following fields to add a new pet to the Angels
-                    Among Us Foster Feed!
+      <ModalContent p={4} w="100%" h="100%">
+        <ModalHeader>
+          <Button
+            h={8}
+            w="fit-content"
+            leftIcon={<ArrowBackIcon />}
+            bgColor="tag-primary-bg"
+            color="text-primary"
+            borderRadius={9}
+            _hover={{
+              bgColor: "tag-primary-bg",
+            }}
+            onClick={isContentView ? onClose : () => setIsContentView(true)}
+          >
+            {isContentView ? "Back to feed" : "Back to post form"}
+          </Button>
+          <Heading size="lg" pt={2}>
+            Add a new post
+          </Heading>
+        </ModalHeader>
+        <ModalBody w="100%" h="100%">
+          <Stack w="100%" h="100%">
+            <Box paddingBottom={5}>
+              {isContentView ? (
+                <Text>
+                  Fill out the following fields to add a new post to the foster
+                  feed.
+                </Text>
+              ) : (
+                <Flex direction={"row"} justifyContent={"space-between"}>
+                  <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
+                    Select up to 6 photos or video of the pet (one video limit)
                   </Text>
-                ) : (
-                  <Flex
-                    direction={"row"}
-                    justifyContent={"space-between"}
-                    maxW={"688px"}
-                    paddingBottom={"20px"}
-                  >
-                    <Text
-                      fontSize={"l"}
-                      textStyle={"semibold"}
-                      color={"#000000"}
-                    >
-                      Select up to 6 photos or video of the pet (one video
-                      limit)
-                    </Text>
-                    <Text
-                      fontSize={"l"}
-                      textStyle={"semibold"}
-                      color={"#8C8C8C"}
-                    >
-                      {fileArr.length}/6
-                    </Text>
-                  </Flex>
-                )}
-              </Box>
+                  <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
+                    {fileArr.length}/6
+                  </Text>
+                </Flex>
+              )}
             </Box>
-            <Box>
+            <Box w="100%" h="100%">
               {isContentView ? (
                 <FormSlide dispatchFormState={dispatch} formState={formState} />
               ) : (
@@ -340,6 +328,7 @@ const PostCreationModal: React.FC<{
         </ModalBody>
         <ModalFooter>
           <Button
+            size="lg"
             isLoading={loading}
             _hover={loading ? {} : undefined}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
@@ -384,12 +373,8 @@ const PostCreationModal: React.FC<{
                       });
                   }
             }
-            width={"125px"}
-            height={"50px"}
           >
-            <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
-              {isContentView ? "Next" : "Post"}
-            </Text>
+            {isContentView ? "Next" : "Post"}
           </Button>
         </ModalFooter>
       </ModalContent>

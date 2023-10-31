@@ -48,8 +48,6 @@ function FeedPostCard(props: { post: IFeedPost }) {
         paddingY={{ base: "16px", lg: "20px" }}
         borderRadius="14px"
         width="100%"
-        border={{ base: "1px solid" }}
-        borderColor={{ base: "border-color" }}
         shadow={"none"}
       >
         <Flex gap={{ base: "15px", lg: "20px" }}>
