@@ -189,9 +189,10 @@ const FosterQuestionnaire = ({
     z.string().min(1, { message: "All fields required." })
   );
 
-  const { userData, refetchUserData } = useAuth();
+  const { userData } = useAuth();
   const mutation = trpc.post.offer.useMutation();
   const toast = useToast();
+  const utils = trpc.useUtils();
 
   function handleSubmission() {
     const formValidation = formSchema.safeParse(fosterQuestionResponses);
@@ -218,7 +219,7 @@ const FosterQuestionnaire = ({
       };
       mutation.mutate(offer, {
         onSuccess: () => {
-          refetchUserData!();
+          utils.post.invalidate();
           toast.closeAll();
           onFormViewClose();
           toast({
@@ -384,8 +385,7 @@ const PetPostModal: React.FC<{
   onClose: () => void;
   postId: Types.ObjectId;
   setModalPostId: React.SetStateAction<React.Dispatch<Types.ObjectId>>;
-  appliedTo: boolean;
-}> = ({ isOpen, onClose, postId, setModalPostId, appliedTo }) => {
+}> = ({ isOpen, onClose, postId, setModalPostId }) => {
   const {
     isOpen: isFormViewOpen,
     onOpen: onFormViewOpen,
@@ -744,13 +744,15 @@ const PetPostModal: React.FC<{
             paddingRight={8}
           >
             <Button
-              isDisabled={appliedTo}
-              variant={appliedTo ? "solid-secondary" : "solid-primary"}
+              isDisabled={postData.userAppliedTo}
+              variant={
+                postData.userAppliedTo ? "solid-secondary" : "solid-primary"
+              }
               width={60}
               borderRadius={"20px"}
               onClick={onFormViewOpen}
               _hover={
-                appliedTo
+                postData.userAppliedTo
                   ? {}
                   : {
                       borderColor: "btn-outline-primary-border",
@@ -759,7 +761,7 @@ const PetPostModal: React.FC<{
                     }
               }
             >
-              {appliedTo ? "Applied" : "Foster Me!"}
+              {postData.userAppliedTo ? "Applied" : "Foster Me!"}
             </Button>
           </Flex>
         </Stack>
@@ -909,13 +911,13 @@ const PetPostModal: React.FC<{
             bgColor={"white"}
           >
             <Button
-              isDisabled={appliedTo}
+              isDisabled={postData.userAppliedTo}
               variant="solid-primary"
               width={"100%"}
               borderRadius={"20px"}
               onClick={onFormViewOpen}
             >
-              {appliedTo ? "Applied" : "Foster Me!"}
+              {postData.userAppliedTo ? "Applied" : "Foster Me!"}
             </Button>
           </Flex>
         </ModalFooter>

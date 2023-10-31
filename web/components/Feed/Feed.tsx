@@ -22,10 +22,10 @@ import {
   FosterType,
   Gender,
   GoodWith,
-  IPost,
+  IFeedPost,
   Size,
 } from "../../utils/types/post";
-import { SerializedUser } from "../../utils/types/user";
+import { IUser } from "../../utils/types/user";
 import PetPostModal from "../PetPostModal/PetPostModal";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
@@ -245,12 +245,10 @@ const parseOptArr = (
 
 /**
  * Imports user preferences and maps them to the feed filters
- * @param {SerializedUser | null} userData user data
+ * @param {IUser | null} userData user data
  * @returns {SelectedFilters | null} preferred filters
  */
-function getPrefFilters(
-  userData: SerializedUser | null
-): SelectedFilters | null {
+function getPrefFilters(userData: IUser | null): SelectedFilters | null {
   if (!userData) {
     return null;
   }
@@ -315,7 +313,6 @@ function Feed(props: {
   const { userData } = useAuth();
 
   const role = userData?.role;
-  const userAppliedToSet = new Set(userData?.appliedTo ?? []);
 
   const [displayCovered, setDisplayCovered] = useState<boolean | undefined>(
     undefined
@@ -382,7 +379,7 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts: (IPost & { _id: Types.ObjectId })[] | undefined =
+  const feedPosts: IFeedPost[] | undefined =
     trpc.post.getFilteredPosts.useQuery({
       postFilters: getQueryFilters(selectedFilters),
       covered: role === Role.Volunteer ? false : displayCovered,
@@ -638,7 +635,6 @@ function Feed(props: {
           onClose={onPostViewClose}
           postId={modalPostId}
           setModalPostId={setModalPostId}
-          appliedTo={userAppliedToSet.has(modalPostId.toString())}
         />
       )}
     </Flex>

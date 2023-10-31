@@ -5,11 +5,12 @@ import {
   Stack,
   ModalContent,
   ModalOverlay,
-  Text,
   Box,
   useToast,
   ModalBody,
   ModalFooter,
+  ModalHeader,
+  Heading,
 } from "@chakra-ui/react";
 import { useEffect, useReducer, useState } from "react";
 import { z } from "zod";
@@ -327,37 +328,37 @@ const EditPostModal: React.FC<{
 
   return (
     <Modal
+      size={{ base: "full", md: "3xl" }}
       onClose={onClose}
       isOpen={isOpen}
-      closeOnOverlayClick={false}
+      closeOnOverlayClick
       blockScrollOnMount
       scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent p={4} minW="800px" minH="750px">
-        <ModalBody>
-          <Stack>
-            <Box>
-              <Button
-                h={8}
-                w="fit-content"
-                leftIcon={<ArrowBackIcon />}
-                bgColor="#C6E3F9"
-                color="#57A0D5"
-                borderRadius={9}
-                _hover={{
-                  bgColor: "#C6E3F9",
-                }}
-                onClick={isContentView ? onClose : () => setIsContentView(true)}
-                mb={4}
-              >
-                {isContentView ? "Back to Post" : "Back to Edit Post content"}
-              </Button>
-              <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
-                Edit Post
-              </Text>
-            </Box>
-            <Box>
+      <ModalContent p={4} w="100%" h="100%">
+        <ModalHeader>
+          <Button
+            h={8}
+            w="fit-content"
+            leftIcon={<ArrowBackIcon />}
+            bgColor="tag-primary-bg"
+            color="text-primary"
+            borderRadius={9}
+            _hover={{
+              bgColor: "tag-primary-bg",
+            }}
+            onClick={isContentView ? onClose : () => setIsContentView(true)}
+          >
+            {isContentView ? "Back to post" : "Back to form content"}
+          </Button>
+          <Heading size="lg" pt={2}>
+            Edit post
+          </Heading>
+        </ModalHeader>
+        <ModalBody w="100%" h="100%">
+          <Stack w="100%" h="100%">
+            <Box w="100%" h="100%">
               {isContentView ? (
                 <FormSlide dispatchFormState={dispatch} formState={formState} />
               ) : (
@@ -375,19 +376,17 @@ const EditPostModal: React.FC<{
         </ModalBody>
         <ModalFooter>
           <Button
+            size="lg"
             variant={"outline-secondary"}
             mr={4}
             onClick={() => {
               onClose();
             }}
-            width={"125px"}
-            height={"50px"}
           >
-            <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
-              Cancel
-            </Text>
+            Cancel
           </Button>
           <Button
+            size="lg"
             isLoading={isLoading}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={
@@ -429,12 +428,8 @@ const EditPostModal: React.FC<{
                       .finally(() => setIsLoading(false));
                   }
             }
-            width={"125px"}
-            height={"50px"}
           >
-            <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
-              {isContentView ? "Next" : "Save"}
-            </Text>
+            {isContentView ? "Next" : "Save"}
           </Button>
         </ModalFooter>
       </ModalContent>

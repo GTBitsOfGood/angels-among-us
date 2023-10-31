@@ -29,9 +29,4 @@ export interface IUser {
   dogsNotGoodWith?: GoodWith[];
   medical?: Medical[];
   behavioral?: Behavioral[];
-  appliedTo: Types.ObjectId[];
-}
-
-export interface SerializedUser extends Omit<IUser, "appliedTo"> {
-  appliedTo: string[];
 }

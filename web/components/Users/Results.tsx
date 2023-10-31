@@ -86,7 +86,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
   );
 
   return (
-    <Flex direction="column" width="100%" minH="100%" gap={5}>
+    <Flex direction="column" w="100%" h="100%" gap={5}>
       <Stack spacing={5} w="100%">
         <Heading size="lg" alignSelf="start">
           Search Results
@@ -131,6 +131,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
               borderColor="gray.300"
               borderRadius={12}
               padding={2}
+              h="fit-content"
             >
               <Grid
                 templateColumns={{
@@ -154,7 +155,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
                     <b>Email: </b>
                     {user.email}
                   </Text>
-                  <Text fontSize="sm" wordBreak="break-all">
+                  <Text fontSize="sm">
                     <b>Preferred Email: </b>
                     {user.preferredEmail ?? "Unspecified"}
                   </Text>
