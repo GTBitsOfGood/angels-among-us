@@ -1,7 +1,7 @@
 import { Flex, Image, Circle } from "@chakra-ui/react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import DefaultDog from "../../public/dog.svg";
 import { useState } from "react";
 
@@ -29,7 +29,12 @@ function ImageSlider(props: { attachments: Array<string> }) {
             maxHeight={["23.5vh", "35.5vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
-              <FaArrowCircleLeft size={30} />
+              <ChevronLeftIcon
+                boxSize={30}
+                background={"white"}
+                color={"black"}
+                borderRadius="100"
+              />
             </Flex>
           </Flex>
         );
@@ -48,7 +53,12 @@ function ImageSlider(props: { attachments: Array<string> }) {
             maxHeight={["23.5vh", "35.5vh"]}
           >
             <Flex onClick={clickHandler} cursor="pointer">
-              <FaArrowCircleRight size={30} />
+              <ChevronRightIcon
+                boxSize={30}
+                background={"white"}
+                color={"black"}
+                borderRadius="100"
+              />
             </Flex>
           </Flex>
         );
