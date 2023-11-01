@@ -34,6 +34,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
                 background={"white"}
                 color={"black"}
                 borderRadius="100"
+                border="1px solid black"
               />
             </Flex>
           </Flex>
@@ -58,6 +59,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
                 background={"white"}
                 color={"black"}
                 borderRadius="100"
+                border="1px solid black"
               />
             </Flex>
           </Flex>
