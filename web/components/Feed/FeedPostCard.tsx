@@ -46,7 +46,6 @@ function FeedPostCard(props: { post: IFeedPost }) {
       position="relative"
       marginBottom={4}
       padding={{ base: "0px", lg: "0px 5px" }}
-      overflow="visible"
     >
       <Card
         paddingX={{ base: "12px", lg: "16px" }}
@@ -58,7 +57,6 @@ function FeedPostCard(props: { post: IFeedPost }) {
           boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.15)",
           transition: "0.2s",
         }}
-        overflow="visible"
       >
         <Flex gap={{ base: "15px", lg: "20px" }}>
           {firstImage ? (
@@ -124,7 +122,6 @@ function FeedPostCard(props: { post: IFeedPost }) {
           boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.5)",
           transition: "0.2s",
         }}
-        overflow="visible"
       ></Card>
     </Flex>
   );
