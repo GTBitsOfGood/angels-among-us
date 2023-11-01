@@ -520,7 +520,7 @@ function Feed(props: {
           backgroundColor={{ base: "white", lg: "#F9F8F8" }}
           direction="column"
           alignItems="center"
-          p={{ base: 4, lg: "20px 0px" }}
+          p={{ base: 4, lg: "20px" }}
         >
           <Flex
             w="100%"
@@ -529,7 +529,7 @@ function Feed(props: {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Flex alignItems="center" marginLeft={{ base: "0px", lg: "20px" }}>
+            <Flex alignItems="center">
               <Text fontWeight="bold" fontSize="20px" pr={3}>
                 {filterDisplayed ? "Filter By:" : "Latest Posts"}
               </Text>
@@ -552,7 +552,7 @@ function Feed(props: {
               !(isSmallerThanLg && filterDisplayed) && (
                 <Flex
                   bgColor={{ base: "white", lg: "transparent" }}
-                  p={{ base: 4, lg: "0px 20px" }}
+                  p={{ base: 4, lg: 0 }}
                   position={{ base: "absolute", lg: "static" }}
                   left={{ base: 0 }}
                   bottom={{ base: 0 }}
@@ -606,7 +606,7 @@ function Feed(props: {
           ) : filterDisplayed && isSmallerThanLg ? (
             filter
           ) : (
-            <Stack overflowY="auto" spacing={0} w="100%" mt={4} paddingY={2}>
+            <Stack overflowY="auto" spacing={0} w="100%" mt={4}>
               {debouncedFeedPosts?.map((p) => {
                 return (
                   <Box
