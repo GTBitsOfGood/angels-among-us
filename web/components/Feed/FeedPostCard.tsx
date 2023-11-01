@@ -42,13 +42,21 @@ function FeedPostCard(props: { post: IFeedPost }) {
     .toString();
 
   return (
-    <Flex position="relative" marginBottom={4}>
+    <Flex
+      position="relative"
+      marginBottom={4}
+      padding={{ base: "0px", lg: "0px 20px" }}
+    >
       <Card
         paddingX={{ base: "12px", lg: "16px" }}
         paddingY={{ base: "16px", lg: "20px" }}
         borderRadius="14px"
         width="100%"
-        shadow={"none"}
+        shadow="none"
+        _hover={{
+          shadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.3)",
+          transition: "0.1s",
+        }}
       >
         <Flex gap={{ base: "15px", lg: "20px" }}>
           {firstImage ? (
@@ -102,13 +110,15 @@ function FeedPostCard(props: { post: IFeedPost }) {
       </Card>
       <Card
         position="absolute"
-        width={{ lg: "52vw" }}
-        height={"100%"}
+        display={post.covered ? "flex" : "none"}
+        width={{ lg: "calc(100% - 40px)" }}
+        height={{ lg: "100%" }}
         top={0}
-        right={0}
-        opacity={post.covered ? "30%" : "0%"}
-        backgroundColor={post.covered ? "#57a0d5" : "white"}
+        right={"20px"}
+        opacity={"30%"}
+        backgroundColor={"#57a0d5"}
         borderRadius="14px"
+        _hover={{ shadow: "0px 4px 10px 0px black", transition: "0.1s" }}
       ></Card>
     </Flex>
   );
