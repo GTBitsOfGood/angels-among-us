@@ -22,6 +22,7 @@ import { navbarVisiblity } from "../utils/visibility";
 import { Pages } from "../utils/consts";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase/firebaseClient";
+import { useState } from "react";
 
 interface AvatarProps {
   user: typeof auth.currentUser | null;
@@ -122,6 +123,7 @@ export default function Navbar() {
   const router = useRouter();
   const { user, loading, userData, authorized } = useAuth();
   const role = userData?.role;
+  const [currPage, setCurrPage] = useState("FEED");
 
   const {
     isOpen: isMenuOpen,
@@ -186,21 +188,53 @@ export default function Navbar() {
           alignItems="center"
           spacing={10}
         >
-          <Link as={NextLink} href={Pages.FEED}>
-            <Text>Feed</Text>
+          <Link
+            as={NextLink}
+            href={Pages.FEED}
+            onClick={() => {
+              setCurrPage("FEED");
+            }}
+          >
+            <Text color={currPage === "FEED" ? "#57A0D5" : "black"}>Feed</Text>
           </Link>
           {role === Role.Admin && (
             <>
-              <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
-                <Text>Access Management</Text>
+              <Link
+                as={NextLink}
+                href={Pages.ACCESS_MANAGEMENT}
+                onClick={() => {
+                  setCurrPage("ACCESS_MANAGEMENT");
+                }}
+              >
+                <Text
+                  color={currPage === "ACCESS_MANAGEMENT" ? "#57A0D5" : "black"}
+                >
+                  Access Management
+                </Text>
               </Link>
-              <Link as={NextLink} href={Pages.USERS}>
-                <Text>Volunteer Search</Text>
+              <Link
+                as={NextLink}
+                href={Pages.USERS}
+                onClick={() => {
+                  setCurrPage("USERS");
+                }}
+              >
+                <Text color={currPage === "USERS" ? "#57A0D5" : "black"}>
+                  Volunteer Search
+                </Text>
               </Link>
             </>
           )}
-          <Link as={NextLink} href={Pages.RESOURCES}>
-            <Text>Resources</Text>
+          <Link
+            as={NextLink}
+            href={Pages.RESOURCES}
+            onClick={() => {
+              setCurrPage("RESOURCES");
+            }}
+          >
+            <Text color={currPage === "RESOURCES" ? "#57A0D5" : "black"}>
+              Resources
+            </Text>
           </Link>
           <Avatar user={user} />
         </Stack>
