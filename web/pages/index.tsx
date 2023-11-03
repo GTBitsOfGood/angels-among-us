@@ -137,7 +137,14 @@ function Home() {
       <Head>
         <title>Angels Among Us Pet Rescue Placements Platform</title>
       </Head>
-      <Flex height="100vh" bgColor="black" maxHeight="-webkit-fill-available">
+      <Flex
+        height={
+          window.CSS && window.CSS.supports("--css: variables")
+            ? "100dvh"
+            : "100vh"
+        }
+        bgColor="black"
+      >
         <Flex
           display="flex"
           position="absolute"
