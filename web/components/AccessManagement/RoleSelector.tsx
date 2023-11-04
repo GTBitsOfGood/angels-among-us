@@ -53,7 +53,7 @@ function RoleSelector(props: PropertyType) {
       onOpen={onOpen}
       onClose={onClose}
       placement="bottom"
-      offset={[42, 0]}
+      offset={[0, 0]}
     >
       <PopoverTrigger>
         <Box
@@ -70,7 +70,7 @@ function RoleSelector(props: PropertyType) {
         </Box>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent padding={2} maxW="200px" borderRadius="0px 0px 8px 8px">
+        <PopoverContent padding={2} maxW="113px" borderRadius="0px 0px 8px 8px">
           <Flex
             flexDirection="column"
             gap={2}
