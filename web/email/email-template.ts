@@ -276,7 +276,7 @@ export function populateEmailTemplate(
                 <table class="info-table">
                   <tr>
                     <th>Preferences & Info</th>
-                    <th>Volunteer Preferences</th>
+                    <th>Capabilities</th>
                     <th>Dog Information</th>
                   </tr>
                   <tr>
