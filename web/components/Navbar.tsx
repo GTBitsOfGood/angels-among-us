@@ -188,51 +188,47 @@ export default function Navbar() {
           alignItems="center"
           spacing={10}
         >
-          <Link
-            as={NextLink}
-            href={Pages.FEED}
-            onClick={() => {
-              setCurrPage("FEED");
-            }}
-          >
-            <Text color={currPage === "FEED" ? "#57A0D5" : "black"}>Feed</Text>
+          <Link as={NextLink} href={Pages.FEED}>
+            <Text
+              color={currPage === "FEED" ? "#57A0D5" : "black"}
+              onClick={() => {
+                setCurrPage("FEED");
+              }}
+            >
+              Feed
+            </Text>
           </Link>
           {role === Role.Admin && (
             <>
-              <Link
-                as={NextLink}
-                href={Pages.ACCESS_MANAGEMENT}
-                onClick={() => {
-                  setCurrPage("ACCESS_MANAGEMENT");
-                }}
-              >
+              <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
                 <Text
                   color={currPage === "ACCESS_MANAGEMENT" ? "#57A0D5" : "black"}
+                  onClick={() => {
+                    setCurrPage("ACCESS_MANAGEMENT");
+                  }}
                 >
                   Access Management
                 </Text>
               </Link>
-              <Link
-                as={NextLink}
-                href={Pages.USERS}
-                onClick={() => {
-                  setCurrPage("USERS");
-                }}
-              >
-                <Text color={currPage === "USERS" ? "#57A0D5" : "black"}>
+              <Link as={NextLink} href={Pages.USERS}>
+                <Text
+                  color={currPage === "USERS" ? "#57A0D5" : "black"}
+                  onClick={() => {
+                    setCurrPage("USERS");
+                  }}
+                >
                   Volunteer Search
                 </Text>
               </Link>
             </>
           )}
-          <Link
-            as={NextLink}
-            href={Pages.RESOURCES}
-            onClick={() => {
-              setCurrPage("RESOURCES");
-            }}
-          >
-            <Text color={currPage === "RESOURCES" ? "#57A0D5" : "black"}>
+          <Link as={NextLink} href={Pages.RESOURCES}>
+            <Text
+              color={currPage === "RESOURCES" ? "#57A0D5" : "black"}
+              onClick={() => {
+                setCurrPage("RESOURCES");
+              }}
+            >
               Resources
             </Text>
           </Link>
@@ -248,7 +244,14 @@ export default function Navbar() {
         <Box display={{ md: "none" }} p={2}>
           <Stack spacing={4}>
             <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
-              <Text>Feed</Text>
+              <Text
+                color={currPage === "FEED" ? "#57A0D5" : "black"}
+                onClick={() => {
+                  setCurrPage("FEED");
+                }}
+              >
+                Feed
+              </Text>
             </Link>
             {role === Role.Admin && (
               <>
@@ -257,15 +260,38 @@ export default function Navbar() {
                   href={Pages.ACCESS_MANAGEMENT}
                   onClick={onMenuClose}
                 >
-                  <Text>Access Management</Text>
+                  <Text
+                    color={
+                      currPage === "ACCESS_MANAGEMENT" ? "#57A0D5" : "black"
+                    }
+                    onClick={() => {
+                      setCurrPage("ACCESS_MANAGEMENT");
+                    }}
+                  >
+                    Access Management
+                  </Text>
                 </Link>
                 <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
-                  <Text>Volunteer Search</Text>
+                  <Text
+                    color={currPage === "USERS" ? "#57A0D5" : "black"}
+                    onClick={() => {
+                      setCurrPage("USERS");
+                    }}
+                  >
+                    Volunteer Search
+                  </Text>
                 </Link>
               </>
             )}
             <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
-              <Text>Resources</Text>
+              <Text
+                color={currPage === "RESOURCES" ? "#57A0D5" : "black"}
+                onClick={() => {
+                  setCurrPage("RESOURCES");
+                }}
+              >
+                Resources
+              </Text>
             </Link>
           </Stack>
         </Box>
