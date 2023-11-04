@@ -78,7 +78,6 @@ export default function Search({
           direction="column"
           spacing={5}
           divider={<StackDivider borderColor="gray.200" />}
-          overflowY={"scroll"}
         >
           <Stack width="100%" direction={["column", "row"]} spacing={5}>
             <Stack direction="column" width={["100%", "50%"]}>
@@ -274,7 +273,7 @@ export default function Search({
               </GridItem>
             </Grid>
           </Stack>
-          <Stack direction="column" width="100%" paddingBottom={5}>
+          <Stack direction="column" width="100%">
             <Heading size="md">Behavioral Traits</Heading>
             <Grid templateColumns={["1fr", "1fr 1fr"]} gap={5}>
               <GridItem>
