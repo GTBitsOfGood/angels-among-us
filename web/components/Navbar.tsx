@@ -22,7 +22,6 @@ import { navbarVisiblity } from "../utils/visibility";
 import { Pages } from "../utils/consts";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase/firebaseClient";
-import { useState } from "react";
 
 interface AvatarProps {
   user: typeof auth.currentUser | null;
@@ -123,7 +122,6 @@ export default function Navbar() {
   const router = useRouter();
   const { user, loading, userData, authorized } = useAuth();
   const role = userData?.role;
-  const [currPage, setCurrPage] = useState("FEED");
 
   const {
     isOpen: isMenuOpen,
@@ -190,10 +188,7 @@ export default function Navbar() {
         >
           <Link as={NextLink} href={Pages.FEED}>
             <Text
-              color={currPage === "FEED" ? "#57A0D5" : "black"}
-              onClick={() => {
-                setCurrPage("FEED");
-              }}
+              color={router.pathname === Pages.FEED ? "text-primary" : "black"}
             >
               Feed
             </Text>
@@ -202,20 +197,20 @@ export default function Navbar() {
             <>
               <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
                 <Text
-                  color={currPage === "ACCESS_MANAGEMENT" ? "#57A0D5" : "black"}
-                  onClick={() => {
-                    setCurrPage("ACCESS_MANAGEMENT");
-                  }}
+                  color={
+                    router.pathname === Pages.ACCESS_MANAGEMENT
+                      ? "text-primary"
+                      : "black"
+                  }
                 >
                   Access Management
                 </Text>
               </Link>
               <Link as={NextLink} href={Pages.USERS}>
                 <Text
-                  color={currPage === "USERS" ? "#57A0D5" : "black"}
-                  onClick={() => {
-                    setCurrPage("USERS");
-                  }}
+                  color={
+                    router.pathname === Pages.USERS ? "text-primary" : "black"
+                  }
                 >
                   Volunteer Search
                 </Text>
@@ -224,10 +219,9 @@ export default function Navbar() {
           )}
           <Link as={NextLink} href={Pages.RESOURCES}>
             <Text
-              color={currPage === "RESOURCES" ? "#57A0D5" : "black"}
-              onClick={() => {
-                setCurrPage("RESOURCES");
-              }}
+              color={
+                router.pathname === Pages.RESOURCES ? "text-primary" : "black"
+              }
             >
               Resources
             </Text>
@@ -245,10 +239,9 @@ export default function Navbar() {
           <Stack spacing={4}>
             <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
               <Text
-                color={currPage === "FEED" ? "#57A0D5" : "black"}
-                onClick={() => {
-                  setCurrPage("FEED");
-                }}
+                color={
+                  router.pathname === Pages.FEED ? "text-primary" : "black"
+                }
               >
                 Feed
               </Text>
@@ -262,21 +255,19 @@ export default function Navbar() {
                 >
                   <Text
                     color={
-                      currPage === "ACCESS_MANAGEMENT" ? "#57A0D5" : "black"
+                      router.pathname === Pages.ACCESS_MANAGEMENT
+                        ? "text-primary"
+                        : "black"
                     }
-                    onClick={() => {
-                      setCurrPage("ACCESS_MANAGEMENT");
-                    }}
                   >
                     Access Management
                   </Text>
                 </Link>
                 <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
                   <Text
-                    color={currPage === "USERS" ? "#57A0D5" : "black"}
-                    onClick={() => {
-                      setCurrPage("USERS");
-                    }}
+                    color={
+                      router.pathname === Pages.USERS ? "text-primary" : "black"
+                    }
                   >
                     Volunteer Search
                   </Text>
@@ -285,10 +276,9 @@ export default function Navbar() {
             )}
             <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
               <Text
-                color={currPage === "RESOURCES" ? "#57A0D5" : "black"}
-                onClick={() => {
-                  setCurrPage("RESOURCES");
-                }}
+                color={
+                  router.pathname === Pages.RESOURCES ? "text-primary" : "black"
+                }
               >
                 Resources
               </Text>
