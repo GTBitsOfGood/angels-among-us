@@ -111,6 +111,7 @@ function OnboardingOptions(props: {
       className="onboardingOptions"
       flexDirection="row"
       gap={{ base: "16px", md: "60px", lg: "90px" }}
+      overflow={"scroll"}
     >
       {opsByCol.map((colVal, ind) => {
         return (

@@ -53,7 +53,7 @@ function RoleSelector(props: PropertyType) {
       onOpen={onOpen}
       onClose={onClose}
       placement="bottom"
-      offset={[42, 0]}
+      offset={[0, -35]}
     >
       <PopoverTrigger>
         <Box
@@ -70,13 +70,31 @@ function RoleSelector(props: PropertyType) {
         </Box>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent padding={2} maxW="200px" borderRadius="0px 0px 8px 8px">
+        <PopoverContent
+          maxW={106}
+          borderRadius="8px"
+          border={"1px solid #747373"}
+        >
           <Flex
             flexDirection="column"
             gap={2}
-            alignItems="left"
+            alignItems="center"
             onClick={onClose}
+            paddingTop={2}
+            paddingBottom={2}
           >
+            <Box
+              as="button"
+              bgColor="#C6E3F9"
+              borderRadius="8px"
+              width={"97px"}
+              height={"27px"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              disabled={mutation.isLoading}
+            >
+              {createLabel(accountList[idx].role)}
+            </Box>
             {ops
               .filter((option) => option.role != accountList[idx].role)
               .map((option) => {
@@ -85,8 +103,9 @@ function RoleSelector(props: PropertyType) {
                     key={ops.indexOf(option)}
                     onClick={() => changeRole(option.role)}
                     as="button"
-                    bgColor="#C6E3F9"
                     borderRadius="8px"
+                    border="1px solid"
+                    borderColor={"#BBBBBB"}
                     width={"97px"}
                     height={"27px"}
                     alignItems={"center"}
