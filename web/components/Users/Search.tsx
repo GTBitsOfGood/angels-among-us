@@ -67,7 +67,7 @@ export default function Search({
       gap={5}
       justifyContent="space-between"
     >
-      <Stack spacing={5} w="100%" overflowY="auto">
+      <Stack spacing={5} w="100%">
         <Heading size="lg" alignSelf="start">
           Search by Filters
         </Heading>
@@ -78,6 +78,7 @@ export default function Search({
           direction="column"
           spacing={5}
           divider={<StackDivider borderColor="gray.200" />}
+          overflowY={"scroll"}
         >
           <Stack width="100%" direction={["column", "row"]} spacing={5}>
             <Stack direction="column" width={["100%", "50%"]}>
@@ -273,7 +274,7 @@ export default function Search({
               </GridItem>
             </Grid>
           </Stack>
-          <Stack direction="column" width="100%">
+          <Stack direction="column" width="100%" paddingBottom={5}>
             <Heading size="md">Behavioral Traits</Heading>
             <Grid templateColumns={["1fr", "1fr 1fr"]} gap={5}>
               <GridItem>
