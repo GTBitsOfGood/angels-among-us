@@ -607,20 +607,26 @@ function Feed(props: {
             filter
           ) : (
             <Stack overflowY="auto" spacing={0} w="100%" mt={4}>
-              {debouncedFeedPosts?.map((p) => {
-                return (
-                  <Box
-                    onClick={() => {
-                      setModalPostId(p._id);
-                      onPostViewOpen();
-                    }}
-                    _hover={{ cursor: "pointer" }}
-                    key={p._id.toString()}
-                  >
-                    <FeedPostCard post={p} />
-                  </Box>
-                );
-              })}
+              {debouncedFeedPosts && debouncedFeedPosts.length != 0 ? (
+                debouncedFeedPosts.map((p) => {
+                  return (
+                    <Box
+                      onClick={() => {
+                        setModalPostId(p._id);
+                        onPostViewOpen();
+                      }}
+                      _hover={{ cursor: "pointer" }}
+                      key={p._id.toString()}
+                    >
+                      <FeedPostCard post={p} />
+                    </Box>
+                  );
+                })
+              ) : (
+                <Center width="100%" marginTop={"5vh"}>
+                  <Text>No results found.</Text>
+                </Center>
+              )}
             </Stack>
           )}
         </Flex>

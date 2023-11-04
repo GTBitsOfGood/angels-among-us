@@ -115,6 +115,9 @@ export default function Results({ filters, setSearched }: ResultsProps) {
         )}
         <Divider />
       </Stack>
+      {(!users || !users.data || users.data.length == 0) && (
+        <Text align={"center"}>No results found.</Text>
+      )}
       <Flex maxW="100%" flex={1} overflowY="scroll">
         <Grid
           gridTemplateColumns={["1fr", "repeat(auto-fit, minmax(300px, 1fr))"]}
