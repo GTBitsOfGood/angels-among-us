@@ -607,8 +607,8 @@ function Feed(props: {
             filter
           ) : (
             <Stack overflowY="auto" spacing={0} w="100%" mt={4}>
-              {debouncedFeedPosts && debouncedFeedPosts.length != 0 ? (
-                debouncedFeedPosts.map((p) => {
+              {(debouncedFeedPosts?.length ?? 0) > 0 ? (
+                debouncedFeedPosts?.map((p) => {
                   return (
                     <Box
                       onClick={() => {

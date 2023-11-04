@@ -57,11 +57,6 @@ function Access() {
           search={search}
           setSearch={setSearch}
         />
-        {!accounts.isLoading &&
-          !isUpdating &&
-          (!accounts.data || accounts.data.length == 0) && (
-            <Text> No results found.</Text>
-          )}
       </Flex>
     </Flex>
   );
