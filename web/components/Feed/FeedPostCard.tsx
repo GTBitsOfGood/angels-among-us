@@ -49,6 +49,8 @@ function FeedPostCard(props: { post: IFeedPost }) {
         borderRadius="14px"
         width="100%"
         shadow={"none"}
+        border={{ base: "1px solid", lg: "none" }}
+        borderColor="#7d7e82a8"
       >
         <Flex gap={{ base: "15px", lg: "20px" }}>
           {firstImage ? (
