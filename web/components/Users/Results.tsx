@@ -115,7 +115,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
         )}
         <Divider />
       </Stack>
-      {users?.data?.length ?? 0 > 0 ? (
+      {users?.data && users.data.length > 0 ? (
         <Flex maxW="100%" flex={1} overflowY="scroll">
           <Grid
             gridTemplateColumns={[
