@@ -111,10 +111,10 @@ function FeedPostCard(props: { post: IFeedPost }) {
       <Card
         position="absolute"
         display={post.covered ? "flex" : "none"}
-        width={{ lg: "calc(100% - 10px)" }}
-        height={{ lg: "100%" }}
+        width={{ base: "100%", lg: "calc(100% - 10px)" }}
+        height={"100%"}
         top={0}
-        right={"5px"}
+        right={{ base: 0, lg: "5px" }}
         opacity={"30%"}
         backgroundColor={"text-primary"}
         borderRadius="14px"
