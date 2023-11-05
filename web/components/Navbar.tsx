@@ -186,7 +186,14 @@ export default function Navbar() {
           alignItems="center"
           spacing={10}
         >
-          <Link as={NextLink} href={Pages.FEED}>
+          <Link
+            as={NextLink}
+            href={Pages.FEED}
+            _hover={{
+              textDecoration: "underline",
+              textDecorationColor: "text-primary",
+            }}
+          >
             <Text
               color={router.pathname === Pages.FEED ? "text-primary" : "black"}
             >
@@ -195,7 +202,14 @@ export default function Navbar() {
           </Link>
           {role === Role.Admin && (
             <>
-              <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
+              <Link
+                as={NextLink}
+                href={Pages.ACCESS_MANAGEMENT}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor: "text-primary",
+                }}
+              >
                 <Text
                   color={
                     router.pathname === Pages.ACCESS_MANAGEMENT
@@ -206,7 +220,14 @@ export default function Navbar() {
                   Access Management
                 </Text>
               </Link>
-              <Link as={NextLink} href={Pages.USERS}>
+              <Link
+                as={NextLink}
+                href={Pages.USERS}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor: "text-primary",
+                }}
+              >
                 <Text
                   color={
                     router.pathname === Pages.USERS ? "text-primary" : "black"
@@ -217,7 +238,14 @@ export default function Navbar() {
               </Link>
             </>
           )}
-          <Link as={NextLink} href={Pages.RESOURCES}>
+          <Link
+            as={NextLink}
+            href={Pages.RESOURCES}
+            _hover={{
+              textDecoration: "underline",
+              textDecorationColor: "text-primary",
+            }}
+          >
             <Text
               color={
                 router.pathname === Pages.RESOURCES ? "text-primary" : "black"
