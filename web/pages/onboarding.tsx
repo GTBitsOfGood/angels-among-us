@@ -477,17 +477,36 @@ function Onboarding() {
           setAnswers={setAnswers}
           qNum={qNum}
         />
+        {qNum === 8 ? (
+          <Flex paddingTop={4} display={["block", "none"]}>
+            {btnDisplay}
+          </Flex>
+        ) : (
+          <></>
+        )}
       </Flex>
-
-      <Flex
-        className="buttonDisplay"
-        position="fixed"
-        right={{ base: "50%", md: "200px", lg: "300px" }}
-        transform={{ base: "translateX(50%)" }}
-        bottom={{ base: "30px", md: "70px", lg: "70px" }}
-      >
-        {btnDisplay}
-      </Flex>
+      {qNum != 8 ? (
+        <Flex
+          className="buttonDisplay"
+          position="fixed"
+          right={{ base: "50%", md: "200px", lg: "300px" }}
+          transform={{ base: "translateX(50%)" }}
+          bottom={{ base: "30px", md: "70px", lg: "70px" }}
+        >
+          {btnDisplay}
+        </Flex>
+      ) : (
+        <Flex
+          display={["none", "block"]}
+          className="buttonDisplay"
+          position="fixed"
+          right={{ base: "50%", md: "200px", lg: "300px" }}
+          transform={{ base: "translateX(50%)" }}
+          bottom={{ base: "30px", md: "70px", lg: "70px" }}
+        >
+          {btnDisplay}
+        </Flex>
+      )}
     </Flex>
   );
 }
