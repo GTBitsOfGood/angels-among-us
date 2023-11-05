@@ -53,7 +53,6 @@ function RoleSelector(props: PropertyType) {
       onOpen={onOpen}
       onClose={onClose}
       placement="bottom"
-      offset={[0, 0]}
     >
       <PopoverTrigger>
         <Box
