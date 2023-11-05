@@ -191,7 +191,8 @@ export default function Navbar() {
             href={Pages.FEED}
             _hover={{
               textDecoration: "underline",
-              textDecorationColor: "text-primary",
+              textDecorationColor:
+                router.pathname === Pages.FEED ? "text-primary" : "black",
             }}
           >
             <Text
@@ -207,7 +208,10 @@ export default function Navbar() {
                 href={Pages.ACCESS_MANAGEMENT}
                 _hover={{
                   textDecoration: "underline",
-                  textDecorationColor: "text-primary",
+                  textDecorationColor:
+                    router.pathname === Pages.ACCESS_MANAGEMENT
+                      ? "text-primary"
+                      : "black",
                 }}
               >
                 <Text
@@ -225,7 +229,8 @@ export default function Navbar() {
                 href={Pages.USERS}
                 _hover={{
                   textDecoration: "underline",
-                  textDecorationColor: "text-primary",
+                  textDecorationColor:
+                    router.pathname === Pages.USERS ? "text-primary" : "black",
                 }}
               >
                 <Text
@@ -243,7 +248,8 @@ export default function Navbar() {
             href={Pages.RESOURCES}
             _hover={{
               textDecoration: "underline",
-              textDecorationColor: "text-primary",
+              textDecorationColor:
+                router.pathname === Pages.RESOURCES ? "text-primary" : "black",
             }}
           >
             <Text
