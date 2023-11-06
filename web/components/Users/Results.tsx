@@ -115,56 +115,65 @@ export default function Results({ filters, setSearched }: ResultsProps) {
         )}
         <Divider />
       </Stack>
-      <Flex maxW="100%" flex={1} overflowY="scroll">
-        <Grid
-          gridTemplateColumns={["1fr", "repeat(auto-fit, minmax(300px, 1fr))"]}
-          gap={5}
-          justifyContent="center"
-          w="100%"
-        >
-          {users?.data?.map((user) => (
-            <GridItem
-              key={user.uid}
-              display="flex"
-              alignItems="stretch"
-              border="1px solid"
-              borderColor="gray.300"
-              borderRadius={12}
-              padding={2}
-              h="fit-content"
-            >
-              <Grid
-                templateColumns={{
-                  base: "0 max-content",
-                  sm: "1fr max-content",
-                }}
-                gap={2}
+      {users?.data && users.data.length > 0 ? (
+        <Flex maxW="100%" flex={1} overflowY="scroll">
+          <Grid
+            gridTemplateColumns={[
+              "1fr",
+              "repeat(auto-fit, minmax(300px, 1fr))",
+            ]}
+            gap={5}
+            justifyContent="center"
+            w="100%"
+          >
+            {users?.data?.map((user) => (
+              <GridItem
+                key={user.uid}
+                display="flex"
+                alignItems="stretch"
+                border="1px solid"
+                borderColor="gray.300"
+                borderRadius={12}
+                padding={2}
+                h="fit-content"
               >
-                <GridItem h={0} minHeight="100%">
-                  <Image
-                    w="100%"
-                    h="100%"
-                    borderRadius={100}
-                    src={user.picture ?? "/profile.jpeg"}
-                    objectFit="cover"
-                  />
-                </GridItem>
-                <GridItem wordBreak="break-all">
-                  <Heading size="sm">{user.name ?? "Volunteer"}</Heading>
-                  <Text fontSize="sm" wordBreak="break-all">
-                    <b>Email: </b>
-                    {user.email}
-                  </Text>
-                  <Text fontSize="sm">
-                    <b>Preferred Email: </b>
-                    {user.preferredEmail ?? "Unspecified"}
-                  </Text>
-                </GridItem>
-              </Grid>
-            </GridItem>
-          ))}
-        </Grid>
-      </Flex>
+                <Grid
+                  templateColumns={{
+                    base: "0 max-content",
+                    sm: "1fr max-content",
+                  }}
+                  gap={2}
+                >
+                  <GridItem h={0} minHeight="100%">
+                    <Image
+                      w="100%"
+                      h="100%"
+                      borderRadius={100}
+                      src={user.picture ?? "/profile.jpeg"}
+                      objectFit="cover"
+                    />
+                  </GridItem>
+                  <GridItem wordBreak="break-all">
+                    <Heading size="sm">{user.name ?? "Volunteer"}</Heading>
+                    <Text fontSize="sm" wordBreak="break-all">
+                      <b>Email: </b>
+                      {user.email}
+                    </Text>
+                    <Text fontSize="sm">
+                      <b>Preferred Email: </b>
+                      {user.preferredEmail ?? "Unspecified"}
+                    </Text>
+                  </GridItem>
+                </Grid>
+              </GridItem>
+            ))}
+          </Grid>
+        </Flex>
+      ) : (
+        <Flex maxW="100%" flex={1} overflowY="scroll" justify={"center"}>
+          <Text>No results found.</Text>
+        </Flex>
+      )}
       <Button
         alignSelf="flex-start"
         onClick={() => setSearched(false)}

@@ -1,7 +1,7 @@
 import { useState, SetStateAction, Dispatch, useEffect } from "react";
 import { IAccount } from "../../utils/types/account";
 import AccountCard from "./AccountCard";
-import { Stack, Grid, GridItem, Spinner } from "@chakra-ui/react";
+import { Stack, Grid, GridItem, Spinner, Text } from "@chakra-ui/react";
 import TableHeader from "./TableHeader";
 
 interface PropertyType {
@@ -36,36 +36,40 @@ function AccountTable(props: PropertyType) {
         updateItemsToDelete={updateItemsToDelete}
       ></TableHeader>
       {!isLoading ? (
-        <Grid
-          paddingX={"20px"}
-          templateColumns={{
-            sm: "repeat(2, 1fr)",
-            md: "repeat(2, 1fr)",
-            lg: "repeat(4, 1fr)",
-          }}
-          gap={"20px"}
-          width={"inherit"}
-        >
-          {accountList.map((e: IAccount) => {
-            return (
-              <GridItem
-                colSpan={{ sm: 1, md: 1, lg: 2 }}
-                alignItems={"center"}
-                key={accountList.indexOf(e)}
-              >
-                <AccountCard
-                  account={e}
-                  idx={accountList.indexOf(e)}
+        accountList?.length > 0 ? (
+          <Grid
+            paddingX={"20px"}
+            templateColumns={{
+              sm: "repeat(2, 1fr)",
+              md: "repeat(2, 1fr)",
+              lg: "repeat(4, 1fr)",
+            }}
+            gap={"20px"}
+            width={"inherit"}
+          >
+            {accountList.map((e: IAccount) => {
+              return (
+                <GridItem
+                  colSpan={{ sm: 1, md: 1, lg: 2 }}
+                  alignItems={"center"}
                   key={accountList.indexOf(e)}
-                  selectItems={selectItems}
-                  itemsToDelete={itemsToDelete}
-                  updateItemsToDelete={updateItemsToDelete}
-                  accountList={accountList}
-                ></AccountCard>
-              </GridItem>
-            );
-          })}
-        </Grid>
+                >
+                  <AccountCard
+                    account={e}
+                    idx={accountList.indexOf(e)}
+                    key={accountList.indexOf(e)}
+                    selectItems={selectItems}
+                    itemsToDelete={itemsToDelete}
+                    updateItemsToDelete={updateItemsToDelete}
+                    accountList={accountList}
+                  ></AccountCard>
+                </GridItem>
+              );
+            })}
+          </Grid>
+        ) : (
+          <Text> No results found.</Text>
+        )
       ) : (
         <Spinner />
       )}
