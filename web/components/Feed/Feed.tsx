@@ -480,8 +480,6 @@ function Feed(props: {
     );
   };
 
-  console.log(isUpdating, isLoading, feedPosts);
-
   return (
     <Flex
       className="feed"
