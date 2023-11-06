@@ -186,21 +186,79 @@ export default function Navbar() {
           alignItems="center"
           spacing={10}
         >
-          <Link as={NextLink} href={Pages.FEED}>
-            <Text>Feed</Text>
+          <Link
+            as={NextLink}
+            href={Pages.FEED}
+            _hover={{
+              textDecoration: "underline",
+              textDecorationColor:
+                router.pathname === Pages.FEED ? "text-primary" : "black",
+            }}
+          >
+            <Text
+              color={router.pathname === Pages.FEED ? "text-primary" : "black"}
+            >
+              Feed
+            </Text>
           </Link>
           {role === Role.Admin && (
             <>
-              <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
-                <Text>Access Management</Text>
+              <Link
+                as={NextLink}
+                href={Pages.ACCESS_MANAGEMENT}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.ACCESS_MANAGEMENT
+                      ? "text-primary"
+                      : "black",
+                }}
+              >
+                <Text
+                  color={
+                    router.pathname === Pages.ACCESS_MANAGEMENT
+                      ? "text-primary"
+                      : "black"
+                  }
+                >
+                  Access Management
+                </Text>
               </Link>
-              <Link as={NextLink} href={Pages.USERS}>
-                <Text>Volunteer Search</Text>
+              <Link
+                as={NextLink}
+                href={Pages.USERS}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.USERS ? "text-primary" : "black",
+                }}
+              >
+                <Text
+                  color={
+                    router.pathname === Pages.USERS ? "text-primary" : "black"
+                  }
+                >
+                  Volunteer Search
+                </Text>
               </Link>
             </>
           )}
-          <Link as={NextLink} href={Pages.RESOURCES}>
-            <Text>Resources</Text>
+          <Link
+            as={NextLink}
+            href={Pages.RESOURCES}
+            _hover={{
+              textDecoration: "underline",
+              textDecorationColor:
+                router.pathname === Pages.RESOURCES ? "text-primary" : "black",
+            }}
+          >
+            <Text
+              color={
+                router.pathname === Pages.RESOURCES ? "text-primary" : "black"
+              }
+            >
+              Resources
+            </Text>
           </Link>
           <Avatar user={user} />
         </Stack>
@@ -214,7 +272,13 @@ export default function Navbar() {
         <Box display={{ md: "none" }} p={2}>
           <Stack spacing={4}>
             <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
-              <Text>Feed</Text>
+              <Text
+                color={
+                  router.pathname === Pages.FEED ? "text-primary" : "black"
+                }
+              >
+                Feed
+              </Text>
             </Link>
             {role === Role.Admin && (
               <>
@@ -223,15 +287,35 @@ export default function Navbar() {
                   href={Pages.ACCESS_MANAGEMENT}
                   onClick={onMenuClose}
                 >
-                  <Text>Access Management</Text>
+                  <Text
+                    color={
+                      router.pathname === Pages.ACCESS_MANAGEMENT
+                        ? "text-primary"
+                        : "black"
+                    }
+                  >
+                    Access Management
+                  </Text>
                 </Link>
                 <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
-                  <Text>Volunteer Search</Text>
+                  <Text
+                    color={
+                      router.pathname === Pages.USERS ? "text-primary" : "black"
+                    }
+                  >
+                    Volunteer Search
+                  </Text>
                 </Link>
               </>
             )}
             <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
-              <Text>Resources</Text>
+              <Text
+                color={
+                  router.pathname === Pages.RESOURCES ? "text-primary" : "black"
+                }
+              >
+                Resources
+              </Text>
             </Link>
           </Stack>
         </Box>
