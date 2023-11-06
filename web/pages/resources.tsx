@@ -341,13 +341,8 @@ function Team({ team, children }: PropsWithChildren<TeamProps>) {
       display="inline-block"
       direction="column"
       bgColor="white"
-      border="solid"
       borderRadius={12}
-      borderWidth="0px"
-      borderColor="border-color"
-      paddingX={6}
-      paddingY={4}
-      marginTop={[4, 6]}
+      paddingY={2}
     >
       <Text fontSize="lg" fontWeight="600" marginBottom={2}>
         {team.teamName}
@@ -369,16 +364,16 @@ function Resources() {
     <Flex display="flex" bgColor="bg-primary" justifyContent="center">
       <Box
         width={{ base: "100%", lg: "80%" }}
-        p={[6, 6, 4, 8]}
+        p={8}
         bgColor="white"
         borderRadius={{ base: 0, lg: 12 }}
         mt={{ base: "65px", lg: 100 }}
         mb={{ base: 0, lg: 100 }}
       >
-        <Box w="100%" textAlign="left" marginBottom={3} marginLeft={6}>
+        <Box w="100%" textAlign="left">
           <Text
             fontSize="2xl"
-            fontWeight="600"
+            fontWeight="bold"
             lineHeight="24px"
             letterSpacing="wide"
           >
@@ -389,25 +384,19 @@ function Resources() {
           direction="column"
           bgColor="white"
           borderRadius={12}
-          paddingX={6}
           paddingTop={2}
           width="100%"
           marginTop={{ md: "6px", lg: "20px" }}
         >
           <Box w="100%" textAlign="left" marginBottom={4}>
-            <Text
-              fontSize="xl"
-              fontWeight="400"
-              lineHeight="20px"
-              letterSpacing="wide"
-            >
+            <Text fontSize="xl" fontWeight="normal" lineHeight="20px">
               Important Phone Numbers To Save In Your Phone
             </Text>
           </Box>
           <Divider />
           <Flex
             direction={{ base: "column", lg: "row" }}
-            marginY={6}
+            paddingY={6}
             alignItems="stretch"
             gap={6}
           >
@@ -433,7 +422,7 @@ function Resources() {
             />
           </Flex>
         </Flex>
-        <Box sx={{ columnCount: { md: 1, lg: 2 } }} w="100%" mx="auto">
+        <Box sx={{ columnCount: { md: 1, lg: 2 } }} w="100%" columnGap={8}>
           {TEAMS.map((team) => {
             return (
               <Team team={team} key={team.teamName}>
