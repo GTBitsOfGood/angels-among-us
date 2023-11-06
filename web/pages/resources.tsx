@@ -343,7 +343,7 @@ function Team({ team, children }: PropsWithChildren<TeamProps>) {
       bgColor="white"
       border="solid"
       borderRadius={12}
-      borderWidth="2px"
+      borderWidth="0px"
       borderColor="border-color"
       paddingX={6}
       paddingY={4}
@@ -369,13 +369,13 @@ function Resources() {
     <Flex display="flex" bgColor="bg-primary" justifyContent="center">
       <Box
         width={{ base: "100%", lg: "80%" }}
-        p={[6, 8]}
+        p={[6, 6, 4, 8]}
         bgColor="white"
         borderRadius={{ base: 0, lg: 12 }}
         mt={{ base: "65px", lg: 100 }}
         mb={{ base: 0, lg: 100 }}
       >
-        <Box w="100%" textAlign="center" marginBottom={6}>
+        <Box w="100%" textAlign="left" marginBottom={3} marginLeft={6}>
           <Text
             fontSize="2xl"
             fontWeight="600"
@@ -388,16 +388,13 @@ function Resources() {
         <Flex
           direction="column"
           bgColor="white"
-          border="solid"
           borderRadius={12}
-          borderWidth="2px"
-          borderColor="border-color"
           paddingX={6}
-          paddingTop={4}
+          paddingTop={2}
           width="100%"
           marginTop={{ md: "6px", lg: "20px" }}
         >
-          <Box w="100%" textAlign="center" marginBottom={4}>
+          <Box w="100%" textAlign="left" marginBottom={4}>
             <Text
               fontSize="xl"
               fontWeight="400"
