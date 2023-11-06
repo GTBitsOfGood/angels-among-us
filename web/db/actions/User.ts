@@ -129,9 +129,7 @@ async function searchUsers(
   session?: ClientSession
 ): Promise<IUser[]> {
   const filter = createFilterQuery(searchParams);
-  return await User.find(filter, { _id: 0, __v: 0 }, { session })
-    .collation({ locale: "en", strength: 2 })
-    .exec();
+  return await User.find(filter, { _id: 0, __v: 0 }, { session }).exec();
 }
 
 export {
