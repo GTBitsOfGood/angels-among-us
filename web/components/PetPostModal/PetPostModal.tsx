@@ -3,18 +3,224 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {
   Button,
   Flex,
+  Input,
   Modal,
+  ModalCloseButton,
   ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Stack,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import ImageSlider from "./ImageSlider";
 import PetPostTagGroup from "./PetPostTagGroup";
+import { FosterType } from "../../utils/types/post";
+
+type FosterTypeData = {
+  [key in FosterType]: Array<{
+    key: string;
+    title: string;
+  }>;
+};
+
+const data: FosterTypeData = {
+  [FosterType.Return]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "maxDogs",
+      title: "What is the maximum number of dogs you are willing to foster?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "maxDogs",
+      title: "What is the maximum number of dogs you are willing to foster?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "maxDogs",
+      title: "What is the maximum number of dogs you are willing to foster?",
+    },
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "maxDogs",
+      title: "What is the maximum number of dogs you are willing to foster?",
+    },
+    {
+      key: "other",
+      title: "Are there any other details that Angels Among Us should know when considering your foster offer?"
+    },
+  ],
+  [FosterType.Boarding]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "other",
+      title: "Are there any other details that Angels Among Us should know when considering your foster offer?"
+    },
+  ],
+  [FosterType.Temporary]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "other",
+      title: "Are there any other details that Angels Among Us should know when considering your foster offer?"
+    },
+  ],
+  [FosterType.Shelter]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "other",
+      title: "Are there any other details that Angels Among Us should know when considering your foster offer?"
+    },
+  ],
+  [FosterType.FosterMove]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "other",
+      title: "Are there any other details that Angels Among Us should know when considering your foster offer?"
+    },
+  ],
+  [FosterType.OwnerSurrender]: [
+    {
+      key: "numOtherDogs",
+      title: "How many other fosters and personal dogs do you have?",
+    },
+    {
+      key: "other",
+      title: "Are there any other details that Angels Among Us should know when considering your foster offer?"
+    },
+  ],
+};
+
+const FosterQuestionnaire = ({
+  fosterType,
+  isFormViewOpen,
+  onFormViewClose,
+}: {
+  fosterType: FosterType;
+  isFormViewOpen: boolean;
+  onFormViewClose: () => void;
+}) => {
+  return (
+    <Modal
+      isOpen={isFormViewOpen}
+      onClose={onFormViewClose}
+      isCentered
+      scrollBehavior="inside"
+      size={["full", "xl"]}
+    >
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader display={["none", "block"]} px={10} mt={4}>
+          Foster Questionnaire
+        </ModalHeader>
+        <ModalCloseButton display={["none", "block"]} mt={6} mr={6} />
+        <Flex display={["none", "flex"]} flexDir="column" overflowY="scroll">
+          <Flex paddingX={10} flexDir="column" gap={4}>
+            {data[fosterType].map((question) => {
+              return (
+                <Flex key={question.key} flexDir="column" gap={2}>
+                  <Text>{question.title}</Text>
+                  <Input />
+                </Flex>
+              );
+            })}
+          </Flex>
+        </Flex>
+        <ModalFooter display={["none", "flex"]} mb={2}>
+          <Button variant="outline-secondary" mr={3} onClick={onFormViewClose}>
+            Cancel
+          </Button>
+          <Button variant="solid-primary">Submit</Button>
+        </ModalFooter>
+        <Flex
+          direction="column"
+          width="100%"
+          height="100vh"
+          display={["flex", "none"]}
+        >
+          <Stack
+            marginTop={4}
+            marginLeft={4}
+            direction="row"
+            onClick={onFormViewClose}
+            spacing={2}
+            color="text-secondary"
+            alignItems="center"
+            fontWeight="semibold"
+          >
+            <ArrowBackIcon boxSize={"20px"}></ArrowBackIcon>
+            <Text>Back to Pet Post</Text>
+          </Stack>
+          <ModalHeader>Foster Questionnaire</ModalHeader>
+          <Flex paddingX={6} flexDir="column" gap={4} overflowY="scroll">
+            {data[fosterType].map((question) => {
+              return (
+                <Flex key={question.key} flexDir="column" gap={2}>
+                  <Text>{question.title}</Text>
+                  <Input />
+                </Flex>
+              );
+            })}
+          </Flex>
+          <ModalFooter display={["flex", "none"]} mb={2}>
+            <Button
+              variant="solid-primary"
+              width="full"
+              paddingY={5}
+              borderRadius="full"
+            >
+              Submit
+            </Button>
+          </ModalFooter>
+        </Flex>
+      </ModalContent>
+    </Modal>
+  );
+};
 
 const PetPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
+  const {
+    isOpen: isFormViewOpen,
+    onOpen: onFormViewOpen,
+    onClose: onFormViewClose,
+  } = useDisclosure();
+
   return (
     <Modal isOpen={isOpen} size={"full"} onClose={onClose}>
       <ModalContent>
@@ -132,9 +338,14 @@ const PetPostModal: React.FC<{
             paddingRight={5}
             paddingBottom={5}
           >
-            <Button variant="solid-primary" size="lg">
+            <Button variant="solid-primary" size="lg" onClick={onFormViewOpen}>
               Foster Me!
             </Button>
+            <FosterQuestionnaire
+              fosterType={FosterType.Return}
+              isFormViewOpen={isFormViewOpen}
+              onFormViewClose={onFormViewClose}
+            />
           </Flex>
         </Stack>
         <Flex direction="column" width="100%" display={["flex", "none"]}>
@@ -151,7 +362,7 @@ const PetPostModal: React.FC<{
               direction="row"
               onClick={onClose}
               spacing={2}
-              color="#7D7E82"
+              color="text-secondary"
               alignItems="center"
               fontWeight="semibold"
             >
@@ -253,7 +464,7 @@ const PetPostModal: React.FC<{
             padding={4}
             bgColor="white"
           >
-            <Button variant="solid-primary" size="lg">
+            <Button variant="solid-primary" size="lg" onClick={onFormViewOpen}>
               Foster Me!
             </Button>
           </Flex>
