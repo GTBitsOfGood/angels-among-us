@@ -49,7 +49,11 @@ async function findUserByEmail(
   email: string,
   session?: ClientSession
 ): Promise<IUser | null> {
-  return await User.findOne({ email }, { _id: 0, __v: 0 }, { session });
+  return await User.findOne(
+    { email },
+    { _id: 0, __v: 0 },
+    { session }
+  ).collation({ locale: "en", strength: 2 });
 }
 
 async function updateUserByEmail(
@@ -57,7 +61,9 @@ async function updateUserByEmail(
   update: UpdateQuery<IUser>,
   session?: ClientSession
 ): Promise<IUser | null> {
-  return await User.findOneAndUpdate({ email }, update, { session: session });
+  return await User.findOneAndUpdate({ email }, update, {
+    session: session,
+  }).collation({ locale: "en", strength: 2 });
 }
 
 async function updateUserByUid(

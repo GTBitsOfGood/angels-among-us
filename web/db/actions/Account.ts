@@ -18,7 +18,7 @@ async function findAccount(
       { email },
       { _id: 0, __v: 0 },
       { session: session }
-    );
+    ).collation({ locale: "en", strength: 2 });
   } catch (e) {
     return null;
   }
@@ -58,7 +58,7 @@ async function updateAccount(
       _id: 0,
       __v: 0,
     },
-  });
+  }).collation({ locale: "en", strength: 2 });
 }
 
 /**
