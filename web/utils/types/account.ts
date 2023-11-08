@@ -8,3 +8,9 @@ export enum Role {
   ContentCreator = "contentCreator",
   Volunteer = "volunteer",
 }
+
+export const roleLabels: Record<Role, string> = {
+  [Role.Admin]: "Administrator",
+  [Role.ContentCreator]: "Content Creator",
+  [Role.Volunteer]: "Volunteer",
+};
