@@ -39,7 +39,7 @@ function Filter(props: {
   width?: string[] | string;
 }): JSX.Element {
   return (
-    <Flex direction="column" width={props.width ?? "100%"} height="100%">
+    <Flex direction="column" width={props.width ?? "100%"} height="fit-content">
       <Text>{props.desc}</Text>
       <Spacer />
       {props.children}
