@@ -1,12 +1,12 @@
 import {
+  Box,
   Button,
+  Divider,
   Flex,
   Grid,
   GridItem,
-  Heading,
   Spacer,
   Stack,
-  StackDivider,
   Text,
 } from "@chakra-ui/react";
 import {
@@ -39,7 +39,7 @@ function Filter(props: {
   width?: string[] | string;
 }): JSX.Element {
   return (
-    <Flex direction="column" width={props.width ?? "100%"} height="100%">
+    <Flex direction="column" width={props.width ?? "100%"} height="fit-content">
       <Text>{props.desc}</Text>
       <Spacer />
       {props.children}
@@ -64,27 +64,40 @@ export default function Search({
       width="100%"
       height="100%"
       align="center"
-      gap={5}
       justifyContent="space-between"
     >
-      <Stack spacing={5} w="100%" overflowY="auto">
-        <Heading size="lg" alignSelf="start">
+      <Stack
+        spacing={5}
+        w="100%"
+        paddingX={{ base: 4, sm: 8 }}
+        overflowY="hidden"
+      >
+        <Text
+          fontSize="2xl"
+          fontWeight="bold"
+          lineHeight="24px"
+          letterSpacing="wide"
+        >
           Search by Filters
-        </Heading>
-        <Text alignSelf="start">
-          Fill out fields to filter for volunteers the specified options:
         </Text>
+        <Text alignSelf="start">Filter volunteers by their preferences:</Text>
         <Stack
           direction="column"
           spacing={5}
-          divider={<StackDivider borderColor="gray.200" />}
+          overflowY="auto"
+          pb={8}
+          divider={<Divider />}
         >
           <Stack width="100%" direction={["column", "row"]} spacing={5}>
             <Stack direction="column" width={["100%", "50%"]}>
-              <Heading size="md">General Information</Heading>
+              <Text fontSize="lg" fontWeight="semibold">
+                General Information
+              </Text>
               <Flex direction={["column", "row"]}>
                 <Filter desc="Foster Type" width="100%">
                   <Select
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                     closeMenuOnSelect={false}
                     isMulti
                     options={Object.entries(fosterTypeLabels).map(
@@ -115,13 +128,17 @@ export default function Search({
               </Flex>
             </Stack>
             <Stack direction="column" width={["100%", "50%"]}>
-              <Heading size="md">Medical Information</Heading>
+              <Text fontSize="lg" fontWeight="semibold">
+                Medical Information
+              </Text>
               <Flex direction={["column", "row"]}>
                 <Filter
                   desc="Able to foster dogs with these medical issues:"
                   width="100%"
                 >
                   <Select
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                     closeMenuOnSelect={false}
                     isMulti
                     options={Object.entries(medicalLabels).map(
@@ -153,11 +170,15 @@ export default function Search({
             </Stack>
           </Stack>
           <Stack direction="column" width="100%">
-            <Heading size="md">Physical Traits</Heading>
+            <Text fontSize="lg" fontWeight="semibold">
+              Physical Traits
+            </Text>
             <Grid templateColumns={["1fr", "1fr 1fr"]} gap={5}>
               <GridItem>
                 <Filter desc="Has these breed preferences:">
                   <Select
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                     closeMenuOnSelect={false}
                     isMulti
                     options={Object.entries(breedLabels).map(([key, val]) => ({
@@ -187,6 +208,8 @@ export default function Search({
               <GridItem>
                 <Filter desc="Age Capability:">
                   <Select
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                     closeMenuOnSelect={false}
                     isMulti
                     options={Object.entries(ageLabels).map(([key, val]) => ({
@@ -216,6 +239,8 @@ export default function Search({
               <GridItem>
                 <Filter desc="Dog Size Capability:">
                   <Select
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                     closeMenuOnSelect={false}
                     isMulti
                     options={Object.entries(sizeLabels).map(([key, val]) => ({
@@ -245,6 +270,8 @@ export default function Search({
               <GridItem>
                 <Filter desc="Gender Capability:">
                   <Select
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                     closeMenuOnSelect={false}
                     isMulti
                     options={Object.entries(genderLabels).map(([key, val]) => ({
@@ -274,11 +301,15 @@ export default function Search({
             </Grid>
           </Stack>
           <Stack direction="column" width="100%">
-            <Heading size="md">Behavioral Traits</Heading>
+            <Text fontSize="lg" fontWeight="semibold">
+              Behavioral Traits
+            </Text>
             <Grid templateColumns={["1fr", "1fr 1fr"]} gap={5}>
               <GridItem>
                 <Filter desc="Able to foster dogs NOT good with:">
                   <Select
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                     closeMenuOnSelect={false}
                     isMulti
                     options={Object.entries(goodWithLabels).map(
@@ -307,6 +338,8 @@ export default function Search({
               <GridItem>
                 <Filter desc="Able to foster dogs with these behavioral issues:">
                   <Select
+                    menuPlacement="auto"
+                    menuPosition="fixed"
                     closeMenuOnSelect={false}
                     isMulti
                     options={Object.entries(behavioralLabels).map(
@@ -336,32 +369,36 @@ export default function Search({
           </Stack>
         </Stack>
       </Stack>
-      <Flex
-        width="100%"
-        direction={["column", "row"]}
-        gap={5}
-        justifyContent="end"
-      >
-        <Button
-          onClick={() => {
-            dispatch({ type: "clear" });
-          }}
-          variant="outline-secondary"
-          width={["100%", "min-content"]}
-          paddingX={20}
+      <Box w="100%" paddingX={{ base: 4, sm: 8 }}>
+        <Divider />
+        <Flex
+          pt={{ base: 4, sm: 8 }}
+          width="100%"
+          direction={["column", "row"]}
+          gap={4}
+          justifyContent="end"
         >
-          Clear
-        </Button>
-        <Button
-          onClick={() => setSearched(true)}
-          variant="solid-primary"
-          width={["100%", "min-content"]}
-          paddingX={20}
-          rightIcon={<ArrowForwardIcon />}
-        >
-          Find volunteers
-        </Button>
-      </Flex>
+          <Button
+            onClick={() => {
+              dispatch({ type: "clear" });
+            }}
+            variant="outline-secondary"
+            width={["100%", "min-content"]}
+            paddingX={20}
+          >
+            Clear
+          </Button>
+          <Button
+            onClick={() => setSearched(true)}
+            variant="solid-primary"
+            width={["100%", "min-content"]}
+            paddingX={20}
+            rightIcon={<ArrowForwardIcon />}
+          >
+            Find volunteers
+          </Button>
+        </Flex>
+      </Box>
     </Flex>
   );
 }
