@@ -81,7 +81,13 @@ export default function Search({
           Search by Filters
         </Text>
         <Text alignSelf="start">Filter volunteers by their preferences:</Text>
-        <Stack direction="column" spacing={5} overflowY="auto" pb={8}>
+        <Stack
+          direction="column"
+          spacing={5}
+          overflowY="auto"
+          pb={8}
+          divider={<Divider />}
+        >
           <Stack width="100%" direction={["column", "row"]} spacing={5}>
             <Stack direction="column" width={["100%", "50%"]}>
               <Text fontSize="lg" fontWeight="semibold">
