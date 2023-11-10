@@ -86,6 +86,7 @@ export const FormSlide: React.FC<{
                   }
                 : undefined
             }
+            menuPosition="fixed"
             options={Object.entries(genderLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -111,6 +112,7 @@ export const FormSlide: React.FC<{
                   }
                 : undefined
             }
+            menuPosition="fixed"
             options={Object.entries(ageLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -136,6 +138,7 @@ export const FormSlide: React.FC<{
                   }
                 : undefined
             }
+            menuPosition="fixed"
             options={Object.entries(fosterTypeLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -161,6 +164,7 @@ export const FormSlide: React.FC<{
                   }
                 : undefined
             }
+            menuPosition="fixed"
             options={Object.entries(sizeLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -184,6 +188,7 @@ export const FormSlide: React.FC<{
               label: breedLabels[val],
             }))}
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            menuPosition="fixed"
             options={Object.entries(breedLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -207,6 +212,7 @@ export const FormSlide: React.FC<{
               label: temperamentLabels[val],
             }))}
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            menuPosition="fixed"
             options={Object.entries(temperamentLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -230,6 +236,7 @@ export const FormSlide: React.FC<{
               label: medicalLabels[val],
             }))}
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            menuPosition="fixed"
             options={Object.entries(medicalLabels).map(([k, v]) => ({
               value: k,
               label: v,
@@ -253,6 +260,7 @@ export const FormSlide: React.FC<{
               label: behavioralLabels[val],
             }))}
             styles={{ menu: (base) => ({ ...base, zIndex: 9999 }) }}
+            menuPosition="fixed"
             options={Object.entries(behavioralLabels).map(([k, v]) => ({
               value: k,
               label: v,
