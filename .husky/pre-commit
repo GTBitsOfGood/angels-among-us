@@ -1,8 +1,6 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-exit 0
-
 npx lint-staged
 
 CURRENT_DIR=$(pwd)
