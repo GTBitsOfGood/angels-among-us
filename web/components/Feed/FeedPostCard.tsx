@@ -2,7 +2,6 @@ import { Card, Center, Flex, Image, Text } from "@chakra-ui/react";
 import DefaultDog from "../../public/dog.svg";
 import dayjs from "dayjs";
 import { fosterTypeLabels, IFeedPost } from "../../utils/types/post";
-import { useEffect, useState } from "react";
 
 function DefaultDogImage() {
   return (
@@ -25,8 +24,6 @@ function DefaultDogImage() {
 
 function FeedPostCard(props: { post: IFeedPost }) {
   const { post } = props;
-
-  const [applied, setApplied] = useState(true)
 
   let firstImage;
   const imageExtensions = new Set<string>(["png", "jpeg", "jpg"]);
@@ -85,7 +82,10 @@ function FeedPostCard(props: { post: IFeedPost }) {
               position="absolute"
               top={5}
               right={5}
-              display={{ base: "none", lg: post.userAppliedTo && !post.covered ? "flex" : "none" }}
+              display={{
+                base: "none",
+                lg: post.userAppliedTo && !post.covered ? "flex" : "none",
+              }}
               fontSize={20}
               fontWeight="semibold"
               zIndex={3}
@@ -122,7 +122,9 @@ function FeedPostCard(props: { post: IFeedPost }) {
         top={0}
         right={0}
         opacity={post.covered ? "30%" : post.userAppliedTo ? "25%" : "0%"}
-        backgroundColor={post.covered ? "#57a0d5" : applied ? "#7D7E82" : "white"}
+        backgroundColor={
+          post.covered ? "#57a0d5" : post.userAppliedTo ? "#7D7E82" : "white"
+        }
         borderRadius="14px"
       ></Card>
     </Flex>
