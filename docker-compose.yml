@@ -10,6 +10,8 @@ services:
       - ./web:/app
     environment:
       - DB_URL=mongodb://mongo1:30001/angels-among-us?replicaSet=rs0
+    env_file:
+      - bitwarden.env
     ports:
       - "3000:3000"
     depends_on:
@@ -18,6 +20,7 @@ services:
       - mongo3
     networks:
       - angels-among-us
+    entrypoint: ['./scripts/env-init.sh']
 
   mongo1:
     image: mongo:latest
