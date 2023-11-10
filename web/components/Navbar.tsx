@@ -44,7 +44,7 @@ function Avatar({ user }: AvatarProps) {
   });
 
   return (
-    <Menu>
+    <Menu autoSelect={false}>
       {({ isOpen, onClose }) => (
         <>
           <MenuButton
