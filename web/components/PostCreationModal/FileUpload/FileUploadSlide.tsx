@@ -1,7 +1,7 @@
 import FileDropZone from "./FileDropZone";
 import FilePreview from "./FilePreview";
 import { Alert, AlertIcon, Box, Grid, Stack } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 interface PropsType {
   fileArr: Array<File>;
