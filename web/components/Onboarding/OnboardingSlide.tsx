@@ -100,7 +100,7 @@ function OnboardingSlide(props: {
       >
         <Stack
           direction="row"
-          marginTop="50px"
+          marginTop="30px"
           alignItems="center"
           display={{ base: "none", md: "none", lg: "flex" }}
         >

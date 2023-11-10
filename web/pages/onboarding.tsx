@@ -1,6 +1,13 @@
 import { useState } from "react";
 import OnboardingSlide from "../components/Onboarding/OnboardingSlide";
-import { Flex, Progress, Text, useToast } from "@chakra-ui/react";
+import {
+  Flex,
+  Grid,
+  GridItem,
+  Progress,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import OnboardingButton from "../components/Onboarding/OnboardingButton";
 import {
   FosterType,
@@ -433,27 +440,21 @@ function Onboarding() {
   }, 0);
 
   return (
-    <Flex>
-      <Flex
-        width="100%"
-        className="page"
-        flexDir="column"
-        alignItems="center"
-        marginX={{ base: "50px", md: "100px", lg: "200px" }}
-        marginTop={{ base: "64px", md: "80px", lg: "50px" }}
-        marginBottom={{ base: "120px", md: "180px", lg: "180px" }}
+    <Grid
+      className="page"
+      templateRows="repeat(3)"
+      maxWidth="100%"
+      minHeight="100%"
+      marginX={{ base: "50px", md: "100px", lg: "200px" }}
+      marginTop={{ base: "64px", md: "80px", lg: "50px" }}
+    >
+      <GridItem
+        className="progress"
+        visibility={
+          questionData[qNum].qtype == QType.Completion ? "hidden" : "visible"
+        }
       >
-        <Flex
-          className="progress"
-          flexDir="row"
-          alignItems="center"
-          justifyContent="center"
-          width="100%"
-          marginBottom={{ base: "50px", md: "70px", lg: "84px" }}
-          visibility={
-            questionData[qNum].qtype == QType.Completion ? "hidden" : "visible"
-          }
-        >
+        <Flex>
           <Progress
             className="progressBar"
             width={{ base: "75%", md: "80%", lg: "85%" }}
@@ -471,24 +472,19 @@ function Onboarding() {
             {Math.max(0, qNum - numIntros + 1) + " of " + numQuestions}
           </Text>
         </Flex>
+      </GridItem>
+      <GridItem>
         <OnboardingSlide
           questionData={questionData}
           answers={answers}
           setAnswers={setAnswers}
           qNum={qNum}
         />
-      </Flex>
-
-      <Flex
-        className="buttonDisplay"
-        position="fixed"
-        right={{ base: "50%", md: "200px", lg: "300px" }}
-        transform={{ base: "translateX(50%)" }}
-        bottom={{ base: "30px", md: "70px", lg: "70px" }}
-      >
-        {btnDisplay}
-      </Flex>
-    </Flex>
+      </GridItem>
+      <GridItem className="buttonDisplay">
+        <Flex justifyContent="flex-end">{btnDisplay}</Flex>
+      </GridItem>
+    </Grid>
   );
 }
 
