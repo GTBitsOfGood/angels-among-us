@@ -304,6 +304,13 @@ async function updatePostStatus(oid: Types.ObjectId, session?: ClientSession) {
               else: "$date",
             },
           },
+          usersAppliedTo: {
+            $cond: {
+              if: { $eq: ["$covered", true] }, // clear usersAppliedTo only when switching from covered: true -> false
+              then: [],
+              else: "$usersAppliedTo",
+            },
+          },
         },
       },
     ],
