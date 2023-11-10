@@ -21,9 +21,15 @@ function FileDropZone(props: PropsType) {
       let newFiles = acceptedFiles.filter((file) => {
         let idx = acceptedFiles.indexOf(file);
         if (
-          file.type === "video/mp4" &&
-          (fileArr.some((f) => f.type === "video/mp4") ||
-            acceptedFiles.slice(0, idx).some((f) => f.type === "video/mp4"))
+          (file.type === "video/mp4" || file.type === "video/quicktime") &&
+          (fileArr.some(
+            (f) => f.type === "video/mp4" || f.type === "video/quicktime"
+          ) ||
+            acceptedFiles
+              .slice(0, idx)
+              .some(
+                (f) => f.type === "video/mp4" || f.type === "video/quicktime"
+              ))
         ) {
           setShowAlert(true);
           return false;
