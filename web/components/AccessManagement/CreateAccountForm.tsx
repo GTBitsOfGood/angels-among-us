@@ -1,152 +1,110 @@
 import { z } from "zod";
-import { Dispatch, SetStateAction, useState } from "react";
-import AddPermissionSelector from "./AddPermissionSelector";
-import { ChangeEvent } from "react";
+import { useRef, useState } from "react";
+import PermissionSelector from "./PermissionSelector";
 import { Role } from "../../utils/types/account";
 import { IAccount } from "../../utils/types/account";
 import { trpc } from "../../utils/trpc";
 
 import {
   Input,
-  Text,
   Flex,
-  SimpleGrid,
-  FormControl,
-  Alert,
-  AlertIcon,
   Button,
+  Stack,
+  useMediaQuery,
+  useToast,
 } from "@chakra-ui/react";
 import { HydratedDocument } from "mongoose";
 
-interface PropertyType {
-  updateSelectItems: Dispatch<SetStateAction<boolean>>;
-}
-
-export default function CreateAccountForm(props: PropertyType) {
-  const { updateSelectItems } = props;
-  const [emailField, setEmailField] = useState("");
+export default function CreateAccountForm() {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [role, setRole] = useState(Role.Volunteer);
-  const [displayError, setDisplayError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isSmallerThanLg] = useMediaQuery("(max-width: 62em)");
 
-  const utils = trpc.useContext();
+  const toast = useToast();
+
+  const utils = trpc.useUtils();
   const mutation = trpc.account.add.useMutation();
 
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    setEmailField(event.target.value);
-  }
-
-  function validateEmail({ emailField }: { emailField: string }): boolean {
+  function validateEmail(email: string) {
     const emailSchema = z.string().email();
-    const result = emailSchema.safeParse(emailField);
+    const result = emailSchema.safeParse(email);
     return result.success;
   }
 
   const updateAccountsHandler = () => {
-    const isValid = validateEmail({ emailField });
+    const isValid = validateEmail(inputRef!.current!.value);
     if (!isValid) {
-      setDisplayError(true);
-      setErrorMessage("Invalid email address");
+      toast({
+        title: "Error",
+        description: "Invalid email address.",
+        position: "top",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
     const newAccount = {
-      email: emailField,
+      email: inputRef.current?.value,
       role: role,
     } as HydratedDocument<IAccount>;
 
     mutation.mutate(newAccount, {
       onSuccess: () => {
-        setDisplayError(false);
         utils.account.invalidate();
-        setEmailField("");
+        inputRef!.current!.value = "";
         setRole(Role.Volunteer);
-        setDisplayError(false);
+        toast({
+          title: "Success",
+          position: "top",
+          description: "Account added succesfully.",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
       },
-      onError: (error) => {
-        setDisplayError(true);
-        setErrorMessage(error.message);
+      onError: () => {
+        toast({
+          title: "Error",
+          position: "top",
+          description: "Unable to add account. Please try again later.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       },
     });
   };
 
   return (
-    <Flex
-      direction="column"
-      bgColor="#FFFFFF"
-      border="solid"
-      borderRadius={12}
-      borderWidth="2px"
-      borderColor="#BBBBBB"
-      paddingX={6}
-      paddingTop={4}
-      paddingBottom={4}
-      margin={{ sm: "12px", lg: "40px" }}
-      marginTop={{ sm: "6px", lg: "20px" }}
-      onClick={() => {
-        updateSelectItems(false);
-      }}
-    >
-      <Text
-        fontSize={20}
-        fontWeight="medium"
-        lineHeight="24px"
-        paddingBottom={4}
+    <Stack dir="column" w="100%">
+      <Flex
+        direction={{ base: "column", lg: "row" }}
+        w="100%"
+        alignItems="center"
+        justifyContent="space-between"
+        p={0}
+        pt={4}
       >
-        Add New Account
-      </Text>
-      <SimpleGrid columns={{ sm: 1, md: 1, lg: 2 }} gap={4} width="inherit">
-        <FormControl>
-          {displayError ? (
-            <div>
-              <Input
-                isInvalid
-                errorBorderColor="crimson"
-                placeholder="Email"
-                value={emailField}
-                onChange={handleChange}
-                borderRadius="16px"
-                bgColor="#D9D9D9"
-                height="36px"
-                maxW={"379px"}
-              />
-              <Alert status="error">
-                <AlertIcon />
-                {errorMessage}
-              </Alert>
-            </div>
-          ) : (
-            <Input
-              type="text"
-              placeholder="Email"
-              value={emailField}
-              onChange={handleChange}
-              borderRadius="12px"
-              borderColor="#BCBCBC"
-              height="36px"
-              maxW={"379px"}
-            />
-          )}
-        </FormControl>
-        <Flex flexDirection="column" alignItems="flex-end" gap={4}>
-          <Flex direction={"row"} gap={2} alignItems="center" flexWrap="wrap">
-            <Text lineHeight="22px" fontSize="18px" fontWeight="400">
-              Add Permission:
-            </Text>
-            <AddPermissionSelector
-              role={role}
-              setRole={setRole}
-            ></AddPermissionSelector>
-          </Flex>
-          <Button
-            variant="solid-primary"
-            disabled={mutation.isLoading}
-            onClick={updateAccountsHandler}
-          >
-            Add Account
-          </Button>
-        </Flex>
-      </SimpleGrid>
-    </Flex>
+        <Input
+          ref={inputRef}
+          placeholder="Email"
+          size="md"
+          focusBorderColor="#57a0d5"
+          maxW={{ base: "100%", lg: "45%" }}
+        />
+        {!isSmallerThanLg && <PermissionSelector setRole={setRole} />}
+      </Flex>
+      <Flex
+        justifyContent={{ base: "space-between", lg: "right" }}
+        alignItems={{ base: "flex-end", md: "center" }}
+      >
+        {isSmallerThanLg && <PermissionSelector setRole={setRole} />}
+        <Button variant="solid-primary" onClick={updateAccountsHandler}>
+          Add Account
+        </Button>
+      </Flex>
+    </Stack>
   );
 }

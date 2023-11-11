@@ -55,6 +55,15 @@ describe("[DB] Account - Unit Test", () => {
       expect(account).toMatchObject(searchSubject);
     });
 
+    test("all caps email", async () => {
+      const searchSubject = randomAccounts[0];
+      const searchEmail = searchSubject.email.toUpperCase();
+      const account = await findAccount(searchEmail);
+
+      expect(account).not.toBeNull();
+      expect(account).toMatchObject(searchSubject);
+    });
+
     test("unauthorized email", async () => {
       const account = await findAccount("test@example.com");
 
@@ -121,7 +130,7 @@ describe("[DB] Account - Unit Test", () => {
       const accountBeforeUpdate = await Account.findOne(
         { email: searchSubject.email },
         { _id: 0, __v: 0 }
-      );
+      ).collation({ locale: "en", strength: 2 });
       expect(accountBeforeUpdate).toMatchObject(searchSubject);
 
       const document = await updateAccount(searchSubject.email, {
@@ -131,7 +140,7 @@ describe("[DB] Account - Unit Test", () => {
       const accountAfterUpdate = await Account.findOne(
         { email: searchSubject.email },
         { _id: 0, __v: 0 }
-      );
+      ).collation({ locale: "en", strength: 2 });
 
       expect(document).toMatchObject(accountBeforeUpdate);
       searchSubject.role = Role.Admin;

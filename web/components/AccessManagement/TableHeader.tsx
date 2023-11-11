@@ -1,82 +1,69 @@
 import { Flex, Input, Button } from "@chakra-ui/react";
-import { Dispatch, SetStateAction } from "react";
-import { IAccount } from "../../utils/types/account";
+import { Dispatch, MutableRefObject, SetStateAction } from "react";
 import DeletePopup from "./DeletePopup";
 
 interface PropertyType {
-  accountList: IAccount[];
-  selectItems: boolean;
-  updateSelectItems: Dispatch<SetStateAction<boolean>>;
+  isSelecting: boolean;
+  setIsSelecting: Dispatch<SetStateAction<boolean>>;
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
-  itemsToDelete: Number[];
-  updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
+  selectedAccounts: MutableRefObject<Set<string>>;
 }
 function TableHeader(props: PropertyType) {
-  const {
-    accountList,
-    selectItems,
-    updateSelectItems,
-    search,
-    setSearch,
-    itemsToDelete,
-    updateItemsToDelete,
-  } = props;
+  const { isSelecting, setIsSelecting, search, setSearch, selectedAccounts } =
+    props;
 
   function toggleSelect() {
-    updateSelectItems(!selectItems);
-    updateItemsToDelete([]);
+    selectedAccounts.current.clear();
+    setIsSelecting((current) => !current);
   }
 
   return (
     <Flex
-      flexDirection={"row"}
+      flexDirection={{ base: "column", md: "row" }}
       alignItems="center"
       justifyContent="space-between"
-      bgColor="#57A0D5"
-      padding={4}
+      bgColor="btn-solid-primary-bg"
+      paddingY={3}
+      paddingX={{ base: 4, lg: 6 }}
+      borderRadius={{ base: 0, lg: "12px 12px 0 0" }}
+      width="100%"
       gap={2}
-      width={"inherit"}
     >
       <Input
+        size="sm"
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
         }}
-        variant="filled"
-        type="text"
-        placeholder="Search"
+        placeholder="Search by email..."
         bg="white"
-        borderRadius={12}
-        border="1px solid white"
-        height="36px"
-        maxWidth="400px"
-        minWidth={9}
-        _focus={{ bg: "white" }}
-      ></Input>
-      {selectItems ? (
-        <Flex flexDirection="row" gap={2}>
+        borderRadius={8}
+        focusBorderColor="#c6e3f9"
+        w="100%"
+      />
+      <Flex w="100%" justifyContent="flex-end">
+        {isSelecting ? (
+          <Flex direction="row" gap={2}>
+            <Button size="sm" variant="solid-secondary" onClick={toggleSelect}>
+              Cancel
+            </Button>
+            <DeletePopup
+              selectedAccounts={selectedAccounts}
+              setIsSelecting={setIsSelecting}
+            />
+          </Flex>
+        ) : (
           <Button
-            variant="outline-secondary"
-            bg="white"
-            borderWidth="thin"
-            fontWeight="thin"
+            size="sm"
+            borderWidth={2}
+            variant="outline-primary-inverted"
             onClick={toggleSelect}
           >
-            Cancel
+            Select Accounts
           </Button>
-          <DeletePopup
-            accountList={accountList}
-            itemsToDelete={itemsToDelete}
-            updateItemsToDelete={updateItemsToDelete}
-            updateSelectItems={updateSelectItems}
-          ></DeletePopup>
-        </Flex>
-      ) : (
-        <Button variant="outline-primary-inverted" onClick={toggleSelect}>
-          Select Items
-        </Button>
-      )}
+        )}
+      </Flex>
     </Flex>
   );
 }

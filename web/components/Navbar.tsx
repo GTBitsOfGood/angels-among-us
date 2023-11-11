@@ -13,8 +13,17 @@ import {
   useDisclosure,
   Box,
   useBreakpointValue,
+  MenuDivider,
+  MenuItem,
 } from "@chakra-ui/react";
-import { ChevronDownIcon, HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { BsPerson } from "react-icons/bs";
+import { PiSignOut } from "react-icons/pi";
+import {
+  ChevronDownIcon,
+  HamburgerIcon,
+  CloseIcon,
+  Icon,
+} from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
 import { Role } from "../utils/types/account";
 import { useRouter } from "next/router";
@@ -27,6 +36,7 @@ interface AvatarProps {
   user: typeof auth.currentUser | null;
 }
 function Avatar({ user }: AvatarProps) {
+  const { userData } = useAuth();
   const router = useRouter();
   const isMd = useBreakpointValue({
     base: false,
@@ -55,62 +65,43 @@ function Avatar({ user }: AvatarProps) {
               alt="User photo"
             ></Image>
           </MenuButton>
-          <MenuList marginTop={4} marginRight={2}>
-            <Stack
-              direction="column"
-              paddingRight={5}
-              paddingLeft={2}
-              paddingTop={2}
-              spacing={5}
+          <MenuList mt={2} maxW={20}>
+            <Box paddingX={3} pb={2}>
+              <Text as="em" color="text-secondary">
+                Signed in as:
+              </Text>
+              <Text
+                display="block"
+                whiteSpace="nowrap"
+                w="100%"
+                fontWeight="semibold"
+                letterSpacing="wide"
+                textOverflow="ellipsis"
+                overflow="hidden"
+              >
+                {userData?.name ?? user?.displayName ?? ""}
+              </Text>
+              <Text fontSize="sm">{user?.email}</Text>
+            </Box>
+            <Link
+              as={NextLink}
+              href={Pages.PROFILE}
+              style={{ textDecoration: "none" }}
             >
-              <Stack direction="row">
-                <Image
-                  borderRadius="100%"
-                  boxSize={10}
-                  src={user?.photoURL ?? undefined}
-                  alt="User photo"
-                />
-
-                <Stack direction="column">
-                  <Text fontWeight="bold" color="gray">
-                    {user?.displayName}
-                  </Text>
-                  <Text fontWeight="semibold" color="gray" fontSize="sm">
-                    {user?.email}
-                  </Text>
-                </Stack>
-              </Stack>
-              <Stack direction="row" justifyContent="flex-end">
-                <Button
-                  variant="outline-secondary"
-                  size="sm"
-                  fontWeight="thin"
-                  borderWidth="thin"
-                  onClick={() => {
-                    onClose();
-                    router.push(Pages.FEED);
-                    signOut(auth);
-                  }}
-                >
-                  Logout
-                </Button>
-                <Link
-                  as={NextLink}
-                  href={Pages.PROFILE}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Button
-                    variant="solid-primary"
-                    size="sm"
-                    fontWeight="thin"
-                    borderWidth="thin"
-                    onClick={onClose}
-                  >
-                    View Profile
-                  </Button>
-                </Link>
-              </Stack>
-            </Stack>
+              <MenuItem icon={<Icon boxSize={5} as={BsPerson} />}>
+                Profile
+              </MenuItem>
+            </Link>
+            <MenuDivider />
+            <MenuItem
+              icon={<Icon boxSize={5} as={PiSignOut} />}
+              onClick={() => {
+                router.push(Pages.FEED);
+                signOut(auth);
+              }}
+            >
+              Sign out
+            </MenuItem>
           </MenuList>
         </>
       )}
@@ -186,21 +177,79 @@ export default function Navbar() {
           alignItems="center"
           spacing={10}
         >
-          <Link as={NextLink} href={Pages.FEED}>
-            <Text>Feed</Text>
+          <Link
+            as={NextLink}
+            href={Pages.FEED}
+            _hover={{
+              textDecoration: "underline",
+              textDecorationColor:
+                router.pathname === Pages.FEED ? "text-primary" : "black",
+            }}
+          >
+            <Text
+              color={router.pathname === Pages.FEED ? "text-primary" : "black"}
+            >
+              Feed
+            </Text>
           </Link>
           {role === Role.Admin && (
             <>
-              <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
-                <Text>Access Management</Text>
+              <Link
+                as={NextLink}
+                href={Pages.ACCESS_MANAGEMENT}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.ACCESS_MANAGEMENT
+                      ? "text-primary"
+                      : "black",
+                }}
+              >
+                <Text
+                  color={
+                    router.pathname === Pages.ACCESS_MANAGEMENT
+                      ? "text-primary"
+                      : "black"
+                  }
+                >
+                  Access Management
+                </Text>
               </Link>
-              <Link as={NextLink} href={Pages.USERS}>
-                <Text>Volunteer Search</Text>
+              <Link
+                as={NextLink}
+                href={Pages.USERS}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.USERS ? "text-primary" : "black",
+                }}
+              >
+                <Text
+                  color={
+                    router.pathname === Pages.USERS ? "text-primary" : "black"
+                  }
+                >
+                  Volunteer Search
+                </Text>
               </Link>
             </>
           )}
-          <Link as={NextLink} href={Pages.RESOURCES}>
-            <Text>Resources</Text>
+          <Link
+            as={NextLink}
+            href={Pages.RESOURCES}
+            _hover={{
+              textDecoration: "underline",
+              textDecorationColor:
+                router.pathname === Pages.RESOURCES ? "text-primary" : "black",
+            }}
+          >
+            <Text
+              color={
+                router.pathname === Pages.RESOURCES ? "text-primary" : "black"
+              }
+            >
+              Resources
+            </Text>
           </Link>
           <Avatar user={user} />
         </Stack>
@@ -214,7 +263,13 @@ export default function Navbar() {
         <Box display={{ md: "none" }} p={2}>
           <Stack spacing={4}>
             <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
-              <Text>Feed</Text>
+              <Text
+                color={
+                  router.pathname === Pages.FEED ? "text-primary" : "black"
+                }
+              >
+                Feed
+              </Text>
             </Link>
             {role === Role.Admin && (
               <>
@@ -223,15 +278,35 @@ export default function Navbar() {
                   href={Pages.ACCESS_MANAGEMENT}
                   onClick={onMenuClose}
                 >
-                  <Text>Access Management</Text>
+                  <Text
+                    color={
+                      router.pathname === Pages.ACCESS_MANAGEMENT
+                        ? "text-primary"
+                        : "black"
+                    }
+                  >
+                    Access Management
+                  </Text>
                 </Link>
                 <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
-                  <Text>Volunteer Search</Text>
+                  <Text
+                    color={
+                      router.pathname === Pages.USERS ? "text-primary" : "black"
+                    }
+                  >
+                    Volunteer Search
+                  </Text>
                 </Link>
               </>
             )}
             <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
-              <Text>Resources</Text>
+              <Text
+                color={
+                  router.pathname === Pages.RESOURCES ? "text-primary" : "black"
+                }
+              >
+                Resources
+              </Text>
             </Link>
           </Stack>
         </Box>
