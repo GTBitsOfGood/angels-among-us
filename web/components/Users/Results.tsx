@@ -169,13 +169,19 @@ export default function Results({ filters, setSearched }: ResultsProps) {
                     <Heading size="sm">{user.name ?? "Volunteer"}</Heading>
                     <Text fontSize="sm" wordBreak="break-all">
                       <b>Email: </b>
-                      <a href={`mailto:${user.email}`}>{user.email}</a>
+                      <a href={`mailto:${user.email}`}>
+                        <Text as="u" fontSize={"sm"}>
+                          {user.email}
+                        </Text>
+                      </a>
                     </Text>
                     <Text fontSize="sm">
                       <b>Preferred Email: </b>
                       {user.preferredEmail ? (
                         <a href={`mailto:${user.preferredEmail}`}>
-                          {user.preferredEmail}
+                          <Text as="u" fontSize={"sm"}>
+                            {user.preferredEmail}
+                          </Text>
                         </a>
                       ) : (
                         "Unspecified"
