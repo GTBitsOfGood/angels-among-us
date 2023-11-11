@@ -443,10 +443,11 @@ function Onboarding() {
     <Grid
       className="page"
       templateRows="repeat(3)"
-      maxWidth="100%"
+      width="100%"
       minHeight="100%"
-      marginX={{ base: "50px", md: "100px", lg: "200px" }}
-      marginTop={{ base: "64px", md: "80px", lg: "50px" }}
+      paddingX={{ base: "50px", md: "100px", lg: "200px" }}
+      paddingY={{ base: "64px", md: "80px", lg: "50px" }}
+      justifyContent="center"
     >
       <GridItem
         className="progress"
@@ -454,7 +455,7 @@ function Onboarding() {
           questionData[qNum].qtype == QType.Completion ? "hidden" : "visible"
         }
       >
-        <Flex>
+        <Flex justifyContent="center">
           <Progress
             className="progressBar"
             width={{ base: "75%", md: "80%", lg: "85%" }}
@@ -462,6 +463,7 @@ function Onboarding() {
             borderRadius="10px"
             height={{ base: "10px", md: "20px", lg: "20px" }}
             marginRight={{ base: "16px", md: "20px", lg: "25px" }}
+            marginBottom={{ base: "50px", md: "70px", lg: "50px" }}
           ></Progress>
           <Text
             className="progressBarText"
