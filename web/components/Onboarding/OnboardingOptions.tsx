@@ -47,6 +47,14 @@ function OnboardingOptions(props: {
   }, []);
 
   if (dropdown) {
+    const otherOptions =
+      qKey == "restrictedBreeds"
+        ? answers["preferredBreeds"]
+        : answers["restrictedBreeds"];
+    const disjointOptions = options.filter(
+      (o) => !otherOptions.includes(o.value)
+    );
+
     return (
       <Select
         className="dropdown"
@@ -82,7 +90,7 @@ function OnboardingOptions(props: {
             },
           }),
         }}
-        options={options}
+        options={disjointOptions}
         isMulti
         value={selected}
         closeMenuOnSelect={false}
