@@ -912,10 +912,21 @@ const PetPostModal: React.FC<{
           >
             <Button
               isDisabled={postData.userAppliedTo}
-              variant="solid-primary"
+              variant={
+                postData.userAppliedTo ? "solid-secondary" : "solid-primary"
+              }
               width={"100%"}
               borderRadius={"20px"}
               onClick={onFormViewOpen}
+              _hover={
+                postData.userAppliedTo
+                  ? {}
+                  : {
+                      borderColor: "btn-outline-primary-border",
+                      color: "text-primary",
+                      backgroundColor: "white",
+                    }
+              }
             >
               {postData.userAppliedTo ? "Applied" : "Foster Me!"}
             </Button>
