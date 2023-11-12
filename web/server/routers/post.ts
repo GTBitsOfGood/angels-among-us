@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { z, ZodArray } from "zod";
+import { z } from "zod";
 import {
   createPost,
   deletePost,
@@ -27,7 +27,7 @@ import {
   Trained,
   IPost,
 } from "../../utils/types/post";
-import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
+import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
 import { FilterQuery, Types } from "mongoose";
@@ -367,6 +367,8 @@ export const postRouter = router({
       z.object({
         postFilters: postFilterSchema,
         covered: z.optional(z.boolean()),
+        resultsPerPage: z.optional(z.number()),
+        page: z.optional(z.number()),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -426,7 +428,9 @@ export const postRouter = router({
       try {
         const filteredPosts = await getFilteredPosts(
           baseFilter,
-          ctx.session.uid
+          ctx.session.uid,
+          input.resultsPerPage,
+          input.page
         );
         return filteredPosts;
       } catch (e) {
