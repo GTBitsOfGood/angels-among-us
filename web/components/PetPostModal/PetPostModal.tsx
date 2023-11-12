@@ -662,7 +662,7 @@ const PetPostModal: React.FC<{
             </Flex>
             <Stack
               direction="column"
-              height={{ lg: "65vh" }}
+              height="65vh"
               width="50%"
               spacing={8}
               paddingLeft={10}
@@ -794,7 +794,7 @@ const PetPostModal: React.FC<{
             alignSelf="center"
             spacing={8}
             paddingTop={4}
-            height={"86vh"}
+            height={"83vh"}
             overflowY={"scroll"}
           >
             <Stack direction="column" spacing={4}>
