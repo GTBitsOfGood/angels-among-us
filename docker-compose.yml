@@ -15,9 +15,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - mongo1
-      - mongo2
-      - mongo3
+      mongo-config:
+        condition: service_completed_successfully
     networks:
       - angels-among-us
     entrypoint: ['./scripts/env-init.sh']
@@ -31,7 +30,7 @@ services:
     ports:
       - 30001:30001
     healthcheck:
-      test: test $$(echo "rs.initiate({_id:'rs0',members:[{_id:0,host:\"mongo1:30001\"},{_id:1,host:\"mongo2:30002\"},{_id:2,host:\"mongo3:30003\"}]}).ok || rs.status().ok" | mongosh --port 30001 --quiet) -eq 1
+      test: test $$(echo "rs.status().ok" | mongosh --port 30001 --quiet) -eq 1
       interval: 10s
       start_period: 30s
     networks:
@@ -71,6 +70,7 @@ services:
     volumes:
       - ./scripts:/scripts
     entrypoint: ['/scripts/rs-init.sh']
+    restart: on-failure
     networks: 
       - angels-among-us 
 
