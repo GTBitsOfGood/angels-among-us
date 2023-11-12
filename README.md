@@ -30,7 +30,7 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
    docker-compose up -d
    ```
 
-   This may take a while on your first build.
+   This may take a while on your first build. It is also expected that the `web` image takes a bit to start up as it depends on a healthy database with proper replica sets.
 
    To stop your Docker containers and remove their processes, run:
 
