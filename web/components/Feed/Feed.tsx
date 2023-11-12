@@ -10,7 +10,7 @@ import {
   useDisclosure,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useReducer, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useReducer, useState } from "react";
 import { useAuth } from "../../context/auth";
 import { PossibleTypes } from "../../pages/onboarding";
 import { trpc } from "../../utils/trpc";
@@ -22,7 +22,6 @@ import {
   FosterType,
   Gender,
   GoodWith,
-  IFeedPost,
   Size,
 } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
@@ -317,6 +316,7 @@ function Feed(props: {
   const [displayCovered, setDisplayCovered] = useState<boolean | undefined>(
     undefined
   );
+
   const [isSmallerThanLg] = useMediaQuery("(max-width: 62em)");
 
   function getInitialFilters(): SelectedFilters {
@@ -379,12 +379,20 @@ function Feed(props: {
     getInitialFilters()
   );
 
-  const feedPosts: IFeedPost[] | undefined =
-    trpc.post.getFilteredPosts.useQuery({
+  const queryParams = useMemo(
+    () => ({
       postFilters: getQueryFilters(selectedFilters),
       covered: role === Role.Volunteer ? false : displayCovered,
-    }).data;
-  const [debouncedFeedPosts, isUpdating] = useDebounce(feedPosts, 400);
+    }),
+    [selectedFilters, displayCovered]
+  );
+
+  const [debouncedQueryParams, isUpdating] = useDebounce<
+    typeof selectedFilters
+  >(queryParams, 400);
+
+  const { data: feedPosts, isLoading } =
+    trpc.post.getFilteredPosts.useQuery(debouncedQueryParams);
 
   const [modalPostId, setModalPostId] = useState<Types.ObjectId | null>(null);
 
@@ -439,6 +447,38 @@ function Feed(props: {
       </Flex>
     </Flex>
   );
+
+  const MediaContextualizedFeedAndFilter = () => {
+    if (filterDisplayed && isSmallerThanLg) {
+      return filter;
+    }
+
+    if (feedPosts && feedPosts.length > 0) {
+      return (
+        <Stack overflowY="auto" spacing={0} w="100%" mt={4}>
+          {feedPosts!.map((p) => {
+            return (
+              <Box
+                onClick={() => {
+                  setModalPostId(p._id);
+                  onPostViewOpen();
+                }}
+                _hover={{ cursor: "pointer" }}
+                key={p._id.toString()}
+              >
+                <FeedPostCard post={p} />
+              </Box>
+            );
+          })}
+        </Stack>
+      );
+    }
+    return (
+      <Center width="100%" marginTop={"5vh"}>
+        <Text>No results found.</Text>
+      </Center>
+    );
+  };
 
   return (
     <Flex
@@ -599,29 +639,12 @@ function Feed(props: {
               />
             </Flex>
           )}
-          {isUpdating ? (
+          {!isUpdating && !isLoading ? (
+            <MediaContextualizedFeedAndFilter />
+          ) : (
             <Center height="75%" width="100%">
               <Spinner size="xl" />
             </Center>
-          ) : filterDisplayed && isSmallerThanLg ? (
-            filter
-          ) : (
-            <Stack overflowY="auto" spacing={0} w="100%" mt={4}>
-              {debouncedFeedPosts?.map((p) => {
-                return (
-                  <Box
-                    onClick={() => {
-                      setModalPostId(p._id);
-                      onPostViewOpen();
-                    }}
-                    _hover={{ cursor: "pointer" }}
-                    key={p._id.toString()}
-                  >
-                    <FeedPostCard post={p} />
-                  </Box>
-                );
-              })}
-            </Stack>
           )}
         </Flex>
       </Stack>
@@ -629,7 +652,7 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      {debouncedFeedPosts && debouncedFeedPosts.length > 0 && modalPostId && (
+      {feedPosts && feedPosts.length > 0 && modalPostId && (
         <PetPostModal
           isOpen={isPostViewOpen}
           onClose={onPostViewClose}

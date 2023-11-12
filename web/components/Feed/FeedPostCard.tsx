@@ -78,6 +78,20 @@ function FeedPostCard(props: { post: IFeedPost }) {
             >
               Covered Post
             </Text>
+            <Text
+              position="absolute"
+              top={5}
+              right={5}
+              display={{
+                base: "none",
+                lg: post.userAppliedTo && !post.covered ? "flex" : "none",
+              }}
+              fontSize={20}
+              fontWeight="semibold"
+              zIndex={3}
+            >
+              Already Applied
+            </Text>
             <Text margin="0px" paddingY="0px" fontWeight="bold" fontSize="18px">
               {post.name}
             </Text>
@@ -107,8 +121,10 @@ function FeedPostCard(props: { post: IFeedPost }) {
         height={"100%"}
         top={0}
         right={0}
-        opacity={post.covered ? "30%" : "0%"}
-        backgroundColor={post.covered ? "#57a0d5" : "white"}
+        opacity={post.covered ? "30%" : post.userAppliedTo ? "25%" : "0%"}
+        backgroundColor={
+          post.covered ? "#57a0d5" : post.userAppliedTo ? "#7D7E82" : "white"
+        }
         borderRadius="14px"
       ></Card>
     </Flex>

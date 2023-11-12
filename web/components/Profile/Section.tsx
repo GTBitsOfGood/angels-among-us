@@ -1,4 +1,4 @@
-import { Heading, Stack } from "@chakra-ui/react";
+import { Text, Stack } from "@chakra-ui/react";
 import React, { PropsWithChildren } from "react";
 
 interface Props extends PropsWithChildren {
@@ -7,8 +7,10 @@ interface Props extends PropsWithChildren {
 
 const Section: React.FC<Props> = ({ heading, children }) => {
   return (
-    <Stack direction="column" spacing={5}>
-      <Heading size="md">{heading}</Heading>
+    <Stack direction="column" spacing={4}>
+      <Text fontSize="lg" fontWeight="semibold">
+        {heading}
+      </Text>
       <>{children}</>
     </Stack>
   );

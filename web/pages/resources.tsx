@@ -368,7 +368,7 @@ function Resources() {
         bgColor="white"
         borderRadius={{ base: 0, lg: 12 }}
         mt={{ base: "65px", lg: 100 }}
-        mb={{ base: 0, lg: 100 }}
+        mb={{ base: 0, lg: 50 }}
       >
         <Box w="100%" textAlign="left">
           <Text
@@ -390,7 +390,7 @@ function Resources() {
         >
           <Box w="100%" textAlign="left" marginBottom={4}>
             <Text fontSize="xl" fontWeight="normal" lineHeight="20px">
-              Important Phone Numbers To Save In Your Phone
+              Important Phone Numbers to Save in Your Phone
             </Text>
           </Box>
           <Divider />

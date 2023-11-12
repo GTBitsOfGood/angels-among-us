@@ -18,6 +18,9 @@ const semanticTokens = {
     "text-primary": "#57a0d5",
     "text-secondary": "#7d7e82",
     "border-color": "#bbbbbb",
+    brand: {
+      500: "text-primary",
+    },
   },
 } as const;
 
