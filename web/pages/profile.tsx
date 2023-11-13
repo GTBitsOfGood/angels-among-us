@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import {
   Button,
   Flex,
@@ -9,6 +9,13 @@ import {
   Box,
   StackDivider,
   useToast,
+  AlertDialog,
+  useDisclosure,
+  AlertDialogBody,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
 } from "@chakra-ui/react";
 
 import Select, { components } from "react-select";
@@ -36,6 +43,8 @@ import { IUser } from "../utils/types/user";
 import { trpc } from "../utils/trpc";
 import Section from "../components/Profile/Section";
 import { z } from "zod";
+import { useRouter } from "next/router";
+import { Url } from "url";
 
 type OptionalKeys<T extends object> = Exclude<
   {
@@ -72,10 +81,76 @@ const profileSchema = z.object({
   behavioral: z.array(z.nativeEnum(Behavioral)),
 });
 
+function ConfirmModal({ editing }: { editing: boolean }) {
+  const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const urlDest = useRef<Url>();
+  const proceed = useRef<boolean>();
+
+  useEffect(() => {
+    const warningText = "Discard unsaved changes?";
+    const handleWindowClose = (e: BeforeUnloadEvent) => {
+      if (!editing) return;
+      // onOpen();
+      e.preventDefault();
+      return (e.returnValue = warningText);
+    };
+    const handleBrowseAway = (url: Url) => {
+      if (!editing) return;
+      urlDest.current = url;
+      if (proceed.current) return;
+      onOpen();
+      router.events.emit("routeChangeError");
+      throw "routeChange aborted.";
+    };
+    window.addEventListener("beforeunload", handleWindowClose);
+    router.events.on("routeChangeStart", handleBrowseAway);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleWindowClose);
+      router.events.off("routeChangeStart", handleBrowseAway);
+    };
+  }, [editing]);
+
+  return (
+    <AlertDialog
+      leastDestructiveRef={cancelRef}
+      isOpen={isOpen}
+      onClose={onClose}
+    >
+      <AlertDialogOverlay>
+        <AlertDialogContent>
+          <AlertDialogHeader>Leave Page</AlertDialogHeader>
+          <AlertDialogBody>
+            Are you sure? Unsaved changes will be lost.
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRef} onClick={() => onClose()}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                proceed.current = true;
+                router.push(urlDest.current as Url).catch((err) => {
+                  console.log(err);
+                });
+              }}
+              colorScheme="red"
+              ml={3}
+            >
+              Yes
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogOverlay>
+    </AlertDialog>
+  );
+}
+
 function Profile() {
   const { user, userData, refetchUserData } = useAuth();
   const [editing, setEditing] = useState(false);
-
   const toast = useToast();
 
   function pruneUserData(
@@ -151,6 +226,7 @@ function Profile() {
       bgColor={["white", "bg-primary"]}
       justifyContent="center"
     >
+      <ConfirmModal editing={editing} />
       <Flex
         display={{ base: "block", md: "none" }}
         width={"100%"}
