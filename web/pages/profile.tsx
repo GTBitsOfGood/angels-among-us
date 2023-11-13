@@ -7,7 +7,6 @@ import {
   Input,
   Image,
   Box,
-  Heading,
   StackDivider,
   useToast,
 } from "@chakra-ui/react";
@@ -173,12 +172,17 @@ function Profile() {
         bgColor="white"
         borderRadius={12}
         mt={[14, 100]}
-        mb={[14, 100]}
+        mb={[14, 50]}
       >
         <Flex w="100%" justifyContent="space-between" alignItems="center">
-          <Heading size="lg" letterSpacing="wide">
+          <Text
+            fontSize="2xl"
+            fontWeight="bold"
+            lineHeight="24px"
+            letterSpacing="wide"
+          >
             Profile
-          </Heading>
+          </Text>
           <Box display={{ base: "none", md: "block" }}>
             <EditButton></EditButton>
           </Box>

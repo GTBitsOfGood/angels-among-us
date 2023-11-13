@@ -8,16 +8,15 @@ export default function Panel(props: { children: JSX.Element }) {
       w="100%"
       h="100%"
       justifyContent="center"
+      pt={[14, 100]}
+      pb={{ base: 0, sm: 50 }}
     >
       <Flex
         bgColor="white"
         direction="column"
         alignItems="center"
         justifyContent={"flex-start"}
-        p={8}
-        mt={[14, 100]}
-        mb={[0, 50, 100]}
-        gap={[4, 4, 0.05]}
+        paddingY={{ base: 4, sm: 8 }}
         width={["100%", "90%", "80%"]}
         borderRadius={12}
       >

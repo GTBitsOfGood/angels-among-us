@@ -16,29 +16,21 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
 1. Download [MongoDB Compass](https://www.mongodb.com/try/download/compass#compass) to view your database documents in a GUI.
 
-2. Run `yarn` in the root directory of the repository. These dependencies are used to automatically run some useful scripts when you commit your code. If you get an error specifying that the command is not found, install yarn:
-
-   ```sh
-   npm install --global yarn
-   ```
-
-   then attempt `yarn` again.
-
-3. Acquire the `.env` file by navigating to the `web` directory and running:
+2. Obtain the Bitwarden password from your EM. Create a file named `bitwarden.env` in the root directory of the respository and fill it with the following contents:
 
    ```zsh
-   yarn secrets
+   BW_PASSWORD=<provided bitwarden password>
    ```
 
-   You will need to obtain a password from your engineering leadership to complete this process. If you are on Windows, contact your engineering leadership to manually paste the text content into an `.env` file into the `web` directory.
+   This only needs to be done on your first run. After that, **you should delete the file from your repository to avoid accidentally pushing it to GitHub.**
 
-4. Boot up the Docker containers:
+3. Boot up the Docker containers:
 
    ```zsh
    docker-compose up -d
    ```
 
-   This may take a while on your first build.
+   This may take a while on your first build. It is also expected that the `web` image takes a bit to start up as it depends on a healthy database with proper replica sets.
 
    To stop your Docker containers and remove their processes, run:
 
@@ -48,7 +40,7 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
    You can see currently running containers with `docker ps -a`.
 
-5. Once everything has spun up successfully, connect to your database on MongoDB compass with the connection URL:
+4. Once everything has spun up successfully, connect to your database on MongoDB compass with the connection URL:
 
    ```zsh
    mongodb://localhost:30001/?directConnection=true
@@ -56,7 +48,7 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
    Keep in mind that our Docker instance of MongoDB runs on a different port (30001) to prevent collisions with a local instance of MongoDB, if you have that installed (which runs on 27017 by default).
 
-6. Add a document to the `accounts` collection, with email and role fields like this:
+5. Add a document to the `accounts` collection, with email and role fields like this:
 
    ```js
     {
@@ -68,7 +60,15 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
    The value of the email field should be the email address you will be logging in with via gmail. You have now added yourself as a valid account with an admin role.
 
-7. Navigate to `localhost:3000` using your web browser. Click "Sign in with Google" and log into using the email you used to make the `account` document.
+6. Navigate to `localhost:3000` using your web browser. Click "Sign in with Google" and log into using the email you used to make the `account` document.
+
+If you make any changes to the packages, you may need to rebuild the images. To do this, append --build to the above docker compose up command.
+
+The Dockerized application will have live-reloading of changes made on the host machine.
+
+Note: On linux-based operating systems, if you come across an entrypoint permission error (i.e. `process: exec: "./scripts/env-init.sh": permission denied: unknown` or `process: exec: "./scripts/rs-init.sh": permission denied: unknown`), run `chmod +x ./scripts/rs-init.sh` or `chmod +x ./web/scripts/env-init.sh` to make the shell files executables.
+
+Windows Users: If you come across this error `exec ./scripts/rs-init.sh: no such file or directory` or `exec ./scripts/env-init.sh: no such file or directory` when running the docker-compose command, please follow this [Stackoverflow thread](https://stackoverflow.com/questions/40452508/docker-error-on-an-entrypoint-script-no-such-file-or-directory) to fix it.
 
 ### Manual setup
 
@@ -91,13 +91,14 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
    You have now installed all the dependencies required to run the project.
 
-3. Acquire the `.env` file by navigating to the `web` directory and running:
+3. Acquire the `.env` file by navigating to the `web` directory and running the following based on your OS:
 
    ```zsh
-   yarn secrets
+   yarn secrets:linux # MacOS/Linux
+   yarn secrets:windows # Windows
    ```
 
-   You will need to obtain a password from your engineering leadership to complete this process. If you are on Windows, contact your engineering leadership to manually paste the text content into an `.env` file into the `web` directory.
+   You will need to obtain a password from your engineering leadership to complete this process.
 
 4. Connect to your MongoDB database using MongoDB compass. Use the connection URL:
 

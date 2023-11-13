@@ -11,6 +11,7 @@ import {
   Spinner,
   Stack,
   Text,
+  Link,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import { SearchUsersParams } from "../../db/actions/User";
@@ -86,11 +87,22 @@ export default function Results({ filters, setSearched }: ResultsProps) {
   );
 
   return (
-    <Flex direction="column" w="100%" h="100%" gap={5}>
+    <Flex
+      direction="column"
+      w="100%"
+      h="100%"
+      gap={5}
+      paddingX={{ base: 4, sm: 8 }}
+    >
       <Stack spacing={5} w="100%">
-        <Heading size="lg" alignSelf="start">
+        <Text
+          fontSize="2xl"
+          fontWeight="bold"
+          lineHeight="24px"
+          letterSpacing="wide"
+        >
           Search Results
-        </Heading>
+        </Text>
         <Text>Showing results for the following search criteria:</Text>
         {flattenedFilters.length > 0 ? (
           <Flex gap={2} wrap="wrap">
@@ -125,6 +137,7 @@ export default function Results({ filters, setSearched }: ResultsProps) {
             gap={5}
             justifyContent="center"
             w="100%"
+            h="fit-content"
           >
             {users?.data?.map((user) => (
               <GridItem
@@ -157,11 +170,17 @@ export default function Results({ filters, setSearched }: ResultsProps) {
                     <Heading size="sm">{user.name ?? "Volunteer"}</Heading>
                     <Text fontSize="sm" wordBreak="break-all">
                       <b>Email: </b>
-                      {user.email}
+                      <Link href={`mailto:${user.email}`}>{user.email}</Link>
                     </Text>
                     <Text fontSize="sm">
                       <b>Preferred Email: </b>
-                      {user.preferredEmail ?? "Unspecified"}
+                      {user.preferredEmail ? (
+                        <Link href={`mailto:${user.preferredEmail}`}>
+                          {user.preferredEmail}
+                        </Link>
+                      ) : (
+                        "Unspecified"
+                      )}
                     </Text>
                   </GridItem>
                 </Grid>
@@ -174,14 +193,21 @@ export default function Results({ filters, setSearched }: ResultsProps) {
           <Text>No results found.</Text>
         </Flex>
       )}
-      <Button
-        alignSelf="flex-start"
-        onClick={() => setSearched(false)}
-        leftIcon={<ArrowBackIcon />}
-        variant="outline-secondary"
+      <Flex
+        direction="column"
+        alignItems="flex-start"
+        w="100%"
+        gap={{ base: 4, sm: 8 }}
       >
-        Back to search
-      </Button>
+        <Divider />
+        <Button
+          onClick={() => setSearched(false)}
+          leftIcon={<ArrowBackIcon />}
+          variant="outline-secondary"
+        >
+          Back to search
+        </Button>
+      </Flex>
     </Flex>
   );
 }
