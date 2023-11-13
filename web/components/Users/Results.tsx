@@ -11,6 +11,7 @@ import {
   Spinner,
   Stack,
   Text,
+  Link,
 } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import { SearchUsersParams } from "../../db/actions/User";
@@ -169,11 +170,17 @@ export default function Results({ filters, setSearched }: ResultsProps) {
                     <Heading size="sm">{user.name ?? "Volunteer"}</Heading>
                     <Text fontSize="sm" wordBreak="break-all">
                       <b>Email: </b>
-                      {user.email}
+                      <Link href={`mailto:${user.email}`}>{user.email}</Link>
                     </Text>
                     <Text fontSize="sm">
                       <b>Preferred Email: </b>
-                      {user.preferredEmail ?? "Unspecified"}
+                      {user.preferredEmail ? (
+                        <Link href={`mailto:${user.preferredEmail}`}>
+                          {user.preferredEmail}
+                        </Link>
+                      ) : (
+                        "Unspecified"
+                      )}
                     </Text>
                   </GridItem>
                 </Grid>
