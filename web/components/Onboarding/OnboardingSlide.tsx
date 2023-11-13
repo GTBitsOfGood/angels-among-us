@@ -46,19 +46,19 @@ function OnboardingSlide(props: {
 
   return (
     <Flex
+      w="100%"
+      h="100%"
       className="onboardingQuestion"
       direction="column"
       textAlign="center"
       align="center"
-      marginX={{ base: "10px", md: "20px", lg: "80px" }}
     >
-      <Flex className="questionText" flexDir="column">
+      <Flex className="questionText" flexDir="column" w="100%">
         <Text
           className="questionTitle"
-          fontSize={{ base: "22px", md: "30px", lg: "36px" }}
-          marginX={{ base: "10px", md: "50px", lg: "150px" }}
+          fontSize={{ base: "3xl", md: "4xl" }}
           marginBottom={{ base: "24px", md: "30px", lg: "36px" }}
-          lineHeight={{ base: "28px", md: "42px", lg: "46px" }}
+          lineHeight={{ base: "36px", md: "46px" }}
           fontWeight="bold"
           whiteSpace="pre-wrap"
         >
@@ -66,7 +66,7 @@ function OnboardingSlide(props: {
         </Text>
         <Text
           className="questionDescription"
-          fontSize={{ base: "16px", md: "22px", lg: "28px" }}
+          fontSize={{ base: "xl", md: "2xl" }}
           marginBottom={{ base: "24px", md: "30px", lg: "30px" }}
           lineHeight={{ lg: "36px" }}
           color="#696969"
@@ -91,7 +91,7 @@ function OnboardingSlide(props: {
         answers={answers}
         setAnswers={setAnswers}
         qKey={("key" in question ? question.key : "") as string}
-      ></OnboardingOptions>
+      />
       <Flex
         className="popover"
         display={
@@ -111,7 +111,7 @@ function OnboardingSlide(props: {
                 paddingX="0px"
                 _hover={{ background: "#FFFFFF" }}
               >
-                <QuestionOutlineIcon color="angelsBlue.100" />
+                <QuestionOutlineIcon color="btn-solid-primary-bg" />
               </Button>
             </PopoverTrigger>
             <PopoverContent backgroundColor="#FFFFFF">
@@ -120,7 +120,7 @@ function OnboardingSlide(props: {
                 <Text
                   color="black"
                   maxHeight="400px"
-                  overflowY="auto"
+                  overflowY="scroll"
                   align="left"
                   padding="20px"
                   paddingRight="30px"
@@ -132,8 +132,8 @@ function OnboardingSlide(props: {
                 ></Text>
               </PopoverBody>
             </PopoverContent>
-            <Text color="angelsBlue.100" fontSize="sm">
-              what does this mean?
+            <Text color="text-primary" fontSize="md">
+              What does this mean?
             </Text>
           </Popover>
         </Stack>
@@ -148,18 +148,18 @@ function OnboardingSlide(props: {
             className="popoverIcon"
             bgColor="white"
             aria-label="info"
-            icon={<QuestionOutlineIcon color="angelsBlue.100" />}
+            icon={<QuestionOutlineIcon color="btn-solid-primary-bg" />}
             onClick={onOpen}
             marginRight="-8px"
           ></IconButton>
           <Text
             className="popoverIconText"
-            color="angelsBlue.100"
-            fontSize="small"
+            color="text-primary"
+            fontSize="md"
             align="left"
             lineHeight="16px"
           >
-            what does this mean?
+            What does this mean?
           </Text>
           <Modal
             isOpen={isOpen}
