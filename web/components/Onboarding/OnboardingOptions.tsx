@@ -1,7 +1,12 @@
-import { Flex, useBreakpointValue } from "@chakra-ui/react";
+import {
+  Checkbox,
+  Grid,
+  useBreakpointValue,
+  Text,
+  GridItem,
+} from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import Select from "react-select";
-import OnboardingOptionColumn from "./OnboardingOptionColumn";
 import { Answers, PossibleTypes, StoredQuestion } from "../../pages/onboarding";
 import { OptionType } from "./OnboardingSlide";
 
@@ -15,17 +20,18 @@ function OnboardingOptions(props: {
 }) {
   const { options, singleAnswer, dropdown, answers, setAnswers, qKey } = props;
 
-  const numCols =
-    useBreakpointValue(
-      {
-        base: 2,
-        md: 2,
-        lg: 3,
-      },
-      {
-        fallback: "base",
-      }
-    ) || 2;
+  function updateAnswers(ind: number) {
+    let tempState = { ...answers };
+    if (singleAnswer && tempState[qKey].length == 1) {
+      tempState[qKey] = [];
+    }
+    if (tempState[qKey].includes(options[ind].value)) {
+      tempState[qKey].splice(tempState[qKey].indexOf(options[ind].value), 1);
+    } else {
+      tempState[qKey].push(options[ind].value);
+    }
+    setAnswers(tempState);
+  }
 
   const dropdownWidth =
     useBreakpointValue(
@@ -98,33 +104,46 @@ function OnboardingOptions(props: {
     );
   }
 
-  const opsByCol = options.reduce((arr: OptionType[][], val, ind) => {
-    if (arr.length < numCols) {
-      arr.push([]);
-    }
-    arr[ind % numCols].push(options[ind]);
-    return arr;
-  }, []);
-
   return (
-    <Flex
-      className="onboardingOptions"
-      flexDirection="row"
-      gap={{ base: "16px", md: "60px", lg: "90px" }}
+    <Grid
+      w="100%"
+      h="100%"
+      templateColumns={{ base: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+      gap={5}
     >
-      {opsByCol.map((colVal, ind) => {
-        return (
-          <OnboardingOptionColumn
-            key={ind}
-            options={colVal}
-            singleAnswer={singleAnswer}
-            answers={answers}
-            setAnswers={setAnswers}
-            qKey={qKey}
-          ></OnboardingOptionColumn>
-        );
-      })}
-    </Flex>
+      {options.map((option, i) => (
+        <GridItem h="100%" key={option.value}>
+          <Checkbox
+            className="optionCheckbox"
+            borderColor="border-color"
+            h="100%"
+            borderWidth={2}
+            paddingX={{ base: 3, md: 15 }}
+            paddingY={{ base: 3, md: 15 }}
+            borderRadius={{ base: 5, md: 8 }}
+            display="flex"
+            iconColor="white"
+            colorScheme="brand"
+            textAlign="left"
+            lineHeight="20px"
+            isChecked={answers[qKey].includes(options[i].value)}
+            onChange={() => {
+              updateAnswers(i);
+            }}
+          >
+            <Text
+              className="optionText"
+              fontSize={{ base: "15px", md: "20px", lg: "20px" }}
+              fontWeight={{ base: "normal", md: "normal", lg: "normal" }}
+              lineHeight={{ base: "18px", md: "22px", lg: "22px" }}
+              color="black"
+            >
+              {option.label}
+            </Text>
+          </Checkbox>
+        </GridItem>
+      ))}
+    </Grid>
   );
 }
 
