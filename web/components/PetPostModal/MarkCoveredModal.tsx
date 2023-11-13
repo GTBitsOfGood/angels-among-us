@@ -43,8 +43,8 @@ function MarkCoveredModal(props: {
           </ModalHeader>
           <ModalBody>
             {isCovered
-              ? "Are you sure you would like to uncover this post? This post would show up on the feed if uncovered."
-              : "Are you sure you would like to mark this post as covered? This post would be hidden on the feed if covered."}
+              ? "Are you sure you would like to uncover this post? This post will go to the top of the feed and become visible on the feed to volunteers. Volunteers will be able to resubmit offers, even if they have submitted offers for this dog previously."
+              : "Are you sure you would like to mark this post as covered? This post will become hidden on the feed to volunteers, and no further offers for this dog will be possible until this post is uncovered."}
           </ModalBody>
           <ModalFooter justifyContent="center" marginBottom={2}>
             <Button
