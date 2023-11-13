@@ -481,13 +481,18 @@ const PetPostModal: React.FC<{
     attachments,
   } = postData;
 
-  const behavioralMedicalAndTrainedTagLabels = [
+  const behavioralAndTrainedTagLabels = [
     ...behavioral?.map((tag) => behavioralLabels[tag]),
+    houseTrained == "yes" ? houseTrainedLabels[houseTrained] : undefined,
+    crateTrained == "yes" ? crateTrainedLabels[crateTrained] : undefined,
+  ].filter((label): label is string => label !== undefined);
+
+  const medicalAndSpayNeuterTagLabels = [
     ...medical?.map((tag) => medicalLabels[tag]),
-    spayNeuterStatusLabels[spayNeuterStatus],
-    houseTrainedLabels[houseTrained],
-    crateTrainedLabels[crateTrained],
-  ];
+    spayNeuterStatus == "yes"
+      ? spayNeuterStatusLabels[spayNeuterStatus]
+      : undefined,
+  ].filter((label): label is string => label !== undefined);
 
   const goodWithLabelMap = {
     getsAlongWithMen: GoodWith.Men,
@@ -708,30 +713,38 @@ const PetPostModal: React.FC<{
                   </Flex>
                   <Flex width="50%">
                     <PetPostListGroup
-                      title={"Behavioral and Medical Info"}
-                      tags={behavioralMedicalAndTrainedTagLabels}
+                      title={"Known Behavioral Info"}
+                      tags={behavioralAndTrainedTagLabels}
                     />
                   </Flex>
                 </Flex>
                 <Flex direction="row" width="100%">
+                  <Flex width="50%">
+                    <PetPostListGroup
+                      title={"Known Medical Info"}
+                      tags={medicalAndSpayNeuterTagLabels}
+                    />
+                  </Flex>
                   <Flex width="50%">
                     <PetPostListGroup
                       title={"I'm not comfortable with"}
                       tags={notGoodWithTagLabels}
                     />
                   </Flex>
+                </Flex>
+                <Flex direction="row" width="100%">
                   <Flex width="50%">
                     <PetPostListGroup
                       title={"I'm comfortable with"}
                       tags={goodWithTagLabels}
                     />
                   </Flex>
-                </Flex>
-                <Flex direction="row" width="100%">
-                  <PetPostListGroup
-                    title={"I'm not sure about"}
-                    tags={unsureAboutTagLabels}
-                  />
+                  <Flex width="50%">
+                    <PetPostListGroup
+                      title={"I'm not sure about"}
+                      tags={unsureAboutTagLabels}
+                    />
+                  </Flex>
                 </Flex>
               </Stack>
             </Stack>
@@ -872,8 +885,14 @@ const PetPostModal: React.FC<{
               </Flex>
               <Flex width="100%">
                 <PetPostListGroup
-                  title={"Behavioral and Medical Info"}
-                  tags={behavioralMedicalAndTrainedTagLabels}
+                  title={"Known Behavioral Info"}
+                  tags={behavioralAndTrainedTagLabels}
+                />
+              </Flex>
+              <Flex width="100%">
+                <PetPostListGroup
+                  title={"Known Medical Info"}
+                  tags={medicalAndSpayNeuterTagLabels}
                 />
               </Flex>
               <Flex width="100%">
