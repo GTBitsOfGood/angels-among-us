@@ -1,6 +1,13 @@
 import { useState } from "react";
 import OnboardingSlide from "../components/Onboarding/OnboardingSlide";
-import { Flex, Progress, Text, useToast } from "@chakra-ui/react";
+import {
+  Flex,
+  Grid,
+  GridItem,
+  Progress,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import OnboardingButton from "../components/Onboarding/OnboardingButton";
 import {
   FosterType,
@@ -391,38 +398,6 @@ function Onboarding() {
 
   const [answers, setAnswers] = useState(initialAnswers);
 
-  let btnDisplay;
-  if (questionData[qNum].qtype == QType.Question) {
-    btnDisplay = (
-      <Flex gap={{ base: "8px", md: "20px", lg: "25px" }}>
-        <OnboardingButton
-          onClickFunc={prevQ}
-          btnType={ButtonType.Back}
-          qNum={qNum}
-          questionData={questionData}
-          answers={answers}
-        ></OnboardingButton>
-        <OnboardingButton
-          onClickFunc={nextQ}
-          btnType={ButtonType.Next}
-          qNum={qNum}
-          questionData={questionData}
-          answers={answers}
-        ></OnboardingButton>
-      </Flex>
-    );
-  } else {
-    btnDisplay = (
-      <OnboardingButton
-        onClickFunc={nextQ}
-        btnType={ButtonType.Singular}
-        qNum={qNum}
-        questionData={questionData}
-        answers={answers}
-      ></OnboardingButton>
-    );
-  }
-
   const numQuestions = questionData.reduce((acc, curr) => {
     if (curr.qtype == QType.Question) acc += 1;
     return acc;
@@ -433,62 +408,87 @@ function Onboarding() {
   }, 0);
 
   return (
-    <Flex>
-      <Flex
-        width="100%"
-        className="page"
-        flexDir="column"
+    <Grid
+      className="page"
+      templateColumns="1fr"
+      templateRows={{
+        base: "100px 1fr 50px",
+        lg: "1fr 5fr 1fr",
+      }}
+      gap={5}
+      minW="100%"
+      h="100%"
+      paddingX={{ base: 8, sm: 50, lg: 100 }}
+      paddingY={{ base: 8, md: 10 }}
+      justifyContent="center"
+    >
+      <GridItem
+        className="progress"
+        visibility={
+          questionData[qNum].qtype === QType.Completion ? "hidden" : "visible"
+        }
+        w="100%"
         alignItems="center"
-        marginX={{ base: "50px", md: "100px", lg: "200px" }}
-        marginTop={{ base: "64px", md: "80px", lg: "50px" }}
-        marginBottom={{ base: "120px", md: "180px", lg: "180px" }}
+        display="flex"
+        gap={{ base: 4, lg: 10 }}
       >
-        <Flex
-          className="progress"
-          flexDir="row"
-          alignItems="center"
-          justifyContent="center"
-          width="100%"
-          marginBottom={{ base: "50px", md: "70px", lg: "84px" }}
-          visibility={
-            questionData[qNum].qtype == QType.Completion ? "hidden" : "visible"
-          }
+        <Progress
+          className="progressBar"
+          flex={1}
+          value={(100 * Math.max(0, qNum - numIntros + 1)) / numQuestions}
+          borderRadius="10px"
+        ></Progress>
+        <Text
+          className="progressBarText"
+          fontWeight="semibold"
+          textColor="text-primary"
+          fontSize={{ base: "md", lg: "lg" }}
         >
-          <Progress
-            className="progressBar"
-            width={{ base: "75%", md: "80%", lg: "85%" }}
-            value={(100 * Math.max(0, qNum - numIntros + 1)) / numQuestions}
-            borderRadius="10px"
-            height={{ base: "10px", md: "20px", lg: "20px" }}
-            marginRight={{ base: "16px", md: "20px", lg: "25px" }}
-          ></Progress>
-          <Text
-            className="progressBarText"
-            fontWeight="semibold"
-            textColor="text-primary"
-            fontSize={{ base: "10px", md: "16px", lg: "20px" }}
-          >
-            {Math.max(0, qNum - numIntros + 1) + " of " + numQuestions}
-          </Text>
-        </Flex>
+          {Math.max(0, qNum - numIntros + 1) + " of " + numQuestions}
+        </Text>
+      </GridItem>
+      <GridItem w="100%" maxH="100%" overflow="hidden">
         <OnboardingSlide
           questionData={questionData}
           answers={answers}
           setAnswers={setAnswers}
           qNum={qNum}
         />
-      </Flex>
-
-      <Flex
-        className="buttonDisplay"
-        position="fixed"
-        right={{ base: "50%", md: "200px", lg: "300px" }}
-        transform={{ base: "translateX(50%)" }}
-        bottom={{ base: "30px", md: "70px", lg: "70px" }}
-      >
-        {btnDisplay}
-      </Flex>
-    </Flex>
+      </GridItem>
+      <GridItem className="buttonDisplay" w="100%">
+        {questionData[qNum].qtype == QType.Question ? (
+          <Flex
+            justifyContent={{ base: "space-between", md: "flex-end" }}
+            gap={5}
+          >
+            <OnboardingButton
+              onClickFunc={prevQ}
+              btnType={ButtonType.Back}
+              qNum={qNum}
+              questionData={questionData}
+              answers={answers}
+            />
+            <OnboardingButton
+              onClickFunc={nextQ}
+              btnType={ButtonType.Next}
+              qNum={qNum}
+              questionData={questionData}
+              answers={answers}
+            />
+          </Flex>
+        ) : (
+          <Flex justifyContent="flex-end">
+            <OnboardingButton
+              onClickFunc={nextQ}
+              btnType={ButtonType.Singular}
+              qNum={qNum}
+              questionData={questionData}
+              answers={answers}
+            />
+          </Flex>
+        )}
+      </GridItem>
+    </Grid>
   );
 }
 

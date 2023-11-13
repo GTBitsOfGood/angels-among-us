@@ -1,10 +1,4 @@
-import {
-  Checkbox,
-  Grid,
-  useBreakpointValue,
-  Text,
-  GridItem,
-} from "@chakra-ui/react";
+import { Checkbox, Grid, Text, GridItem, Flex, Box } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 import Select from "react-select";
 import { Answers, PossibleTypes, StoredQuestion } from "../../pages/onboarding";
@@ -40,19 +34,6 @@ function OnboardingOptions(props: {
     }
     setAnswers(tempState);
   }
-
-  const dropdownWidth =
-    useBreakpointValue(
-      {
-        base: "260px",
-        md: "400px",
-        lg: "500px",
-      },
-      {
-        fallback: "base",
-      }
-    ) || "260px";
-
   const selected = options.reduce((arr: OptionType[], val) => {
     if (answers[qKey].includes(val.value)) {
       arr.push(val);
@@ -70,72 +51,75 @@ function OnboardingOptions(props: {
       : options;
 
     return (
-      <Select
-        className="dropdown"
-        placeholder="Type here..."
-        styles={{
-          control: (baseStyles: any) => ({
-            ...baseStyles,
-            width: dropdownWidth,
-            fontSize: "18px",
-            border: "1px solid gray",
-            boxShadow: "none",
-            "&:hover": {
-              border: "1px solid gray",
-            },
-          }),
-          multiValue: (styles) => ({
-            ...styles,
-            border: "2px solid #57A0D5",
-            borderRadius: "8px",
-            backgroundColor: "#FFFFFF",
-            fontSize: "20px",
-          }),
-          multiValueLabel: (styles) => ({
-            ...styles,
-            color: "#57A0D5",
-          }),
-          multiValueRemove: (styles) => ({
-            ...styles,
-            color: "#57A0D5",
-            ":hover": {
-              backgroundColor: "#57A0D5",
-              color: "white",
-            },
-          }),
-        }}
-        options={parsedOptions}
-        isMulti
-        value={selected}
-        closeMenuOnSelect={false}
-        onChange={(event: any) => {
-          let tempState = { ...answers };
-          tempState[qKey] = [];
-          event.forEach((o: any) => {
-            tempState[qKey].push(o.value);
-          });
-          setAnswers(tempState);
-        }}
-      />
+      <Flex w="100%" justifyContent="center">
+        <Box w={{ base: "100%", md: "400px", lg: "500px" }}>
+          <Select
+            className="dropdown"
+            placeholder="Type here..."
+            styles={{
+              control: (baseStyles: any) => ({
+                ...baseStyles,
+                fontSize: "18px",
+                border: "1px solid gray",
+                boxShadow: "none",
+                "&:hover": {
+                  border: "1px solid gray",
+                },
+              }),
+              multiValue: (styles) => ({
+                ...styles,
+                border: "2px solid #57A0D5",
+                borderRadius: "8px",
+                backgroundColor: "#FFFFFF",
+                fontSize: "20px",
+              }),
+              multiValueLabel: (styles) => ({
+                ...styles,
+                color: "#57A0D5",
+              }),
+              multiValueRemove: (styles) => ({
+                ...styles,
+                color: "#57A0D5",
+                ":hover": {
+                  backgroundColor: "#57A0D5",
+                  color: "white",
+                },
+              }),
+            }}
+            options={parsedOptions}
+            isMulti
+            value={selected}
+            closeMenuOnSelect={false}
+            onChange={(event: any) => {
+              let tempState = { ...answers };
+              tempState[qKey] = [];
+              event.forEach((o: any) => {
+                tempState[qKey].push(o.value);
+              });
+              setAnswers(tempState);
+            }}
+          />
+        </Box>
+      </Flex>
     );
   }
 
   return (
     <Grid
       w="100%"
-      h="100%"
       templateColumns={{ base: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+      overflow="auto"
       gap={5}
     >
       {options.map((option, i) => (
-        <GridItem h="100%" key={option.value}>
+        <GridItem key={option.value}>
           <Checkbox
             className="optionCheckbox"
             borderColor="border-color"
-            h="100%"
             borderWidth={2}
-            paddingX={{ base: 3, md: 15 }}
-            paddingY={{ base: 3, md: 15 }}
+            h="100%"
+            paddingX={{ base: 3, md: 8 }}
+            paddingY={{ base: 6, md: 8 }}
             borderRadius={{ base: 5, md: 8 }}
             display="flex"
             iconColor="white"
@@ -149,9 +133,8 @@ function OnboardingOptions(props: {
           >
             <Text
               className="optionText"
-              fontSize={{ base: "15px", md: "20px", lg: "20px" }}
-              fontWeight={{ base: "normal", md: "normal", lg: "normal" }}
-              lineHeight={{ base: "18px", md: "22px", lg: "22px" }}
+              lineHeight={{ base: "xl", md: "2xl" }}
+              fontSize={{ base: "xl", md: "2xl" }}
               color="black"
             >
               {option.label}

@@ -76,6 +76,7 @@ function OnboardingButton(props: {
 
   return (
     <Button
+      w={{ base: "100%", md: "auto" }}
       variant={buttonVariantMap[btnType]}
       size="lg"
       className="onboardingButton"
