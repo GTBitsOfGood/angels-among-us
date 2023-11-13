@@ -74,6 +74,9 @@ const TIME_UNATTENDED_QUESTION =
 const CAN_QUARANTINE_KEY = "canQuarantine";
 const CAN_QUARANTINE_QUESTION = "Are you able to quarantine?";
 
+const OTHER_KEY = "other";
+const OTHER_QUESTION = "Are there any other details that Angels Among Us should know when considering your foster offer?";
+
 const KEY_QUESTION_MAP = {
   [NUM_OTHER_DOGS_KEY]: NUM_OTHER_DOGS_QUESTION,
   [UNEXPECTED_MEDICAL_KEY]: UNEXPECTED_MEDICAL_QUESTION,
@@ -83,6 +86,7 @@ const KEY_QUESTION_MAP = {
   [CHILD_AGE_KEY]: CHILD_AGE_QUESTION,
   [TIME_UNATTENDED_KEY]: TIME_UNATTENDED_QUESTION,
   [CAN_QUARANTINE_KEY]: CAN_QUARANTINE_QUESTION,
+  [OTHER_KEY]: OTHER_QUESTION,
 };
 
 const RETURN_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
@@ -93,6 +97,7 @@ const RETURN_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
   FENCED_YARD_KEY,
   CHILD_AGE_KEY,
   TIME_UNATTENDED_KEY,
+  OTHER_KEY,
 ];
 
 const BOARDING_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
@@ -100,6 +105,7 @@ const BOARDING_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
   HAS_CAT_KEY,
   FENCED_YARD_KEY,
   CHILD_AGE_KEY,
+  OTHER_KEY,
 ];
 
 const TEMPORARY_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
@@ -107,6 +113,7 @@ const TEMPORARY_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
   HAS_CAT_KEY,
   FENCED_YARD_KEY,
   CHILD_AGE_KEY,
+  OTHER_KEY,
 ];
 
 const SHELTER_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
@@ -116,6 +123,7 @@ const SHELTER_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
   TRAVEL_PLANS_KEY,
   HAS_CAT_KEY,
   TIME_UNATTENDED_KEY,
+  OTHER_KEY,
 ];
 
 const FOSTER_MOVE_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
@@ -127,6 +135,7 @@ const FOSTER_MOVE_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
   FENCED_YARD_KEY,
   CHILD_AGE_KEY,
   TIME_UNATTENDED_KEY,
+  OTHER_KEY,
 ];
 
 const OWNER_SURRENDER_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
@@ -136,6 +145,7 @@ const OWNER_SURRENDER_KEYS: (keyof typeof KEY_QUESTION_MAP)[] = [
   TRAVEL_PLANS_KEY,
   HAS_CAT_KEY,
   TIME_UNATTENDED_KEY,
+  OTHER_KEY,
 ];
 
 function keysToData(
