@@ -4,6 +4,14 @@ import Select from "react-select";
 import { Answers, PossibleTypes, StoredQuestion } from "../../pages/onboarding";
 import { OptionType } from "./OnboardingSlide";
 
+const disjointOptionMap: Record<
+  string,
+  "preferredBreeds" | "restrictedBreeds"
+> = {
+  restrictedBreeds: "preferredBreeds",
+  preferredBreeds: "restrictedBreeds",
+};
+
 function OnboardingOptions(props: {
   options: OptionType[];
   singleAnswer: boolean;
@@ -34,6 +42,14 @@ function OnboardingOptions(props: {
   }, []);
 
   if (dropdown) {
+    const opposingKey:
+      | typeof disjointOptionMap[keyof typeof disjointOptionMap]
+      | undefined = disjointOptionMap[qKey];
+
+    const parsedOptions = opposingKey
+      ? options.filter((o) => !answers[opposingKey].includes(o.value))
+      : options;
+
     return (
       <Flex w="100%" justifyContent="center">
         <Box w={{ base: "100%", md: "400px", lg: "500px" }}>
@@ -70,7 +86,7 @@ function OnboardingOptions(props: {
                 },
               }),
             }}
-            options={options}
+            options={parsedOptions}
             isMulti
             value={selected}
             closeMenuOnSelect={false}
