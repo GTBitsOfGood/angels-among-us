@@ -75,7 +75,8 @@ const CAN_QUARANTINE_KEY = "canQuarantine";
 const CAN_QUARANTINE_QUESTION = "Are you able to quarantine?";
 
 const OTHER_KEY = "other";
-const OTHER_QUESTION = "Are there any other details that Angels Among Us should know when considering your foster offer?";
+const OTHER_QUESTION =
+  "Are there any other details that Angels Among Us Pet Rescue should know when considering your foster offer?";
 
 const KEY_QUESTION_MAP = {
   [NUM_OTHER_DOGS_KEY]: NUM_OTHER_DOGS_QUESTION,
@@ -195,9 +196,14 @@ const FosterQuestionnaire = ({
     initialQuestionResponseData
   );
 
-  const formSchema = z.record(
-    z.string().min(1, { message: "All fields required." })
-  );
+  // Requires all paths to include `other` key.
+  const formSchema = z
+    .object({
+      other: z.string(),
+    })
+    .catchall(
+      z.string().min(1, { message: "Please fill out all required fields." })
+    );
 
   const { userData } = useAuth();
   const mutation = trpc.post.offer.useMutation();
@@ -278,7 +284,8 @@ const FosterQuestionnaire = ({
               {data[fosterType].map(({ key, title }) => {
                 return (
                   <Flex key={key} flexDir="column" gap={2}>
-                    <FormControl isRequired>
+                    {/* TODO: Refactor to remove hard coded required for `other` key */}
+                    <FormControl isRequired={key !== OTHER_KEY}>
                       <FormLabel>{title}</FormLabel>
                       <Input
                         bgColor={"#FAFBFC"}
