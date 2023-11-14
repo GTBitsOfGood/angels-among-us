@@ -227,7 +227,7 @@ export function populateEmailTemplate(
             <img class="logo" src="https://i.imgur.com/Frk3oH3.png" />
           </div>
               <p class="medium-weight-text font-24px congrats-text">
-                There is a new foster application for the dog below to review.
+                There is a new foster offer for the dog below to review.
               </p>
               <table class="pet-info">
                 <tr>
