@@ -8,7 +8,11 @@ export default function PetPostListGroup(props: {
       <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
         {props.title}
       </Text>
-      <Flex direction={["row", "column"]} flexBasis={2} flexWrap={"wrap"}>
+      <Flex
+        flexDirection={["row", "column"]}
+        flexBasis={2}
+        flexWrap={["wrap", "nowrap"]}
+      >
         {props.tags?.map((tag, index) => {
           return (
             <Stack key={index} width={["50%", "100%"]}>
