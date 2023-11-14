@@ -272,7 +272,7 @@ function Onboarding() {
     } as StoredQuestion<Age>,
     {
       key: "dogsNotGoodWith",
-      title: "Are you able to foster dogs that may not be comfortable with:",
+      title: "Are you able to foster dogs that DO NOT do well with:",
       description: "",
       options: [
         { value: GoodWith.Men, label: "Men" },
