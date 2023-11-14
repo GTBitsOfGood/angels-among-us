@@ -44,7 +44,7 @@ const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {
           <Head>
             <title>Loading</title>
           </Head>
-          <Center w="100vw" h="100vh">
+          <Center w="100dvw" h="100dvh">
             <Spinner size="xl" />
           </Center>
         </>

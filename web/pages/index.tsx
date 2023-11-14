@@ -111,7 +111,7 @@ function Home() {
         <Head>
           <title>Loading</title>
         </Head>
-        <Center w="100vw" h="100vh">
+        <Center w="100dvw" h="100dvh">
           <Spinner size="xl" />
         </Center>
       </>
@@ -195,7 +195,7 @@ function Home() {
               fontWeight="semibold"
               fontSize={["sm", "lg"]}
               textAlign={["center", "left"]}
-              paddingBottom={["140px", "0px"]}
+              paddingBottom={[12, "0px"]}
             >
               The goal is for all fosters to see the dogs that are the most
               likely to be a fit for their home without having to look through

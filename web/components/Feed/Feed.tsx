@@ -553,7 +553,7 @@ function Feed(props: {
           })}
         </Flex>
         <Flex
-          width={{ base: "100vw", lg: "55vw" }}
+          width={{ base: "100dvw", lg: "55dvw" }}
           minHeight="0" // To prevent mobile view column flexbox blowout (flex: 1 doesn't respect parent's max height)
           flex="1"
           borderRadius={{ base: "0px", lg: "10px" }}
