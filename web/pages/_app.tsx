@@ -112,7 +112,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ChakraProvider theme={theme}>
       <AuthProvider>
-        <Box h="100vh" w="100vw">
+        <Box h="100dvh" w="100dvw">
           <Navbar />
           <Component {...pageProps} />
         </Box>
