@@ -224,7 +224,7 @@ const FosterQuestionnaire = ({
           onFormViewClose();
           toast({
             description:
-              "Thank you for submitting a foster application with Angels Among Us! You will hear back from us soon!",
+              "Thank you for submitting a foster offer with Angels Among Us! You will hear back from us soon!",
             status: "info",
             duration: 9000,
             isClosable: true,

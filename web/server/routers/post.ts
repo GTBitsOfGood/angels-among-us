@@ -198,9 +198,7 @@ export const postRouter = router({
             await transporter.sendMail({
               from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
               to: email,
-              subject: `[APPLICATION] ${user.name ?? "Volunteer"} <> ${
-                post.name
-              }`,
+              subject: `[OFFER] ${user.name ?? "Volunteer"} <> ${post.name}`,
               html: emailFormatted,
             });
             break;
