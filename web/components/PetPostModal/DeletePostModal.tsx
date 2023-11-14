@@ -60,6 +60,7 @@ function DeletePostModal(props: {
                 {
                   onSuccess: () => {
                     utils.post.invalidate();
+                    onDeleteConfirmationClose();
                     onClose();
                   },
                   onError: () => {
