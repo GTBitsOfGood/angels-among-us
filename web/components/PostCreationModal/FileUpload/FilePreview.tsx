@@ -45,7 +45,8 @@ function FilePreview(props: PropsType) {
         cursor: "pointer",
       }}
     >
-      {fileArr[idx].type === "video/mp4" ? (
+      {fileArr[idx].type === "video/mp4" ||
+      fileArr[idx].type === "video/quicktime" ? (
         <Box
           width={"211px"}
           height={"211px"}
@@ -59,7 +60,12 @@ function FilePreview(props: PropsType) {
           onClick={updateSelections}
         >
           <AspectRatio maxW={"211px"} ratio={1}>
-            <iframe src={URL.createObjectURL(fileArr[idx])} />
+            <video controls autoPlay loop muted>
+              <source
+                src={URL.createObjectURL(fileArr[idx])}
+                type="video/mp4"
+              ></source>
+            </video>
           </AspectRatio>
           <Box position={"absolute"} top={1} right={14}>
             <Button onClick={updateSelections} colorScheme={"blackAlpha"}>

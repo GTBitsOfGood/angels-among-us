@@ -211,6 +211,7 @@ const EditPostModal: React.FC<{
 
   useEffect(() => {
     const convertFiles = async () => {
+      const videoTypes = new Set(["mp4", "mov"]);
       let fileObjects = [];
       for (const fileUrl of attachments) {
         try {
@@ -218,8 +219,15 @@ const EditPostModal: React.FC<{
           const blob = await response.blob();
 
           // You can customize the file name and type as needed
-          const fileName = "image.jpg";
-          const fileType = "image/jpeg";
+          const isVideo = videoTypes.has(
+            fileUrl.split(".").pop()!.toLowerCase()
+          );
+          let fileName = `image_${Date.now()}.jpg`;
+          let fileType = "image/jpeg";
+          if (isVideo) {
+            fileName = `video_${Date.now()}.mp4`;
+            fileType = "video/mp4";
+          }
 
           const file = new File([blob], fileName, { type: fileType });
           fileObjects.push(file);
