@@ -430,7 +430,7 @@ function Feed(props: {
           }}
           variant="solid-primary"
         >
-          Use My Preferences
+          Fill From Profile
         </Button>
       </Flex>
       <Flex direction="column">
@@ -538,7 +538,7 @@ function Feed(props: {
               }}
               variant="solid-primary"
             >
-              Use My Preferences
+              Fill From Profile
             </Button>
           </Flex>
           {filterGroups.map((val) => {
