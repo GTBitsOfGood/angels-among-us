@@ -137,7 +137,7 @@ function Home() {
       <Head>
         <title>Angels Among Us Pet Rescue Placements Platform</title>
       </Head>
-      <Flex height="100vh" bgColor="black">
+      <Flex height="100dvh" bgColor="black">
         <Flex
           display="flex"
           position="absolute"

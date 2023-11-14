@@ -485,7 +485,7 @@ function Feed(props: {
       className="feed"
       backgroundColor={{ base: "white", lg: "bg-primary" }}
       justifyContent="center"
-      height="100vh"
+      height="100dvh"
     >
       <Stack
         spacing={{ base: "0px", lg: "30px" }}
