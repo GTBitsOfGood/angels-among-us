@@ -11,7 +11,7 @@ export default function PetPostListGroup(props: {
       <Flex
         flexDirection={["row", "column"]}
         flexBasis={2}
-        display="-webkit-flex"
+        flexWrap={["wrap", "nowrap"]}
       >
         {props.tags?.map((tag, index) => {
           return (
