@@ -8,8 +8,10 @@ import {
   PopoverContent,
   Box,
   Flex,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 
 interface PropertyType {
   account: IAccount;
@@ -46,7 +48,8 @@ function RoleSelector(props: PropertyType) {
       placement="bottom-start"
     >
       <PopoverTrigger>
-        <Box
+        <Flex
+          direction="row"
           as="button"
           bgColor="tag-primary-bg"
           disabled={mutation.isLoading}
@@ -54,9 +57,11 @@ function RoleSelector(props: PropertyType) {
           paddingX={2}
           alignItems="center"
           justifyContent="center"
+          gap={1}
         >
-          {roleLabels[account.role]}
-        </Box>
+          <Text>{roleLabels[account.role]}</Text>
+          {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        </Flex>
       </PopoverTrigger>
       <PopoverContent p={2} w="fit-content">
         <Flex
