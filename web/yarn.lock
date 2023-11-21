@@ -9844,6 +9844,13 @@ new-find-package-json@^2.0.0:
   dependencies:
     debug "^4.3.4"
 
+next-query-params@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/next-query-params/-/next-query-params-4.3.0.tgz#62cf9297005a66ebc5b0823c3c66d77971ec87b5"
+  integrity sha512-8w8AXfPJ8vnYvSFBCByT5ZR8ItNSJ6lAbVer8aRZZRUpADZAR6hQ4dh7fLDs/6383DU0Ve7WvNHqswMR8S98zg==
+  dependencies:
+    tslib "^2.0.3"
+
 next@13.1.1:
   version "13.1.1"
   resolved "https://registry.npmjs.org/next/-/next-13.1.1.tgz"
@@ -11099,6 +11106,11 @@ semver@^7.1.2, semver@^7.3.5, semver@^7.3.7, semver@^7.3.8, semver@^7.5.3, semve
   dependencies:
     lru-cache "^6.0.0"
 
+serialize-query-params@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/serialize-query-params/-/serialize-query-params-2.0.2.tgz#598a3fb9e13f4ea1c1992fbd20231aa16b31db81"
+  integrity sha512-1chMo1dST4pFA9RDXAtF0Rbjaut4is7bzFbI1Z26IuMub68pNCILku85aYmeFhvnY//BXUPUhoRMjYcsT93J/Q==
+
 set-blocking@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/set-blocking/-/set-blocking-2.0.0.tgz#045f9782d011ae9a6803ddd382b24392b3d890f7"
@@ -12065,6 +12077,13 @@ use-isomorphic-layout-effect@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.1.2.tgz"
   integrity sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==
+
+use-query-params@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/use-query-params/-/use-query-params-2.2.1.tgz#c558ab70706f319112fbccabf6867b9f904e947d"
+  integrity sha512-i6alcyLB8w9i3ZK3caNftdb+UnbfBRNPDnc89CNQWkGRmDrm/gfydHvMBfVsQJRq3NoHOM2dt/ceBWG2397v1Q==
+  dependencies:
+    serialize-query-params "^2.0.2"
 
 use-sidecar@^1.1.2:
   version "1.1.2"

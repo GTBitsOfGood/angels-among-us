@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import Select from "react-select";
 
 const showingMap: Map<boolean | undefined, string> = new Map([
@@ -14,9 +13,9 @@ const allDropdownOptions = Array.from(showingMap.entries()).map(([k, v]) => ({
 
 function FeedCoveredDropdown(props: {
   displayCovered: boolean | undefined;
-  setDisplayCovered: Dispatch<SetStateAction<boolean | undefined>>;
+  handleCoveredChange: (newVal: boolean | undefined) => void;
 }) {
-  const { displayCovered, setDisplayCovered } = props;
+  const { displayCovered, handleCoveredChange } = props;
 
   const placeholder = `Showing ${showingMap.get(displayCovered)}`;
 
@@ -60,7 +59,7 @@ function FeedCoveredDropdown(props: {
         (option) => option.value !== displayCovered
       )}
       onChange={(event) => {
-        setDisplayCovered(event!.value);
+        handleCoveredChange(event!.value);
       }}
     />
   );

@@ -1,6 +1,5 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
-  Box,
   Button,
   Center,
   Flex,
@@ -10,9 +9,8 @@ import {
   useDisclosure,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useMemo, useReducer, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
 import { useAuth } from "../../context/auth";
-import { PossibleTypes } from "../../pages/onboarding";
 import { trpc } from "../../utils/trpc";
 import { Role } from "../../utils/types/account";
 import {
@@ -24,251 +22,106 @@ import {
   GoodWith,
   Size,
 } from "../../utils/types/post";
+import {
+  Option,
+  filterGroups,
+  AGE_OPTION_MAP,
+  GENDER_OPTION_MAP,
+  FilterKeys,
+  FilterKeyTypeMap,
+  TYPE_OPTION_MAP,
+  BREED_OPTION_MAP,
+  SIZE_OPTION_MAP,
+  BEHAVIORAL_OPTION_MAP,
+  GOOD_WITH_OPTION_MAP,
+} from "./filterConsts";
 import { IUser } from "../../utils/types/user";
-import PetPostModal from "../PetPostModal/PetPostModal";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
 import FeedFilterGroup from "./FeedFilterGroup";
 import FeedPostCard from "./FeedPostCard";
-import { Types } from "mongoose";
 import useDebounce from "../../hooks/useDebounce";
 import FeedCoveredDropdown from "./FeedCoveredDropdown";
+import {
+  useQueryParams,
+  ArrayParam,
+  BooleanParam,
+  withDefault,
+} from "use-query-params";
+import { z } from "zod";
+import Link from "next/link";
 
-export type FilterGroup = {
-  title: string;
-  filters: Filter[];
+type OptHandlers = {
+  [K in FilterKeys]: OptHandler<FilterKeyTypeMap[K]>;
 };
 
-export type Filter = {
-  key: string;
-  description: string;
-  options: Option[];
-  dropdown: boolean;
-  allSelected: boolean;
-};
-
-export type Option = {
-  value: PossibleTypes;
-  label: string;
-};
-
-export type SelectedFilters = {
-  [key: Filter["key"]]: Option[];
-};
-
-export type OptHandlers = {
-  [key: Filter["key"]]: (opts: Option[]) => Option[];
-};
-
-//TODO: Temperament is not included currently.
 export type QueryFilter = {
-  breed: Breed[];
-  type: FosterType[];
-  age: Age[];
-  size: Size[];
-  gender: Gender[];
-  behavioral: Behavioral[];
-  goodWith: GoodWith[];
+  [K in FilterKeys]: FilterKeyTypeMap[K][];
 };
 
-const filterGroups: FilterGroup[] = [
-  {
-    title: "General Information",
-    filters: [
-      {
-        key: "type",
-        description: "Which types of fosters can you help with?",
-        options: [
-          { value: FosterType.Return, label: "Return" },
-          { value: FosterType.Boarding, label: "Boarding" },
-          { value: FosterType.Temporary, label: "Temporary" },
-          { value: FosterType.FosterMove, label: "Foster Move" },
-          { value: FosterType.Shelter, label: "Shelter" },
-          { value: FosterType.OwnerSurrender, label: "Owner Surrender" },
-        ],
-        dropdown: false,
-        allSelected: true,
-      },
-    ],
-  },
-  {
-    title: "Physical Traits",
-    filters: [
-      {
-        key: "breed",
-        description: "Breeds",
-        options: [
-          { value: Breed.AmericanEskimo, label: "American Eskimo" },
-          { value: Breed.AustralianShepherd, label: "Australian Shepherd" },
-          { value: Breed.Beagle, label: "Beagle" },
-          { value: Breed.BichonFrise, label: "Bichon Frise" },
-          { value: Breed.BorderCollie, label: "Border Collie" },
-          { value: Breed.Boxer, label: "Boxer" },
-          { value: Breed.BrusselsGriffon, label: "Brussels Griffon" },
-          { value: Breed.Bulldog, label: "Bulldog" },
-          { value: Breed.CaneCorsoMastiff, label: "Cane Corso/Mastiff" },
-          { value: Breed.CattleDogHeeler, label: "Cattle Dog/Heeler" },
-          { value: Breed.Chihuahua, label: "Chihuahua" },
-          { value: Breed.ChowChow, label: "Chow Chow" },
-          { value: Breed.Collie, label: "Collie" },
-          { value: Breed.Corgi, label: "Corgi" },
-          { value: Breed.Dachshund, label: "Dachshund" },
-          { value: Breed.Dalmatian, label: "Dalmatian" },
-          { value: Breed.DobermanPinscher, label: "Doberman Pinscher" },
-          { value: Breed.GermanShepherd, label: "German Shepherd" },
-          { value: Breed.GoldenRetriever, label: "Golden Retriever" },
-          { value: Breed.GreatDane, label: "Great Dane" },
-          { value: Breed.GreatPyrenees, label: "Great Pyrenees" },
-          { value: Breed.Greyhound, label: "Greyhound" },
-          { value: Breed.Hound, label: "Hound" },
-          { value: Breed.Husky, label: "Husky" },
-          { value: Breed.LabradorRetriever, label: "Labrador Retriever" },
-          { value: Breed.Malamute, label: "Malamute" },
-          { value: Breed.Maltese, label: "Maltese" },
-          { value: Breed.MinPin, label: "Min Pin" },
-          { value: Breed.Mix, label: "Mix" },
-          { value: Breed.Newfoundland, label: "Newfoundland" },
-          { value: Breed.Pekingese, label: "Pekingese" },
-          { value: Breed.Pitbull, label: "Pitbull" },
-          { value: Breed.Pointer, label: "Pointer" },
-          { value: Breed.Pomeranian, label: "Pomeranian" },
-          { value: Breed.Poodle, label: "Poodle" },
-          { value: Breed.Pug, label: "Pug" },
-          { value: Breed.Rottweiler, label: "Rottweiler" },
-          { value: Breed.Schnauzer, label: "Schnauzer" },
-          { value: Breed.Scottie, label: "Scottie" },
-          { value: Breed.Setter, label: "Setter" },
-          { value: Breed.Sharpei, label: "Sharpei" },
-          { value: Breed.Sheepdog, label: "Sheepdog" },
-          { value: Breed.Shepherd, label: "Shepherd" },
-          { value: Breed.ShihTzu, label: "Shih Tzu" },
-          { value: Breed.Spaniel, label: "Spaniel" },
-          { value: Breed.StBernard, label: "St. Bernard" },
-          { value: Breed.TerrierMedLarge, label: "Terrier (Med-Large)" },
-          { value: Breed.TerrierSmall, label: "Terrier (Small)" },
-          { value: Breed.Weimaraner, label: "Weimaraner" },
-          { value: Breed.Whippet, label: "Whippet" },
-        ],
-        dropdown: true,
-        allSelected: true,
-      },
-      {
-        key: "age",
-        description: "Age",
-        options: [
-          { value: Age.Puppy, label: "Puppy" },
-          { value: Age.Young, label: "Young" },
-          { value: Age.Adult, label: "Adult" },
-          { value: Age.Senior, label: "Senior" },
-          { value: Age.MomAndPuppies, label: "Mom & Puppies" },
-        ],
-        dropdown: false,
-        allSelected: true,
-      },
-      {
-        key: "size",
-        description: "Size",
-        options: [
-          { value: Size.XS, label: "Extra Small" },
-          { value: Size.S, label: "Small" },
-          { value: Size.M, label: "Medium" },
-          { value: Size.L, label: "Large" },
-          { value: Size.XL, label: "Extra Large" },
-        ],
-        dropdown: false,
-        allSelected: true,
-      },
-      {
-        key: "gender",
-        description: "Gender",
-        options: [
-          { value: Gender.Male, label: "Male" },
-          { value: Gender.Female, label: "Female" },
-          { value: Gender.Litter, label: "Litter" },
-        ],
-        dropdown: false,
-        allSelected: true,
-      },
-    ],
-  },
-  {
-    title: "Behavioral Traits",
-    filters: [
-      {
-        key: "goodWith",
-        description: "Dogs known to be good with:",
-        options: [
-          { value: GoodWith.Men, label: "Men" },
-          { value: GoodWith.Women, label: "Women" },
-          { value: GoodWith.OlderChildren, label: "Older Children" },
-          { value: GoodWith.YoungChildren, label: "Young Children" },
-          { value: GoodWith.LargeDogs, label: "Large Dogs" },
-          { value: GoodWith.SmallDogs, label: "Small Dogs" },
-          { value: GoodWith.Cats, label: "Cats" },
-        ],
-        dropdown: false,
-        allSelected: false,
-      },
-      {
-        key: "behavioral",
-        description: "Able to foster dogs with:",
-        options: [
-          { value: Behavioral.SeparationAnxiety, label: "Separation Anxiety" },
-          { value: Behavioral.Barking, label: "Barking" },
-          { value: Behavioral.Jumping, label: "Jumping" },
-          { value: Behavioral.BiteRisk, label: "Bite Risk" },
-          { value: Behavioral.PullsOnLeash, label: "Pulls on Leash" },
-          { value: Behavioral.FlightRisk, label: "Flight Risk" },
-        ],
-        dropdown: false,
-        allSelected: true,
-      },
-    ],
-  },
-] satisfies FilterGroup[];
+type FilterAPIInput = {
+  postFilters: QueryFilter;
+  covered?: boolean;
+};
+
+type OptHandler<T extends FilterKeyTypeMap[FilterKeys]> = (
+  opts: Option<T>[]
+) => T[];
 
 /**
- * Parse filter options array based on user preferences
- * @param {Option[]} opts array of all possible options
- * @param {PossibleTypes | undefined} prefArr array of filter option enums
+ * Defines transformation for user preferences array of enums into
+ * a format usable for feed (query params)
+ * @param {Option<T>[]} opts array of all possible options
+ * @param {T[]} userPreferencefArr array of filter option enums
  * @param {boolean} inverse whether to invert the user preferences
- * @returns {Option[]} option enums converted into Option type
+ * @returns {T[]} enums array
  */
-const parseOptArr = (
-  opts: Option[],
-  prefArr: PossibleTypes[] | undefined,
+function parseOptArr<T extends FilterKeyTypeMap[FilterKeys]>(
+  opts: Option<T>[],
+  userPreferenceArr: T[] | undefined,
   inverse: boolean = false
-): Option[] =>
-  inverse
-    ? [...opts.filter((f) => !prefArr?.includes(f.value))]
-    : [...opts.filter((f) => prefArr?.includes(f.value))];
+): T[] {
+  return inverse
+    ? [
+        ...opts
+          .filter((f) => !userPreferenceArr?.includes(f.value))
+          .map((option) => option.value),
+      ]
+    : [
+        ...opts
+          .filter((f) => userPreferenceArr?.includes(f.value))
+          .map((option) => option.value),
+      ];
+}
 
 /**
  * Imports user preferences and maps them to the feed filters
  * @param {IUser | null} userData user data
- * @returns {SelectedFilters | null} preferred filters
+ * @returns {QueryFilter | null} preferred filters
  */
-function getPrefFilters(userData: IUser | null): SelectedFilters | null {
+function getPrefFilters(userData: IUser | null): QueryFilter | null {
   if (!userData) {
     return null;
   }
 
   const optHandlers: OptHandlers = {
-    type: (opts: Option[]) => parseOptArr(opts, userData.type),
-    breed: (opts: Option[]) =>
+    type: (opts: Option<FosterType>[]) =>
+      parseOptArr<FosterType>(opts, userData.type),
+    breed: (opts: Option<Breed>[]) =>
       parseOptArr(opts, userData.restrictedBreeds, true),
-    age: (opts: Option[]) => parseOptArr(opts, userData.age),
-    size: (opts: Option[]) => parseOptArr(opts, userData.size),
-    gender: (opts: Option[]) => parseOptArr(opts, userData.gender),
-    goodWith: (opts: Option[]) =>
+    age: (opts: Option<Age>[]) => parseOptArr(opts, userData.age),
+    size: (opts: Option<Size>[]) => parseOptArr(opts, userData.size),
+    gender: (opts: Option<Gender>[]) => parseOptArr(opts, userData.gender),
+    goodWith: (opts: Option<GoodWith>[]) =>
       parseOptArr(opts, userData.dogsNotGoodWith, true),
-    behavioral: (opts: Option[]) => parseOptArr(opts, userData.behavioral),
+    behavioral: (opts: Option<Behavioral>[]) =>
+      parseOptArr(opts, userData.behavioral),
   };
 
   const filters = filterGroups.reduce((acc, curr) => {
     const group = curr.filters.reduce((a, c) => {
       return {
         ...a,
-        [c.key]: optHandlers[c.key](c.options),
+        [c.key]: optHandlers[c.key](c.options as Option<any>[]), // TypeScript refuses to accept Option<FilterKeyTypeMap[FilterKeys]>[]
       };
     }, {});
     return {
@@ -276,21 +129,97 @@ function getPrefFilters(userData: IUser | null): SelectedFilters | null {
       ...group,
     };
   }, {});
-  return filters;
+  return filters as QueryFilter;
 }
 
+function generatePreprocessAndTransformSchema<
+  T extends FilterKeyTypeMap[FilterKeys]
+>(nativeEnum: any, optionMap: Record<T, string>) {
+  return z
+    .preprocess(
+      (val) => (val as string[]).filter((param) => param in optionMap),
+      z.array(z.nativeEnum(nativeEnum))
+    )
+    .transform((val) => Array.from(new Set(val)));
+}
+
+export const postFilterSchema = z.object({
+  type: generatePreprocessAndTransformSchema<FosterType>(
+    FosterType,
+    TYPE_OPTION_MAP
+  ),
+  breed: generatePreprocessAndTransformSchema(Breed, BREED_OPTION_MAP),
+  age: generatePreprocessAndTransformSchema(Age, AGE_OPTION_MAP),
+  size: generatePreprocessAndTransformSchema(Size, SIZE_OPTION_MAP),
+  gender: generatePreprocessAndTransformSchema(Gender, GENDER_OPTION_MAP),
+  goodWith: generatePreprocessAndTransformSchema(
+    GoodWith,
+    GOOD_WITH_OPTION_MAP
+  ),
+  behavioral: generatePreprocessAndTransformSchema(
+    Behavioral,
+    BEHAVIORAL_OPTION_MAP
+  ),
+});
+
+const feedFilterSchema = postFilterSchema.merge(
+  z.object({
+    covered: z.optional(z.boolean()),
+  })
+);
+
+type ResetAction = {
+  type: "reset";
+};
+
+type ProfileFillAction = {
+  type: "profileFill";
+};
+
+type CheckboxChangeAction<T extends FilterKeys> = {
+  type: "checkboxChange";
+  key: T;
+  value: FilterKeyTypeMap[T];
+  operation: "push" | "pull";
+};
+
+type DropdownChangeAction<T extends FilterKeys> = {
+  type: "dropdownChange";
+  key: T;
+  value: FilterKeyTypeMap[T][] | "";
+};
+
+export type HandleFilterChangeActions =
+  | ResetAction
+  | ProfileFillAction
+  | CheckboxChangeAction<FilterKeys>
+  | DropdownChangeAction<FilterKeys>;
+
 /**
- * Transforms `selectedFilters` into QueryFilter to match API input
- * @param selectedFilters selected feed filters
+ * Transforms `query` into QueryFilters to match API `postFilters` input.
+ * `covered` field excluded as it will only
+ * @param query parameters from URL
  * @returns query filters used to send shaped to the API input
  */
-function getQueryFilters(selectedFilters: SelectedFilters) {
-  const queryFilters = Object.keys(selectedFilters).reduce((acc, curr) => {
-    const filterVals = selectedFilters[curr].map((v) => v.value);
-    return { ...acc, [curr]: filterVals };
-  }, {});
-  return queryFilters as QueryFilter;
+function parseFeedFilter(query: Record<string, any>): FilterAPIInput {
+  const result = feedFilterSchema.safeParse(query);
+  if (!result.success) {
+    throw new Error("Could not parse URL");
+  }
+  const { covered, ...postFilters } = result.data;
+  return { covered, postFilters };
 }
+
+const defaultQueryParams = {
+  type: withDefault(ArrayParam, Object.keys(TYPE_OPTION_MAP)),
+  breed: withDefault(ArrayParam, Object.keys(BREED_OPTION_MAP)),
+  age: withDefault(ArrayParam, Object.keys(AGE_OPTION_MAP)),
+  size: withDefault(ArrayParam, Object.keys(SIZE_OPTION_MAP)),
+  gender: withDefault(ArrayParam, Object.keys(GENDER_OPTION_MAP)),
+  goodWith: withDefault(ArrayParam, []),
+  behavioral: withDefault(ArrayParam, Object.keys(BEHAVIORAL_OPTION_MAP)),
+  covered: withDefault(BooleanParam, undefined),
+};
 
 function Feed(props: {
   filterDisplayed: boolean;
@@ -303,98 +232,82 @@ function Feed(props: {
     onOpen: onPostCreationOpen,
     onClose: onPostCreationClose,
   } = useDisclosure();
-  const {
-    isOpen: isPostViewOpen,
-    onOpen: onPostViewOpen,
-    onClose: onPostViewClose,
-  } = useDisclosure();
 
   const { userData } = useAuth();
-
   const role = userData?.role;
-
-  const [displayCovered, setDisplayCovered] = useState<boolean | undefined>(
-    undefined
-  );
 
   const [isSmallerThanLg] = useMediaQuery("(max-width: 62em)");
 
-  function getInitialFilters(): SelectedFilters {
-    return filterGroups.reduce((acc, curr) => {
-      const group = curr.filters.reduce((a, c) => {
-        if (c.allSelected) return { ...a, [c.key]: [...c.options] };
-        return { ...a, [c.key]: [] };
-      }, {});
-      return {
-        ...acc,
-        ...group,
-      };
-    }, {});
-  }
+  const [query, setQuery] = useQueryParams(defaultQueryParams);
 
-  function filterReducer(
-    state: SelectedFilters,
-    action: {
-      type: string;
-      filter: Filter;
-      ind: number;
-      event: Option[];
-    }
-  ) {
-    let tempState = JSON.parse(JSON.stringify(state));
-    switch (action.type) {
-      case "reset":
-        return getInitialFilters();
-      case "useprefs":
-        return getPrefFilters(userData) || state;
-      case "dropdown":
-        tempState[action.filter.key] = action.event;
-        return tempState;
-      case "checkbox":
-        const filt = action.filter;
-        const ind = action.ind;
-        const option = filt.options[ind];
-        if (
-          tempState[filt.key].some(
-            (e: Option) => e.value == option.value && e.label == option.label
-          )
-        ) {
-          tempState[filt.key].splice(
-            tempState[filt.key].findIndex(
-              (e: Option) => e.value == option.value && e.label == option.label
-            ),
-            1
-          );
-        } else {
-          tempState[filt.key].push(filt.options[ind]);
-        }
-        return tempState;
-      default:
-        return state;
-    }
-  }
+  const validatedFilters = useMemo(() => {
+    const parsedFilters = parseFeedFilter(query);
+    return {
+      postFilters: parsedFilters.postFilters,
+      covered:
+        role === Role.Volunteer ? false : parsedFilters.covered ?? undefined,
+    };
+  }, [query]);
 
-  const [selectedFilters, setSelectedFilters] = useReducer(
-    filterReducer,
-    getInitialFilters()
+  const [debouncedFilters, isUpdating] = useDebounce<typeof validatedFilters>(
+    validatedFilters,
+    400
   );
-
-  const queryParams = useMemo(
-    () => ({
-      postFilters: getQueryFilters(selectedFilters),
-      covered: role === Role.Volunteer ? false : displayCovered,
-    }),
-    [selectedFilters, displayCovered]
-  );
-
-  const [debouncedQueryParams, isUpdating] = useDebounce<
-    typeof selectedFilters
-  >(queryParams, 400);
 
   const { data: feedPosts, isLoading } =
-    trpc.post.getFilteredPosts.useQuery(debouncedQueryParams);
+    trpc.post.getFilteredPosts.useQuery(debouncedFilters);
 
-  const [modalPostId, setModalPostId] = useState<Types.ObjectId | null>(null);
+  /**
+   * Handles all changes to filter state, except for `covered`. This includes
+   * option selection/deselection, dropdown modifications, reset,
+   * and filling from profile.
+   */
+  const handleFilterChange = useCallback(
+    (action: HandleFilterChangeActions) => {
+      switch (action.type) {
+        case "reset":
+          setQuery({}, "replace");
+          break;
+        case "checkboxChange":
+          let newParams: FilterKeyTypeMap[FilterKeys][] | "";
+          if (action.operation === "push") {
+            newParams = [
+              ...validatedFilters.postFilters[action.key],
+              action.value,
+            ];
+          } else {
+            newParams = (
+              validatedFilters.postFilters[
+                action.key
+              ] as FilterKeyTypeMap[FilterKeys][]
+            ).filter((val) => val !== action.value);
+          }
+
+          if (newParams.length === 0) {
+            newParams = "";
+          }
+          setQuery({
+            [action.key]: newParams,
+          });
+          break;
+        case "dropdownChange":
+          setQuery({
+            [action.key]: action.value,
+          });
+          break;
+        case "profileFill":
+          setQuery(getPrefFilters(userData) ?? {}, "replace");
+          break;
+      }
+    },
+    [validatedFilters]
+  );
+
+  function handleCoveredChange(newVal: boolean | undefined) {
+    setQuery({
+      covered: newVal,
+    });
+  }
 
   const filter = (
     <Flex
@@ -408,11 +321,8 @@ function Feed(props: {
           w="100%"
           variant="outline-secondary"
           onClick={() => {
-            setSelectedFilters({
+            handleFilterChange({
               type: "reset",
-              filter: filterGroups[0].filters[0],
-              ind: 0,
-              event: [],
             });
           }}
         >
@@ -421,11 +331,8 @@ function Feed(props: {
         <Button
           w="100%"
           onClick={() => {
-            setSelectedFilters({
-              type: "useprefs",
-              filter: filterGroups[0].filters[0],
-              ind: 0,
-              event: [],
+            handleFilterChange({
+              type: "profileFill",
             });
           }}
           variant="solid-primary"
@@ -439,8 +346,8 @@ function Feed(props: {
             <FeedFilterGroup
               key={val.title}
               filterGroup={val}
-              selectedFilters={selectedFilters}
-              setSelectedFilters={setSelectedFilters}
+              selectedFilters={validatedFilters.postFilters}
+              handleFilterChange={handleFilterChange}
             />
           );
         })}
@@ -458,16 +365,9 @@ function Feed(props: {
         <Stack overflowY="auto" spacing={0} w="100%" mt={4}>
           {feedPosts!.map((p) => {
             return (
-              <Box
-                onClick={() => {
-                  setModalPostId(p._id);
-                  onPostViewOpen();
-                }}
-                _hover={{ cursor: "pointer" }}
-                key={p._id.toString()}
-              >
+              <Link key={p._id.toString()} href={`/post/${p._id.toString()}`}>
                 <FeedPostCard post={p} />
-              </Box>
+              </Link>
             );
           })}
         </Stack>
@@ -517,11 +417,8 @@ function Feed(props: {
             <Button
               variant="outline-secondary"
               onClick={() => {
-                setSelectedFilters({
+                handleFilterChange({
                   type: "reset",
-                  filter: filterGroups[0].filters[0],
-                  ind: 0,
-                  event: [],
                 });
               }}
             >
@@ -529,11 +426,8 @@ function Feed(props: {
             </Button>
             <Button
               onClick={() => {
-                setSelectedFilters({
-                  type: "useprefs",
-                  filter: filterGroups[0].filters[0],
-                  ind: 0,
-                  event: [],
+                handleFilterChange({
+                  type: "profileFill",
                 });
               }}
               variant="solid-primary"
@@ -546,8 +440,8 @@ function Feed(props: {
               <FeedFilterGroup
                 key={val.title}
                 filterGroup={val}
-                selectedFilters={selectedFilters}
-                setSelectedFilters={setSelectedFilters}
+                selectedFilters={validatedFilters.postFilters}
+                handleFilterChange={handleFilterChange}
               />
             );
           })}
@@ -583,8 +477,8 @@ function Feed(props: {
                 }}
               >
                 <FeedCoveredDropdown
-                  displayCovered={displayCovered}
-                  setDisplayCovered={setDisplayCovered}
+                  displayCovered={validatedFilters.covered}
+                  handleCoveredChange={handleCoveredChange}
                 />
               </Flex>
             </Flex>
@@ -634,8 +528,8 @@ function Feed(props: {
               w="100%"
             >
               <FeedCoveredDropdown
-                displayCovered={displayCovered}
-                setDisplayCovered={setDisplayCovered}
+                displayCovered={validatedFilters.covered}
+                handleCoveredChange={handleCoveredChange}
               />
             </Flex>
           )}
@@ -652,14 +546,6 @@ function Feed(props: {
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
       />
-      {feedPosts && feedPosts.length > 0 && modalPostId && (
-        <PetPostModal
-          isOpen={isPostViewOpen}
-          onClose={onPostViewClose}
-          postId={modalPostId}
-          setModalPostId={setModalPostId}
-        />
-      )}
     </Flex>
   );
 }

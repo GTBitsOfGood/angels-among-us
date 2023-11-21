@@ -31,6 +31,7 @@ import {
 import FileUploadSlide from "../PostCreationModal/FileUpload/FileUploadSlide";
 import { FormSlide } from "../PostCreationModal/Form/FormSlide";
 import { Types } from "mongoose";
+import { useRouter } from "next/router";
 
 function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
   if (val === null) {
@@ -128,10 +129,10 @@ const EditPostModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   postData: SerializedPost;
-  setModalPostId: React.SetStateAction<React.Dispatch<Types.ObjectId>>;
   attachments: string[];
-}> = ({ isOpen, onClose, postData, setModalPostId, attachments }) => {
+}> = ({ isOpen, onClose, postData, attachments }) => {
   const toast = useToast();
+  const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isContentView, setIsContentView] = useState(true);
@@ -297,7 +298,7 @@ const EditPostModal: React.FC<{
         newId,
       });
 
-      setModalPostId(newPost._id);
+      router.replace(`/post/${newPost._id.toString()}`);
     } catch (e) {
       toast({
         title: "An error has occurred.",

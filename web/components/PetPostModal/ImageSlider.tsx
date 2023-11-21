@@ -1,9 +1,9 @@
 import { Flex, Image, Circle } from "@chakra-ui/react";
 import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import DefaultDog from "../../public/dog.svg";
 import { useState } from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 function ImageSlider(props: { attachments: Array<string> }) {
   const videoTypes = new Set(["mp4", "mov"]);
@@ -12,52 +12,50 @@ function ImageSlider(props: { attachments: Array<string> }) {
   return (
     <Carousel
       axis="horizontal"
+      dynamicHeight={false}
+      showThumbs={false}
       showStatus={false}
       swipeable={false}
       infiniteLoop
       renderArrowPrev={(clickHandler, hasPrev) => {
         return (
           <Flex
-            position="absolute"
             display={hasPrev ? "flex" : "none"}
+            position="absolute"
             zIndex={2}
-            top={0}
-            bottom={0}
+            top="50%"
             left={0}
-            p={3}
-            alignItems="flex-end"
-            maxHeight={["23.5vh", "35.5vh"]}
+            transform="translateY(-50%)"
+            pl={3}
           >
-            <Flex onClick={clickHandler} cursor="pointer">
-              <ChevronLeftIcon
-                boxSize={30}
-                background={"white"}
-                color={"black"}
-                borderRadius="100"
-                border="1px solid black"
-              />
-            </Flex>
+            <ChevronLeftIcon
+              onClick={clickHandler}
+              cursor="pointer"
+              boxSize={30}
+              background="white"
+              color="black"
+              borderRadius="100"
+              border="1px solid black"
+            />
           </Flex>
         );
       }}
       renderArrowNext={(clickHandler, hasNext) => {
         return (
           <Flex
-            position="absolute"
             display={hasNext ? "flex" : "none"}
+            position="absolute"
             zIndex={2}
-            top={0}
-            bottom={0}
+            top="50%"
             right={0}
-            p={3}
-            alignItems="flex-end"
-            maxHeight={["23.5vh", "35.5vh"]}
+            transform="translateY(-50%)"
+            pr={3}
           >
             <Flex onClick={clickHandler} cursor="pointer">
               <ChevronRightIcon
                 boxSize={30}
-                background={"white"}
-                color={"black"}
+                background="white"
+                color="black"
                 borderRadius="100"
                 border="1px solid black"
               />
@@ -93,21 +91,18 @@ function ImageSlider(props: { attachments: Array<string> }) {
             );
             return (
               <Flex
+                key={attachment}
                 justifyContent={"center"}
                 alignItems={"center"}
-                bgColor={isVideoType ? "black" : "tag-primary-bg"}
-                borderRadius="15px"
-                overflow={"hidden"}
-                height={["40vh", "65vh"]}
-                key={attachment}
-                paddingX={0}
+                borderRadius={12}
+                height={{ base: "40dvh", md: "100%" }}
               >
                 {isVideoType ? (
                   <Flex
                     alignItems={"center"}
                     justifyContent={"center"}
-                    height={["40vh", "65vh"]}
-                    width={["94%", "96%"]}
+                    height={{ base: "40dvh", md: "100%" }}
+                    p={2}
                   >
                     <Flex
                       w="100%"
@@ -134,10 +129,11 @@ function ImageSlider(props: { attachments: Array<string> }) {
                   <Image
                     key={attachment}
                     src={attachment}
-                    objectFit={"cover"}
-                    verticalAlign={"true"}
+                    objectFit="contain"
+                    verticalAlign="true"
                     align="center"
-                    maxHeight={["40vh", "65vh"]}
+                    w="auto"
+                    h="100%"
                     alt=""
                   />
                 )}
@@ -146,16 +142,12 @@ function ImageSlider(props: { attachments: Array<string> }) {
           })
         : [
             <Flex
-              key={"default"}
-              direction={"column"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              borderRadius="15px"
-              minHeight={["40vh", "65vh"]}
-              minWidth={{ lg: "20vw" }}
-              width={"100%"}
-              paddingBottom={10}
-              bgColor={"#DDDDDD"}
+              key="default"
+              direction="column"
+              justifyContent="center"
+              alignItems="center"
+              minHeight={{ base: "40dvh", md: "100%" }}
+              width="100%"
             >
               <DefaultDog fill="white" height={"50%"} width={"50%"} />
             </Flex>,

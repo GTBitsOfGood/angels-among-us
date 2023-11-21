@@ -33,6 +33,7 @@ import nodemailer from "nodemailer";
 import { FilterQuery, Types } from "mongoose";
 import { populateEmailTemplate } from "../../email/email-template";
 import inlineCss from "inline-css";
+import { postFilterSchema } from "../../components/Feed/Feed";
 
 const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24
@@ -98,16 +99,6 @@ const transporter = nodemailer.createTransport({
     user: process.env.LOGIN_EMAIL,
     pass: process.env.PASSWORD_EMAIL,
   },
-});
-
-const postFilterSchema = z.object({
-  type: z.array(z.nativeEnum(FosterType)),
-  breed: z.array(z.nativeEnum(Breed)),
-  age: z.array(z.nativeEnum(Age)),
-  size: z.array(z.nativeEnum(Size)),
-  gender: z.array(z.nativeEnum(Gender)),
-  goodWith: z.array(z.nativeEnum(GoodWith)),
-  behavioral: z.array(z.nativeEnum(Behavioral)),
 });
 
 const goodWithMap: Record<GoodWith, string> = {

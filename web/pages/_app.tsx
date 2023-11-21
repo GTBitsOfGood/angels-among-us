@@ -4,6 +4,8 @@ import { trpc } from "../utils/trpc";
 import { AuthProvider } from "../context/auth";
 import { Box, ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
+import NextAdapterPages from "next-query-params/pages";
+import { QueryParamProvider } from "use-query-params";
 
 const semanticTokens = {
   colors: {
@@ -112,10 +114,12 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ChakraProvider theme={theme}>
       <AuthProvider>
-        <Box h="100dvh" w="100dvw">
-          <Navbar />
-          <Component {...pageProps} />
-        </Box>
+        <QueryParamProvider adapter={NextAdapterPages}>
+          <Box h="100dvh" w="100dvw">
+            <Navbar />
+            <Component {...pageProps} />
+          </Box>
+        </QueryParamProvider>
       </AuthProvider>
     </ChakraProvider>
   );

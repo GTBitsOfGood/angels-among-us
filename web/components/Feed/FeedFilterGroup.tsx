@@ -10,22 +10,18 @@ import {
   Flex,
   Text,
 } from "@chakra-ui/react";
-import { Dispatch } from "react";
 import Select from "react-select";
-import { Filter, FilterGroup, Option, SelectedFilters } from "./Feed";
+import { Breed, breedLabels } from "../../utils/types/post";
+import { HandleFilterChangeActions, QueryFilter } from "./Feed";
+import { FilterGroup, FilterKeys, FilterKeyTypeMap } from "./filterConsts";
 
 function FeedFilterGroup(props: {
   key: string;
   filterGroup: FilterGroup;
-  selectedFilters: SelectedFilters;
-  setSelectedFilters: Dispatch<{
-    type: string;
-    filter: Filter;
-    ind: number;
-    event: Option[];
-  }>;
+  selectedFilters: QueryFilter;
+  handleFilterChange: (action: HandleFilterChangeActions) => void;
 }) {
-  const { filterGroup, selectedFilters, setSelectedFilters } = props;
+  const { filterGroup, selectedFilters, handleFilterChange } = props;
 
   return (
     <Accordion allowMultiple={true}>
@@ -82,42 +78,42 @@ function FeedFilterGroup(props: {
                           },
                         }),
                       }}
-                      options={f.options}
-                      value={f.options.reduce((arr: Option[], val) => {
-                        if (selectedFilters[f.key].includes(val)) {
-                          arr.push(val);
-                        }
-                        return arr;
-                      }, [])}
+                      options={f.options as any}
+                      //TODO: Refactor to allow dropdown to not be hard-coded as Breed[]
+                      value={(selectedFilters[f.key] as Breed[]).map(
+                        (selected) => ({
+                          value: selected,
+                          label: breedLabels[selected],
+                        })
+                      )}
                       isMulti
                       closeMenuOnSelect={false}
-                      onChange={(event: any) => {
-                        setSelectedFilters({
-                          type: "dropdown",
-                          filter: f,
-                          ind: 0,
-                          event: event,
+                      onChange={(options) => {
+                        handleFilterChange({
+                          type: "dropdownChange",
+                          key: f.key,
+                          value: options.map((option) => option.value),
                         });
                       }}
                     />
                   </Flex>
                 ) : (
-                  f.options.map((val, ind) => {
+                  f.options.map((val) => {
                     return (
                       <Checkbox
                         key={val.label}
                         color="#3F3F3F"
-                        isChecked={selectedFilters[f.key].some(
-                          (e: Option) =>
-                            e.value == f.options[ind].value &&
-                            e.label == f.options[ind].label
-                        )}
-                        onChange={() => {
-                          setSelectedFilters({
-                            type: "checkbox",
-                            filter: f,
-                            ind: ind,
-                            event: [],
+                        isChecked={(
+                          selectedFilters[
+                            f.key
+                          ] as FilterKeyTypeMap[FilterKeys][]
+                        ).includes(val.value)}
+                        onChange={(e) => {
+                          handleFilterChange({
+                            type: "checkboxChange",
+                            key: f.key,
+                            value: val.value,
+                            operation: e.target.checked ? "push" : "pull",
                           });
                         }}
                       >
@@ -142,11 +138,10 @@ function FeedFilterGroup(props: {
                   borderColor="#D9D9D9"
                   borderRadius="4px"
                   onClick={() => {
-                    setSelectedFilters({
-                      type: "dropdown",
-                      filter: f,
-                      ind: 0,
-                      event: [],
+                    handleFilterChange({
+                      type: "dropdownChange",
+                      key: f.key,
+                      value: "",
                     });
                   }}
                 >
@@ -160,11 +155,10 @@ function FeedFilterGroup(props: {
                   borderColor="#D9D9D9"
                   borderRadius="4px"
                   onClick={() => {
-                    setSelectedFilters({
-                      type: "dropdown",
-                      filter: f,
-                      ind: 0,
-                      event: f.options.map((val) => val),
+                    handleFilterChange({
+                      type: "dropdownChange",
+                      key: f.key,
+                      value: f.options.map((option) => option.value),
                     });
                   }}
                 >
