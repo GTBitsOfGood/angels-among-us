@@ -271,19 +271,18 @@ function PostPage() {
           display="flex"
           flexDir="column"
           justifyContent="center"
+          alignContent="center"
           w="100%"
-          h="100%"
           bgColor="#DDDDDD"
           colSpan={1}
           borderRadius={12}
-          overflow="clip"
         >
           <ImageSlider attachments={attachments} />
         </GridItem>
         <GridItem
           display="flex"
           w="100%"
-          h="100%"
+          maxH="100%"
           flexDir="column"
           gap={{ base: 2, md: 8 }}
           overflowY="scroll"
