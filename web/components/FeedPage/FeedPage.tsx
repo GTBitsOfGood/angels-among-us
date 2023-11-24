@@ -1,15 +1,11 @@
-import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
-  Center,
   Flex,
-  Spinner,
-  Stack,
   Text,
   useDisclosure,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../../context/auth";
 import { trpc } from "../../utils/trpc";
 import { Role } from "../../utils/types/account";
@@ -34,13 +30,11 @@ import {
   SIZE_OPTION_MAP,
   BEHAVIORAL_OPTION_MAP,
   GOOD_WITH_OPTION_MAP,
-} from "./filterConsts";
+} from "./Filter/filterConsts";
 import { IUser } from "../../utils/types/user";
 import PostCreationModal from "../PostCreationModal/PostCreationModal";
-import FeedFilterGroup from "./FeedFilterGroup";
-import FeedPostCard from "./FeedPostCard";
 import useDebounce from "../../hooks/useDebounce";
-import FeedCoveredDropdown from "./FeedCoveredDropdown";
+import FeedCoveredDropdown from "./CoveredDropdown";
 import {
   useQueryParams,
   ArrayParam,
@@ -48,7 +42,8 @@ import {
   withDefault,
 } from "use-query-params";
 import { z } from "zod";
-import Link from "next/link";
+import FeedSection from "./Feed/FeedSection";
+import FilterSection from "./Filter/FilterSection";
 
 type OptHandlers = {
   [K in FilterKeys]: OptHandler<FilterKeyTypeMap[K]>;
@@ -221,12 +216,7 @@ const defaultQueryParams = {
   covered: withDefault(BooleanParam, undefined),
 };
 
-function Feed(props: {
-  filterDisplayed: boolean;
-  setFilterDisplayed: Dispatch<SetStateAction<boolean>>;
-}) {
-  let { filterDisplayed, setFilterDisplayed } = props;
-
+function FeedPage() {
   const {
     isOpen: isPostCreationOpen,
     onOpen: onPostCreationOpen,
@@ -237,6 +227,7 @@ function Feed(props: {
   const role = userData?.role;
 
   const [isSmallerThanLg] = useMediaQuery("(max-width: 62em)");
+  const [isMobileFilterDisplayed, setIsMobileFilterDisplayed] = useState(false);
 
   const [query, setQuery] = useQueryParams(defaultQueryParams);
 
@@ -309,239 +300,96 @@ function Feed(props: {
     });
   }
 
-  const filter = (
-    <Flex
-      display={{ base: "flex", lg: "none" }}
-      direction="column"
-      width="100%"
-      padding="0px"
-    >
-      <Flex marginTop="0px" gap="8px" w="100%" paddingY={{ base: 5, lg: 0 }}>
-        <Button
-          w="100%"
-          variant="outline-secondary"
-          onClick={() => {
-            handleFilterChange({
-              type: "reset",
-            });
-          }}
-        >
-          Clear All
-        </Button>
-        <Button
-          w="100%"
-          onClick={() => {
-            handleFilterChange({
-              type: "profileFill",
-            });
-          }}
-          variant="solid-primary"
-        >
-          Fill From Profile
-        </Button>
-      </Flex>
-      <Flex direction="column">
-        {filterGroups.map((val) => {
-          return (
-            <FeedFilterGroup
-              key={val.title}
-              filterGroup={val}
-              selectedFilters={validatedFilters.postFilters}
-              handleFilterChange={handleFilterChange}
-            />
-          );
-        })}
-      </Flex>
-    </Flex>
-  );
-
-  const MediaContextualizedFeedAndFilter = () => {
-    if (filterDisplayed && isSmallerThanLg) {
-      return filter;
-    }
-
-    if (feedPosts && feedPosts.length > 0) {
-      return (
-        <Stack overflowY="auto" spacing={0} w="100%" mt={4}>
-          {feedPosts!.map((p) => {
-            return (
-              <Link key={p._id.toString()} href={`/post/${p._id.toString()}`}>
-                <FeedPostCard post={p} />
-              </Link>
-            );
-          })}
-        </Stack>
-      );
-    }
+  const Dropdown = () => {
     return (
-      <Center width="100%" marginTop={"5vh"}>
-        <Text>No results found.</Text>
-      </Center>
+      <FeedCoveredDropdown
+        displayCovered={validatedFilters.covered}
+        handleCoveredChange={handleCoveredChange}
+      />
     );
   };
 
   return (
     <Flex
-      className="feed"
-      backgroundColor={{ base: "white", lg: "bg-primary" }}
-      justifyContent="center"
-      height="100dvh"
+      bgColor={{ base: "white", lg: "bg-primary" }}
+      flexDir={{ base: "column", lg: "row" }}
+      w="100%"
+      h="100%"
+      justifyContent={{ base: "inherit", lg: "center" }}
+      alignItems={{ base: "center", lg: "inherit" }}
+      pt={{ base: 20, lg: 100 }}
+      px={{ base: 4, lg: 8 }}
+      pb={{ base: 0, lg: 50 }}
     >
-      <Stack
-        spacing={{ base: "0px", lg: "30px" }}
-        marginTop={{
-          base: document.getElementById("navbar")?.offsetHeight + "px",
-          lg: "100px",
-        }}
-        marginBottom={{ base: "0px", lg: "50px" }}
-        direction={{ base: "column", lg: "row" }}
-        flex={{ base: "1", lg: "0" }}
+      <Flex
+        display={{ base: "flex", lg: "none" }}
+        w="100%"
+        direction="column"
+        pb={4}
       >
-        <Flex
-          width="25vw"
-          borderRadius="10px"
-          backgroundColor="white"
-          direction="column"
-          display={{ base: "none", lg: "flex" }}
-          overflowY="auto"
-        >
-          <Text fontWeight="semibold" margin="16px">
-            Filter By:
-          </Text>
-          <Flex
-            direction="column"
-            justifyContent="flex-end"
-            margin="12px"
-            gap="8px"
-          >
-            <Button
-              variant="outline-secondary"
-              onClick={() => {
-                handleFilterChange({
-                  type: "reset",
-                });
-              }}
-            >
-              Clear All
-            </Button>
-            <Button
-              onClick={() => {
-                handleFilterChange({
-                  type: "profileFill",
-                });
-              }}
-              variant="solid-primary"
-            >
-              Fill From Profile
-            </Button>
-          </Flex>
-          {filterGroups.map((val) => {
-            return (
-              <FeedFilterGroup
-                key={val.title}
-                filterGroup={val}
-                selectedFilters={validatedFilters.postFilters}
-                handleFilterChange={handleFilterChange}
-              />
-            );
-          })}
-        </Flex>
-        <Flex
-          width={{ base: "100dvw", lg: "55dvw" }}
-          minHeight="0" // To prevent mobile view column flexbox blowout (flex: 1 doesn't respect parent's max height)
-          flex="1"
-          borderRadius={{ base: "0px", lg: "10px" }}
-          backgroundColor={{ base: "white", lg: "#F9F8F8" }}
-          direction="column"
-          alignItems="center"
-          p={{ base: 4, lg: "20px" }}
-        >
-          <Flex
-            w="100%"
-            h="min-content"
-            dir="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Flex alignItems="center">
-              <Text fontWeight="bold" fontSize="20px" pr={3}>
-                {filterDisplayed ? "Filter By:" : "Latest Posts"}
-              </Text>
-              <Flex
-                display={{
-                  base: "none",
-                  md:
-                    role === Role.Admin || role === Role.ContentCreator
-                      ? "flex"
-                      : "none",
-                }}
-              >
-                <FeedCoveredDropdown
-                  displayCovered={validatedFilters.covered}
-                  handleCoveredChange={handleCoveredChange}
-                />
-              </Flex>
-            </Flex>
-            {(role === Role.Admin || role === Role.ContentCreator) &&
-              !(isSmallerThanLg && filterDisplayed) && (
-                <Flex
-                  bgColor={{ base: "white", lg: "transparent" }}
-                  p={{ base: 4, lg: 0 }}
-                  position={{ base: "absolute", lg: "static" }}
-                  left={{ base: 0 }}
-                  bottom={{ base: 0 }}
-                  zIndex={1}
-                  w={{ base: "100%", lg: "auto" }}
-                >
-                  <Button
-                    variant="solid-primary"
-                    leftIcon={<AddIcon />}
-                    onClick={onPostCreationOpen}
-                    w="100%"
-                  >
-                    Add new post
-                  </Button>
-                </Flex>
-              )}
-            <Button
-              display={{ base: "flex", lg: "none" }}
-              variant={filterDisplayed ? "outline-secondary" : "solid-primary"}
-              onClick={() => {
-                setFilterDisplayed(!filterDisplayed);
-              }}
-              height="36px"
-              borderRadius="10px"
-            >
-              {filterDisplayed ? "Close" : "Filter By"}
-            </Button>
-          </Flex>
-          {!filterDisplayed && (
+        <Flex w="100%" direction="row" justifyContent="space-between">
+          <Flex gap={2} w="100%" display={{ base: "flex", lg: "none" }}>
+            <Text fontWeight="bold" fontSize="20px" pr={3}>
+              {isMobileFilterDisplayed && isSmallerThanLg
+                ? "Filter By:"
+                : "Latest Posts"}
+            </Text>
             <Flex
               display={{
-                base:
+                base: "none",
+                md:
                   role === Role.Admin || role === Role.ContentCreator
                     ? "flex"
                     : "none",
-                md: "none",
               }}
-              pt={2}
-              w="100%"
             >
-              <FeedCoveredDropdown
-                displayCovered={validatedFilters.covered}
-                handleCoveredChange={handleCoveredChange}
-              />
+              <Dropdown />
             </Flex>
-          )}
-          {!isUpdating && !isLoading ? (
-            <MediaContextualizedFeedAndFilter />
-          ) : (
-            <Center height="75%" width="100%">
-              <Spinner size="xl" />
-            </Center>
-          )}
+          </Flex>
+          <Button
+            display={{ base: "flex", lg: "none" }}
+            variant={
+              isMobileFilterDisplayed ? "outline-secondary" : "solid-primary"
+            }
+            onClick={() => {
+              setIsMobileFilterDisplayed(!isMobileFilterDisplayed);
+            }}
+            height="36px"
+            borderRadius="10px"
+          >
+            {isMobileFilterDisplayed ? "Close" : "Filter By"}
+          </Button>
         </Flex>
-      </Stack>
+        <Flex
+          w="100%"
+          display={{ base: "flex", md: "none" }}
+          justifyContent="start"
+        >
+          <Dropdown />
+        </Flex>
+      </Flex>
+      <Flex
+        w="100%"
+        h="100%"
+        overflow="hidden"
+        justifyContent="center"
+        gap={30}
+      >
+        <FilterSection
+          isMobileFilterDisplayed={isMobileFilterDisplayed}
+          handleFilterChange={handleFilterChange}
+          postFilterState={validatedFilters.postFilters}
+        />
+        {!(isSmallerThanLg && isMobileFilterDisplayed) ? (
+          <FeedSection
+            isLoading={isUpdating || isLoading}
+            coveredState={validatedFilters.covered}
+            handleCoveredChange={handleCoveredChange}
+            onPostCreationOpen={onPostCreationOpen}
+            feedPosts={feedPosts}
+          />
+        ) : null}
+      </Flex>
       <PostCreationModal
         isOpen={isPostCreationOpen}
         onClose={onPostCreationClose}
@@ -550,5 +398,5 @@ function Feed(props: {
   );
 }
 
-export default Feed;
+export default FeedPage;
 export { getPrefFilters };

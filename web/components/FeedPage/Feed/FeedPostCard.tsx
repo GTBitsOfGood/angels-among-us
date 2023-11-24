@@ -1,7 +1,8 @@
-import { Card, Center, Flex, Image, Text } from "@chakra-ui/react";
-import DefaultDog from "../../public/dog.svg";
+import Image from "next/legacy/image";
+import { Box, Card, Center, Flex, Text } from "@chakra-ui/react";
+import DefaultDog from "../../../public/dog.svg";
 import dayjs from "dayjs";
-import { fosterTypeLabels, IFeedPost } from "../../utils/types/post";
+import { fosterTypeLabels, IFeedPost } from "../../../utils/types/post";
 
 function DefaultDogImage() {
   return (
@@ -42,7 +43,7 @@ function FeedPostCard(props: { post: IFeedPost }) {
     .toString();
 
   return (
-    <Flex position="relative" marginBottom={4}>
+    <Flex position="relative">
       <Card
         paddingX={{ base: "12px", lg: "16px" }}
         paddingY={{ base: "16px", lg: "20px" }}
@@ -53,15 +54,17 @@ function FeedPostCard(props: { post: IFeedPost }) {
       >
         <Flex gap={{ base: "15px", lg: "20px" }}>
           {firstImage ? (
-            <Image
-              src={firstImage}
-              objectFit="cover"
-              minWidth={{ base: "120px", lg: "150px" }}
-              width={{ base: "120px", lg: "150px" }}
-              height={{ base: "120px", lg: "150px" }}
-              backgroundColor="#D9D9D9"
-              borderRadius="14px"
-            ></Image>
+            <Box
+              minW={{ base: "120px", lg: "150px" }}
+              w={{ base: "120px", lg: "150px" }}
+              h={{ base: "120px", lg: "150px" }}
+              bgColor="#D9D9D9"
+              borderRadius={12}
+              overflow="hidden"
+              pos="relative"
+            >
+              <Image src={firstImage} objectFit="cover" layout="fill" alt="" />
+            </Box>
           ) : (
             <DefaultDogImage />
           )}

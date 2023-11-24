@@ -1,5 +1,6 @@
 import { PhoneIcon } from "@chakra-ui/icons";
 import { Flex, Stack, Text, Box, Divider } from "@chakra-ui/react";
+import Link from "next/link";
 import { PropsWithChildren } from "react";
 import pageAccessHOC from "../components/HOC/PageAccess";
 
@@ -299,7 +300,9 @@ function TeamContact({ contact, purpose }: TeamContactProps) {
       paddingY={3}
       borderRadius={10}
     >
-      <Text fontWeight="600">{`${contact}@angelsrescue.org`}</Text>
+      <Link href={`mailto:${contact}@angelsrescue.org`}>
+        <Text fontWeight="600">{`${contact}@angelsrescue.org`}</Text>
+      </Link>
       <Text fontSize="sm">{purpose}</Text>
     </Flex>
   );
@@ -326,10 +329,12 @@ function ImportantContact({
         {lineName}
       </Text>
       <Text fontSize="md">{purpose}</Text>
-      <Text fontSize="xl" fontWeight="600">
-        <PhoneIcon marginRight="4px" />
-        {phoneNumber}
-      </Text>
+      <Link href={`tel:${phoneNumber}`}>
+        <Text fontSize="xl" fontWeight="600">
+          <PhoneIcon marginRight="4px" />
+          {phoneNumber}
+        </Text>
+      </Link>
     </Flex>
   );
 }

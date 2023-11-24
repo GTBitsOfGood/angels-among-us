@@ -2,7 +2,7 @@ import {
   getPrefFilters,
   Option,
   SelectedFilters,
-} from "../../components/Feed/Feed";
+} from "../../components/FeedPage/FeedPage";
 import { Role } from "../../utils/types/account";
 import {
   Breed,

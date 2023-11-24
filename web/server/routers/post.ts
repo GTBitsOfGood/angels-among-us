@@ -33,7 +33,7 @@ import nodemailer from "nodemailer";
 import { FilterQuery, Types } from "mongoose";
 import { populateEmailTemplate } from "../../email/email-template";
 import inlineCss from "inline-css";
-import { postFilterSchema } from "../../components/Feed/Feed";
+import { postFilterSchema } from "../../components/FeedPage/FeedPage";
 
 const zodOidType = z.custom<Types.ObjectId>(
   (item) => String(item).length == 24

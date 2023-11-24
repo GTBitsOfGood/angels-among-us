@@ -184,7 +184,7 @@ function PostPage() {
         h="100%"
         templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
         templateRows={{ base: "75px 1fr 1fr 50px", md: "50px 1fr 50px" }}
-        p={8}
+        p={{ base: 4, md: 8 }}
         gap={{ base: 4, md: 8 }}
         overflow="hidden"
       >
@@ -273,9 +273,7 @@ function PostPage() {
           justifyContent="center"
           alignContent="center"
           w="100%"
-          bgColor="#DDDDDD"
           colSpan={1}
-          borderRadius={12}
         >
           <ImageSlider attachments={attachments} />
         </GridItem>
@@ -285,7 +283,7 @@ function PostPage() {
           maxH="100%"
           flexDir="column"
           gap={{ base: 2, md: 8 }}
-          overflowY="scroll"
+          overflowY="auto"
           colSpan={1}
         >
           <Text fontWeight="black" fontSize="4xl" letterSpacing="wide">

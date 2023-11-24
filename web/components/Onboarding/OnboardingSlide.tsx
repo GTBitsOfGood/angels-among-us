@@ -120,7 +120,7 @@ function OnboardingSlide(props: {
                 <Text
                   color="black"
                   maxHeight="400px"
-                  overflowY="scroll"
+                  overflowY="auto"
                   align="left"
                   padding="20px"
                   paddingRight="30px"

@@ -38,13 +38,9 @@ export default async function handler(
       res.status(400).send("Invalid JWT");
       return;
     }
-    const resizer = sharp()
-      .resize({
-        width: 2000,
-      })
-      .resize({
-        height: 2000,
-      });
+    const resizer = sharp().rotate().resize(2000, 2000, {
+      fit: "inside",
+    });
 
     const chunks = [];
 

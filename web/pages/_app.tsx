@@ -1,4 +1,4 @@
-import "@fontsource/roboto/400.css";
+import "@fontsource/roboto";
 import type { AppProps } from "next/app";
 import { trpc } from "../utils/trpc";
 import { AuthProvider } from "../context/auth";

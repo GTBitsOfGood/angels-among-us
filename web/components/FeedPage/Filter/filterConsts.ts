@@ -1,4 +1,4 @@
-import { PossibleTypes } from "../../pages/onboarding";
+import { PossibleTypes } from "../../../pages/onboarding";
 import {
   Breed,
   FosterType,
@@ -14,7 +14,7 @@ import {
   sizeLabels,
   goodWithLabels,
   behavioralLabels,
-} from "../../utils/types/post";
+} from "../../../utils/types/post";
 
 export type FilterKeys =
   | typeof TYPE_KEY

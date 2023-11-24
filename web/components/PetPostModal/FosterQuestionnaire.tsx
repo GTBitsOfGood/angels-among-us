@@ -265,7 +265,7 @@ function FosterQuestionnaire(props: {
           </Button>
           <Text size={"xl"}> Foster Questionnaire</Text>
         </ModalHeader>
-        <Flex w="100%" paddingX={6} flexDir="column" gap={6} overflowY="scroll">
+        <Flex w="100%" paddingX={6} flexDir="column" gap={6} overflowY="auto">
           {data[fosterType].map(({ key, title }) => {
             return (
               <Flex key={key} flexDir="column" gap={2} w="100%">
