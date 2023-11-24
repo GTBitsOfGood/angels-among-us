@@ -29,22 +29,6 @@ jest.mock("../../context/auth", () => ({
 }));
 
 /**
- * Counts the number of filter options within a SelectedFilters object
- * @param {SelectedFilters} filters object containing filter options
- * @returns {number} number of options
- */
-const countFilters = (filters: QueryFilter | null): number => {
-  if (!filters) return 0;
-
-  let count = 0;
-  for (const opts of Object.values(filters)) {
-    if (!opts) continue;
-    count = Array.isArray(opts) ? count + opts.length : count + 1;
-  }
-  return count;
-};
-
-/**
  * Tests feed filter functionality.
  *
  * @group components/feed
