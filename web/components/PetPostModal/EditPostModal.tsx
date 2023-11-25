@@ -2,7 +2,6 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Button,
   Modal,
-  Stack,
   ModalContent,
   ModalOverlay,
   Box,
@@ -136,9 +135,7 @@ const EditPostModal: React.FC<{
 
   const [isLoading, setIsLoading] = useState(false);
   const [isContentView, setIsContentView] = useState(true);
-  const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
-  const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
 
   const {
     name,
@@ -365,22 +362,13 @@ const EditPostModal: React.FC<{
           </Heading>
         </ModalHeader>
         <ModalBody w="100%" h="100%">
-          <Stack w="100%" h="100%">
-            <Box w="100%" h="100%">
-              {isContentView ? (
-                <FormSlide dispatchFormState={dispatch} formState={formState} />
-              ) : (
-                <FileUploadSlide
-                  fileArr={fileArr}
-                  selectedFiles={selectedFiles}
-                  setSelectedFiles={setSelectedFiles}
-                  setFileArr={setFileArr}
-                  showAlert={showAlert}
-                  setShowAlert={setShowAlert}
-                ></FileUploadSlide>
-              )}
-            </Box>
-          </Stack>
+          <Box w="100%" h="100%">
+            {isContentView ? (
+              <FormSlide dispatchFormState={dispatch} formState={formState} />
+            ) : (
+              <FileUploadSlide fileArr={fileArr} setFileArr={setFileArr} />
+            )}
+          </Box>
         </ModalBody>
         <ModalFooter>
           <Button

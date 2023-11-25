@@ -126,7 +126,7 @@ function ImageSlider(props: { attachments: Array<string> }) {
       </Flex>
       {attachments.length > 1 && (
         <Flex
-          paddingY={3}
+          pt={3}
           gap={2}
           w="100%"
           direction="row"

@@ -6,8 +6,13 @@ import pageAccessHOC from "../components/HOC/PageAccess";
 
 export type Team = {
   teamName: string;
-  primaryContact?: string;
+  primaryContact?: PrimaryContact;
   contacts: Contact[];
+};
+
+export type PrimaryContact = {
+  name: string;
+  email?: string;
 };
 
 export type Contact = {
@@ -45,7 +50,10 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Dog Records Team",
-    primaryContact: "Marcia Hockenbery (marcia@angelsrescue.org)",
+    primaryContact: {
+      email: "marcia",
+      name: "Marcia Hockenbery",
+    },
     contacts: [
       {
         email: "records",
@@ -145,7 +153,10 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Vetting Teams",
-    primaryContact: "Samantha Orr (samanthao@angelsrescue.org)",
+    primaryContact: {
+      email: "samanthao",
+      name: "Samantha Orr",
+    },
     contacts: [
       {
         email: "vets",
@@ -235,7 +246,10 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Social Media & Marketing Teams",
-    primaryContact: "Hilary Van Brunt (hilaryv@angelsrescue.org)",
+    primaryContact: {
+      email: "hilaryv",
+      name: "Hilary Van Brunt",
+    },
     contacts: [
       {
         email: "socialmedia",
@@ -256,7 +270,10 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Development & Events Teams",
-    primaryContact: "Jackie Spett (jackie@angelsrescue.org)",
+    primaryContact: {
+      email: "jackie",
+      name: "Jackie Spett",
+    },
     contacts: [
       {
         email: "events",
@@ -354,7 +371,12 @@ function Team({ team, children }: PropsWithChildren<TeamProps>) {
       </Text>
       {team.primaryContact && (
         <Text fontSize="md" fontWeight="600" marginTop={-2} marginBottom={1}>
-          {team.primaryContact}
+          <Text as="span">{team.primaryContact.name} </Text>
+          {team.primaryContact.email && (
+            <Link href={`mailto:${team.primaryContact.email}@angelsrescue.org`}>
+              <Text as="span">{`(${team.primaryContact.email}@angelsrescue.org)`}</Text>
+            </Link>
+          )}
         </Text>
       )}
       <Stack direction="column" gap={3}>

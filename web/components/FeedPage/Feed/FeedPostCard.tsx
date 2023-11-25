@@ -112,7 +112,12 @@ function FeedPostCard(props: { post: IFeedPost }) {
             >
               {fosterTypeLabels[post.type]}
             </Text>
-            <Text fontSize="14px" lineHeight="18px" color="#656565">
+            <Text
+              fontSize="14px"
+              lineHeight="18px"
+              color="#656565"
+              noOfLines={5}
+            >
               {post.description}
             </Text>
           </Flex>
