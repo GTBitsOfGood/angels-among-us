@@ -44,8 +44,29 @@ import {
   trainedLabels,
 } from "../../utils/types/post";
 import FosterQuestionnaire from "../../components/PetPostModal/FosterQuestionnaire";
+import { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { consts, Pages } from "../../utils/consts";
 
-function PostPage() {
+export const getServerSideProps = (async (context) => {
+  if (!context.req.headers.referer) {
+    return { props: { isFromFeed: false } };
+  }
+
+  const referrer = new URL(context.req.headers.referer);
+  const isFromFeed =
+    referrer.origin + referrer.pathname === consts.baseUrl + Pages.FEED;
+  return {
+    props: { isFromFeed, referrer: referrer.pathname + referrer.search },
+  };
+}) satisfies GetServerSideProps<{
+  isFromFeed: boolean;
+  referrer?: string;
+}>;
+
+function PostPage({
+  isFromFeed,
+  referrer,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const paramPostId = router.query.postId;
 
@@ -202,7 +223,9 @@ function PostPage() {
             _hover={{ bgColor: "tag-primary-bg" }}
             leftIcon={<ArrowBackIcon />}
             id="backToFeedButton"
-            onClick={() => router.back()}
+            onClick={() =>
+              isFromFeed ? router.replace(referrer) : router.replace(Pages.FEED)
+            }
           >
             Back to feed
           </Button>
