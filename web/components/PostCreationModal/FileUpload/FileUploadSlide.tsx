@@ -13,9 +13,6 @@ function FileUploadSlide(props: PropsType) {
 
   return (
     <Flex w="100%" h="100%">
-      {fileArr.length === 0 && (
-        <FileDropZone fileArr={fileArr} setFileArr={setFileArr}></FileDropZone>
-      )}
       <Grid
         templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }}
         templateRows={{

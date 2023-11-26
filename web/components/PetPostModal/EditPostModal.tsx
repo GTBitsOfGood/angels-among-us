@@ -135,7 +135,9 @@ const EditPostModal: React.FC<{
 
   const [isLoading, setIsLoading] = useState(false);
   const [isContentView, setIsContentView] = useState(true);
-  const [fileArr, setFileArr] = useState<Array<File>>([]);
+  const [fileArr, setFileArr] = useState<Array<File>>(
+    attachments.map(() => new File([], ""))
+  );
 
   const {
     name,
