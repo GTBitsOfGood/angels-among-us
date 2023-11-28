@@ -1,100 +1,66 @@
-import { AddIcon, CloseIcon, MinusIcon } from "@chakra-ui/icons";
-import { Image, Box, AspectRatio, Button } from "@chakra-ui/react";
+import Image from "next/legacy/image";
+import { CloseIcon } from "@chakra-ui/icons";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 
 interface PropsType {
   fileArr: Array<File>;
   setFileArr: Dispatch<SetStateAction<Array<File>>>;
-  selectedFiles: Array<File>;
-  setSelectedFiles: Dispatch<SetStateAction<Array<File>>>;
   idx: number;
 }
 
 function FilePreview(props: PropsType) {
-  const { fileArr, setFileArr, selectedFiles, setSelectedFiles, idx } = props;
-
-  let previewStyle = {
-    border: "none",
-  };
-
-  let selectedStyle = {
-    border: "2px solid #000000",
-  };
-
-  function updateSelections() {
-    if (selectedFiles.indexOf(fileArr[idx]) > -1) {
-      var temp = selectedFiles.filter((e) => e != fileArr[idx]);
-      setSelectedFiles(temp);
-    } else {
-      var temp = [...selectedFiles];
-      temp.push(fileArr[idx]);
-      setSelectedFiles(temp);
-    }
-  }
+  const { fileArr, setFileArr, idx } = props;
 
   function removeFile() {
-    setSelectedFiles(selectedFiles.filter((e) => e != fileArr[idx]));
     let temp = [...fileArr];
-    setFileArr(temp.filter((e) => e != fileArr[idx]));
+    temp.splice(idx, 1);
+    setFileArr(temp);
   }
 
   return (
     <Box
-      position={"relative"}
-      _hover={{
-        cursor: "pointer",
-      }}
+      w="100%"
+      h="100%"
+      position="relative"
+      borderRadius={12}
+      bgColor="#DDDDDD"
+      overflow="hidden"
     >
       {fileArr[idx].type === "video/mp4" ||
       fileArr[idx].type === "video/quicktime" ? (
-        <Box
-          width={"211px"}
-          height={"211px"}
-          borderRadius={"5.82474px"}
-          bgColor={"#000000"}
-          style={
-            selectedFiles.indexOf(fileArr[idx]) > -1
-              ? selectedStyle
-              : previewStyle
-          }
-          onClick={updateSelections}
+        <Flex
+          w="100%"
+          h="100%"
+          justifyContent="center"
+          alignItems="center"
+          _hover={{ cursor: "pointer" }}
         >
-          <AspectRatio maxW={"211px"} ratio={1}>
-            <video controls autoPlay loop muted>
-              <source
-                src={URL.createObjectURL(fileArr[idx])}
-                type="video/mp4"
-              ></source>
-            </video>
-          </AspectRatio>
-          <Box position={"absolute"} top={1} right={14}>
-            <Button onClick={updateSelections} colorScheme={"blackAlpha"}>
-              {selectedFiles.indexOf(fileArr[idx]) > -1 ? (
-                <MinusIcon></MinusIcon>
-              ) : (
-                <AddIcon></AddIcon>
-              )}
-            </Button>
-          </Box>
-        </Box>
+          <video
+            controls
+            autoPlay={false}
+            controlsList="nodownload"
+            style={{
+              objectFit: "contain",
+              height: "100%",
+              width: "auto",
+            }}
+          >
+            <source
+              src={URL.createObjectURL(fileArr[idx])}
+              type="video/mp4"
+            ></source>
+          </video>
+        </Flex>
       ) : (
         <Image
-          objectFit={"cover"}
-          width={"211px"}
-          height={"211px"}
-          borderRadius={"5.82474px"}
-          style={
-            selectedFiles.indexOf(fileArr[idx]) > -1
-              ? selectedStyle
-              : previewStyle
-          }
-          onClick={updateSelections}
           src={URL.createObjectURL(fileArr[idx])}
-          alt="Uploaded image"
-        ></Image>
+          objectFit="contain"
+          layout="fill"
+        />
       )}
 
-      <Box position={"absolute"} top={1} right={2}>
+      <Box position={"absolute"} top={1} right={1}>
         <Button onClick={removeFile} colorScheme={"blackAlpha"}>
           <CloseIcon></CloseIcon>
         </Button>

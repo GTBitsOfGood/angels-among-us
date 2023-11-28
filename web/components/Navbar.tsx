@@ -34,8 +34,9 @@ import { auth } from "../utils/firebase/firebaseClient";
 
 interface AvatarProps {
   user: typeof auth.currentUser | null;
+  onMenuClose: () => void;
 }
-function Avatar({ user }: AvatarProps) {
+function Avatar({ user, onMenuClose }: AvatarProps) {
   const { userData } = useAuth();
   const router = useRouter();
   const isMd = useBreakpointValue({
@@ -55,7 +56,7 @@ function Avatar({ user }: AvatarProps) {
             _active={{ bgColor: "white" }}
             borderLeft={{ md: "1px solid black" }}
             borderRadius={0}
-            onClick={isOpen ? onClose : () => {}}
+            onClick={isOpen ? onClose : onMenuClose}
             rightIcon={isMd ? <ChevronDownIcon /> : undefined}
           >
             <Image
@@ -161,7 +162,7 @@ export default function Navbar() {
           onClick={isMenuOpen ? onMenuClose : onMenuOpen}
         />
 
-        <Link as={NextLink} href={Pages.FEED}>
+        <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
           <Image
             src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
             alt="logo"
@@ -251,11 +252,11 @@ export default function Navbar() {
               Resources
             </Text>
           </Link>
-          <Avatar user={user} />
+          <Avatar user={user} onMenuClose={onMenuClose} />
         </Stack>
 
         <Box display={{ base: "block", md: "none" }}>
-          <Avatar user={user} />
+          <Avatar user={user} onMenuClose={onMenuClose} />
         </Box>
       </Flex>
 

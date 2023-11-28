@@ -5,7 +5,7 @@ export default function PetPostListGroup(props: {
 }) {
   return (
     <Stack direction="column" spacing={3} width={"100%"}>
-      <Text fontWeight="bold" fontSize="xl" fontFamily="sans-serif">
+      <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
         {props.title}
       </Text>
       <Flex

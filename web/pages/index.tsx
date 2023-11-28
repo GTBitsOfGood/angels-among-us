@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -31,9 +31,9 @@ import {
 import { auth } from "../utils/firebase/firebaseClient";
 import { useAuth } from "../context/auth";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import Feed from "../components/Feed/Feed";
 import backgroundImage from "../public/backgroundImage.png";
 import Head from "next/head";
+import FeedPage from "../components/FeedPage/FeedPage";
 
 function Home() {
   const { loading, setLoading, authorized, authError, userData } = useAuth();
@@ -81,8 +81,6 @@ function Home() {
     }
   }
 
-  const [filterDisplayed, setFilterDisplayed] = useState<boolean>(false);
-
   useEffect(() => {
     if (!authError) {
       toast.closeAll();
@@ -124,10 +122,7 @@ function Home() {
         <Head>
           <title>Feed</title>
         </Head>
-        <Feed
-          filterDisplayed={filterDisplayed}
-          setFilterDisplayed={setFilterDisplayed}
-        />
+        <FeedPage />
       </>
     );
   }

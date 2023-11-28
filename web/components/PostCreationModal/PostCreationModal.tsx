@@ -2,7 +2,6 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Button,
   Modal,
-  Stack,
   ModalContent,
   ModalOverlay,
   Text,
@@ -13,6 +12,7 @@ import {
   ModalFooter,
   Heading,
   ModalHeader,
+  Stack,
 } from "@chakra-ui/react";
 import { useReducer, useState } from "react";
 import { z } from "zod";
@@ -130,12 +130,10 @@ const PostCreationModal: React.FC<{
   onClose: () => void;
 }> = ({ isOpen, onClose }) => {
   const toast = useToast();
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
 
   const [isContentView, setIsContentView] = useState(true);
-  const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
-  const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
 
   const defaultFormState = {
     name: "",
@@ -314,14 +312,7 @@ const PostCreationModal: React.FC<{
               {isContentView ? (
                 <FormSlide dispatchFormState={dispatch} formState={formState} />
               ) : (
-                <FileUploadSlide
-                  fileArr={fileArr}
-                  selectedFiles={selectedFiles}
-                  setSelectedFiles={setSelectedFiles}
-                  setFileArr={setFileArr}
-                  showAlert={showAlert}
-                  setShowAlert={setShowAlert}
-                ></FileUploadSlide>
+                <FileUploadSlide fileArr={fileArr} setFileArr={setFileArr} />
               )}
             </Box>
           </Stack>

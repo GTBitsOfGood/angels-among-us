@@ -10,20 +10,16 @@ import {
 } from "@chakra-ui/react";
 import { trpc } from "../../utils/trpc";
 import { Types } from "mongoose";
+import { useRouter } from "next/router";
 
 function DeletePostModal(props: {
   isDeleteConfirmationOpen: boolean;
   onDeleteConfirmationClose: () => void;
-  onClose: () => void;
   postId: Types.ObjectId;
 }) {
-  const {
-    isDeleteConfirmationOpen,
-    onDeleteConfirmationClose,
-    onClose,
-    postId,
-  } = props;
+  const { isDeleteConfirmationOpen, onDeleteConfirmationClose, postId } = props;
 
+  const router = useRouter();
   const mutation = trpc.post.delete.useMutation();
   const utils = trpc.useContext();
   const toast = useToast();
@@ -61,7 +57,7 @@ function DeletePostModal(props: {
                   onSuccess: () => {
                     utils.post.invalidate();
                     onDeleteConfirmationClose();
-                    onClose();
+                    router.back();
                   },
                   onError: () => {
                     toast({

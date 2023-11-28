@@ -1,12 +1,18 @@
 import { PhoneIcon } from "@chakra-ui/icons";
 import { Flex, Stack, Text, Box, Divider } from "@chakra-ui/react";
+import Link from "next/link";
 import { PropsWithChildren } from "react";
 import pageAccessHOC from "../components/HOC/PageAccess";
 
 export type Team = {
   teamName: string;
-  primaryContact?: string;
+  primaryContact?: PrimaryContact;
   contacts: Contact[];
+};
+
+export type PrimaryContact = {
+  name: string;
+  email?: string;
 };
 
 export type Contact = {
@@ -44,7 +50,10 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Dog Records Team",
-    primaryContact: "Marcia Hockenbery (marcia@angelsrescue.org)",
+    primaryContact: {
+      email: "marcia",
+      name: "Marcia Hockenbery",
+    },
     contacts: [
       {
         email: "records",
@@ -144,7 +153,10 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Vetting Teams",
-    primaryContact: "Samantha Orr (samanthao@angelsrescue.org)",
+    primaryContact: {
+      email: "samanthao",
+      name: "Samantha Orr",
+    },
     contacts: [
       {
         email: "vets",
@@ -234,7 +246,10 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Social Media & Marketing Teams",
-    primaryContact: "Hilary Van Brunt (hilaryv@angelsrescue.org)",
+    primaryContact: {
+      email: "hilaryv",
+      name: "Hilary Van Brunt",
+    },
     contacts: [
       {
         email: "socialmedia",
@@ -255,7 +270,10 @@ const TEAMS: Team[] = [
   },
   {
     teamName: "Development & Events Teams",
-    primaryContact: "Jackie Spett (jackie@angelsrescue.org)",
+    primaryContact: {
+      email: "jackie",
+      name: "Jackie Spett",
+    },
     contacts: [
       {
         email: "events",
@@ -299,7 +317,9 @@ function TeamContact({ contact, purpose }: TeamContactProps) {
       paddingY={3}
       borderRadius={10}
     >
-      <Text fontWeight="600">{`${contact}@angelsrescue.org`}</Text>
+      <Link href={`mailto:${contact}@angelsrescue.org`}>
+        <Text fontWeight="600">{`${contact}@angelsrescue.org`}</Text>
+      </Link>
       <Text fontSize="sm">{purpose}</Text>
     </Flex>
   );
@@ -326,10 +346,12 @@ function ImportantContact({
         {lineName}
       </Text>
       <Text fontSize="md">{purpose}</Text>
-      <Text fontSize="xl" fontWeight="600">
-        <PhoneIcon marginRight="4px" />
-        {phoneNumber}
-      </Text>
+      <Link href={`tel:${phoneNumber}`}>
+        <Text fontSize="xl" fontWeight="600">
+          <PhoneIcon marginRight="4px" />
+          {phoneNumber}
+        </Text>
+      </Link>
     </Flex>
   );
 }
@@ -349,7 +371,12 @@ function Team({ team, children }: PropsWithChildren<TeamProps>) {
       </Text>
       {team.primaryContact && (
         <Text fontSize="md" fontWeight="600" marginTop={-2} marginBottom={1}>
-          {team.primaryContact}
+          <Text as="span">{team.primaryContact.name} </Text>
+          {team.primaryContact.email && (
+            <Link href={`mailto:${team.primaryContact.email}@angelsrescue.org`}>
+              <Text as="span">{`(${team.primaryContact.email}@angelsrescue.org)`}</Text>
+            </Link>
+          )}
         </Text>
       )}
       <Stack direction="column" gap={3}>

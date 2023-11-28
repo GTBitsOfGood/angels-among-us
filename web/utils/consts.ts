@@ -5,6 +5,7 @@ enum Pages {
   PROFILE = "/profile",
   RESOURCES = "/resources",
   USERS = "/users",
+  POST = "/post/[postId]",
 }
 
 function getBaseUrl() {

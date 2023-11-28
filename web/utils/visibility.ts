@@ -7,4 +7,5 @@ export const navbarVisiblity = {
   [Pages.PROFILE]: true,
   [Pages.RESOURCES]: true,
   [Pages.USERS]: true,
+  [Pages.POST]: false,
 };

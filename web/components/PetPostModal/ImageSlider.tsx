@@ -1,167 +1,150 @@
-import { Flex, Image, Circle } from "@chakra-ui/react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
+import Image from "next/legacy/image";
+import { Flex, Circle, IconButton, Box } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import DefaultDog from "../../public/dog.svg";
 import { useState } from "react";
 
 function ImageSlider(props: { attachments: Array<string> }) {
+  const { attachments } = props;
   const videoTypes = new Set(["mp4", "mov"]);
   const [slideIndex, setSlideIndex] = useState(0);
 
+  if (attachments.length === 0) {
+    return (
+      <Flex
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        minHeight={{ base: "40dvh", md: "100%" }}
+        bgColor="#DDDDDD"
+        width="100%"
+        borderRadius={12}
+      >
+        <DefaultDog fill="white" height="50%" width="50%" />
+      </Flex>
+    );
+  }
+
+  const hasPrev = slideIndex - 1 >= 0;
+  const hasNext = slideIndex + 1 < attachments.length;
+
   return (
-    <Carousel
-      axis="horizontal"
-      showStatus={false}
-      swipeable={false}
-      infiniteLoop
-      renderArrowPrev={(clickHandler, hasPrev) => {
-        return (
-          <Flex
-            position="absolute"
-            display={hasPrev ? "flex" : "none"}
-            zIndex={2}
-            top={0}
-            bottom={0}
-            left={0}
-            p={3}
-            alignItems="flex-end"
-            maxHeight={["23.5vh", "35.5vh"]}
-          >
-            <Flex onClick={clickHandler} cursor="pointer">
-              <ChevronLeftIcon
-                boxSize={30}
-                background={"white"}
-                color={"black"}
-                borderRadius="100"
-                border="1px solid black"
-              />
-            </Flex>
-          </Flex>
-        );
-      }}
-      renderArrowNext={(clickHandler, hasNext) => {
-        return (
-          <Flex
-            position="absolute"
-            display={hasNext ? "flex" : "none"}
-            zIndex={2}
-            top={0}
-            bottom={0}
-            right={0}
-            p={3}
-            alignItems="flex-end"
-            maxHeight={["23.5vh", "35.5vh"]}
-          >
-            <Flex onClick={clickHandler} cursor="pointer">
-              <ChevronRightIcon
-                boxSize={30}
-                background={"white"}
-                color={"black"}
-                borderRadius="100"
-                border="1px solid black"
-              />
-            </Flex>
-          </Flex>
-        );
-      }}
-      onChange={(index) => setSlideIndex(index)}
-      showIndicators={
-        props.attachments.length > 0 &&
-        !videoTypes.has(
-          props.attachments[slideIndex].split(".").pop()!.toLowerCase()
-        )
-      }
-      renderIndicator={(onClickHandler, isSelected, index) => {
-        return (
-          <Circle
-            key={index}
-            display="inline-block"
-            onClick={onClickHandler}
-            cursor="pointer"
-            size={3}
-            marginX={2}
-            bg={isSelected ? "white" : "whiteAlpha.600"}
+    <Flex w="100%" h="100%" direction="column">
+      <Flex
+        position="relative"
+        w="100%"
+        h={{ base: "40dvh", md: "100%" }}
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        borderRadius={12}
+        bgColor="#DDDDDD"
+        overflow="hidden"
+      >
+        <Flex
+          display={hasPrev ? "flex" : "none"}
+          position="absolute"
+          zIndex={2}
+          top="50%"
+          left={3}
+          transform="translateY(-50%)"
+        >
+          <IconButton
+            isRound={true}
+            variant="solid"
+            colorScheme="brand"
+            aria-label="left"
+            size="sm"
+            fontSize="20px"
+            icon={<ChevronLeftIcon />}
+            onClick={() => setSlideIndex((cur) => cur - 1)}
           />
-        );
-      }}
-    >
-      {props.attachments.length > 0
-        ? props.attachments?.map((attachment) => {
+        </Flex>
+        <Flex
+          display={hasNext ? "flex" : "none"}
+          position="absolute"
+          zIndex={2}
+          top="50%"
+          right={3}
+          transform="translateY(-50%)"
+        >
+          <IconButton
+            isRound={true}
+            variant="solid"
+            colorScheme="brand"
+            aria-label="right"
+            size="sm"
+            fontSize="20px"
+            icon={<ChevronRightIcon />}
+            onClick={() =>
+              setSlideIndex((cur) => (cur + 1) % attachments.length)
+            }
+          />
+        </Flex>
+        <>
+          {attachments.map((attachment, i) => {
             const isVideoType = videoTypes.has(
               attachment.split(".").pop()!.toLowerCase()
             );
+            if (isVideoType) {
+              return (
+                <video
+                  key={attachment}
+                  style={{
+                    position: "absolute",
+                    objectFit: "contain",
+                    height: "100%",
+                    width: "auto",
+                    display: i === slideIndex ? "inline" : "none",
+                  }}
+                  controls
+                  controlsList="nodownload"
+                >
+                  <source src={attachment} />
+                </video>
+              );
+            }
             return (
-              <Flex
-                justifyContent={"center"}
-                alignItems={"center"}
-                bgColor={isVideoType ? "black" : "tag-primary-bg"}
-                borderRadius="15px"
-                overflow={"hidden"}
-                height={["40vh", "65vh"]}
+              <Box
                 key={attachment}
-                paddingX={0}
+                w="100%"
+                h="100%"
+                display={i === slideIndex ? "inline" : "none"}
+                pos="relative"
               >
-                {isVideoType ? (
-                  <Flex
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                    height={["40vh", "65vh"]}
-                    width={["94%", "96%"]}
-                  >
-                    <Flex
-                      w="100%"
-                      h="100%"
-                      overflow="hidden"
-                      pos="absolute"
-                      direction="row"
-                      justifyContent="center"
-                    >
-                      <video
-                        style={{
-                          objectFit: "contain",
-                          width: "auto",
-                          height: "100%",
-                        }}
-                        controls
-                        controlsList="nodownload"
-                      >
-                        <source src={attachment} />
-                      </video>
-                    </Flex>
-                  </Flex>
-                ) : (
-                  <Image
-                    key={attachment}
-                    src={attachment}
-                    objectFit={"cover"}
-                    verticalAlign={"true"}
-                    align="center"
-                    maxHeight={["40vh", "65vh"]}
-                    alt=""
-                  />
-                )}
-              </Flex>
+                <Image
+                  key={attachment}
+                  src={attachment}
+                  objectFit="contain"
+                  layout="fill"
+                  alt=""
+                />
+              </Box>
             );
-          })
-        : [
-            <Flex
-              key={"default"}
-              direction={"column"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              borderRadius="15px"
-              minHeight={["40vh", "65vh"]}
-              minWidth={{ lg: "20vw" }}
-              width={"100%"}
-              paddingBottom={10}
-              bgColor={"#DDDDDD"}
-            >
-              <DefaultDog fill="white" height={"50%"} width={"50%"} />
-            </Flex>,
-          ]}
-    </Carousel>
+          })}
+        </>
+      </Flex>
+      {attachments.length > 1 && (
+        <Flex
+          pt={3}
+          gap={2}
+          w="100%"
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+        >
+          {attachments.map((_, i) => {
+            return (
+              <Circle
+                key={i}
+                size={i === slideIndex ? 3 : 2}
+                bg={i === slideIndex ? "text-primary" : "#DDDDDD"}
+              />
+            );
+          })}
+        </Flex>
+      )}
+    </Flex>
   );
 }
-
 export default ImageSlider;
