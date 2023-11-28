@@ -1,7 +1,7 @@
 import { MutableRefObject } from "react";
 import { IAccount } from "../../utils/types/account";
 import AccountCard from "./AccountCard";
-import { Grid, GridItem, Spinner, Text, Center } from "@chakra-ui/react";
+import { Grid, GridItem, Spinner, Text, Center, Box } from "@chakra-ui/react";
 
 interface PropertyType {
   accountList: IAccount[] | undefined;
@@ -23,35 +23,40 @@ function AccountTable(props: PropertyType) {
 
   if (accountList && accountList.length > 0) {
     return (
-      <Grid
-        bgColor="white"
+      <Box
         w="100%"
-        templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
-        columnGap={6}
-        paddingX={6}
+        h="100%"
+        bgColor="white"
+        overflowY="auto"
         pt={3}
         pb={6}
         borderRadius="0 0 12px 12px"
-        overflowY="auto"
       >
-        {accountList.map((account) => {
-          return (
-            <GridItem
-              bgColor="white"
-              paddingY={3}
-              borderBottom="1px solid #E2E8F0"
-              alignItems="center"
-              key={account.email}
-            >
-              <AccountCard
-                account={account}
-                isSelecting={isSelecting}
-                selectedAccounts={selectedAccounts}
-              />
-            </GridItem>
-          );
-        })}
-      </Grid>
+        <Grid
+          w="100%"
+          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }}
+          columnGap={6}
+          paddingX={6}
+        >
+          {accountList.map((account) => {
+            return (
+              <GridItem
+                bgColor="white"
+                paddingY={3}
+                borderBottom="1px solid #E2E8F0"
+                alignItems="center"
+                key={account.email}
+              >
+                <AccountCard
+                  account={account}
+                  isSelecting={isSelecting}
+                  selectedAccounts={selectedAccounts}
+                />
+              </GridItem>
+            );
+          })}
+        </Grid>
+      </Box>
     );
   }
 
