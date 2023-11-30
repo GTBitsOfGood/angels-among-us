@@ -14,7 +14,10 @@ function FileUploadSlide(props: PropsType) {
   return (
     <Flex w="100%" h="100%">
       <Grid
-        templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }}
+        templateColumns={{
+          base: `repeat(${Math.min(2, fileArr.length + 1)}, 1fr)`,
+          md: `repeat(${Math.min(3, fileArr.length + 1)}, 1fr)`,
+        }}
         templateRows={{
           base: `repeat(${Math.ceil(
             (fileArr.length + (fileArr.length < 6 ? 1 : 0)) / 2
@@ -37,7 +40,7 @@ function FileUploadSlide(props: PropsType) {
             />
           </GridItem>
         ))}
-        {fileArr.length > 0 && fileArr.length < 6 ? (
+        {fileArr.length < 6 ? (
           <GridItem w="100%">
             <FileDropZone fileArr={fileArr} setFileArr={setFileArr} />
           </GridItem>
