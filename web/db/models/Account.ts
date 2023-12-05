@@ -6,6 +6,7 @@ const accountSchema = new Schema<IAccount>({
   email: {
     type: String,
     required: true,
+    unique: true,
     index: {
       unique: true,
       collation: {
