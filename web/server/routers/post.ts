@@ -27,7 +27,7 @@ import {
   Trained,
   IPost,
 } from "../../utils/types/post";
-import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
+import { findUserByEmail } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import nodemailer from "nodemailer";
 import { FilterQuery, Types } from "mongoose";
@@ -158,14 +158,13 @@ export const postRouter = router({
   offer: procedure
     .input(
       z.object({
-        email: z.string(),
         postOid: zodOidType,
         responses: questionnaireSchema,
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       try {
-        const user = await findUserByEmail(input.email);
+        const user = await findUserByEmail(ctx.session.email ?? "");
         if (!user) {
           throw new Error("No user with given email exists");
         }
@@ -176,7 +175,7 @@ export const postRouter = router({
         const email =
           process.env.CONTEXT === "production"
             ? fosterTypeEmails[post.type]
-            : input.email;
+            : ctx.session.email;
 
         const emailBody = populateEmailTemplate(post, user, input.responses);
 

@@ -17,9 +17,11 @@ var mongoose = require("mongoose");
 faker.seed(0);
 
 function createRandomUser(): IUser & { _id: Types.ObjectId } {
+  const email = faker.internet.email();
   return {
     _id: new mongoose.Types.ObjectId(),
-    email: faker.internet.email(),
+    email,
+    serializedEmail: email.toLowerCase(),
     name: faker.person.fullName(),
     uid: faker.string.alphanumeric(28),
     role: faker.helpers.arrayElement(Object.values(Role)),

@@ -18,13 +18,11 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
-    index: {
-      unique: true,
-      collation: {
-        locale: "en",
-        strength: 2,
-      },
-    },
+  },
+  serializedEmail: {
+    type: String,
+    required: true,
+    unique: true,
   },
   picture: {
     type: String,
