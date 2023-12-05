@@ -2,25 +2,24 @@ import mongoose from "mongoose";
 import { IAccount, Role } from "../../utils/types/account";
 const { Schema } = mongoose;
 
-const accountSchema = new Schema<IAccount>({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    index: {
+const accountSchema = new Schema<IAccount>(
+  {
+    email: {
+      type: String,
+      required: true,
       unique: true,
-      collation: {
-        locale: "en",
-        strength: 2,
-      },
+      index: true,
+    },
+    role: {
+      type: String,
+      required: true,
+      enum: Object.values(Role),
     },
   },
-  role: {
-    type: String,
-    required: true,
-    enum: Object.values(Role),
-  },
-});
+  {
+    autoCreate: true,
+  }
+);
 
 export default mongoose.models.Account ||
   mongoose.model("Account", accountSchema);
