@@ -15,12 +15,9 @@ async function dbConnect() {
   if (cached.conn) {
     return cached.conn;
   }
-
   if (!cached.promise) {
     cached.promise = mongoose
-      .connect(consts.dbUrl as string, {
-        dbName: consts.dbName,
-      })
+      .connect(consts.dbUrl as string)
       .then((mongoose) => {
         return mongoose;
       });

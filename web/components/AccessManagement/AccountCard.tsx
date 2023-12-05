@@ -1,132 +1,60 @@
-import { IAccount, Role } from "../../utils/types/account";
-import { HydratedDocument } from "mongoose";
+import { IAccount, roleLabels } from "../../utils/types/account";
 import RoleSelector from "./RoleSelector";
-import { Box, Flex, HStack, SimpleGrid, Spacer, Text } from "@chakra-ui/react";
-import { Dispatch, SetStateAction } from "react";
+import { Box, Checkbox, Flex, Text } from "@chakra-ui/react";
+import { MutableRefObject } from "react";
 
 interface PropertyType {
-  account: HydratedDocument<IAccount>;
-  idx: Number;
-  selectItems: boolean;
-  itemsToDelete: Number[];
-  updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
-}
-
-function createLabel(r: Role) {
-  let labelText = "";
-  if (r === Role.Admin) {
-    labelText = "Admin";
-  } else if (r === Role.Volunteer) {
-    labelText = "Volunteer";
-  } else {
-    labelText = "Creator";
-  }
-  return labelText;
+  account: IAccount;
+  isSelecting: boolean;
+  selectedAccounts: MutableRefObject<Set<string>>;
 }
 
 function AccountCard(props: PropertyType) {
-  const {
-    account,
-    idx,
-    selectItems,
-    itemsToDelete,
-    updateItemsToDelete,
-    accountList,
-    updateAccountList,
-  } = props;
-
-  let cardStyle = {
-    border: "none",
-  };
-
-  let selectButtonStyle = {
-    border: "solid",
-    borderColor: "#BBBBBB",
-    borderWidth: "1px",
-    bgColor: "white",
-  };
-
-  if (itemsToDelete.indexOf(idx) > -1) {
-    selectButtonStyle = {
-      bgColor: "#529FD4",
-      border: "solid",
-      borderColor: "#BBBBBB",
-      borderWidth: "1",
-    };
-  }
-
-  function updateSelections() {
-    if (itemsToDelete.indexOf(idx) > -1) {
-      const temp = itemsToDelete.filter((e) => e != idx);
-      updateItemsToDelete(temp);
-    } else {
-      const temp = [...itemsToDelete];
-      temp.push(idx);
-      updateItemsToDelete(temp);
-    }
-  }
+  const { account, isSelecting, selectedAccounts } = props;
 
   return (
-    <Box
-      borderRadius="12px"
-      borderWidth={1}
-      borderColor="#BBBBBB"
-      width={{ sm: "90%", md: "90%", lg: "100%" }}
+    <Flex
+      justifyContent={"space-between"}
+      alignItems={"center"}
+      gap={2}
+      h="100%"
     >
-      <HStack justifyContent={"space-between"} minH={"43px"} padding="12px">
-        <Flex
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          width={"80%"}
-          flexWrap={"wrap"}
-        >
-          <Text
-            fontWeight={"400"}
-            fontSize={"16px"}
-            lineHeight={"19px"}
-            maxWidth={"60%"}
+      <Flex flex={1} h="100%" alignItems="center">
+        {isSelecting ? (
+          <Checkbox
+            onChange={(event) => {
+              if (event.target.checked) {
+                selectedAccounts.current.add(account.email);
+              } else {
+                selectedAccounts.current.delete(account.email);
+              }
+            }}
           >
+            <Text fontWeight="medium" fontSize="md" wordBreak="break-all">
+              {account.email}
+            </Text>
+          </Checkbox>
+        ) : (
+          <Text fontWeight="medium" fontSize="md" wordBreak="break-all">
             {account.email}
           </Text>
-          {selectItems ? (
-            <Box
-              as="button"
-              bgColor="#C6E3F9"
-              borderRadius="8px"
-              width={"97px"}
-              height={"27px"}
-              alignItems={"center"}
-              justifyContent={"center"}
-            >
-              {createLabel(account.role)}
-            </Box>
-          ) : (
-            <RoleSelector
-              account={account}
-              accountList={accountList}
-              updateAccountList={updateAccountList}
-              createLabel={createLabel}
-            ></RoleSelector>
-          )}
-        </Flex>
-        {selectItems ? (
-          <Box
-            border={selectButtonStyle.border}
-            borderWidth={selectButtonStyle.borderWidth}
-            borderColor={selectButtonStyle.borderColor}
-            bgColor={selectButtonStyle.bgColor}
-            borderRadius="15px"
-            minWidth="30px"
-            minHeight="30px"
-            onClick={updateSelections}
-          ></Box>
-        ) : (
-          <Box minWidth="30px" minHeight="30px"></Box>
         )}
-      </HStack>
-    </Box>
+      </Flex>
+      {isSelecting ? (
+        <Box
+          as="button"
+          bgColor="tag-primary-bg"
+          borderRadius={8}
+          paddingX={2}
+          alignItems="center"
+          justifyContent="center"
+        >
+          {roleLabels[account.role]}
+        </Box>
+      ) : (
+        <RoleSelector account={account} />
+      )}
+    </Flex>
   );
 }
 

@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { browserSessionPersistence, getAuth } from "firebase/auth";
+import { getAuth, indexedDBLocalPersistence } from "firebase/auth";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
@@ -22,6 +22,6 @@ if (getApps().length === 0) {
 }
 
 const auth = getAuth();
-auth.setPersistence(browserSessionPersistence);
+auth.setPersistence(indexedDBLocalPersistence);
 
 export { app, auth };

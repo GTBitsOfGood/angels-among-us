@@ -1,73 +1,132 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
-import { Text, Flex } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  useToast,
+  useBreakpointValue,
+  Icon,
+} from "@chakra-ui/react";
 import { FileRejection, useDropzone } from "react-dropzone";
-import { ArrowUpIcon } from "@chakra-ui/icons";
+import { GrUpload } from "react-icons/gr";
 
 interface PropsType {
   fileArr: Array<File>;
   setFileArr: Dispatch<SetStateAction<Array<File>>>;
-  numFiles: number;
-  setShowAlert: Dispatch<SetStateAction<boolean>>;
 }
 
+const MinimalDropZone = () => {
+  return (
+    <Flex
+      direction="column"
+      alignItems="center"
+      justifyContent="center"
+      rowGap={3}
+    >
+      <Icon as={GrUpload} />
+      <Text>Upload attachment</Text>
+    </Flex>
+  );
+};
+
+const FullDropZone = () => {
+  return (
+    <Flex
+      direction={"column"}
+      alignItems={"center"}
+      justifyContent={"center"}
+      rowGap={3}
+    >
+      <Flex direction={"row"} gap={1}>
+        <Text
+          as="span"
+          fontSize={"2xl"}
+          lineHeight={"28px"}
+          color={"#0094FF"}
+          fontWeight={"semibold"}
+        >
+          Click to upload photo
+        </Text>
+        <Text
+          as="span"
+          fontSize={"2xl"}
+          lineHeight={"28px"}
+          fontWeight={"regular"}
+        >
+          or drag and drop photos
+        </Text>
+      </Flex>
+      <Text fontSize={"l"} color={"rgba(0, 0, 0, 0.5)"} lineHeight={"22px"}>
+        JPG and PNG images - MP4 and MOV video
+      </Text>
+    </Flex>
+  );
+};
+
 function FileDropZone(props: PropsType) {
-  const { fileArr, setFileArr, numFiles, setShowAlert } = props;
+  const { fileArr, setFileArr } = props;
+  const toast = useToast();
+
+  const DropZoneComponent = useBreakpointValue({
+    base: <MinimalDropZone />,
+    lg: <FullDropZone />,
+  });
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
-      console.log("REJECTIONS");
-      console.log(fileRejections);
-      console.log("ACCEPTED");
-      console.log(acceptedFiles);
-
       if (fileRejections.length > 0) {
-        setShowAlert(true);
-      } else setShowAlert(false);
+        toast({
+          status: "error",
+          position: "top",
+          title: "Error",
+          description: fileRejections[0].errors[0].message,
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      }
 
-      let newFiles = acceptedFiles.filter((file) => {
-        let idx = acceptedFiles.indexOf(file);
-        if (
-          file.type === "video/mp4" &&
-          (fileArr.some((f) => f.type === "video/mp4") ||
-            acceptedFiles.slice(0, idx).some((f) => f.type === "video/mp4"))
-        ) {
-          setShowAlert(true);
-          return false;
-        }
-        return true;
-      });
-      setFileArr([...fileArr, ...newFiles]);
+      const currentNumVideos = fileArr.filter(
+        (file) => file.type === "video/mp4" || file.type === "video/quicktime"
+      ).length;
+      const incomingNumVideos = acceptedFiles.filter(
+        (file) => file.type === "video/mp4" || file.type === "video/quicktime"
+      ).length;
+
+      if (currentNumVideos + incomingNumVideos > 1) {
+        toast({
+          status: "error",
+          position: "top",
+          title: "Error",
+          description: "Maximum of 1 video permitted.",
+          duration: 4000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      setFileArr([...fileArr, ...acceptedFiles]);
     },
-    [fileArr, setFileArr, setShowAlert]
+    [fileArr, setFileArr]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    maxFiles: 6 - numFiles,
+    maxFiles: 6 - fileArr.length,
     accept: {
-      "image/*": [".jpg", ".jpeg", ".png"],
-      "video/*": [".mp4", ".mov"],
+      "image/jpeg": [".jpeg", ".jpg"],
+      "image/png": [".png"],
+      "video/mp4": [".mp4"],
+      "video/quicktime": [".mov"],
     },
   });
 
-  let dropZoneStyle = {
-    width: "688px",
-    height: "435px",
-    border: "1px dashed #000000",
-    borderRadius: "5.82474px",
-  };
-
-  if (numFiles > 0) {
-    dropZoneStyle.width = "211px";
-    dropZoneStyle.height = "211px";
-  }
-
   return (
     <Flex
-      width={dropZoneStyle.width}
-      height={dropZoneStyle.height}
-      border={dropZoneStyle.border}
-      borderRadius={dropZoneStyle.borderRadius}
+      flex={1}
+      minW="100%"
+      minH="100%"
+      border="1px dashed gray"
+      borderRadius={8}
       direction={"column"}
       alignItems={"center"}
       justifyContent={"center"}
@@ -76,42 +135,10 @@ function FileDropZone(props: PropsType) {
         cursor: "pointer",
       }}
     >
-      <input {...getInputProps()} />
-      {numFiles <= 0 ? (
-        <Flex
-          direction={"column"}
-          alignItems={"center"}
-          justifyContent={"center"}
-          rowGap={3}
-        >
-          <Flex direction={"row"} gap={1}>
-            <Text
-              fontSize={"2xl"}
-              lineHeight={"28px"}
-              color={"#0094FF"}
-              fontWeight={"semibold"}
-            >
-              Click to upload photo
-            </Text>
-            <Text fontSize={"2xl"} lineHeight={"28px"} fontWeight={"regular"}>
-              or drag and drop photos
-            </Text>
-          </Flex>
-          <Text fontSize={"l"} color={"rgba(0, 0, 0, 0.5)"} lineHeight={"22px"}>
-            JPG and PNG images - MP4 and MOV video
-          </Text>
-        </Flex>
-      ) : (
-        <Flex
-          direction={"column"}
-          alignItems={"center"}
-          justifyContent={"center"}
-          rowGap={3}
-        >
-          <ArrowUpIcon></ArrowUpIcon>
-          <Text>Add photo</Text>
-        </Flex>
-      )}
+      <>
+        <input {...getInputProps()} />
+        {fileArr.length <= 0 ? DropZoneComponent : <MinimalDropZone />}
+      </>
     </Flex>
   );
 }

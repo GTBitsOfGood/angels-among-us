@@ -1,90 +1,150 @@
-import { Flex, Image } from "@chakra-ui/react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
+import Image from "next/legacy/image";
+import { Flex, Circle, IconButton, Box } from "@chakra-ui/react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import DefaultDog from "../../public/dog.svg";
+import { useState } from "react";
 
-const SlideData = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
+function ImageSlider(props: { attachments: Array<string> }) {
+  const { attachments } = props;
+  const videoTypes = new Set(["mp4", "mov"]);
+  const [slideIndex, setSlideIndex] = useState(0);
 
-  {
-    image:
-      "https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1601979031925-424e53b6caaa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1591160690555-5debfba289f0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8cHVwcHl8ZW58MHx8MHx8&w=1000&q=80",
-  },
-];
+  if (attachments.length === 0) {
+    return (
+      <Flex
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        minHeight={{ base: "40dvh", md: "100%" }}
+        bgColor="#DDDDDD"
+        width="100%"
+        borderRadius={12}
+      >
+        <DefaultDog fill="white" height="50%" width="50%" />
+      </Flex>
+    );
+  }
 
-const ImageSlider = () => {
+  const hasPrev = slideIndex - 1 >= 0;
+  const hasNext = slideIndex + 1 < attachments.length;
+
   return (
-    <Carousel
-      axis="horizontal"
-      showStatus={false}
-      swipeable={false}
-      infiniteLoop
-      renderArrowPrev={(clickHandler, hasPrev) => {
-        return (
-          <Flex
-            position="absolute"
-            display={hasPrev ? "flex" : "none"}
-            zIndex={2}
-            top={0}
-            bottom={0}
-            left={0}
-            p={3}
-            alignItems="center"
-            maxHeight={["50vh", "75vh"]}
-          >
-            <Flex onClick={clickHandler} cursor="pointer">
-              <FaArrowCircleLeft size={30} />
-            </Flex>
-          </Flex>
-        );
-      }}
-      renderArrowNext={(clickHandler, hasNext) => {
-        return (
-          <Flex
-            position="absolute"
-            display={hasNext ? "flex" : "none"}
-            zIndex={2}
-            top={0}
-            bottom={0}
-            right={0}
-            p={3}
-            alignItems="center"
-            maxHeight={["50vh", "75vh"]}
-          >
-            <Flex onClick={clickHandler} cursor="pointer">
-              <FaArrowCircleRight size={30} />
-            </Flex>
-          </Flex>
-        );
-      }}
-    >
-      {SlideData.map((slide) => {
-        return (
-          <Image
-            key={slide.image}
-            src={slide.image}
-            borderRadius="15px"
-            objectFit="cover"
-            width="full"
-            height="full"
-            maxHeight={["50vh", "75vh"]}
-            alt=""
+    <Flex w="100%" h="100%" direction="column">
+      <Flex
+        position="relative"
+        w="100%"
+        h={{ base: "40dvh", md: "100%" }}
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        borderRadius={12}
+        bgColor="#DDDDDD"
+        overflow="hidden"
+      >
+        <Flex
+          display={hasPrev ? "flex" : "none"}
+          position="absolute"
+          zIndex={2}
+          top="50%"
+          left={3}
+          transform="translateY(-50%)"
+        >
+          <IconButton
+            isRound={true}
+            variant="solid"
+            colorScheme="brand"
+            aria-label="left"
+            size="sm"
+            fontSize="20px"
+            icon={<ChevronLeftIcon />}
+            onClick={() => setSlideIndex((cur) => cur - 1)}
           />
-        );
-      })}
-    </Carousel>
+        </Flex>
+        <Flex
+          display={hasNext ? "flex" : "none"}
+          position="absolute"
+          zIndex={2}
+          top="50%"
+          right={3}
+          transform="translateY(-50%)"
+        >
+          <IconButton
+            isRound={true}
+            variant="solid"
+            colorScheme="brand"
+            aria-label="right"
+            size="sm"
+            fontSize="20px"
+            icon={<ChevronRightIcon />}
+            onClick={() =>
+              setSlideIndex((cur) => (cur + 1) % attachments.length)
+            }
+          />
+        </Flex>
+        <>
+          {attachments.map((attachment, i) => {
+            const isVideoType = videoTypes.has(
+              attachment.split(".").pop()!.toLowerCase()
+            );
+            if (isVideoType) {
+              return (
+                <video
+                  key={attachment}
+                  style={{
+                    position: "absolute",
+                    objectFit: "contain",
+                    height: "100%",
+                    width: "auto",
+                    display: i === slideIndex ? "inline" : "none",
+                  }}
+                  controls
+                  controlsList="nodownload"
+                >
+                  <source src={attachment} />
+                </video>
+              );
+            }
+            return (
+              <Box
+                key={attachment}
+                w="100%"
+                h="100%"
+                display={i === slideIndex ? "inline" : "none"}
+                pos="relative"
+              >
+                <Image
+                  key={attachment}
+                  src={attachment}
+                  objectFit="contain"
+                  layout="fill"
+                  alt=""
+                />
+              </Box>
+            );
+          })}
+        </>
+      </Flex>
+      {attachments.length > 1 && (
+        <Flex
+          pt={3}
+          gap={2}
+          w="100%"
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+        >
+          {attachments.map((_, i) => {
+            return (
+              <Circle
+                key={i}
+                size={i === slideIndex ? 3 : 2}
+                bg={i === slideIndex ? "text-primary" : "#DDDDDD"}
+              />
+            );
+          })}
+        </Flex>
+      )}
+    </Flex>
   );
-};
-
+}
 export default ImageSlider;

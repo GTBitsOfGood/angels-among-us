@@ -1,0 +1,79 @@
+version: "3.8"
+
+services:
+  web:
+    container_name: web
+    build: 
+      context: ./web
+      dockerfile: Dockerfile
+    volumes:
+      - ./web:/app
+    environment:
+      - DB_URL=mongodb://mongo1:30001/angels-among-us?replicaSet=rs0
+    env_file:
+      - bitwarden.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongo-config:
+        condition: service_completed_successfully
+    networks:
+      - angels-among-us
+    entrypoint: ['./scripts/env-init.sh']
+
+  mongo1:
+    image: mongo:latest
+    container_name: mongo1
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "30001"]
+    volumes:
+      - ./mongo/data1:/data/db
+    ports:
+      - 30001:30001
+    healthcheck:
+      test: test $$(echo "rs.status().ok" | mongosh --port 30001 --quiet) -eq 1
+      interval: 10s
+      start_period: 30s
+    networks:
+      - angels-among-us
+
+  mongo2:
+    image: mongo:latest
+    container_name: mongo2
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "30002"]
+    volumes:
+      - ./mongo/data2:/data/db
+    ports:
+      - 30002:30002
+    restart: always
+    networks:
+      - angels-among-us
+
+  mongo3:
+    image: mongo:latest
+    container_name: mongo3
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "30003"]
+    volumes:
+      - ./mongo/data3:/data/db
+    ports:
+      - 30003:30003
+    restart: always
+    networks:
+      - angels-among-us
+
+  mongo-config:
+    container_name: mongo-config
+    image: mongo:latest
+    depends_on: 
+      - mongo1
+      - mongo2
+      - mongo3
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: ['/scripts/rs-init.sh']
+    restart: on-failure
+    networks: 
+      - angels-among-us 
+
+networks:
+  angels-among-us:
+    driver: bridge

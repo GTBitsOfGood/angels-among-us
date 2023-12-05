@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Slider,
   SliderMark,
@@ -30,7 +30,6 @@ type Props<
 > = {
   field: T;
   val: FormState[T];
-  // val: Trained;
   dispatchFormState: React.Dispatch<Action<T, FormState[T]>>;
 };
 
@@ -42,6 +41,17 @@ function convertStep(num: number) {
       return Trained.Unknown;
     case 2:
       return Trained.Yes;
+  }
+}
+
+function convertTrained(trained: Trained) {
+  switch (trained) {
+    case Trained.No:
+      return 0;
+    case Trained.Unknown:
+      return 1;
+    case Trained.Yes:
+      return 2;
   }
 }
 
@@ -65,7 +75,7 @@ function Picker<
   return (
     <Center ml={2} mr={3.5} mt={2}>
       <Slider
-        defaultValue={1}
+        value={convertTrained(val)}
         min={0}
         max={2}
         step={1}
@@ -78,7 +88,7 @@ function Picker<
         }}
       >
         <SliderMark value={0}>
-          <Box position="absolute" top="-1.5px" left="0.5px" zIndex={2}>
+          <Box position="absolute" top="-1.5px" left="0.5px">
             <Circle size="3px" bg="#57A0D5" />
             <Text
               fontSize="xs"
@@ -92,7 +102,7 @@ function Picker<
           </Box>
         </SliderMark>
         <SliderMark value={1}>
-          <Box position="absolute" top="-1.5px" left="-1.5px" zIndex={2}>
+          <Box position="absolute" top="-1.5px" left="-1.5px">
             <Circle size="3px" bg="#57A0D5" />
             <Text
               fontSize="xs"
@@ -106,7 +116,7 @@ function Picker<
           </Box>
         </SliderMark>
         <SliderMark value={2}>
-          <Box position="absolute" top="-1.5px" left="-3.75px" zIndex={2}>
+          <Box position="absolute" top="-1.5px" left="-3.75px">
             <Circle size="3px" bg="#57A0D5" />
             <Text
               fontSize="xs"
@@ -119,10 +129,10 @@ function Picker<
             </Text>
           </Box>
         </SliderMark>
-        <SliderTrack bg="#D5E7F5" zIndex={1}>
+        <SliderTrack bg="#D5E7F5" zIndex={-2}>
           <SliderFilledTrack bg="#D5E7F5" />
         </SliderTrack>
-        <SliderThumb bg="#57A0D5" />
+        <SliderThumb bg="#57A0D5" zIndex={-1} />
       </Slider>
     </Center>
   );

@@ -1,14 +1,17 @@
 import { TRPCError } from "@trpc/server";
-import { ObjectId } from "mongoose";
-import { z } from "zod";
+import { z, ZodArray } from "zod";
 import {
   createPost,
+  deletePost,
   finalizePost,
   getPost,
   getAllPosts,
-  updatePostDetails,
   updatePostStatus,
   getFilteredPosts,
+  getAttachments,
+  finalizePostEdit,
+  pushUserAppliedTo,
+  getUserContextualizedPost,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -22,18 +25,30 @@ import {
   Medical,
   Behavioral,
   Trained,
-  Status,
+  IPost,
 } from "../../utils/types/post";
-import {
-  router,
-  creatorProcedure,
-  publicProcedure,
-  protectedProcedure,
-} from "../trpc";
+import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
+import { router, procedure } from "../trpc";
+import nodemailer from "nodemailer";
+import { FilterQuery, Types } from "mongoose";
+import { populateEmailTemplate } from "../../email/email-template";
+import inlineCss from "inline-css";
+import { postFilterSchema } from "../../components/FeedPage/FeedPage";
 
-const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
+const zodOidType = z.custom<Types.ObjectId>(
+  (item) => String(item).length == 24
+);
+
+const questionnaireSchema = z.array(
+  z.object({
+    key: z.string(),
+    answer: z.string(),
+  })
+);
 
 const postSchema = z.object({
+  name: z.string(),
+  description: z.string(),
   type: z.nativeEnum(FosterType),
   size: z.nativeEnum(Size),
   breed: z.array(z.nativeEnum(Breed)),
@@ -68,30 +83,54 @@ const postSchema = z.object({
   ),
 });
 
-//TODO: Update goodWith
-const postFilterSchema = z.object({
-  type: z.array(z.nativeEnum(FosterType)),
-  breed: z.array(z.nativeEnum(Breed)),
-  age: z.array(z.nativeEnum(Age)),
-  size: z.array(z.nativeEnum(Size)),
-  gender: z.array(z.nativeEnum(Gender)),
-  goodWith: z.array(z.nativeEnum(GoodWith)),
-  behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.nativeEnum(Trained).optional(),
-  spayNeuterStatus: z.nativeEnum(Status).optional(),
+const fosterTypeEmails: Record<FosterType, string> = {
+  [FosterType.FosterMove]: "foster@angelsrescue.org",
+  [FosterType.Return]: "returns@angelsrescue.org, foster@angelsrescue.org",
+  [FosterType.Temporary]: "tempfoster@angelsrescue.org",
+  [FosterType.Boarding]: "boardingadmin@angelsrescue.org",
+  [FosterType.Shelter]: "fosteroffer@angelsrescue.org",
+  [FosterType.OwnerSurrender]: "fosteroffer@angelsrescue.org",
+} as const;
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_SERVER_EMAIL,
+  port: parseInt(process.env.PORT_EMAIL as string),
+  auth: {
+    user: process.env.LOGIN_EMAIL,
+    pass: process.env.PASSWORD_EMAIL,
+  },
 });
 
+const goodWithMap: Record<GoodWith, string> = {
+  [GoodWith.Cats]: "getsAlongWithCats",
+  [GoodWith.LargeDogs]: "getsAlongWithLargeDogs",
+  [GoodWith.Men]: "getsAlongWithMen",
+  [GoodWith.OlderChildren]: "getsAlongWithOlderKids",
+  [GoodWith.SmallDogs]: "getsAlongWithSmallDogs",
+  [GoodWith.Women]: "getsAlongWithWomen",
+  [GoodWith.YoungChildren]: "getsAlongWithYoungKids",
+} as const;
+
 export const postRouter = router({
-  get: publicProcedure
+  get: procedure
     .input(
       z.object({
         _id: zodOidType,
       })
     )
-    .query(async ({ input }) => {
-      return getPost(input._id);
+    .query(async ({ input, ctx }) => {
+      try {
+        return getUserContextualizedPost(input._id, ctx.session.uid, true);
+      } catch (e) {
+        console.error(e);
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+          cause: e,
+        });
+      }
     }),
-  create: creatorProcedure.input(postSchema).mutation(async ({ input }) => {
+  create: procedure.input(postSchema).mutation(async ({ input }) => {
     const session = await Post.startSession();
     session.startTransaction();
     try {
@@ -100,6 +139,7 @@ export const postRouter = router({
           ...input,
           date: new Date(),
           covered: false,
+          usersAppliedTo: [],
         },
         session
       );
@@ -107,14 +147,96 @@ export const postRouter = router({
       return post;
     } catch (e) {
       await session.abortTransaction();
-      console.error(e);
+
       throw new TRPCError({
         message: "Internal Server Error",
         code: "INTERNAL_SERVER_ERROR",
+        cause: e,
       });
     }
   }),
-  finalize: creatorProcedure
+  offer: procedure
+    .input(
+      z.object({
+        email: z.string(),
+        postOid: zodOidType,
+        responses: questionnaireSchema,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const user = await findUserByEmail(input.email);
+        if (!user) {
+          throw new Error("No user with given email exists");
+        }
+        const post = await getPost(input.postOid, true);
+        if (!post) {
+          throw new Error("No post with given id exists.");
+        }
+        const email =
+          process.env.CONTEXT === "production"
+            ? fosterTypeEmails[post.type]
+            : input.email;
+
+        const emailBody = populateEmailTemplate(post, user, input.responses);
+
+        let count = 0;
+        const maxTries = 3;
+        const options = { url: "www.angelsrescue.org" };
+        while (true) {
+          try {
+            const emailFormatted = await inlineCss(emailBody, options);
+            await transporter.sendMail({
+              from: '"Angels Among Us Pet Rescue Placements Platform" <bitsofgood.aau@gmail.com>',
+              to: email,
+              subject: `[OFFER] ${user.name ?? "Volunteer"} <> ${post.name}`,
+              html: emailFormatted,
+            });
+            break;
+          } catch (e) {
+            if (++count == maxTries) {
+              throw new TRPCError({
+                message: "Unable to send Email.",
+                code: "INTERNAL_SERVER_ERROR",
+                cause: e,
+              });
+            }
+          }
+        }
+        await pushUserAppliedTo(input.postOid, user.uid);
+      } catch (e) {
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occurred.",
+            cause: e,
+          });
+      }
+      return { success: true };
+    }),
+  delete: procedure
+    .input(
+      z.object({
+        postOid: zodOidType,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        return await deletePost(input.postOid);
+      } catch (e) {
+        if (e instanceof TRPCError) {
+          throw e;
+        } else {
+          throw new TRPCError({
+            message: "Internal Server Error",
+            code: "INTERNAL_SERVER_ERROR",
+            cause: e,
+          });
+        }
+      }
+    }),
+  finalize: procedure
     .input(
       z.object({
         _id: zodOidType,
@@ -127,28 +249,63 @@ export const postRouter = router({
         throw new TRPCError({
           message: "All attachments not uploaded",
           code: "PRECONDITION_FAILED",
+          cause: e,
         });
       }
     }),
-  updateDetails: creatorProcedure
+  finalizeEdit: procedure
     .input(
       z.object({
-        _id: zodOidType,
-        updateFields: postSchema.partial(),
+        oldId: zodOidType,
+        newId: zodOidType,
       })
     )
     .mutation(async ({ input }) => {
       try {
-        await updatePostDetails(input._id, input.updateFields);
-        return { success: true };
+        return await finalizePostEdit(input.oldId, input.newId);
+      } catch (e) {
+        throw new TRPCError({
+          message: "All attachments not uploaded",
+          code: "PRECONDITION_FAILED",
+          cause: e,
+        });
+      }
+    }),
+  /**
+   * `editPost` does not actually edit the target post id:
+   * - A new post document is created (new _id) with the updated fields (post-edit)
+   * - The updated attachments are uploaded with the new post id as the prefix for the object key
+   * - The old document and its attachments are deleted
+   */
+  editPost: procedure
+    .input(
+      z.object({
+        _id: zodOidType,
+        updateFields: postSchema,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const existingPost = await getPost(input._id, false);
+        if (!existingPost) {
+          throw new Error("Unable to find existing post id.");
+        }
+        const newPost = await createPost({
+          ...input.updateFields,
+          date: existingPost.date,
+          covered: existingPost.covered,
+          usersAppliedTo: existingPost.usersAppliedTo,
+        });
+        return newPost;
       } catch (e) {
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
-  updateStatus: creatorProcedure
+  updateStatus: procedure
     .input(
       z.object({
         _id: zodOidType,
@@ -162,48 +319,111 @@ export const postRouter = router({
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
-  getAllPosts: protectedProcedure.query(async () => {
+  getAllPosts: procedure.query(async () => {
     try {
       return await getAllPosts();
     } catch (e) {
       throw new TRPCError({
         message: "Internal Server Error",
         code: "INTERNAL_SERVER_ERROR",
+        cause: e,
       });
     }
   }),
-  getFilteredPosts: protectedProcedure
-    .input(postFilterSchema)
+  getAttachments: procedure
+    .input(
+      z.object({
+        _id: zodOidType,
+      })
+    )
     .query(async ({ input }) => {
-      const houseTrained = input.houseTrained
-        ? [input.houseTrained]
-        : Object.values(Trained);
-      const spayNeuterStatus = input.spayNeuterStatus
-        ? [input.spayNeuterStatus]
-        : Object.values(Status);
+      try {
+        return getAttachments(input._id);
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred",
+          cause: e,
+        });
+      }
+    }),
+  getFilteredPosts: procedure
+    .input(
+      z.object({
+        postFilters: postFilterSchema,
+        covered: z.optional(z.boolean()),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const postFilters = input.postFilters;
       const notAllowedBehavioral = Object.values(Behavioral).filter(
-        (obj) => !input.behavioral.includes(obj)
+        (obj) => !postFilters.behavioral.includes(obj)
       );
-      const notGoodWith =
-        input.goodWith.length == 0
-          ? []
-          : Object.values(GoodWith).filter(
-              (obj) => !input.goodWith.includes(obj)
-            );
-      let completeFilter = {
-        breed: { $in: input.breed },
-        type: { $in: input.type },
-        age: { $in: input.age },
-        size: { $in: input.size },
-        gender: { $in: input.gender },
+
+      /**
+       * Go through each value in GoodWith enum.
+       * If the value should be filtered as yes, get the specific key from the goodWithMap and set the filter array to only yes.
+       * Otherwise we don't need to filter by that enum value and can set the filter array to yes, no and unknown.
+       */
+      const getsAlongWith: Record<string, Trained> = Object.values(
+        GoodWith
+      ).reduce((acc, curr) => {
+        if (postFilters.goodWith.includes(curr)) {
+          return { ...acc, ...{ [goodWithMap[curr]]: [Trained.Yes] } };
+        } else {
+          return {
+            ...acc,
+            ...{
+              [goodWithMap[curr]]: [Trained.Yes, Trained.No, Trained.Unknown],
+            },
+          };
+        }
+      }, {});
+
+      const baseFilter: FilterQuery<IPost> = {
+        breed: { $in: postFilters.breed },
+        type: { $in: postFilters.type },
+        age: { $in: postFilters.age },
+        size: { $in: postFilters.size },
+        gender: { $in: postFilters.gender },
         behavioral: { $nin: notAllowedBehavioral },
-        goodWith: { $nin: notGoodWith },
-        houseTrained: { $in: houseTrained },
-        spayNeuterStatus: { $in: spayNeuterStatus },
+        getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
+        getsAlongWithLargeDogs: {
+          $in: getsAlongWith["getsAlongWithLargeDogs"],
+        },
+        getsAlongWithMen: { $in: getsAlongWith["getsAlongWithMen"] },
+        getsAlongWithOlderKids: {
+          $in: getsAlongWith["getsAlongWithOlderKids"],
+        },
+        getsAlongWithSmallDogs: {
+          $in: getsAlongWith["getsAlongWithSmallDogs"],
+        },
+        getsAlongWithWomen: { $in: getsAlongWith["getsAlongWithWomen"] },
+        getsAlongWithYoungKids: {
+          $in: getsAlongWith["getsAlongWithYoungKids"],
+        },
+        pending: false,
       };
-      return await getFilteredPosts(completeFilter);
+      if (input.covered !== undefined) {
+        baseFilter.covered = input.covered;
+      }
+
+      try {
+        const filteredPosts = await getFilteredPosts(
+          baseFilter,
+          ctx.session.uid
+        );
+        return filteredPosts;
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occurred.",
+          cause: e,
+        });
+      }
     }),
 });

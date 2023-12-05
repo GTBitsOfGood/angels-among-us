@@ -1,9 +1,10 @@
-import { router, publicProcedure } from "../trpc";
-import { boolean, z } from "zod";
+import { router, procedure } from "../trpc";
+import { z } from "zod";
 import {
   createUser,
   findUserByUid,
   updateUserByUid,
+  searchUsers,
 } from "../../db/actions/User";
 import { TRPCError } from "@trpc/server";
 import { Role } from "../../utils/types/account";
@@ -13,36 +14,33 @@ import {
   Breed,
   Gender,
   Age,
-  Temperament,
   GoodWith,
   Medical,
   Behavioral,
-  Trained,
-  Status,
 } from "../../utils/types/post";
+import { IUser } from "../../utils/types/user";
 
-const userSchema = z.object({
+const userPreferencesSchema = z.object({
+  preferredEmail: z.string().email().optional(),
+  name: z.string().optional(),
   type: z.array(z.nativeEnum(FosterType)),
   size: z.array(z.nativeEnum(Size)),
   preferredBreeds: z.array(z.nativeEnum(Breed)),
   restrictedBreeds: z.array(z.nativeEnum(Breed)),
   gender: z.array(z.nativeEnum(Gender)),
   age: z.array(z.nativeEnum(Age)),
-  temperament: z.array(z.nativeEnum(Temperament)),
   dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
-  houseTrained: z.array(z.nativeEnum(Trained)),
-  spayNeuterStatus: z.array(z.nativeEnum(Status)),
 });
 
 export const userRouter = router({
-  add: publicProcedure
+  add: procedure
     .input(
       z.object({
         email: z.string().email(),
         uid: z.string(),
-        name: z.string(),
+        name: z.string().optional(),
         role: z.nativeEnum(Role),
       })
     )
@@ -53,42 +51,38 @@ export const userRouter = router({
           await createUser({
             ...input,
             disabled: false,
+            hasCompletedOnboarding: false,
           });
         }
       } catch (e) {
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
-  get: publicProcedure
+  get: procedure
     .input(
       z.object({
-        uid: z.nullable(z.string()),
+        uid: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       try {
-        if (input.uid === null) {
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "Not authenticated",
-          });
-        } else {
-          const user = await findUserByUid(input.uid);
-          return user;
-        }
+        const user = await findUserByUid(input.uid);
+        return user;
       } catch (e) {
         if (e instanceof TRPCError) throw e;
         else
           throw new TRPCError({
             message: "Internal Server Error",
             code: "INTERNAL_SERVER_ERROR",
+            cause: e,
           });
       }
     }),
-  disableStatus: publicProcedure
+  disableStatus: procedure
     .input(
       z.object({
         uid: z.string(),
@@ -102,10 +96,11 @@ export const userRouter = router({
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
-  modifyRoleEnableStatus: publicProcedure
+  modifyRoleEnableStatus: procedure
     .input(
       z.object({
         uid: z.string(),
@@ -120,25 +115,63 @@ export const userRouter = router({
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
-  updateUserPreferences: publicProcedure
+  updateUserPreferences: procedure
     .input(
       z.object({
         uid: z.string(),
-        updateFields: userSchema.partial(),
+        updateFields: userPreferencesSchema.partial(),
       })
     )
     .mutation(async ({ input }) => {
       try {
-        await updateUserByUid(input.uid, input.updateFields);
+        await updateUserByUid(input.uid, {
+          ...input.updateFields,
+          hasCompletedOnboarding: true,
+        });
         return { success: true };
       } catch (e) {
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
+      }
+    }),
+  searchUsers: procedure
+    .input(
+      z.object({
+        searchParams: z
+          .object({
+            role: z.nativeEnum(Role),
+            type: z.array(z.nativeEnum(FosterType)),
+            size: z.array(z.nativeEnum(Size)),
+            preferredBreeds: z.array(z.nativeEnum(Breed)),
+            gender: z.array(z.nativeEnum(Gender)),
+            age: z.array(z.nativeEnum(Age)),
+            dogsNotGoodWith: z.array(z.nativeEnum(GoodWith)),
+            medical: z.array(z.nativeEnum(Medical)),
+            behavioral: z.array(z.nativeEnum(Behavioral)),
+          })
+          .partial(),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        const { searchParams } = input;
+        const res = await searchUsers(searchParams);
+        return { data: res };
+      } catch (e) {
+        if (e instanceof TRPCError) throw e;
+        else
+          throw new TRPCError({
+            message: "Internal Server Error",
+            code: "INTERNAL_SERVER_ERROR",
+            cause: e,
+          });
       }
     }),
 });

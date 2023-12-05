@@ -1,44 +1,35 @@
 import {
-  Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Box,
   Button,
   Checkbox,
   Flex,
   Text,
 } from "@chakra-ui/react";
-import { Dispatch } from "react";
 import Select from "react-select";
-import { Filter, FilterGroup, Option, SelectedFilters } from "./Feed";
+import { Breed, breedLabels } from "../../../utils/types/post";
+import { HandleFilterChangeActions, QueryFilter } from "../FeedPage";
+import { FilterGroup, FilterKeys, FilterKeyTypeMap } from "./filterConsts";
 
 function FeedFilterGroup(props: {
-  key: string;
   filterGroup: FilterGroup;
-  selectedFilters: SelectedFilters<Filter>;
-  setSelectedFilters: Dispatch<{
-    type: string;
-    filter: Filter;
-    ind: number;
-    event: Option[];
-  }>;
+  selectedFilters: QueryFilter;
+  handleFilterChange: (action: HandleFilterChangeActions) => void;
 }) {
-  const { filterGroup, selectedFilters, setSelectedFilters } = props;
+  const { filterGroup, selectedFilters, handleFilterChange } = props;
 
   return (
-    <Accordion allowMultiple={true}>
-      <AccordionItem>
-        <AccordionButton>
-          <Box as="span" flex="1" textAlign="left">
-            <Text fontWeight="semibold">{filterGroup.title}</Text>
-          </Box>
-          <AccordionIcon />
-        </AccordionButton>
+    <AccordionItem w="100%">
+      <AccordionButton>
+        <Text fontWeight="semibold">{filterGroup.title}</Text>
+        <AccordionIcon />
+      </AccordionButton>
+      <AccordionPanel w="100%" display="flex" gap={4} flexDir="column">
         {filterGroup.filters.map((f) => {
           return (
-            <AccordionPanel key={f.description} marginRight="40px">
+            <Flex key={f.key} direction="column" w="100%" gap={2}>
               <Text color="#3F3F3F">{f.description}</Text>
               <Flex
                 id="filterBox"
@@ -46,9 +37,8 @@ function FeedFilterGroup(props: {
                 borderWidth="2px"
                 borderColor="#D9D9D9"
                 borderRadius="6px"
-                gap="10px"
-                padding="16px"
-                marginTop="6px"
+                gap={2}
+                padding={4}
                 paddingBottom="16px"
               >
                 {f.dropdown ? (
@@ -82,100 +72,99 @@ function FeedFilterGroup(props: {
                           },
                         }),
                       }}
-                      options={f.options}
-                      value={f.options.reduce((arr: Option[], val) => {
-                        if (selectedFilters[f.key].includes(val)) {
-                          arr.push(val);
-                        }
-                        return arr;
-                      }, [])}
+                      options={f.options as any}
+                      //TODO: Refactor to allow dropdown to not be hard-coded as Breed[]
+                      value={(selectedFilters[f.key] as Breed[]).map(
+                        (selected) => ({
+                          value: selected,
+                          label: breedLabels[selected],
+                        })
+                      )}
                       isMulti
                       closeMenuOnSelect={false}
-                      onChange={(event: any) => {
-                        setSelectedFilters({
-                          type: "dropdown",
-                          filter: f,
-                          ind: 0,
-                          event: event,
+                      onChange={(options) => {
+                        handleFilterChange({
+                          type: "dropdownChange",
+                          key: f.key,
+                          value: options.map((option) => option.value),
                         });
                       }}
                     />
                   </Flex>
                 ) : (
-                  f.options.map((val, ind) => {
-                    return (
-                      <Checkbox
-                        key={val.label}
-                        color="#3F3F3F"
-                        isChecked={selectedFilters[f.key].some(
-                          (e: Option) =>
-                            e.value == f.options[ind].value &&
-                            e.label == f.options[ind].label
-                        )}
-                        onChange={() => {
-                          setSelectedFilters({
-                            type: "checkbox",
-                            filter: f,
-                            ind: ind,
-                            event: [],
-                          });
-                        }}
-                      >
-                        {val.label}
-                      </Checkbox>
-                    );
-                  })
+                  <Flex direction="column" gap={2} maxW="100%">
+                    {f.options.map((val) => {
+                      return (
+                        <Checkbox
+                          key={val.value}
+                          color="#3F3F3F"
+                          isChecked={(
+                            selectedFilters[
+                              f.key
+                            ] as FilterKeyTypeMap[FilterKeys][]
+                          ).includes(val.value)}
+                          onChange={(e) => {
+                            handleFilterChange({
+                              type: "checkboxChange",
+                              key: f.key,
+                              value: val.value,
+                              operation: e.target.checked ? "push" : "pull",
+                            });
+                          }}
+                        >
+                          {val.label}
+                        </Checkbox>
+                      );
+                    })}
+                  </Flex>
                 )}
               </Flex>
               <Flex
                 display={f.dropdown ? "flex" : "none"}
-                marginTop="10px"
-                gap="10px"
+                gap={2}
                 width="100%"
                 justifyContent="right"
               >
                 <Button
-                  backgroundColor="#FFFFFF"
+                  backgroundColor="white"
                   fontWeight="normal"
                   color="#7D7E82"
                   borderWidth="1px"
                   borderColor="#D9D9D9"
                   borderRadius="4px"
                   onClick={() => {
-                    setSelectedFilters({
-                      type: "dropdown",
-                      filter: f,
-                      ind: 0,
-                      event: [],
+                    handleFilterChange({
+                      type: "dropdownChange",
+                      key: f.key,
+                      value: "",
                     });
                   }}
                 >
                   Deselect All
                 </Button>
                 <Button
-                  backgroundColor="#FFFFFF"
+                  backgroundColor="white"
                   fontWeight="normal"
                   color="#7D7E82"
                   borderWidth="1px"
                   borderColor="#D9D9D9"
                   borderRadius="4px"
                   onClick={() => {
-                    setSelectedFilters({
-                      type: "dropdown",
-                      filter: f,
-                      ind: 0,
-                      event: f.options.map((val) => val),
+                    handleFilterChange({
+                      type: "dropdownChange",
+                      key: f.key,
+                      value: f.options.map((option) => option.value),
                     });
                   }}
                 >
                   Select All
                 </Button>
               </Flex>
-            </AccordionPanel>
+            </Flex>
           );
         })}
-      </AccordionItem>
-    </Accordion>
+      </AccordionPanel>
+    </AccordionItem>
   );
 }
 

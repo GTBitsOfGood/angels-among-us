@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import {
   IPost,
   FosterType,
@@ -17,6 +17,8 @@ const { Schema } = mongoose;
 
 const postSchema = new Schema<IPost>({
   date: { type: Date, default: Date.now },
+  name: { type: String, required: true },
+  description: { type: String, required: true },
   type: {
     type: String,
     required: true,
@@ -126,6 +128,11 @@ const postSchema = new Schema<IPost>({
       required: true,
     },
   ],
+  usersAppliedTo: {
+    type: [{ type: String }], // Firebase UID
+    default: [],
+    required: true,
+  },
 });
 
 export default mongoose.models.Post || mongoose.model("Post", postSchema);

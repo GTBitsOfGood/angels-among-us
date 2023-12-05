@@ -8,51 +8,136 @@ Angels Among Us's mission is to save animals from shelters and owner surrenders.
 
 Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449bfafddede9870ca190) Notion page.
 
-## Onboarding
+## Setup
 
-### Accounts
+### Using Docker (recommended)
 
-We will be authenticating using Facebook login. Create a Facebook account if you do not yet have one.
+> For those that use WSL on Windows, there are known bugs that can prevent the web app from connecting to your Mongo database. It is strongly encouraged that you set up the repository using Docker.
 
-### MongoDB
+1. Download [MongoDB Compass](https://www.mongodb.com/try/download/compass#compass) to view your database documents in a GUI.
 
-Install [MongoDB Community Server](https://www.mongodb.com/docs/manual/administration/install-community/) to host a local instance of MongoDB. It may also be helpful to download [MongoDB Compass](https://www.mongodb.com/try/download/compass#compass) to view the state of your database.
+2. Obtain the Bitwarden password from your EM. Create a file named `bitwarden.env` in the root directory of the respository and fill it with the following contents:
 
-### Dependencies
+   ```zsh
+   BW_PASSWORD=<provided bitwarden password>
+   ```
 
-Run `yarn` in the root directory of the repository. If you get an error specifying that the command is not found, install yarn:
+   This only needs to be done on your first run. After that, **you should delete the file from your repository to avoid accidentally pushing it to GitHub.**
+
+3. Boot up the Docker containers:
+
+   ```zsh
+   docker-compose up -d
+   ```
+
+   This may take a while on your first build. It is also expected that the `web` image takes a bit to start up as it depends on a healthy database with proper replica sets.
+
+   To stop your Docker containers and remove their processes, run:
+
+   ```zsh
+   docker-compose down
+   ```
+
+   You can see currently running containers with `docker ps -a`.
+
+4. Once everything has spun up successfully, connect to your database on MongoDB compass with the connection URL:
+
+   ```zsh
+   mongodb://localhost:30001/?directConnection=true
+   ```
+
+   Keep in mind that our Docker instance of MongoDB runs on a different port (30001) to prevent collisions with a local instance of MongoDB, if you have that installed (which runs on 27017 by default).
+
+5. Add a document to the `accounts` collection, with email and role fields like this:
+
+   ```js
+    {
+      _id: ...,
+      email: "YOUR_EMAIL_HERE",
+      role: "admin"
+    }
+   ```
+
+   The value of the email field should be the email address you will be logging in with via gmail. You have now added yourself as a valid account with an admin role.
+
+6. Navigate to `localhost:3000` using your web browser. Click "Sign in with Google" and log into using the email you used to make the `account` document.
+
+If you make any changes to the packages, you may need to rebuild the images. To do this, append --build to the above docker compose up command.
+
+The Dockerized application will have live-reloading of changes made on the host machine.
+
+Note: On linux-based operating systems, if you come across an entrypoint permission error (i.e. `process: exec: "./scripts/env-init.sh": permission denied: unknown` or `process: exec: "./scripts/rs-init.sh": permission denied: unknown`), run `chmod +x ./scripts/rs-init.sh` or `chmod +x ./web/scripts/env-init.sh` to make the shell files executables.
+
+Windows Users: If you come across this error `exec ./scripts/rs-init.sh: no such file or directory` or `exec ./scripts/env-init.sh: no such file or directory` when running the docker-compose command, please follow this [Stackoverflow thread](https://stackoverflow.com/questions/40452508/docker-error-on-an-entrypoint-script-no-such-file-or-directory) to fix it.
+
+### Manual setup
+
+1. Install [MongoDB Community Server](https://www.mongodb.com/docs/manual/administration/install-community/) to host a local instance of MongoDB. Download [MongoDB Compass](https://www.mongodb.com/try/download/compass#compass) to view the state of your database using a GUI.
+
+2. Run `yarn` in the root directory of the repository. If you get an error specifying that the command is not found, install yarn:
+
+   ```zsh
+   npm install --global yarn
+   ```
+
+   then attempt `yarn` again.
+
+   Run the following commands.
+
+   ```zsh
+   cd web
+   yarn
+   ```
+
+   You have now installed all the dependencies required to run the project.
+
+3. Acquire the `.env` file by navigating to the `web` directory and running the following based on your OS:
+
+   ```zsh
+   yarn secrets:linux # MacOS/Linux
+   yarn secrets:windows # Windows
+   ```
+
+   You will need to obtain a password from your engineering leadership to complete this process.
+
+4. Connect to your MongoDB database using MongoDB compass. Use the connection URL:
+
+   ```zsh
+   mongodb://localhost:27017/
+   ```
+
+   Create a document within the `accounts` collection with the fields:
+
+   ```js
+    {
+      _id: ...,
+      email: "YOUR_EMAIL_HERE",
+      role: "admin"
+    }
+   ```
+
+   The value of the email field should be the email address you will be logging in with via gmail. You have now added yourself as a valid account with an admin role.
+
+5. Configure MongoDB session transactions using [this](https://www.notion.so/gtbitsofgood/MongoDB-Transactions-Setup-42d280055f3b45beb6cea350882ab7b9?pvs=4) Notion doc.
+
+6. Start the Next.js development server by running:
+
+   ```zsh
+   yarn dev
+   ```
+
+   in the `web` directory.
+
+7. Navigate to `localhost:3000` using your web browser. Click "Sign in with Google" and log into using the email you used to make the `account` document.
+
+## Testing
+
+We use [jest](https://jestjs.io/docs/getting-started) for testing. See the `web/__tests__` directory for our unit and integration tests. Currently, our tests are mostly limited to testing backend functionality.
+
+To run all test suites, navigate to the `web` directory and run `yarn jest`. To generate a coverage report, run:
 
 ```zsh
-npm install --global yarn
-```
-
-then attempt `yarn` again.
-
-Run the following commands.
-
-```zsh
-cd web
-yarn
-```
-
-These commands should have installed all necessary dependencies for your project to run.
-
-### Environment Variables
-
-In the `web` directory, run the following commands:
-
-```
-yarn secrets
-```
-
-You should be prompted for a master password. Ask your Engineering leadership to continue. Once the password has been verified, your `.env` file should have been created automatically for you.
-
-### Development
-
-To start the Next.js development server, run:
-
-```
-yarn dev
+yarn jest --coverage --collectCoverageFrom='./**/*.{ts,tsx}'
 ```
 
 ## Code Formatting

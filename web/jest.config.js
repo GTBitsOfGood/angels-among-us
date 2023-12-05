@@ -8,10 +8,19 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 /** @type {import('jest').Config} */
-const customJestConfig = {
+const config = {
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  preset: "@shelf/jest-mongodb",
+  coverageThreshold: {
+    global: {
+      branches: 0,
+      functions: 0,
+      lines: 0,
+      statements: 0,
+    },
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig);
+module.exports = createJestConfig(config);

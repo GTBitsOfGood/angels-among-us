@@ -1,27 +1,28 @@
 import { TRPCError } from "@trpc/server";
-import { ObjectId } from "mongoose";
 import { z } from "zod";
 import {
-  removeAccount,
   updateAccount,
   addAccount,
   findAccount,
   findAll,
   removeAllAccounts,
+  searchAccounts,
 } from "../../db/actions/Account";
 import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { IAccount, Role } from "../../utils/types/account";
-import { router, protectedProcedure } from "../trpc";
+import { router, procedure } from "../trpc";
 
 const emailInput = {
   email: z.string().email("Invalid email provided"),
 };
 
-const zodOidType = z.custom<ObjectId>((item) => String(item).length == 24);
+const searchInput = z.object({
+  searchSubject: z.string(),
+});
 
 export const accountRouter = router({
-  modify: protectedProcedure
+  modify: procedure
     .input(
       z.object({
         role: z.nativeEnum(Role),
@@ -30,6 +31,11 @@ export const accountRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const email = input.email;
+      if (!ctx.session?.email)
+        throw new TRPCError({
+          message: "Unauthorized - Caller has no email",
+          code: "UNAUTHORIZED",
+        });
       if (ctx.session?.email === email)
         throw new TRPCError({
           message: "Unauthorized - Cannot modify own account",
@@ -64,10 +70,11 @@ export const accountRouter = router({
           throw new TRPCError({
             message: "Internal Server Error",
             code: "INTERNAL_SERVER_ERROR",
+            cause: e,
           });
       }
     }),
-  remove: protectedProcedure
+  remove: procedure
     .input(z.array(z.string().email()))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session?.email)
@@ -96,11 +103,12 @@ export const accountRouter = router({
         throw new TRPCError({
           message: "Internal Server Error",
           code: "INTERNAL_SERVER_ERROR",
+          cause: e,
         });
       }
     }),
 
-  add: protectedProcedure
+  add: procedure
     .input(
       z.object({
         email: z.string().email(),
@@ -148,12 +156,13 @@ export const accountRouter = router({
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred",
+            cause: e,
           });
         }
       }
     }),
 
-  get: protectedProcedure
+  getRole: procedure
     .input(
       z.object({
         email: z.string().email().nullable(),
@@ -183,11 +192,12 @@ export const accountRouter = router({
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred",
+            cause: e,
           });
       }
     }),
 
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: procedure.query(async ({ ctx }) => {
     const session = await Account.startSession();
     session.startTransaction();
     try {
@@ -200,6 +210,29 @@ export const accountRouter = router({
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "An unexpected error occured",
+          cause: e,
+        });
+    }
+  }),
+
+  search: procedure.input(searchInput).query(async ({ input, ctx }) => {
+    const session = await Account.startSession();
+    session.startTransaction();
+    try {
+      const { searchSubject } = input;
+      const accounts = searchSubject
+        ? await searchAccounts(searchSubject, session)
+        : await findAll();
+      session.commitTransaction();
+      return accounts as IAccount[];
+    } catch (e) {
+      session.abortTransaction();
+      if (e instanceof TRPCError) throw e;
+      else
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An unexpected error occured",
+          cause: e,
         });
     }
   }),

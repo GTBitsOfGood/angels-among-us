@@ -1,18 +1,22 @@
 import { useState } from "react";
 import OnboardingSlide from "../components/Onboarding/OnboardingSlide";
-import { Flex, Progress, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Grid,
+  GridItem,
+  Progress,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import OnboardingButton from "../components/Onboarding/OnboardingButton";
 import {
   FosterType,
   Size,
   Gender,
   Age,
-  Temperament,
   GoodWith,
   Medical,
   Behavioral,
-  Trained,
-  Status,
   Breed,
 } from "../utils/types/post";
 import { useAuth } from "../context/auth";
@@ -36,12 +40,9 @@ export type PossibleTypes =
   | Breed
   | Gender
   | Age
-  | Temperament
   | GoodWith
   | Medical
-  | Behavioral
-  | Trained
-  | Status;
+  | Behavioral;
 
 export interface IQuestion {
   title: string;
@@ -56,6 +57,7 @@ export interface StoredQuestion<T extends PossibleTypes> extends IQuestion {
   dropdown: boolean;
   popover: string;
   allSelected: boolean;
+  required: boolean;
 }
 
 export type Answers<T extends StoredQuestion<PossibleTypes>> = {
@@ -64,6 +66,7 @@ export type Answers<T extends StoredQuestion<PossibleTypes>> = {
 
 function Onboarding() {
   const { user } = useAuth();
+  const toast = useToast();
 
   const questionData: IQuestion[] = [
     {
@@ -90,8 +93,9 @@ function Onboarding() {
       singleAnswer: false,
       dropdown: false,
       popover:
-        "<b>Return Foster</b> <br> A dog that was adopted but then returned to AAU by the adopter. <br><br> <b> Boarding </b> <br> A foster parent or other dogs' owner goes on vacation or other hiatus and needs someone to take their dog for a little while. <br><br> <b> Temporary </b> <br> During holidays, vacations, and emergencies until permanent fosters can be found or return. <br><br> <b> Shelter </b> <br> A dog that comes from or is currently in a shelter and in need of a home. <br><br> <b> Owner Surrender </b> <br> A dog that has been handed over from their previous owner and now needs a home. <br><br> <b> Foster Move </b> <br> A dog whose previous foster parents can't care for the foster dog any more.",
+        "<b>Return Foster</b> <br> A dog that was adopted from AAUPR and is being returned <br><br> <b> Boarding </b> <br> Dogs that are in a boarding facility until a foster or adopter is found <br><br> <b> Temporary </b> <br> Short term placement while the primary foster is on vacation or other emergency placement <br><br> <b> Shelter </b> <br> A dog that is coming into the rescue from a shelter or animal control facility <br><br> <b> Owner Surrender </b> <br> A dog that is being surrendered by their current owner <br><br> <b> Foster Move </b> <br> A current Angel dog that needs a new placement",
       allSelected: true,
+      required: false,
     } as StoredQuestion<FosterType>,
     {
       key: "size",
@@ -109,6 +113,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Size>,
     {
       key: "restrictedBreeds",
@@ -172,6 +177,7 @@ function Onboarding() {
       dropdown: true,
       popover: "",
       allSelected: false,
+      required: false,
     } as StoredQuestion<Breed>,
     {
       key: "preferredBreeds",
@@ -234,6 +240,7 @@ function Onboarding() {
       dropdown: true,
       popover: "",
       allSelected: false,
+      required: false,
     } as StoredQuestion<Breed>,
     {
       key: "gender",
@@ -250,6 +257,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Gender>,
     {
       key: "age",
@@ -267,24 +275,8 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Age>,
-    {
-      key: "temperament",
-      title:
-        "Which of the following dog temperaments are you comfortable with?",
-      description: "",
-      options: [
-        { value: Temperament.Friendly, label: "Friendly" },
-        { value: Temperament.Scared, label: "Scared" },
-        { value: Temperament.Active, label: "Active" },
-        { value: Temperament.Calm, label: "Calm" },
-      ],
-      qtype: QType.Question,
-      singleAnswer: false,
-      dropdown: false,
-      popover: "",
-      allSelected: true,
-    } as StoredQuestion<Temperament>,
     {
       key: "dogsNotGoodWith",
       title: "Are you able to foster dogs that DO NOT do well with:",
@@ -303,6 +295,7 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<GoodWith>,
     {
       key: "medical",
@@ -326,6 +319,7 @@ function Onboarding() {
       popover:
         "<b>Illness</b> <br> A treatable illness.  May require additional vet appointments before cleared for adoption. <br><br> <b>Injury</b> <br> May require additional vet visits, bandage changes, and/or surgery. <br><br> <b> Pregnant </b> <br> Will have babies in your home. Puppies can be adopted or split into multiple fosters at 8 weeks. <br><br> <b> Nursing </b> <br> Puppies already born but will need monitoring and to stay with mom until 8 weeks of age. <br><br> <b> Bottle Fed </b> <br> Needs round the clock bottle feedings until able to eat solid food. <br><br> <b> Heartworms </b> <br> Dogs need to be kept calm during heartworm treatment.  In some cases, AAUPR will cover treatment after adoption. <br><br> <b> Chronic Condition </b> <br> May need ongoing medication or follow ups.  May be adopted once diagnosed and an adopter is fully informed. <br><br> <b> Parvo </b><br>A virus that affects puppies.  Since parvo stays in the home for a period of time, if a foster has parvo puppies, they cannot take healthy puppies for 6 months to a year. <br><br> <b> Hospice </b> <br> A dog that is not available for adoption but will be made comfortable for as long as possible in their foster home.",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Medical>,
     {
       key: "behavioral",
@@ -344,35 +338,8 @@ function Onboarding() {
       dropdown: false,
       popover: "",
       allSelected: true,
+      required: false,
     } as StoredQuestion<Behavioral>,
-    {
-      key: "houseTrained",
-      title: "Are you able to foster a dog who is NOT house trained?",
-      description:
-        "(Note: We often do not know if a dog is house trained until they are in a foster home.)",
-      options: [
-        { value: Trained.Yes, label: "Yes" },
-        { value: Trained.No, label: "No" },
-      ],
-      qtype: QType.Question,
-      singleAnswer: true,
-      dropdown: false,
-      popover: "",
-    } as StoredQuestion<Trained>,
-    {
-      key: "spayNeuterStatus",
-      title: "Are you able to foster a dog who is NOT spayed/neutered?",
-      description:
-        "(Note: New intakes are rarely altered but an appointment can be scheduled.) ",
-      options: [
-        { value: Status.Yes, label: "Yes" },
-        { value: Status.No, label: "No" },
-      ],
-      qtype: QType.Question,
-      singleAnswer: true,
-      dropdown: false,
-      popover: "",
-    } as StoredQuestion<Status>,
     {
       title: "🎉\nThanks for completing your profile!",
       description: `We're super excited that you're interested in helping our dogs in need by providing them with a kind home!\n\nYou may change any of these preferences on the profile page.`,
@@ -382,14 +349,37 @@ function Onboarding() {
 
   const [qNum, setQNum] = useState<number>(0);
 
+  function validateRequiredQuestionAndAlert() {
+    const currentQuestion = questionData[qNum];
+    if (
+      (currentQuestion as any).required &&
+      answers[(currentQuestion as StoredQuestion<PossibleTypes>).key].length ===
+        0
+    ) {
+      toast({
+        title: "Error",
+        description: "An answer to this question is required.",
+        status: "error",
+        isClosable: true,
+        position: "top",
+      });
+      return false;
+    }
+    return true;
+  }
+
   function prevQ() {
-    if (qNum != 0) {
+    const enforced = validateRequiredQuestionAndAlert();
+    if (enforced && qNum != 0) {
+      toast.closeAll();
       setQNum(qNum - 1);
     }
   }
 
   function nextQ() {
-    if (qNum != questionData.length - 1) {
+    const enforced = validateRequiredQuestionAndAlert();
+    if (enforced && qNum != questionData.length - 1) {
+      toast.closeAll();
       setQNum(qNum + 1);
     }
   }
@@ -408,38 +398,6 @@ function Onboarding() {
 
   const [answers, setAnswers] = useState(initialAnswers);
 
-  let btnDisplay;
-  if (questionData[qNum].qtype == QType.Question) {
-    btnDisplay = (
-      <Flex gap={{ base: "8px", md: "20px", lg: "25px" }}>
-        <OnboardingButton
-          onClickFunc={prevQ}
-          btnType={ButtonType.Back}
-          qNum={qNum}
-          questionData={questionData}
-          answers={answers}
-        ></OnboardingButton>
-        <OnboardingButton
-          onClickFunc={nextQ}
-          btnType={ButtonType.Next}
-          qNum={qNum}
-          questionData={questionData}
-          answers={answers}
-        ></OnboardingButton>
-      </Flex>
-    );
-  } else {
-    btnDisplay = (
-      <OnboardingButton
-        onClickFunc={nextQ}
-        btnType={ButtonType.Singular}
-        qNum={qNum}
-        questionData={questionData}
-        answers={answers}
-      ></OnboardingButton>
-    );
-  }
-
   const numQuestions = questionData.reduce((acc, curr) => {
     if (curr.qtype == QType.Question) acc += 1;
     return acc;
@@ -450,62 +408,87 @@ function Onboarding() {
   }, 0);
 
   return (
-    <Flex>
-      <Flex
-        width="100%"
-        className="page"
-        flexDir="column"
+    <Grid
+      className="page"
+      templateColumns="1fr"
+      templateRows={{
+        base: "100px 1fr 50px",
+        lg: "1fr 5fr 1fr",
+      }}
+      gap={5}
+      minW="100%"
+      h="100%"
+      paddingX={{ base: 8, sm: 50, lg: 100 }}
+      paddingY={{ base: 8, md: 10 }}
+      justifyContent="center"
+    >
+      <GridItem
+        className="progress"
+        visibility={
+          questionData[qNum].qtype === QType.Completion ? "hidden" : "visible"
+        }
+        w="100%"
         alignItems="center"
-        marginX={{ base: "50px", md: "100px", lg: "200px" }}
-        marginTop={{ base: "64px", md: "80px", lg: "50px" }}
-        marginBottom={{ base: "120px", md: "180px", lg: "180px" }}
+        display="flex"
+        gap={{ base: 4, lg: 10 }}
       >
-        <Flex
-          className="progress"
-          flexDir="row"
-          alignItems="center"
-          justifyContent="center"
-          width="100%"
-          marginBottom={{ base: "50px", md: "70px", lg: "84px" }}
-          visibility={
-            questionData[qNum].qtype == QType.Completion ? "hidden" : "visible"
-          }
+        <Progress
+          className="progressBar"
+          flex={1}
+          value={(100 * Math.max(0, qNum - numIntros + 1)) / numQuestions}
+          borderRadius="10px"
+        ></Progress>
+        <Text
+          className="progressBarText"
+          fontWeight="semibold"
+          textColor="text-primary"
+          fontSize={{ base: "md", lg: "lg" }}
         >
-          <Progress
-            className="progressBar"
-            width={{ base: "75%", md: "80%", lg: "85%" }}
-            value={(100 * Math.max(0, qNum - numIntros + 1)) / numQuestions}
-            borderRadius="10px"
-            height={{ base: "10px", md: "20px", lg: "20px" }}
-            marginRight={{ base: "16px", md: "20px", lg: "25px" }}
-          ></Progress>
-          <Text
-            className="progressBarText"
-            fontWeight="semibold"
-            textColor="angelsBlue.100"
-            fontSize={{ base: "10px", md: "16px", lg: "20px" }}
-          >
-            {Math.max(0, qNum - numIntros + 1) + " of " + numQuestions}
-          </Text>
-        </Flex>
+          {Math.max(0, qNum - numIntros + 1) + " of " + numQuestions}
+        </Text>
+      </GridItem>
+      <GridItem w="100%" maxH="100%" overflow="hidden">
         <OnboardingSlide
           questionData={questionData}
           answers={answers}
           setAnswers={setAnswers}
           qNum={qNum}
         />
-      </Flex>
-
-      <Flex
-        className="buttonDisplay"
-        position="fixed"
-        right={{ base: "50%", md: "200px", lg: "300px" }}
-        transform={{ base: "translateX(50%)" }}
-        bottom={{ base: "30px", md: "70px", lg: "70px" }}
-      >
-        {btnDisplay}
-      </Flex>
-    </Flex>
+      </GridItem>
+      <GridItem className="buttonDisplay" w="100%">
+        {questionData[qNum].qtype == QType.Question ? (
+          <Flex
+            justifyContent={{ base: "space-between", md: "flex-end" }}
+            gap={5}
+          >
+            <OnboardingButton
+              onClickFunc={prevQ}
+              btnType={ButtonType.Back}
+              qNum={qNum}
+              questionData={questionData}
+              answers={answers}
+            />
+            <OnboardingButton
+              onClickFunc={nextQ}
+              btnType={ButtonType.Next}
+              qNum={qNum}
+              questionData={questionData}
+              answers={answers}
+            />
+          </Flex>
+        ) : (
+          <Flex justifyContent="flex-end">
+            <OnboardingButton
+              onClickFunc={nextQ}
+              btnType={ButtonType.Singular}
+              qNum={qNum}
+              questionData={questionData}
+              answers={answers}
+            />
+          </Flex>
+        )}
+      </GridItem>
+    </Grid>
   );
 }
 

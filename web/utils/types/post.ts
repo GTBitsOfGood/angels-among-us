@@ -1,3 +1,6 @@
+import { UploadInfo } from "../../db/actions/Post";
+import { Types } from "mongoose";
+
 export enum PetKind {
   Dog = "dog",
   Cat = "cat",
@@ -24,6 +27,25 @@ export const fosterTypeLabels: Record<FosterType, string> = {
   [FosterType.FosterMove]: "Foster move",
   [FosterType.OwnerSurrender]: "Owner surrender",
   [FosterType.Shelter]: "Shelter",
+};
+
+export const fosterTypeDescriptions: Record<FosterType, string> = {
+  [FosterType.Return]:
+    "I was returned back to Angels Among Us by my previous foster parent.",
+
+  [FosterType.Boarding]:
+    "My foster parent or owner needs someone to care for me for while they are away for a bit.",
+
+  [FosterType.Temporary]:
+    "I already have a foster parent but while they sort out logistics, I need care for a few days.",
+
+  [FosterType.FosterMove]:
+    "My previous foster parents weren't able to care for me any more so I need a new home.",
+
+  [FosterType.Shelter]: "I'm originally from a shelter and need a home!",
+
+  [FosterType.OwnerSurrender]:
+    "I was previously surrendered from my previous owner and need a new home!",
 };
 
 export enum Size {
@@ -274,12 +296,32 @@ export const statusLabels: Record<Status, string> = {
   [Trained.No]: "No",
 };
 
+export const houseTrainedLabels: Record<Trained, string> = {
+  [Trained.Yes]: "House-trained",
+  [Trained.No]: "Not house-trained",
+  [Trained.Unknown]: "House-training status unknown",
+};
+
+export const crateTrainedLabels: Record<Trained, string> = {
+  [Trained.Yes]: "Crate-trained",
+  [Trained.No]: "Not crate-trained",
+  [Trained.Unknown]: "Crate-training status unknown",
+};
+
+export const spayNeuterStatusLabels: Record<Trained, string> = {
+  [Trained.Yes]: "Spayed/neutered",
+  [Trained.No]: "Not spayed/neutered",
+  [Trained.Unknown]: "Spay/neuter status unknown",
+};
+
 export type AttachmentInfo =
   | { type: "image"; key: string; length: number; width: number }
   | { type: "video"; key: string };
 
 export interface IPost {
   date: Date;
+  name: string;
+  description: string;
   type: FosterType;
   size: Size;
   breed: Breed[];
@@ -301,8 +343,25 @@ export interface IPost {
   covered: boolean;
   pending: boolean;
   attachments: string[];
+  usersAppliedTo: string[];
 }
+
+export type IFeedPost = Omit<IPost, "usersAppliedTo"> & {
+  _id: Types.ObjectId;
+  userAppliedTo: boolean;
+};
+
+export type SerializedPost = Omit<IFeedPost, "_id" | "date"> & {
+  _id: string;
+  date: string;
+};
 
 export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
   attachments: AttachmentInfo[];
+};
+
+export type IPendingUpdatePost = Omit<IPendingPost, "covered" | "date">;
+
+export type IPendingFinalizePost = Omit<IFeedPost, "attachments"> & {
+  attachments: UploadInfo;
 };

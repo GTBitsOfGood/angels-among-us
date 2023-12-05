@@ -3,6 +3,9 @@ enum Pages {
   ACCESS_MANAGEMENT = "/access",
   ONBOARDING = "/onboarding",
   PROFILE = "/profile",
+  RESOURCES = "/resources",
+  USERS = "/users",
+  POST = "/post/[postId]",
 }
 
 function getBaseUrl() {
@@ -21,9 +24,7 @@ function getBaseUrl() {
 
 const consts = {
   dbUrl: process.env.DB_URL,
-  dbName: "angels-among-us",
   pages: Object.values(Pages),
-  404: "/404",
   baseUrl: getBaseUrl(),
   storageBucket: process.env.STORAGE_BUCKET_NAME,
   storageS3Endpoint: process.env.STORAGE_S3_ENDPOINT,

@@ -2,15 +2,19 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Button,
   Modal,
-  Stack,
   ModalContent,
   ModalOverlay,
   Text,
   Flex,
   Box,
   useToast,
+  ModalBody,
+  ModalFooter,
+  Heading,
+  ModalHeader,
+  Stack,
 } from "@chakra-ui/react";
-import { useEffect, useReducer, useState } from "react";
+import { useReducer, useState } from "react";
 import { z } from "zod";
 import { trpc } from "../../utils/trpc";
 import {
@@ -20,16 +24,14 @@ import {
   Breed,
   FosterType,
   Gender,
-  GoodWith,
   Medical,
-  PetKind,
   Size,
-  Status,
   Temperament,
   Trained,
 } from "../../utils/types/post";
 import FileUploadSlide from "./FileUpload/FileUploadSlide";
 import { FormSlide } from "./Form/FormSlide";
+import { Types } from "mongoose";
 
 function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
   if (val === null) {
@@ -79,10 +81,6 @@ const formSchema = z.object({
   description: z
     .string()
     .transform((val, ctx) => stringEmptyValidation(val, ctx, "Description")),
-  petKind: z
-    .nativeEnum(PetKind, { required_error: "Pet kind required." })
-    .nullable()
-    .transform((val, ctx) => nullValidation(val, ctx, "Pet kind")),
   gender: z
     .nativeEnum(Gender, { required_error: "Gender required." })
     .nullable()
@@ -122,42 +120,24 @@ const formSchema = z.object({
 export type FormState = z.input<typeof formSchema>;
 
 export type Action<K extends keyof FormState, V extends FormState[K]> = {
-  type: "setField";
-  key: K;
-  data: V;
+  type: "setField" | "clear";
+  key?: K;
+  data?: V;
 };
 
 const PostCreationModal: React.FC<{
   isOpen: boolean;
-  onOpen: () => void;
   onClose: () => void;
-}> = ({ isOpen, onOpen, onClose }) => {
+}> = ({ isOpen, onClose }) => {
   const toast = useToast();
+  const utils = trpc.useUtils();
+
   const [isContentView, setIsContentView] = useState(true);
-  const [numFiles, setNumFiles] = useState<number>(0);
-  const [showAlert, setShowAlert] = useState<boolean>(false);
   const [fileArr, setFileArr] = useState<Array<File>>([]);
-  const [selectedFiles, setSelectedFiles] = useState<Array<File>>([]);
 
-  function reducer<K extends keyof FormState, V extends FormState[K]>(
-    state: FormState,
-    action: Action<K, V>
-  ) {
-    switch (action.type) {
-      case "setField":
-        return {
-          ...state,
-          [action.key]: action.data,
-        };
-      default:
-        throw Error("Unknown action.");
-    }
-  }
-
-  const [formState, dispatch] = useReducer(reducer, {
+  const defaultFormState = {
     name: "",
     description: "",
-    petKind: null,
     gender: null,
     age: null,
     type: null,
@@ -176,18 +156,27 @@ const PostCreationModal: React.FC<{
     getsAlongWithLargeDogs: Trained.Unknown,
     getsAlongWithSmallDogs: Trained.Unknown,
     getsAlongWithCats: Trained.Unknown,
-  });
+  };
 
-  useEffect(() => {
-    console.log("FILE ARRAY");
-    console.log(fileArr);
-    setNumFiles(fileArr.length);
-  }, [fileArr]);
+  function reducer<K extends keyof FormState, V extends FormState[K]>(
+    state: FormState,
+    action: Action<K, V>
+  ) {
+    switch (action.type) {
+      case "setField":
+        return {
+          ...state,
+          [action.key!]: action.data,
+        };
+      case "clear":
+        return defaultFormState;
+      default:
+        throw Error("Unknown action.");
+    }
+  }
 
-  useEffect(() => {
-    console.log("SELECTED FILES");
-    console.log(selectedFiles);
-  }, [selectedFiles]);
+  const [loading, setLoading] = useState(false);
+  const [formState, dispatch] = useReducer(reducer, defaultFormState);
 
   const postCreate = trpc.post.create.useMutation();
   const postFinalize = trpc.post.finalize.useMutation();
@@ -198,7 +187,7 @@ const PostCreationModal: React.FC<{
         const key = file.name;
         if (file.type.includes("image/")) {
           const url = URL.createObjectURL(file);
-          return new Promise((resolve, _) => {
+          return new Promise((resolve) => {
             const image = new Image();
             image.onload = () => {
               URL.revokeObjectURL(url);
@@ -219,7 +208,6 @@ const PostCreationModal: React.FC<{
         }
       })
     );
-    console.log(`${JSON.stringify(files)}`);
     try {
       const creationInfo = await postCreate.mutateAsync({
         ...(formState as z.output<typeof formSchema>),
@@ -228,174 +216,158 @@ const PostCreationModal: React.FC<{
       const oid = creationInfo._id;
       const uploadInfo = creationInfo.attachments;
 
-      console.log(`creation: ${JSON.stringify(creationInfo)}`);
-
       for (let i = 0; i < fileArr.length; i++) {
         const file = fileArr[i];
         await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
       }
 
-      const postInfo = await postFinalize.mutateAsync({
-        _id: oid,
+      await postFinalize.mutateAsync({
+        _id: new Types.ObjectId(oid),
       });
-
-      console.log(JSON.stringify(postInfo));
     } catch (e) {
-      console.log(e);
+      toast({
+        title: "An error has occurred.",
+        description:
+          "We encountered an issue while processing your request. Please try again.",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const uploadFile = async (url: string, file: File) => {
-    const uploadResp = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "content-length": `${file.size}`,
-      },
-      body: await file.arrayBuffer(),
-    });
-    if (uploadResp.status == 500) {
-      // TODO retry logic
+    let count = 0;
+    const maxTries = 3;
+    while (true) {
+      const uploadResp = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "content-length": `${file.size}`,
+        },
+        body: await file.arrayBuffer(),
+      });
+
+      if (uploadResp.status === 200) {
+        return;
+      }
+
+      if (uploadResp.status === 500 && ++count === maxTries) {
+        throw new Error("Error uploading images.");
+      }
     }
   };
 
-  let postButtonStyle = {
-    color: "#57A0D5",
-    bgColor: "#FFFFFF",
-    borderColor: "#57A0D5",
-    borderRadius: "20px",
-  };
-
-  if (selectedFiles.length > 0) {
-    postButtonStyle = {
-      color: "#FFFFFF",
-      bgColor: "#57A0D5",
-      borderColor: "#57A0D5",
-      borderRadius: "20px",
-    };
-  }
-
   return (
-    <Modal onClose={onClose} isOpen={isOpen} closeOnOverlayClick={false}>
+    <Modal
+      size={{ base: "full", md: "3xl" }}
+      onClose={onClose}
+      isOpen={isOpen}
+      closeOnOverlayClick
+      blockScrollOnMount
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
-      <ModalContent
-        minW={"800px"}
-        maxH={"770px"}
-        minH={"770px"}
-        alignItems={"center"}
-      >
-        <Stack
-          paddingTop={"30px"}
-          paddingBottom={"20px"}
-          // paddingX="50px"
-          minW={"790px"}
-          minH={"760px"}
-        >
-          <Box paddingX="50px">
-            <Button
-              h={8}
-              w="fit-content"
-              leftIcon={<ArrowBackIcon />}
-              bgColor="#C6E3F9"
-              color="#57A0D5"
-              borderRadius={9}
-              _hover={{
-                bgColor: "#C6E3F9",
-              }}
-              onClick={isContentView ? onClose : () => setIsContentView(true)}
-              mb={4}
-            >
-              {isContentView ? "Back to feed" : "Back to New Post content"}
-            </Button>
-            <Text fontSize={"40px"} fontWeight={"bold"} lineHeight={"56px"}>
-              Add A New Post
-            </Text>
+      <ModalContent p={4} w="100%" h="100%">
+        <ModalHeader>
+          <Button
+            h={8}
+            w="fit-content"
+            leftIcon={<ArrowBackIcon />}
+            bgColor="tag-primary-bg"
+            color="text-primary"
+            borderRadius={9}
+            _hover={{
+              bgColor: "tag-primary-bg",
+            }}
+            onClick={isContentView ? onClose : () => setIsContentView(true)}
+          >
+            {isContentView ? "Back to feed" : "Back to post form"}
+          </Button>
+          <Heading size="lg" pt={2}>
+            Add a new post
+          </Heading>
+        </ModalHeader>
+        <ModalBody w="100%" h="100%">
+          <Stack w="100%" h="100%">
             <Box paddingBottom={5}>
               {isContentView ? (
                 <Text>
-                  Fill out the following fields to add a new pet to the Angels
-                  Among Us Foster Feed!
+                  Fill out the following fields to add a new post to the foster
+                  feed.
                 </Text>
               ) : (
-                <Flex
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  maxW={"688px"}
-                  paddingBottom={"20px"}
-                >
+                <Flex direction={"row"} justifyContent={"space-between"}>
                   <Text fontSize={"l"} textStyle={"semibold"} color={"#000000"}>
                     Select up to 6 photos or video of the pet (one video limit)
                   </Text>
                   <Text fontSize={"l"} textStyle={"semibold"} color={"#8C8C8C"}>
-                    {numFiles}/6
+                    {fileArr.length}/6
                   </Text>
                 </Flex>
               )}
             </Box>
-          </Box>
-          <Box overflowY="auto" paddingX="50px">
-            {isContentView ? (
-              <FormSlide dispatchFormState={dispatch} formState={formState} />
-            ) : (
-              <FileUploadSlide
-                fileArr={fileArr}
-                selectedFiles={selectedFiles}
-                setSelectedFiles={setSelectedFiles}
-                setFileArr={setFileArr}
-                numFiles={numFiles}
-                showAlert={showAlert}
-                setShowAlert={setShowAlert}
-              ></FileUploadSlide>
-            )}
-          </Box>
-          <Flex
-            paddingX="50px"
-            direction={"row"}
-            justifyContent={"flex-end"}
-            paddingTop={"20px"}
-          >
-            <Button
-              onClick={
-                isContentView
-                  ? () => {
-                      const validation = formSchema.safeParse(formState);
-                      if (validation.success) {
-                        setIsContentView(false);
-                      } else {
-                        toast({
-                          title: "Error",
-                          description: validation.error.issues
-                            .map((issue) => issue.message)
-                            .join("\r\n"),
-                          status: "error",
-                          duration: 5000,
-                          isClosable: true,
-                          position: "top",
-                          containerStyle: { whiteSpace: "pre" },
+            <Box w="100%" h="100%">
+              {isContentView ? (
+                <FormSlide dispatchFormState={dispatch} formState={formState} />
+              ) : (
+                <FileUploadSlide fileArr={fileArr} setFileArr={setFileArr} />
+              )}
+            </Box>
+          </Stack>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            size="lg"
+            isLoading={loading}
+            _hover={loading ? {} : undefined}
+            variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
+            onClick={
+              isContentView
+                ? () => {
+                    const validation = formSchema.safeParse(formState);
+                    if (validation.success) {
+                      setIsContentView(false);
+                    } else {
+                      toast.closeAll();
+                      toast({
+                        title: "Error",
+                        description: validation.error.issues
+                          .map((issue) => issue.message)
+                          .join("\r\n"),
+                        containerStyle: {
+                          whiteSpace: "pre-line",
+                        },
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        position: "top",
+                      });
+                    }
+                  }
+                : () => {
+                    setLoading(true);
+                    //TODO: Wait for success to close.
+                    createPost()
+                      .then(() => {
+                        utils.post.invalidate();
+                        setFileArr([]);
+                        setIsContentView(true);
+                        dispatch({
+                          type: "clear",
                         });
-                      }
-                    }
-                  : () => {
-                      //TODO: Wait for success to close.
-                      onClose();
-                      createPost();
-                      setFileArr([]);
-                      setIsContentView(true);
-                    }
-              }
-              color={postButtonStyle.color}
-              bgColor={postButtonStyle.bgColor}
-              borderRadius={postButtonStyle.borderRadius}
-              borderColor={postButtonStyle.borderColor}
-              width={"125px"}
-              height={"50px"}
-              border={"1px solid"}
-            >
-              <Text lineHeight={"28px"} fontWeight={"regular"} fontSize={"xl"}>
-                {isContentView ? "Next" : "Post"}
-              </Text>
-            </Button>
-          </Flex>
-        </Stack>
+                        onClose();
+                      })
+                      .finally(() => {
+                        setLoading(false);
+                      });
+                  }
+            }
+          >
+            {isContentView ? "Next" : "Post"}
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

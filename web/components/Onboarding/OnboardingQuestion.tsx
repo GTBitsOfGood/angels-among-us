@@ -1,4 +1,4 @@
-import { Flex, Text, useRadioGroup, HStack, ScaleFade } from "@chakra-ui/react";
+import { Flex, Text, useRadioGroup, HStack } from "@chakra-ui/react";
 import OnboardingOptionCard from "./OnboardingOptionCard";
 
 function OnboardingQuestion(props: {

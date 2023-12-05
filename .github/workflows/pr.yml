@@ -1,0 +1,35 @@
+name: "coverage"
+on:
+  pull_request:
+    branches:
+      - "*"
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate coverage report
+        id: coverage
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        env:
+          STORAGE_BUCKET_NAME: ${{ secrets.STORAGE_BUCKET_NAME }}
+          STORAGE_S3_ENDPOINT: ${{ secrets.STORAGE_S3_ENDPOINT }}
+          STORAGE_S3_REGION: ${{ secrets.STORAGE_S3_REGION }}
+          STORAGE_KEY_ID: ${{ secrets.STORAGE_KEY_ID }}
+          STORAGE_APPLICATION_KEY: ${{ secrets.STORAGE_APPLICATION_KEY }}
+          STORAGE_BUCKET_URL: ${{ secrets.STORAGE_BUCKET_URL }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+        with:
+          working-directory: web
+          test-script: yarn jest --coverage --collectCoverageFrom='./**/*.{ts,tsx}'
+          package-manager: yarn
+          output: comment
+          annotations: none

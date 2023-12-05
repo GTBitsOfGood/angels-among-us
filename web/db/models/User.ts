@@ -9,9 +9,6 @@ import {
   GoodWith,
   Medical,
   Size,
-  Status,
-  Temperament,
-  Trained,
 } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
 const { Schema } = mongoose;
@@ -21,11 +18,26 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
-    index: true,
+    index: {
+      unique: true,
+      collation: {
+        locale: "en",
+        strength: 2,
+      },
+    },
+  },
+  picture: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
+  preferredEmail: {
+    type: String,
+    required: false,
   },
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   uid: {
     type: String,
@@ -37,6 +49,11 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     enum: Object.values(Role),
+  },
+  hasCompletedOnboarding: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
   disabled: {
     type: Boolean,
@@ -103,16 +120,6 @@ const userSchema = new Schema<IUser>({
     default: undefined,
     required: false,
   },
-  temperament: {
-    type: [
-      {
-        type: String,
-        enum: Object.values(Temperament),
-      },
-    ],
-    default: undefined,
-    required: false,
-  },
   dogsNotGoodWith: {
     type: [
       {
@@ -138,26 +145,6 @@ const userSchema = new Schema<IUser>({
       {
         type: String,
         enum: Object.values(Behavioral),
-      },
-    ],
-    default: undefined,
-    required: false,
-  },
-  houseTrained: {
-    type: [
-      {
-        type: String,
-        enum: Object.values(Trained),
-      },
-    ],
-    default: undefined,
-    required: false,
-  },
-  spayNeuterStatus: {
-    type: [
-      {
-        type: String,
-        enum: Object.values(Status),
       },
     ],
     default: undefined,

@@ -3,56 +3,56 @@ import {
   AlertDialog,
   AlertDialogOverlay,
   AlertDialogContent,
-  Box,
-  Flex,
-  Text,
-  Alert,
-  AlertIcon,
   Button,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+  useToast,
 } from "@chakra-ui/react";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { IAccount } from "../../utils/types/account";
-import { HydratedDocument } from "mongoose";
+import { Dispatch, MutableRefObject, SetStateAction, useRef } from "react";
 import { trpc } from "../../utils/trpc";
 
 interface PropertyType {
-  accountList: HydratedDocument<IAccount>[];
-  updateAccountList: Dispatch<SetStateAction<HydratedDocument<IAccount>[]>>;
-  itemsToDelete: Number[];
-  updateItemsToDelete: Dispatch<SetStateAction<Number[]>>;
-  updateSelectItems: Dispatch<SetStateAction<boolean>>;
+  selectedAccounts: MutableRefObject<Set<string>>;
+  setIsSelecting: Dispatch<SetStateAction<boolean>>;
 }
 
 function DeletePopup(props: PropertyType) {
-  const {
-    accountList,
-    updateAccountList,
-    itemsToDelete,
-    updateItemsToDelete,
-    updateSelectItems,
-  } = props;
+  const { selectedAccounts, setIsSelecting } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef(null);
+  const utils = trpc.useUtils();
   const mutation = trpc.account.remove.useMutation();
-  const [showError, setShowError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const toast = useToast();
 
   const handleDelete = () => {
-    const newArr = accountList.filter(
-      (e, i) => !itemsToDelete.includes(i)
-    ) as HydratedDocument<IAccount>[];
-    const removeArr = accountList.filter((e, i) => itemsToDelete.includes(i));
-    const emails = removeArr.map((e) => e.email);
+    const emails = Array.from(selectedAccounts.current);
     mutation.mutate(emails, {
       onSuccess: () => {
-        setShowError(false);
-        updateAccountList(newArr);
-        updateSelectItems(false);
-        updateItemsToDelete([]);
+        utils.account.invalidate();
+        setIsSelecting(false);
+        selectedAccounts.current.clear();
+        onClose();
+        toast({
+          title: "Success",
+          description: "Accounts successfully deleted.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
       },
-      onError: (error) => {
-        setShowError(true);
-        setErrorMessage(error.message);
+      onError: () => {
+        onClose();
+        toast({
+          title: "Error",
+          description:
+            "We encountered a problem deleting the selected accounts. Please try again later.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+        });
       },
     });
   };
@@ -60,96 +60,51 @@ function DeletePopup(props: PropertyType) {
   return (
     <>
       <Button
-        onClick={onOpen}
-        variant="outline"
-        fontWeight="semibold"
-        textColor="white"
-        h="36px"
-        maxWidth="208px"
-        minWidth="170px"
-        borderRadius={12}
+        size="sm"
+        variant="outline-primary-inverted"
+        bgColor="white"
+        color="text-primary"
+        borderWidth={2}
         _hover={{
-          bg: "#75B2DD",
+          color: "white",
+          bgColor: "btn-solid-primary-bg",
+          border: "2px solid white",
         }}
+        onClick={() => selectedAccounts.current.size > 0 && onOpen()}
       >
-        Delete Selected Items
+        Delete Selected Accounts
       </Button>
       <AlertDialog
-        motionPreset="slideInBottom"
         leastDestructiveRef={cancelRef}
         onClose={onClose}
         isOpen={isOpen}
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent
-          borderRadius="30px"
-          padding={5}
-          maxW={{ sm: "80%", md: "50%", lg: "500px" }}
-        >
-          <Flex
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            rowGap={"20px"}
+        <AlertDialogContent>
+          <AlertDialogHeader
+            fontSize="lg"
+            fontWeight="bold"
+            letterSpacing="wide"
           >
-            <Text
-              fontWeight={"semibold"}
-              fontSize={"lg"}
-              textAlign={"center"}
-              textColor="#7D7E82"
+            Delete selected accounts
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            Are you sure you want to delete the accounts selected? This cannot
+            be undone.
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button
+              ref={cancelRef}
+              variant="outline-secondary"
+              onClick={onClose}
             >
-              Are you sure you want to delete the items selected?
-            </Text>
-            <Text fontWeight={"normal"} fontSize={"md"} textColor="#7D7E82">
-              This cannot be undone.
-            </Text>
-            <Flex
-              flexDirection="row"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Button
-                maxW="150px"
-                minW="120px"
-                height="35px"
-                borderRadius="12px"
-                borderColor="#7D7E82"
-                borderWidth={1}
-                onClick={onClose}
-                variant="outline"
-                fontWeight="normal"
-                textColor="#7D7E82"
-              >
-                Cancel
-              </Button>
-              <Box
-                as="button"
-                maxW="180px"
-                minW="180px"
-                height="35px"
-                borderRadius="12px"
-                bgColor="#57A0D5"
-                textColor="white"
-                onClick={handleDelete}
-                ref={cancelRef}
-                ml={3}
-                _hover={{
-                  bg: "#75B2DD",
-                }}
-              >
-                Yes, delete items.
-              </Box>
-            </Flex>
-            {showError ? (
-              <Alert status={"error"}>
-                <AlertIcon></AlertIcon>
-                {errorMessage}
-              </Alert>
-            ) : (
-              <></>
-            )}
-          </Flex>
+              Cancel
+            </Button>
+            <Button colorScheme="red" ml={3} onClick={handleDelete}>
+              Delete
+            </Button>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>

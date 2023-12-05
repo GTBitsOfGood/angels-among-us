@@ -1,7 +1,6 @@
 import NextLink from "next/link";
 import {
   Link,
-  Box,
   Button,
   Flex,
   Menu,
@@ -10,14 +9,21 @@ import {
   Image,
   Stack,
   Text,
-  AccordionButton,
-  AccordionItem,
-  Accordion,
-  AccordionPanel,
-  Divider,
+  IconButton,
+  useDisclosure,
+  Box,
+  useBreakpointValue,
+  MenuDivider,
   MenuItem,
 } from "@chakra-ui/react";
-import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { BsPerson } from "react-icons/bs";
+import { PiSignOut } from "react-icons/pi";
+import {
+  ChevronDownIcon,
+  HamburgerIcon,
+  CloseIcon,
+  Icon,
+} from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
 import { Role } from "../utils/types/account";
 import { useRouter } from "next/router";
@@ -26,258 +32,286 @@ import { Pages } from "../utils/consts";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase/firebaseClient";
 
+interface AvatarProps {
+  user: typeof auth.currentUser | null;
+  onMenuClose: () => void;
+}
+function Avatar({ user, onMenuClose }: AvatarProps) {
+  const { userData } = useAuth();
+  const router = useRouter();
+  const isMd = useBreakpointValue({
+    base: false,
+    md: true,
+  });
+
+  return (
+    <Menu autoSelect={false}>
+      {({ isOpen, onClose }) => (
+        <>
+          <MenuButton
+            as={Button}
+            bgColor="white"
+            p={{ base: 0, md: 4 }}
+            _hover={{ bgColor: "white" }}
+            _active={{ bgColor: "white" }}
+            borderLeft={{ md: "1px solid black" }}
+            borderRadius={0}
+            onClick={isOpen ? onClose : onMenuClose}
+            rightIcon={isMd ? <ChevronDownIcon /> : undefined}
+          >
+            <Image
+              borderRadius="100%"
+              boxSize={10}
+              src={user?.photoURL ?? undefined} //TODO: Replace with default avatar
+              alt="User photo"
+            ></Image>
+          </MenuButton>
+          <MenuList mt={2} maxW={20}>
+            <Box paddingX={3} pb={2}>
+              <Text as="em" color="text-secondary">
+                Signed in as:
+              </Text>
+              <Text
+                display="block"
+                whiteSpace="nowrap"
+                w="100%"
+                fontWeight="semibold"
+                letterSpacing="wide"
+                textOverflow="ellipsis"
+                overflow="hidden"
+              >
+                {userData?.name ?? user?.displayName ?? ""}
+              </Text>
+              <Text fontSize="sm">{user?.email}</Text>
+            </Box>
+            <Link
+              as={NextLink}
+              href={Pages.PROFILE}
+              style={{ textDecoration: "none" }}
+            >
+              <MenuItem icon={<Icon boxSize={5} as={BsPerson} />}>
+                Profile
+              </MenuItem>
+            </Link>
+            <MenuDivider />
+            <MenuItem
+              icon={<Icon boxSize={5} as={PiSignOut} />}
+              onClick={() => {
+                router.push(Pages.FEED);
+                signOut(auth);
+              }}
+            >
+              Sign out
+            </MenuItem>
+          </MenuList>
+        </>
+      )}
+    </Menu>
+  );
+}
+
 export default function Navbar() {
   const router = useRouter();
   const { user, loading, userData, authorized } = useAuth();
   const role = userData?.role;
 
+  const {
+    isOpen: isMenuOpen,
+    onOpen: onMenuOpen,
+    onClose: onMenuClose,
+  } = useDisclosure();
+
   const visible = navbarVisiblity[router.pathname as Pages] ?? false;
 
-  if (loading && visible) {
-    return <Box h="64px"></Box>;
-  }
-
-  if ((loading && !visible) || !authorized || !visible) {
+  if (!loading && visible && userData && !userData.hasCompletedOnboarding) {
     return <></>;
   }
+
+  if (loading || !authorized || !visible) {
+    return <></>;
+  }
+
   return (
     <Flex
       id="navbar"
       bgColor="white"
       width="100%"
-      minH="64px"
+      zIndex={10}
+      flexDir="column"
       position="absolute"
       top={0}
-      zIndex="1"
+      borderBottom={{
+        base: isMenuOpen ? "1px solid" : "none",
+        lg: "none",
+      }}
+      borderBottomColor={{ base: "text-secondary" }}
     >
       <Flex
         direction="row"
         alignItems="center"
         justifyContent="space-between"
         w="100%"
-        marginLeft={[0, 2]}
+        minH="64px"
+        p={2}
       >
-        <Link as={NextLink} href={Pages.FEED} display={["none", "flex"]}>
+        <IconButton
+          size={"md"}
+          icon={isMenuOpen ? <CloseIcon /> : <HamburgerIcon />}
+          aria-label={"Open Menu"}
+          display={{ md: "none" }}
+          onClick={isMenuOpen ? onMenuClose : onMenuOpen}
+        />
+
+        <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
           <Image
             src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
             alt="logo"
-            boxSize={[8, 10]}
+            boxSize={{ base: 8, md: 10 }}
             w={46}
           ></Image>
         </Link>
 
         <Stack
-          display={["none", "flex"]}
-          width="50%"
+          display={{ base: "none", md: "flex" }}
           justifyContent="flex-end"
           direction="row"
           alignItems="center"
           spacing={10}
         >
-          {role === Role.Admin && (
-            <Link as={NextLink} href={Pages.ACCESS_MANAGEMENT}>
-              <Text>Access Management</Text>
-            </Link>
-          )}
-          <Link>
-            <Text>Resources</Text>
-          </Link>
-          <Menu>
-            <MenuButton
-              as={Button}
-              bgColor="white"
-              _hover={{ bgColor: "white" }}
-              _active={{ bgColor: "white" }}
-              borderLeft="1px solid black"
-              borderRadius="0%"
+          <Link
+            as={NextLink}
+            href={Pages.FEED}
+            _hover={{
+              textDecoration: "underline",
+              textDecorationColor:
+                router.pathname === Pages.FEED ? "text-primary" : "black",
+            }}
+          >
+            <Text
+              color={router.pathname === Pages.FEED ? "text-primary" : "black"}
             >
-              <Stack direction="row" alignItems="center">
-                <Image
-                  borderRadius="100%"
-                  boxSize={10}
-                  src={user?.photoURL ?? undefined}
-                  alt="User photo"
-                ></Image>
-
-                <ChevronDownIcon />
-              </Stack>
-            </MenuButton>
-            <MenuList marginTop={4} marginRight={2}>
-              <Stack
-                direction="column"
-                paddingRight={5}
-                paddingLeft={2}
-                paddingTop={2}
-                spacing={5}
+              Feed
+            </Text>
+          </Link>
+          {role === Role.Admin && (
+            <>
+              <Link
+                as={NextLink}
+                href={Pages.ACCESS_MANAGEMENT}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.ACCESS_MANAGEMENT
+                      ? "text-primary"
+                      : "black",
+                }}
               >
-                <Stack direction="row">
-                  <Image
-                    borderRadius="100%"
-                    boxSize={10}
-                    src={user?.photoURL ?? undefined}
-                    alt="User photo"
-                  />
-
-                  <Stack direction="column">
-                    <Text fontWeight="bold" color="gray">
-                      {user?.displayName}
-                    </Text>
-                    <Text fontWeight="semibold" color="gray" fontSize="sm">
-                      {user?.email}
-                    </Text>
-                  </Stack>
-                </Stack>
-                <Stack direction="row" justifyContent="flex-end">
-                  <Button
-                    variant="outline"
-                    textColor="gray"
-                    size="sm"
-                    fontWeight={400}
-                    onClick={() => {
-                      router.push(Pages.FEED);
-                      signOut(auth);
-                    }}
-                  >
-                    Logout
-                  </Button>
-                  <Link
-                    as={NextLink}
-                    href={Pages.PROFILE}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <MenuItem borderRadius="16px" padding={0}>
-                      <Button
-                        variant="solid"
-                        bgColor="angelsBlue.100"
-                        borderRadius="16px"
-                        color="white"
-                        size="sm"
-                        _hover={{
-                          bgColor: "rgb(87, 161, 213, 0.5)",
-                        }}
-                      >
-                        View Profile
-                      </Button>
-                    </MenuItem>
-                  </Link>
-                </Stack>
-              </Stack>
-            </MenuList>
-          </Menu>
+                <Text
+                  color={
+                    router.pathname === Pages.ACCESS_MANAGEMENT
+                      ? "text-primary"
+                      : "black"
+                  }
+                >
+                  Access Management
+                </Text>
+              </Link>
+              <Link
+                as={NextLink}
+                href={Pages.USERS}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.USERS ? "text-primary" : "black",
+                }}
+              >
+                <Text
+                  color={
+                    router.pathname === Pages.USERS ? "text-primary" : "black"
+                  }
+                >
+                  Volunteer Search
+                </Text>
+              </Link>
+            </>
+          )}
+          <Link
+            as={NextLink}
+            href={Pages.RESOURCES}
+            _hover={{
+              textDecoration: "underline",
+              textDecorationColor:
+                router.pathname === Pages.RESOURCES ? "text-primary" : "black",
+            }}
+          >
+            <Text
+              color={
+                router.pathname === Pages.RESOURCES ? "text-primary" : "black"
+              }
+            >
+              Resources
+            </Text>
+          </Link>
+          <Avatar user={user} onMenuClose={onMenuClose} />
         </Stack>
 
-        <Accordion
-          display={["flex", "none"]}
-          allowToggle
-          width="100%"
-          zIndex={10}
-        >
-          <AccordionItem width="100%">
-            <Stack
-              direction="row"
-              width="100%"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Link as={NextLink} href={Pages.FEED}>
-                <Image
-                  src="https://angelsrescue.org/wp-content/uploads/2020/05/A-Mark.svg"
-                  alt="logo"
-                  boxSize={[8, 10]}
-                  w={46}
-                ></Image>
-              </Link>
-              <AccordionButton
-                as={Button}
-                height="70px"
-                width="10%"
-                alignItems="center"
-                justifyContent="flex-end"
-                bgColor="white"
-                _hover={{ bgColor: "white" }}
-                _active={{ bgColor: "white" }}
-                cursor="default"
-              >
-                <HamburgerIcon fontSize="30px" color="gray" />
-              </AccordionButton>
-            </Stack>
-            <AccordionPanel bgColor="white">
-              <Stack direction="column">
-                <Stack direction="column">
-                  <Link>
-                    <Text>Resources</Text>
-                  </Link>
-                  <Divider border="1px solid angelsGray.100" />
-                  {role === Role.Admin && (
-                    <>
-                      <Link>
-                        <Text>Access Management</Text>
-                      </Link>
-                      <Divider border="1px solid angelsGray.100" />
-                    </>
-                  )}
-                </Stack>
-                <Stack
-                  direction="column"
-                  paddingRight={5}
-                  paddingLeft={2}
-                  paddingTop={2}
-                  paddingBottom={2}
-                  spacing={5}
-                  borderRadius="12px"
-                  border="1px solid angels.Gray"
-                >
-                  <Stack direction="row">
-                    <Image
-                      borderRadius="100%"
-                      boxSize={10}
-                      src={user?.photoURL ?? undefined}
-                      alt="User photo"
-                    />
-                    <Stack direction="column">
-                      <Text fontWeight="bold" color="gray">
-                        {user?.displayName}
-                      </Text>
-                      <Text fontWeight="semibold" color="gray" fontSize="sm">
-                        {user?.email}
-                      </Text>
-                    </Stack>
-                  </Stack>
-                  <Stack direction="row" justifyContent="flex-end">
-                    <Button
-                      variant="outline"
-                      textColor="gray"
-                      size="sm"
-                      fontWeight={400}
-                      onClick={() => {
-                        router.push(Pages.FEED);
-                        signOut(auth);
-                      }}
-                    >
-                      Logout
-                    </Button>
-                    <Link
-                      as={NextLink}
-                      href={Pages.PROFILE}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <Button
-                        bgColor="angelsBlue.100"
-                        borderRadius="16px"
-                        color="white"
-                        size="sm"
-                        _hover={{ bgColor: "rgb(87, 161, 213, 0.5)" }}
-                      >
-                        View Profile
-                      </Button>
-                    </Link>
-                  </Stack>
-                </Stack>
-              </Stack>
-            </AccordionPanel>
-          </AccordionItem>
-        </Accordion>
+        <Box display={{ base: "block", md: "none" }}>
+          <Avatar user={user} onMenuClose={onMenuClose} />
+        </Box>
       </Flex>
+
+      {isMenuOpen ? (
+        <Box display={{ md: "none" }} p={2}>
+          <Stack spacing={4}>
+            <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
+              <Text
+                color={
+                  router.pathname === Pages.FEED ? "text-primary" : "black"
+                }
+              >
+                Feed
+              </Text>
+            </Link>
+            {role === Role.Admin && (
+              <>
+                <Link
+                  as={NextLink}
+                  href={Pages.ACCESS_MANAGEMENT}
+                  onClick={onMenuClose}
+                >
+                  <Text
+                    color={
+                      router.pathname === Pages.ACCESS_MANAGEMENT
+                        ? "text-primary"
+                        : "black"
+                    }
+                  >
+                    Access Management
+                  </Text>
+                </Link>
+                <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
+                  <Text
+                    color={
+                      router.pathname === Pages.USERS ? "text-primary" : "black"
+                    }
+                  >
+                    Volunteer Search
+                  </Text>
+                </Link>
+              </>
+            )}
+            <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
+              <Text
+                color={
+                  router.pathname === Pages.RESOURCES ? "text-primary" : "black"
+                }
+              >
+                Resources
+              </Text>
+            </Link>
+          </Stack>
+        </Box>
+      ) : null}
     </Flex>
   );
 }
