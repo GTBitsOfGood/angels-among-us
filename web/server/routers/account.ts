@@ -8,7 +8,10 @@ import {
   removeAllAccounts,
   searchAccounts,
 } from "../../db/actions/Account";
-import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
+import {
+  updateAllUsers,
+  updateUserBySerializedEmail,
+} from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { IAccount, Role } from "../../utils/types/account";
 import { router, procedure } from "../trpc";
@@ -36,7 +39,7 @@ export const accountRouter = router({
           message: "Unauthorized - Caller has no email",
           code: "UNAUTHORIZED",
         });
-      if (ctx.session?.email === email)
+      if (ctx.session?.email.toLowerCase() === email.toLowerCase())
         throw new TRPCError({
           message: "Unauthorized - Cannot modify own account",
           code: "UNAUTHORIZED",
@@ -58,7 +61,11 @@ export const accountRouter = router({
             code: "NOT_FOUND",
           });
 
-        await updateUserByEmail(email, { role: input.role }, session);
+        await updateUserBySerializedEmail(
+          email.toLowerCase(),
+          { role: input.role },
+          session
+        );
 
         session.commitTransaction();
         return { success: true };
@@ -93,7 +100,11 @@ export const accountRouter = router({
 
       try {
         await removeAllAccounts(input, session);
-        await updateAllUsers(input, { disabled: true }, session);
+        await updateAllUsers(
+          input.map((email) => email.toLowerCase()),
+          { disabled: true },
+          session
+        );
         session.commitTransaction();
 
         return { success: true };
@@ -127,8 +138,9 @@ export const accountRouter = router({
       session.startTransaction();
 
       try {
-        const inputData: { email: string; role: Role } = {
+        const inputData: IAccount = {
           email: input.email,
+          serializedEmail: input.email.toLowerCase(),
           role: input.role,
         };
 
@@ -139,8 +151,8 @@ export const accountRouter = router({
           });
         }
 
-        await updateUserByEmail(
-          input.email,
+        await updateUserBySerializedEmail(
+          input.email.toLowerCase(),
           { role: input.role, disabled: false },
           session
         );

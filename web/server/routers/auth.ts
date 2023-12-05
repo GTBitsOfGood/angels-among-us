@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { findAccount } from "../../db/actions/Account";
+import { findAccountBySerializedEmail } from "../../db/actions/Account";
 import {
   createUser,
   findUserByEmail,
@@ -30,7 +30,9 @@ export const authRouter = router({
           });
         }
         const user = await findUserByEmail(ctx.session.email);
-        const account = await findAccount(ctx.session.email);
+        const account = await findAccountBySerializedEmail(
+          ctx.session.email.toLowerCase()
+        );
 
         if (user && account) {
           // Subsequent sign-in, authorized account
@@ -61,6 +63,7 @@ export const authRouter = router({
           const document = await createUser({
             uid: ctx.session.uid,
             email: ctx.session.email,
+            serializedEmail: ctx.session.email.toLowerCase(),
             role: account.role,
             hasCompletedOnboarding: false,
             disabled: false,
