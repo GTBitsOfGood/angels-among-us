@@ -35,7 +35,7 @@ async function updateAllUsers(
 ) {
   return await User.updateMany({ email: { $in: emails } }, update, {
     session: session,
-  });
+  }).collation({ locale: "en", strength: 2 });
 }
 
 async function findUserByUid(

@@ -36,7 +36,7 @@ export const accountRouter = router({
           message: "Unauthorized - Caller has no email",
           code: "UNAUTHORIZED",
         });
-      if (ctx.session?.email === email)
+      if (ctx.session?.email.toLowerCase() === email.toLowerCase())
         throw new TRPCError({
           message: "Unauthorized - Cannot modify own account",
           code: "UNAUTHORIZED",
