@@ -13,7 +13,6 @@ import {
 
 export interface IUser {
   email: string;
-  serializedEmail: string;
   picture?: string;
   preferredEmail?: string;
   name?: string;

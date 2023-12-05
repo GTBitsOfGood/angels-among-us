@@ -29,17 +29,13 @@ async function createUser(
 }
 
 async function updateAllUsers(
-  serializedEmails: string[],
+  emails: string[],
   update: UpdateQuery<IUser>,
   session?: ClientSession
 ) {
-  return await User.updateMany(
-    { serializedEmail: { $in: serializedEmails } },
-    update,
-    {
-      session: session,
-    }
-  );
+  return await User.updateMany({ email: { $in: emails } }, update, {
+    session: session,
+  });
 }
 
 async function findUserByUid(
@@ -49,18 +45,25 @@ async function findUserByUid(
   return await User.findOne({ uid }, { _id: 0, __v: 0 }, { session });
 }
 
-async function findUserByEmail(email: string, session?: ClientSession) {
-  return await User.findOne({ email }, { _id: 0, __v: 0 }, { session });
+async function findUserByEmail(
+  email: string,
+  session?: ClientSession
+): Promise<IUser | null> {
+  return await User.findOne(
+    { email },
+    { _id: 0, __v: 0 },
+    { session }
+  ).collation({ locale: "en", strength: 2 });
 }
 
-async function updateUserBySerializedEmail(
-  serializedEmail: string,
+async function updateUserByEmail(
+  email: string,
   update: UpdateQuery<IUser>,
   session?: ClientSession
 ): Promise<IUser | null> {
-  return await User.findOneAndUpdate({ serializedEmail }, update, {
+  return await User.findOneAndUpdate({ email }, update, {
     session: session,
-  });
+  }).collation({ locale: "en", strength: 2 });
 }
 
 async function updateUserByUid(
@@ -134,7 +137,7 @@ export {
   findUserByUid,
   findUserByEmail,
   updateAllUsers,
-  updateUserBySerializedEmail,
+  updateUserByEmail,
   updateUserByUid,
   searchUsers,
 };

@@ -50,7 +50,6 @@ export const userRouter = router({
         if (!user) {
           await createUser({
             ...input,
-            serializedEmail: input.email.toLowerCase(),
             disabled: false,
             hasCompletedOnboarding: false,
           });
