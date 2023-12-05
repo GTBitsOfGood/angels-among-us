@@ -70,6 +70,8 @@ export const accountRouter = router({
         session.commitTransaction();
         return { success: true };
       } catch (e) {
+        console.error(e);
+        throw e;
         session.abortTransaction();
 
         if (e instanceof TRPCError) throw e;
