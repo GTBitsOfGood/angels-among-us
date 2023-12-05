@@ -1,6 +1,5 @@
 export interface IAccount {
   email: string;
-  serializedEmail: string;
   role: Role;
 }
 

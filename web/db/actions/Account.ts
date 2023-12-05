@@ -18,29 +18,7 @@ async function findAccount(
       { email },
       { _id: 0, __v: 0 },
       { session: session }
-    );
-  } catch (e) {
-    return null;
-  }
-}
-
-/**
- * Finds account document by unique serialized email.
- *
- * @param serializedEmail account email used for indexing
- * @param session MongoDB session used for transactions
- * @returns pruned document (without _id, __v) if successful, null otherwise
- */
-async function findAccountBySerializedEmail(
-  serializedEmail: string,
-  session?: ClientSession
-): Promise<HydratedDocument<IAccount> | null> {
-  try {
-    return await Account.findOne(
-      { serializedEmail },
-      { _id: 0, __v: 0 },
-      { session: session }
-    );
+    ).collation({ locale: "en", strength: 2 });
   } catch (e) {
     return null;
   }
@@ -80,7 +58,7 @@ async function updateAccount(
       _id: 0,
       __v: 0,
     },
-  });
+  }).collation({ locale: "en", strength: 2 });
 }
 
 /**
@@ -133,9 +111,9 @@ async function searchAccounts(
   session?: ClientSession
 ): Promise<Array<HydratedDocument<IAccount>>> {
   try {
-    const regexTerm = new RegExp(`.*${searchSubject.toLowerCase()}.*`, "i");
+    const regexTerm = new RegExp(`.*${searchSubject}.*`, "i");
     const accounts = await Account.find(
-      { serializedEmail: regexTerm },
+      { email: regexTerm },
       { _id: 0, __v: 0 },
       { session: session }
     );
@@ -147,7 +125,6 @@ async function searchAccounts(
 
 export {
   findAccount,
-  findAccountBySerializedEmail,
   addAccount,
   removeAllAccounts,
   updateAccount,
