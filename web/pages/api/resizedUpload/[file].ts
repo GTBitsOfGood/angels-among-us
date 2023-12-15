@@ -1,3 +1,4 @@
+import { captureException } from "@sentry/nextjs";
 import { verify } from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import sharp from "sharp";
@@ -59,6 +60,8 @@ export default async function handler(
 
     res.status(200).json(uploadRes);
   } catch (e) {
+    console.error(e);
+    captureException(e);
     res.status(500).send("Internal Server Error");
   }
 }
