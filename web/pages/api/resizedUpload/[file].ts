@@ -60,6 +60,7 @@ export default async function handler(
 
     res.status(200).json(uploadRes);
   } catch (e) {
+    console.error(e);
     captureException(e);
     res.status(500).send("Internal Server Error");
   }

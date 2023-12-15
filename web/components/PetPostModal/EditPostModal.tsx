@@ -315,7 +315,6 @@ const EditPostModal: React.FC<{
     let count = 0;
     const maxTries = 3;
     while (true) {
-      console.log(url);
       const uploadResp = await fetch(url, {
         method: "PUT",
         headers: {
@@ -329,7 +328,6 @@ const EditPostModal: React.FC<{
       }
 
       if (uploadResp.status === 500 && ++count === maxTries) {
-        console.log(uploadResp);
         throw new Error("Error uploading images.");
       }
     }
