@@ -1,4 +1,5 @@
 [[plugins]]
     package = "netlify-plugin-bundle-env"
     [plugins.inputs]
+    files = ["utils/consts.ts"]
     include = ["DEPLOY_PRIME_URL"]
