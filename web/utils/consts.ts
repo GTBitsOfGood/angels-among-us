@@ -14,7 +14,7 @@ function getBaseUrl() {
     return "";
   if (process.env.URL)
     // reference for vercel.com
-    return `https://${process.env.URL}`;
+    return process.env.URL;
   if (process.env.RENDER_INTERNAL_HOSTNAME)
     // reference for render.com
     return `http://${process.env.RENDER_INTERNAL_HOSTNAME}:${process.env.PORT}`;
