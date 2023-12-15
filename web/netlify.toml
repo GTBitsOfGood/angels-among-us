@@ -1,0 +1,4 @@
+[[plugins]]
+    package = "netlify-plugin-bundle-env"
+    [plugins.inputs]
+    include = ["DEPLOY_PRIME_URL"]
