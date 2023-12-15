@@ -12,9 +12,9 @@ function getBaseUrl() {
   if (typeof window !== "undefined")
     // browser should use relative path
     return "";
-  if (process.env.URL)
+  if (process.env.DEPLOY_PRIME_URL)
     // reference for vercel.com
-    return process.env.URL;
+    return process.env.DEPLOY_PRIME_URL;
   if (process.env.RENDER_INTERNAL_HOSTNAME)
     // reference for render.com
     return `http://${process.env.RENDER_INTERNAL_HOSTNAME}:${process.env.PORT}`;
