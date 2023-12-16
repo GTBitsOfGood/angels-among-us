@@ -4,3 +4,6 @@ node_modules
 .DS_Store
 mongo
 *.env*
+
+# Local Netlify folder
+.netlify
