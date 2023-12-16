@@ -7,6 +7,3 @@
     [plugins.inputs]
     files = ["utils/consts.ts"]
     include = ["DEPLOY_PRIME_URL"]
-
-[functions]
-  included_files = ["node_modules/sharp/**/*"]
