@@ -67,7 +67,7 @@
     "react-icons": "^4.11.0",
     "react-select": "^5.7.0",
     "react-table": "^7.8.0",
-    "sharp": "^0.33.0",
+    "sharp": "^0.32.6",
     "start-server-and-test": "^2.0.0",
     "styled-components": "^5.3.6",
     "typescript": "4.9.4",
