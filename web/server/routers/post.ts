@@ -174,7 +174,7 @@ export const postRouter = router({
           throw new Error("No post with given id exists.");
         }
         const email =
-          process.env.CONTEXT === "production"
+          process.env.NEXT_PUBLIC_CONTEXT === "production"
             ? fosterTypeEmails[post.type]
             : input.email;
 
