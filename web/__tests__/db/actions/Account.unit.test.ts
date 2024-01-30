@@ -6,11 +6,12 @@ import {
   findAccount,
   findAll,
   removeAllAccounts,
-  updateAccount,
   searchAccounts,
+  updateAccount,
 } from "../../../db/actions/Account";
 import { randomAccounts } from "../../../db/actions/__mocks__/Account";
 import Account from "../../../db/models/Account";
+import standardizeEmails from "../../../scripts/standardizeEmails";
 import { Role } from "../../../utils/types/account";
 
 /**
@@ -44,6 +45,12 @@ describe("[DB] Account - Unit Test", () => {
 
   afterEach(async () => {
     await Account.deleteMany({});
+  });
+
+  describe("updateEmails", () => {
+    test("should add standardizedEmail field to all accounts", async () => {
+      await standardizeEmails();
+    });
   });
 
   describe("findAccount", () => {
