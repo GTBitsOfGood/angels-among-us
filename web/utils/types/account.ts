@@ -1,5 +1,6 @@
 export interface IAccount {
   email: string;
+  standardizedEmail: string;
   role: Role;
 }
 

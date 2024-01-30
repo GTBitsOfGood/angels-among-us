@@ -1,17 +1,17 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
-  updateAccount,
   addAccount,
   findAccount,
   findAll,
   removeAllAccounts,
   searchAccounts,
+  updateAccount,
 } from "../../db/actions/Account";
 import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { IAccount, Role } from "../../utils/types/account";
-import { router, procedure } from "../trpc";
+import { procedure, router } from "../trpc";
 
 const emailInput = {
   email: z.string().email("Invalid email provided"),
@@ -31,16 +31,18 @@ export const accountRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const email = input.email;
-      if (!ctx.session?.email)
+      if (!ctx.session?.email) {
         throw new TRPCError({
           message: "Unauthorized - Caller has no email",
           code: "UNAUTHORIZED",
         });
-      if (ctx.session?.email.toLowerCase() === email.toLowerCase())
+      }
+      if (ctx.session?.email.toLowerCase() === email.toLowerCase()) {
         throw new TRPCError({
           message: "Unauthorized - Cannot modify own account",
           code: "UNAUTHORIZED",
         });
+      }
 
       const session = await Account.startSession();
       session.startTransaction();
@@ -52,11 +54,12 @@ export const accountRouter = router({
           session
         );
 
-        if (!updateResult)
+        if (!updateResult) {
           throw new TRPCError({
             message: "Account with specified email not found",
             code: "NOT_FOUND",
           });
+        }
 
         await updateUserByEmail(email, { role: input.role }, session);
 
@@ -66,27 +69,30 @@ export const accountRouter = router({
         session.abortTransaction();
 
         if (e instanceof TRPCError) throw e;
-        else
+        else {
           throw new TRPCError({
             message: "Internal Server Error",
             code: "INTERNAL_SERVER_ERROR",
             cause: e,
           });
+        }
       }
     }),
   remove: procedure
     .input(z.array(z.string().email()))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session?.email)
+      if (!ctx.session?.email) {
         throw new TRPCError({
           message: "Unauthorized - Caller has no email",
           code: "UNAUTHORIZED",
         });
-      if (input.includes(ctx.session.email))
+      }
+      if (input.includes(ctx.session.email)) {
         throw new TRPCError({
           message: "Unauthorized - Cannot remove own account",
           code: "UNAUTHORIZED",
         });
+      }
 
       const session = await Account.startSession();
       session.startTransaction();
@@ -132,6 +138,7 @@ export const accountRouter = router({
           role: input.role,
         };
 
+        // @ts-ignore
         if ((await addAccount(inputData, session)) === null) {
           throw new TRPCError({
             code: "UNAUTHORIZED",
@@ -188,12 +195,13 @@ export const accountRouter = router({
         }
       } catch (e) {
         if (e instanceof TRPCError) throw e;
-        else
+        else {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An unexpected error occurred",
             cause: e,
           });
+        }
       }
     }),
 
@@ -206,12 +214,13 @@ export const accountRouter = router({
     } catch (e) {
       session.abortTransaction();
       if (e instanceof TRPCError) throw e;
-      else
+      else {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "An unexpected error occured",
           cause: e,
         });
+      }
     }
   }),
 
@@ -228,12 +237,13 @@ export const accountRouter = router({
     } catch (e) {
       session.abortTransaction();
       if (e instanceof TRPCError) throw e;
-      else
+      else {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "An unexpected error occured",
           cause: e,
         });
+      }
     }
   }),
 });

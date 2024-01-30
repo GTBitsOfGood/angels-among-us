@@ -15,6 +15,19 @@ const accountSchema = new Schema<IAccount>({
       },
     },
   },
+  standardizedEmail: {
+    type: String,
+    lowercase: true,
+    required: true,
+    unique: true,
+    index: {
+      unique: true,
+      collation: {
+        locale: "en",
+        strength: 2,
+      },
+    },
+  },
   role: {
     type: String,
     required: true,
