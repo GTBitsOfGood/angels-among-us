@@ -15,10 +15,10 @@ async function findAccount(
 ): Promise<HydratedDocument<IAccount> | null> {
   try {
     return await Account.findOne(
-      { email },
+      { lowerEmail: email.toLowerCase() },
       { _id: 0, __v: 0 },
       { session: session }
-    ).collation({ locale: "en", strength: 2 });
+    );
   } catch (e) {
     return null;
   }
@@ -32,8 +32,9 @@ async function findAccount(
  * @returns object with key `deletedCount` containing the number of documents deleted
  */
 async function removeAllAccounts(emails: string[], session?: ClientSession) {
+  const loweredEmails = emails.map((email) => email.toLowerCase());
   return await Account.deleteMany(
-    { email: { $in: emails } },
+    { lowerEmail: { $in: loweredEmails } },
     { session: session }
   );
 }
@@ -51,14 +52,18 @@ async function updateAccount(
   update: UpdateQuery<IAccount>,
   session?: ClientSession
 ) {
-  return await Account.findOneAndUpdate({ email }, update, {
-    session: session,
-    returnDocument: "before",
-    projection: {
-      _id: 0,
-      __v: 0,
-    },
-  }).collation({ locale: "en", strength: 2 });
+  return await Account.findOneAndUpdate(
+    { lowerEmail: email.toLowerCase() },
+    update,
+    {
+      session: session,
+      returnDocument: "before",
+      projection: {
+        _id: 0,
+        __v: 0,
+      },
+    }
+  );
 }
 
 /**
@@ -69,11 +74,14 @@ async function updateAccount(
  * @returns added document (pruned without _id, __v) or null if creation fails
  */
 async function addAccount(
-  inputData: IAccount,
+  inputData: Omit<IAccount, "lowerEmail">,
   session?: ClientSession
 ): Promise<IAccount | null> {
   try {
-    const document = new Account(inputData);
+    const document = new Account({
+      ...inputData,
+      lowerEmail: inputData.email.toLowerCase(),
+    });
     const {
       _doc: { _id, __v, ...accountDoc },
     } = await document.save({ session: session });
@@ -113,7 +121,7 @@ async function searchAccounts(
   try {
     const regexTerm = new RegExp(`.*${searchSubject}.*`, "i");
     const accounts = await Account.find(
-      { email: regexTerm },
+      { lowerEmail: regexTerm },
       { _id: 0, __v: 0 },
       { session: session }
     );

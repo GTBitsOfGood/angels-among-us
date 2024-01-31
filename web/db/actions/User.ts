@@ -18,10 +18,10 @@ import {
 } from "../../utils/types/post";
 
 async function createUser(
-  user: IUser,
+  user: Omit<IUser, "lowerEmail">,
   session?: ClientSession
 ): Promise<IUser> {
-  const document = new User(user);
+  const document = new User({ ...user, lowerEmail: user.email.toLowerCase() });
   const {
     _doc: { _id, __v, ...userDoc },
   } = await document.save({ session: session });
@@ -33,9 +33,10 @@ async function updateAllUsers(
   update: UpdateQuery<IUser>,
   session?: ClientSession
 ) {
-  return await User.updateMany({ email: { $in: emails } }, update, {
+  const loweredEmails = emails.map((email) => email.toLowerCase());
+  return await User.updateMany({ lowerEmail: { $in: loweredEmails } }, update, {
     session: session,
-  }).collation({ locale: "en", strength: 2 });
+  });
 }
 
 async function findUserByUid(
@@ -50,10 +51,10 @@ async function findUserByEmail(
   session?: ClientSession
 ): Promise<IUser | null> {
   return await User.findOne(
-    { email },
+    { lowerEmail: email.toLowerCase() },
     { _id: 0, __v: 0 },
     { session }
-  ).collation({ locale: "en", strength: 2 });
+  );
 }
 
 async function updateUserByEmail(
@@ -61,9 +62,13 @@ async function updateUserByEmail(
   update: UpdateQuery<IUser>,
   session?: ClientSession
 ): Promise<IUser | null> {
-  return await User.findOneAndUpdate({ email }, update, {
-    session: session,
-  }).collation({ locale: "en", strength: 2 });
+  return await User.findOneAndUpdate(
+    { lowerEmail: email.toLowerCase() },
+    update,
+    {
+      session: session,
+    }
+  );
 }
 
 async function updateUserByUid(

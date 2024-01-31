@@ -7,13 +7,11 @@ const accountSchema = new Schema<IAccount>({
     type: String,
     required: true,
     unique: true,
-    index: {
-      unique: true,
-      collation: {
-        locale: "en",
-        strength: 2,
-      },
-    },
+  },
+  lowerEmail: {
+    type: String,
+    required: true,
+    unique: true,
   },
   role: {
     type: String,
