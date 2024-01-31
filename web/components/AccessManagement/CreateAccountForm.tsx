@@ -64,11 +64,15 @@ export default function CreateAccountForm() {
           isClosable: true,
         });
       },
-      onError: () => {
+      onError: (error) => {
+        const message =
+          error.data?.code === "UNAUTHORIZED"
+            ? error.message
+            : "Unable to add account. Please try again later.";
         toast({
           title: "Error",
           position: "top",
-          description: "Unable to add account. Please try again later.",
+          description: message,
           status: "error",
           duration: 5000,
           isClosable: true,

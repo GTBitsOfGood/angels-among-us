@@ -82,7 +82,8 @@ export const accountRouter = router({
           message: "Unauthorized - Caller has no email",
           code: "UNAUTHORIZED",
         });
-      if (input.includes(ctx.session.email))
+      const loweredEmails = input.map((email) => email.toLowerCase());
+      if (loweredEmails.includes(ctx.session.email.toLowerCase()))
         throw new TRPCError({
           message: "Unauthorized - Cannot remove own account",
           code: "UNAUTHORIZED",
@@ -116,7 +117,7 @@ export const accountRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      if (ctx.session?.email === input.email) {
+      if (ctx.session?.email?.toLowerCase() === input.email.toLowerCase()) {
         throw new TRPCError({
           code: "UNAUTHORIZED",
           message: "User cannot add themselves",
