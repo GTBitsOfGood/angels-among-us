@@ -1,4 +1,4 @@
-import { ClientSession, FilterQuery, Types, UpdateQuery } from "mongoose";
+import { ClientSession, FilterQuery, Types } from "mongoose";
 import Post from "../models/Post";
 import {
   IFeedPost,
@@ -343,7 +343,12 @@ async function getAttachments(oid: Types.ObjectId) {
   return attachInfo;
 }
 
-async function getFilteredPosts(filter: FilterQuery<IPost>, userUid: string) {
+async function getFilteredPosts(
+  filter: FilterQuery<IPost>,
+  userUid: string,
+  resultsPerPage?: number,
+  page?: number
+) {
   const posts = await Post.aggregate([
     {
       $match: filter,
@@ -372,6 +377,8 @@ async function getFilteredPosts(filter: FilterQuery<IPost>, userUid: string) {
     },
   ])
     .sort({ date: -1 })
+    .skip((resultsPerPage ?? 1000) * ((page ?? 1) - 1))
+    .limit(resultsPerPage ?? 1000)
     .exec();
   return posts;
 }

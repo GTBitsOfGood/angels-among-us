@@ -278,5 +278,48 @@ describe("[API] Post - Integration Test", () => {
       expect(uncoveredPosts.length).toBe(expectedUncoveredPosts.length);
       expect(uncoveredPosts).toMatchObject(expectedUncoveredPosts);
     });
+
+    test("pagination", async () => {
+      const response = await Post.insertMany(randomFeedPosts);
+      expect(response).not.toBeNull();
+
+      const serializedFeedPosts = randomFeedPosts.map((post) => ({
+        ...post,
+        _id: post._id.toString(),
+      }));
+
+      const postFilters = {
+        type: Object.values(FosterType),
+        breed: Object.values(Breed),
+        age: Object.values(Age),
+        size: Object.values(Size),
+        gender: Object.values(Gender),
+        behavioral: Object.values(Behavioral),
+        goodWith: [],
+      };
+
+      const allPosts = await caller.post.getFilteredPosts({
+        postFilters,
+      });
+      expect(allPosts).not.toBeNull();
+      expect(allPosts.length).toBe(randomFeedPosts.length);
+
+      let resultsPerPage = 4;
+      let page = 2;
+      const paginatedPosts = (
+        await caller.post.getFilteredPosts({
+          postFilters,
+          resultsPerPage: resultsPerPage,
+          page: page,
+        })
+      ).map((post) => ({ ...post, _id: post._id.toString() }));
+      const expectedPaginatedPosts = serializedFeedPosts
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .slice(resultsPerPage * (page - 1), resultsPerPage * page);
+
+      expect(paginatedPosts).not.toBeNull();
+      expect(paginatedPosts.length).toBe(expectedPaginatedPosts.length);
+      expect(paginatedPosts).toMatchObject(expectedPaginatedPosts);
+    });
   });
 });
