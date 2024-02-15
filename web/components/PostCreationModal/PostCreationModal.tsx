@@ -323,6 +323,15 @@ const PostCreationModal: React.FC<{
             isLoading={loading}
             _hover={loading ? {} : undefined}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
+            //TODO write the onClick
+          >
+            Save as Draft
+          </Button>
+          <Button
+            size="lg"
+            isLoading={loading}
+            _hover={loading ? {} : undefined}
+            variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={
               isContentView
                 ? () => {
