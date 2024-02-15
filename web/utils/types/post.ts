@@ -344,6 +344,7 @@ export interface IPost {
   pending: boolean;
   attachments: string[];
   usersAppliedTo: string[];
+  isDraft: boolean;
 }
 
 export type IFeedPost = Omit<IPost, "usersAppliedTo"> & {

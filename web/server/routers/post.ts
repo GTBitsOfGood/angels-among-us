@@ -140,6 +140,7 @@ export const postRouter = router({
           date: new Date(),
           covered: false,
           usersAppliedTo: [],
+          isDraft: false,
         },
         session
       );
@@ -295,6 +296,7 @@ export const postRouter = router({
           date: existingPost.date,
           covered: existingPost.covered,
           usersAppliedTo: existingPost.usersAppliedTo,
+          isDraft: false,
         });
         return newPost;
       } catch (e) {

@@ -133,6 +133,11 @@ const postSchema = new Schema<IPost>({
     default: [],
     required: true,
   },
+  isDraft: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
 });
 
 export default mongoose.models.Post || mongoose.model("Post", postSchema);
