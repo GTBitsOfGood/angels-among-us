@@ -6,12 +6,13 @@ import { IAccount } from "../../utils/types/account";
 import { trpc } from "../../utils/trpc";
 
 import {
-  Input,
   Flex,
   Button,
   Stack,
   useMediaQuery,
   useToast,
+  Textarea,
+  Text,
 } from "@chakra-ui/react";
 import { HydratedDocument } from "mongoose";
 
@@ -81,6 +82,68 @@ export default function CreateAccountForm() {
     });
   };
 
+  // const updateAccountsHandler = () => {
+  //   // const emails = inputRef!.current!.value.split(",");
+  //   // const emails = inputRef!.current!.value.split(",");
+
+  //   // //let successList = [];
+  //   // let failedList = [];
+
+  //   // for (let i = 0; i < emails.length; i++) {
+  //   //   const isValid = validateEmail(emails[i]);
+      
+
+
+  //     if (!isValid) {
+  //     //   failedList.push(emails[i]);
+  //       toast({
+  //         title: "Error",
+  //         description: "Invalid email address.",
+  //         position: "top",
+  //         status: "error",
+  //         duration: 5000,
+  //         isClosable: true,
+  //       });
+  //       return;
+  //     }
+
+  //     const newAccount = {
+  //       email: emails[i],
+  //       role: role,
+  //     } as HydratedDocument<IAccount>;
+
+  //     mutation.mutate(newAccount, {
+  //       onSuccess: () => {
+  //         utils.account.invalidate();
+  //         inputRef!.current!.value = "";
+  //         setRole(Role.Volunteer);
+  //         toast({
+  //           title: "Success",
+  //           position: "top",
+  //           description: "Account added succesfully.",
+  //           status: "success",
+  //           duration: 2000,
+  //           isClosable: true,
+  //         });
+  //       },
+  //       onError: (error) => {
+  //         const message =
+  //           error.data?.code === "UNAUTHORIZED"
+  //             ? error.message
+  //             : "Unable to add account. Please try again later.";
+  //         toast({
+  //           title: "Error",
+  //           position: "top",
+  //           description: message,
+  //           status: "error",
+  //           duration: 5000,
+  //           isClosable: true,
+  //         });
+  //       },
+  //     });
+  //   }
+  // };
+
   return (
     <Stack dir="column" w="100%">
       <Flex
@@ -91,13 +154,29 @@ export default function CreateAccountForm() {
         p={0}
         pt={4}
       >
-        <Input
-          ref={inputRef}
-          placeholder="Email"
-          size="md"
-          focusBorderColor="#57a0d5"
-          maxW={{ base: "100%", lg: "45%" }}
-        />
+        <Stack dir="column" w="50%">
+          <Flex
+            direction={{ base: "column", lg: "column" }}
+            w="100%"
+            alignItems="flex-start"
+            justifyContent="space-between"
+            p={0}
+            pt={2}
+          >
+            <Flex pb={4}>
+              <Text fontSize="sm">
+                Enter one or more emails separated by commas...
+              </Text>
+            </Flex>
+            <Textarea
+              placeholder="Email"
+              size="md"
+              focusBorderColor="#57a0d5"
+              maxW={{ base: "100%", lg: "80%" }}
+              resize="vertical"
+            />
+          </Flex>
+        </Stack>
         {!isSmallerThanLg && <PermissionSelector setRole={setRole} />}
       </Flex>
       <Flex
