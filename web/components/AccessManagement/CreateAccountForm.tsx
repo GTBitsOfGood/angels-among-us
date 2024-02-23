@@ -17,7 +17,7 @@ import {
 import { HydratedDocument } from "mongoose";
 
 export default function CreateAccountForm() {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [role, setRole] = useState(Role.Volunteer);
   const [isSmallerThanLg] = useMediaQuery("(max-width: 62em)");
 
@@ -33,116 +33,127 @@ export default function CreateAccountForm() {
   }
 
   const updateAccountsHandler = () => {
-    const isValid = validateEmail(inputRef!.current!.value);
-    if (!isValid) {
-      toast({
-        title: "Error",
-        description: "Invalid email address.",
-        position: "top",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
+    const emails = inputRef!.current!.value.split(",");
+    //const emails = inputRef!.current!.value.split(",");
+
+    let successList = [];
+    //let unAuthList = [];
+    let errorList = [] as string[];
+    let failedList = [];
+
+    for (let i = 0; i < emails.length; i++) {
+      const isValid = validateEmail(emails[i]);
+      
+
+
+      if (!isValid) {
+        failedList.push(emails[i]);
+        // toast({
+        //   title: "Error",
+        //   description: "Invalid email address.",
+        //   position: "top",
+        //   status: "error",
+        //   duration: 5000,
+        //   isClosable: true,
+        // });
+        //return;
+      } else {
+        const newAccount = {
+          email: emails[i],
+          role: role,
+        } as HydratedDocument<IAccount>;
+        mutation.mutate(newAccount, {
+          onSuccess: () => {
+            utils.account.invalidate();
+            inputRef!.current!.value = "";
+            setRole(Role.Volunteer);
+            successList.push(emails[i]);
+            // toast({
+            //   title: "Success",
+            //   position: "top",
+            //   description: "Account added succesfully.",
+            //   status: "success",
+            //   duration: 2000,
+            //   isClosable: true,
+            // });
+          },
+          onError: () => {
+            //unAuthList.push(emails[i]);
+            errorList.push(emails[i]);
+            // toast({
+            //   title: "Error",
+            //   position: "top",
+            //   description: message,
+            //   status: "error",
+            //   duration: 5000,
+            //   isClosable: true,
+            // });
+          },
+        });
+      }
+
     }
 
-    const newAccount = {
-      email: inputRef.current?.value,
-      role: role,
-    } as HydratedDocument<IAccount>;
-
-    mutation.mutate(newAccount, {
-      onSuccess: () => {
-        utils.account.invalidate();
-        inputRef!.current!.value = "";
-        setRole(Role.Volunteer);
-        toast({
-          title: "Success",
-          position: "top",
-          description: "Account added succesfully.",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-      },
-      onError: (error) => {
-        const message =
-          error.data?.code === "UNAUTHORIZED"
-            ? error.message
-            : "Unable to add account. Please try again later.";
-        toast({
+    if(emails.length === successList.length) {
+      toast({
+        title: "Success",
+        position: "top",
+        description: "All accounts added succesfully!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } else if (failedList.length != 0 && errorList.length != 0) {
+      let message =  "Invalid emails: ";
+      const failed = Object.entries(failedList);
+      for(const value of failed) {
+        message += value + " ";
+      }
+      
+      message += "\nError adding emails: "
+      for(let j = 0; j < errorList.length; j++) {
+        message += (errorList[j]) + " ";
+      }
+      
+      toast({
           title: "Error",
-          position: "top",
           description: message,
+          position: "top",
           status: "error",
           duration: 5000,
           isClosable: true,
         });
-      },
-    });
+    } else if (failedList.length != 0) {
+        let message =  "Invalid emails: ";
+        const failed = Object.entries(failedList);
+        for(const value of failed) {
+          message += value + " ";
+        }
+        
+        toast({
+            title: "Error",
+            description: message,
+            position: "top",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+      } else {
+        let message = "Error adding emails: "
+        for(let j = 0; j < errorList.length; j++) {
+          message += (errorList[j]) + " ";
+        }
+        
+        toast({
+            title: "Error",
+            description: message,
+            position: "top",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+      }
   };
-
-  // const updateAccountsHandler = () => {
-  //   // const emails = inputRef!.current!.value.split(",");
-  //   // const emails = inputRef!.current!.value.split(",");
-
-  //   // //let successList = [];
-  //   // let failedList = [];
-
-  //   // for (let i = 0; i < emails.length; i++) {
-  //   //   const isValid = validateEmail(emails[i]);
-      
-
-
-  //     if (!isValid) {
-  //     //   failedList.push(emails[i]);
-  //       toast({
-  //         title: "Error",
-  //         description: "Invalid email address.",
-  //         position: "top",
-  //         status: "error",
-  //         duration: 5000,
-  //         isClosable: true,
-  //       });
-  //       return;
-  //     }
-
-  //     const newAccount = {
-  //       email: emails[i],
-  //       role: role,
-  //     } as HydratedDocument<IAccount>;
-
-  //     mutation.mutate(newAccount, {
-  //       onSuccess: () => {
-  //         utils.account.invalidate();
-  //         inputRef!.current!.value = "";
-  //         setRole(Role.Volunteer);
-  //         toast({
-  //           title: "Success",
-  //           position: "top",
-  //           description: "Account added succesfully.",
-  //           status: "success",
-  //           duration: 2000,
-  //           isClosable: true,
-  //         });
-  //       },
-  //       onError: (error) => {
-  //         const message =
-  //           error.data?.code === "UNAUTHORIZED"
-  //             ? error.message
-  //             : "Unable to add account. Please try again later.";
-  //         toast({
-  //           title: "Error",
-  //           position: "top",
-  //           description: message,
-  //           status: "error",
-  //           duration: 5000,
-  //           isClosable: true,
-  //         });
-  //       },
-  //     });
-  //   }
-  // };
 
   return (
     <Stack dir="column" w="100%">
@@ -169,6 +180,7 @@ export default function CreateAccountForm() {
               </Text>
             </Flex>
             <Textarea
+              ref={inputRef}
               placeholder="Email"
               size="md"
               focusBorderColor="#57a0d5"
