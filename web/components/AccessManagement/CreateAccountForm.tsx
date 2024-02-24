@@ -33,14 +33,14 @@ export default function CreateAccountForm() {
   }
 
   const updateAccountsHandler = () => {
+    if(inputRef!.current!.value === "") {
+      return;
+    }
     const emails = inputRef!.current!.value.split(",");
-    //const emails = inputRef!.current!.value.split(",");
 
-    let successList = [];
-    //let unAuthList = [];
     let errorList = [] as string[];
+    //console.log("test "+ errorList.length);
     let failedList = [];
-
     for (let i = 0; i < emails.length; i++) {
       const isValid = validateEmail(emails[i]);
       
@@ -48,15 +48,6 @@ export default function CreateAccountForm() {
 
       if (!isValid) {
         failedList.push(emails[i]);
-        // toast({
-        //   title: "Error",
-        //   description: "Invalid email address.",
-        //   position: "top",
-        //   status: "error",
-        //   duration: 5000,
-        //   isClosable: true,
-        // });
-        //return;
       } else {
         const newAccount = {
           email: emails[i],
@@ -65,55 +56,34 @@ export default function CreateAccountForm() {
         mutation.mutate(newAccount, {
           onSuccess: () => {
             utils.account.invalidate();
-            inputRef!.current!.value = "";
             setRole(Role.Volunteer);
-            successList.push(emails[i]);
-            // toast({
-            //   title: "Success",
-            //   position: "top",
-            //   description: "Account added succesfully.",
-            //   status: "success",
-            //   duration: 2000,
-            //   isClosable: true,
-            // });
           },
           onError: () => {
-            //unAuthList.push(emails[i]);
             errorList.push(emails[i]);
-            // toast({
-            //   title: "Error",
-            //   position: "top",
-            //   description: message,
-            //   status: "error",
-            //   duration: 5000,
-            //   isClosable: true,
-            // });
+            //console.log("push " + errorList);
+            //console.log(errorList.length);
           },
         });
       }
 
     }
+    // console.log(errorList);
+    
+    // console.log(errorList.length);
+    inputRef!.current!.value = "";
 
-    if(emails.length === successList.length) {
-      toast({
-        title: "Success",
-        position: "top",
-        description: "All accounts added succesfully!",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-      });
-    } else if (failedList.length != 0 && errorList.length != 0) {
+    if (failedList.length !== 0 && errorList.length !== 0) {
       let message =  "Invalid emails: ";
-      const failed = Object.entries(failedList);
-      for(const value of failed) {
-        message += value + " ";
+      for(let j = 0; j < failedList.length - 1; j++) {
+        message += (failedList[j]) + ", ";
       }
+      message += failedList[failedList.length - 1];
       
       message += "\nError adding emails: "
-      for(let j = 0; j < errorList.length; j++) {
-        message += (errorList[j]) + " ";
+      for(let j = 0; j < errorList.length - 1; j++) {
+        message += (errorList[j]) + ", ";
       }
+      message += errorList[errorList.length - 1];
       
       toast({
           title: "Error",
@@ -123,12 +93,27 @@ export default function CreateAccountForm() {
           duration: 5000,
           isClosable: true,
         });
-    } else if (failedList.length != 0) {
-        let message =  "Invalid emails: ";
-        const failed = Object.entries(failedList);
-        for(const value of failed) {
-          message += value + " ";
+    } else if (failedList.length !== 0) {
+      let message =  "Invalid emails: ";
+      for(let j = 0; j < failedList.length - 1; j++) {
+        message += (failedList[j]) + ", ";
+      }
+      message += failedList[failedList.length - 1];
+        
+        toast({
+            title: "Error",
+            description: message,
+            position: "top",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+      } else if (errorList.length !== 0) {
+        let message = "Error adding emails: "
+        for(let j = 0; j < errorList.length - 1; j++) {
+          message += (errorList[j]) + ", ";
         }
+        message += errorList[errorList.length - 1];
         
         toast({
             title: "Error",
@@ -139,17 +124,12 @@ export default function CreateAccountForm() {
             isClosable: true,
           });
       } else {
-        let message = "Error adding emails: "
-        for(let j = 0; j < errorList.length; j++) {
-          message += (errorList[j]) + " ";
-        }
-        
-        toast({
-            title: "Error",
-            description: message,
+          toast({
+            title: "Success",
             position: "top",
-            status: "error",
-            duration: 5000,
+            description: "All accounts added succesfully!",
+            status: "success",
+            duration: 2000,
             isClosable: true,
           });
       }
