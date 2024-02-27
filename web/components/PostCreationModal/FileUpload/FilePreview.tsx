@@ -1,5 +1,6 @@
 import Image from "next/legacy/image";
-import { CloseIcon } from "@chakra-ui/icons";
+import rotateImg from "./rotateImageHelper";
+import { CloseIcon, RepeatIcon } from "@chakra-ui/icons";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import { Dispatch, SetStateAction } from "react";
 
@@ -16,6 +17,16 @@ function FilePreview(props: PropsType) {
     let temp = [...fileArr];
     temp.splice(idx, 1);
     setFileArr(temp);
+  }
+
+  function rotateImage() {
+    rotateImg(URL.createObjectURL(fileArr[idx])).then((blob) => {
+      let temp = [...fileArr];
+      temp[idx] = new File(blob ? [blob] : [], fileArr[idx].name, {
+        type: fileArr[idx].type,
+      });
+      setFileArr(temp);
+    });
   }
 
   return (
@@ -61,6 +72,12 @@ function FilePreview(props: PropsType) {
       )}
 
       <Box position={"absolute"} top={1} right={1}>
+        {fileArr[idx].type !== "video/mp4" &&
+          fileArr[idx].type !== "video/quicktime" && (
+            <Button onClick={rotateImage} colorScheme={"blackAlpha"}>
+              <RepeatIcon></RepeatIcon>
+            </Button>
+          )}
         <Button onClick={removeFile} colorScheme={"blackAlpha"}>
           <CloseIcon></CloseIcon>
         </Button>
