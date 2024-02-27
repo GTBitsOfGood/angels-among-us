@@ -56,6 +56,7 @@ export type QueryFilter = {
 type FilterAPIInput = {
   postFilters: QueryFilter;
   covered?: boolean;
+  draft?: boolean;
 };
 
 type OptHandler<T extends FilterKeyTypeMap[FilterKeys]> = (
@@ -160,6 +161,7 @@ export const postFilterSchema = z.object({
 const feedFilterSchema = postFilterSchema.merge(
   z.object({
     covered: z.optional(z.boolean()),
+    draft: z.optional(z.boolean()),
   })
 );
 
@@ -214,6 +216,7 @@ const defaultQueryParams = {
   goodWith: withDefault(ArrayParam, []),
   behavioral: withDefault(ArrayParam, Object.keys(BEHAVIORAL_OPTION_MAP)),
   covered: withDefault(BooleanParam, undefined),
+  draft: withDefault(BooleanParam, undefined),
 };
 
 function FeedPage() {
@@ -233,10 +236,13 @@ function FeedPage() {
 
   const validatedFilters = useMemo(() => {
     const parsedFilters = parseFeedFilter(query);
+    ``;
     return {
       postFilters: parsedFilters.postFilters,
       covered:
         role === Role.Volunteer ? false : parsedFilters.covered ?? undefined,
+      draft:
+        role === Role.Volunteer ? undefined : parsedFilters.draft ?? undefined,
     };
   }, [query]);
 
@@ -294,9 +300,13 @@ function FeedPage() {
     [validatedFilters]
   );
 
-  function handleCoveredChange(newVal: boolean | undefined) {
+  function handleCoveredChange(
+    covered: boolean | undefined,
+    draft: boolean | undefined
+  ) {
     setQuery({
-      covered: newVal,
+      covered: covered,
+      draft: draft,
     });
   }
 
@@ -304,6 +314,7 @@ function FeedPage() {
     return (
       <FeedCoveredDropdown
         displayCovered={validatedFilters.covered}
+        displayDraft={validatedFilters.draft}
         handleCoveredChange={handleCoveredChange}
       />
     );
@@ -384,6 +395,7 @@ function FeedPage() {
           <FeedSection
             isLoading={isUpdating || isLoading}
             coveredState={validatedFilters.covered}
+            draftState={validatedFilters.draft}
             handleCoveredChange={handleCoveredChange}
             onPostCreationOpen={onPostCreationOpen}
             feedPosts={feedPosts}

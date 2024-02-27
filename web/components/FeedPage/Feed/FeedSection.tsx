@@ -17,7 +17,11 @@ import FeedPostCard from "./FeedPostCard";
 
 interface Props {
   coveredState: boolean | undefined;
-  handleCoveredChange: (newVal: boolean | undefined) => void;
+  draftState: boolean | undefined;
+  handleCoveredChange: (
+    covered: boolean | undefined,
+    draft: boolean | undefined
+  ) => void;
   onPostCreationOpen: () => void;
   isLoading: boolean;
   feedPosts: IFeedPost[] | undefined;
@@ -25,6 +29,7 @@ interface Props {
 function FeedSection(props: Props) {
   const {
     coveredState,
+    draftState,
     handleCoveredChange,
     onPostCreationOpen,
     isLoading,
@@ -69,6 +74,7 @@ function FeedSection(props: Props) {
           >
             <FeedCoveredDropdown
               displayCovered={coveredState}
+              displayDraft={draftState}
               handleCoveredChange={handleCoveredChange}
             />
           </Flex>
