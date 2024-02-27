@@ -443,6 +443,11 @@ const EditPostModal: React.FC<{
                 : () => {
                     //TODO: Wait for success to close.
                     setIsLoading(true);
+                    dispatch({
+                      type: "setField",
+                      key: "draft",
+                      data: false,
+                    });
                     editPost()
                       .then(() => {
                         onClose();
