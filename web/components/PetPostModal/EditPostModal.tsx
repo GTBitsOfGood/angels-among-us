@@ -446,7 +446,7 @@ const EditPostModal: React.FC<{
                     dispatch({
                       type: "setField",
                       key: "draft",
-                      data: false,
+                      data: undefined,
                     });
                     editPost()
                       .then(() => {

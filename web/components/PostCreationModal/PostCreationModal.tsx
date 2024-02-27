@@ -269,6 +269,7 @@ const PostCreationModal: React.FC<{
     try {
       const creationInfo = await postCreate.mutateAsync({
         ...(formState as z.output<typeof formSchema>),
+        draft: true,
         attachments: files,
       });
       const oid = creationInfo._id;
@@ -381,14 +382,9 @@ const PostCreationModal: React.FC<{
             isLoading={loading}
             _hover={loading ? {} : undefined}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
-            onClick={() => {
+            onClick={async () => {
               setLoading(true);
               //TODO: Wait for success to close.
-              dispatch({
-                type: "setField",
-                key: "draft",
-                data: true,
-              });
               createDraftPost()
                 .then(() => {
                   utils.post.invalidate();

@@ -200,6 +200,7 @@ export type HandleFilterChangeActions =
  */
 function parseFeedFilter(query: Record<string, any>): FilterAPIInput {
   const result = feedFilterSchema.safeParse(query);
+  console.log(result);
   if (!result.success) {
     throw new Error("Could not parse URL");
   }
