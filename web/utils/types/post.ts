@@ -341,10 +341,10 @@ export interface IPost {
   getsAlongWithSmallDogs: Trained;
   getsAlongWithCats: Trained;
   covered: boolean;
+  draft: boolean;
   pending: boolean;
   attachments: string[];
   usersAppliedTo: string[];
-  isDraft: boolean;
 }
 
 export type IFeedPost = Omit<IPost, "usersAppliedTo"> & {

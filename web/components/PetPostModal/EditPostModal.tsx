@@ -114,6 +114,7 @@ const formSchema = z.object({
   getsAlongWithLargeDogs: z.nativeEnum(Trained),
   getsAlongWithSmallDogs: z.nativeEnum(Trained),
   getsAlongWithCats: z.nativeEnum(Trained),
+  draft: z.boolean(),
 });
 
 export type FormState = z.input<typeof formSchema>;
@@ -145,6 +146,7 @@ const EditPostModal: React.FC<{
     type,
     size,
     age,
+    draft,
     spayNeuterStatus,
     houseTrained,
     crateTrained,
@@ -170,6 +172,7 @@ const EditPostModal: React.FC<{
     type,
     size,
     breed,
+    draft,
     temperament,
     spayNeuterStatus,
     houseTrained,
@@ -382,6 +385,33 @@ const EditPostModal: React.FC<{
             }}
           >
             Cancel
+          </Button>
+          <Button
+            size="lg"
+            isLoading={isLoading}
+            _hover={isLoading ? {} : undefined}
+            variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
+            onClick={() => {
+              //TODO: Wait for success to close.
+              setIsLoading(true);
+              dispatch({
+                type: "setField",
+                key: "draft",
+                data: true,
+              });
+              editPost()
+                .then(() => {
+                  onClose();
+                  setFileArr(fileArr);
+                  setIsContentView(true);
+                  dispatch({
+                    type: "clear",
+                  });
+                })
+                .finally(() => setIsLoading(false));
+            }}
+          >
+            Save as Draft
           </Button>
           <Button
             size="lg"

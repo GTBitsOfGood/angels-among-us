@@ -118,6 +118,10 @@ const postSchema = new Schema<IPost>({
     type: Boolean,
     default: false,
   },
+  draft: {
+    type: Boolean,
+    default: undefined,
+  },
   pending: {
     type: Boolean,
     default: true,
@@ -131,11 +135,6 @@ const postSchema = new Schema<IPost>({
   usersAppliedTo: {
     type: [{ type: String }], // Firebase UID
     default: [],
-    required: true,
-  },
-  isDraft: {
-    type: Boolean,
-    default: false,
     required: true,
   },
 });

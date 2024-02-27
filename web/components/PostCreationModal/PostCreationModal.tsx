@@ -115,6 +115,7 @@ const formSchema = z.object({
   getsAlongWithLargeDogs: z.nativeEnum(Trained),
   getsAlongWithSmallDogs: z.nativeEnum(Trained),
   getsAlongWithCats: z.nativeEnum(Trained),
+  draft: z.boolean(),
 });
 
 export type FormState = z.input<typeof formSchema>;
@@ -146,6 +147,7 @@ const PostCreationModal: React.FC<{
     temperament: [],
     medical: [],
     behavioral: [],
+    draft: false,
     houseTrained: Trained.Unknown,
     crateTrained: Trained.Unknown,
     spayNeuterStatus: Trained.Unknown,
@@ -182,6 +184,62 @@ const PostCreationModal: React.FC<{
   const postFinalize = trpc.post.finalize.useMutation();
 
   const createPost = async () => {
+    const files: AttachmentInfo[] = await Promise.all(
+      fileArr.map(async (file) => {
+        const key = file.name;
+        if (file.type.includes("image/")) {
+          const url = URL.createObjectURL(file);
+          return new Promise((resolve) => {
+            const image = new Image();
+            image.onload = () => {
+              URL.revokeObjectURL(url);
+              resolve({
+                type: "image",
+                key,
+                length: image.height,
+                width: image.width,
+              });
+            };
+            image.src = url;
+          });
+        } else {
+          return {
+            type: "video",
+            key,
+          };
+        }
+      })
+    );
+    try {
+      const creationInfo = await postCreate.mutateAsync({
+        ...(formState as z.output<typeof formSchema>),
+        attachments: files,
+      });
+      const oid = creationInfo._id;
+      const uploadInfo = creationInfo.attachments;
+
+      for (let i = 0; i < fileArr.length; i++) {
+        const file = fileArr[i];
+        await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
+      }
+
+      await postFinalize.mutateAsync({
+        _id: new Types.ObjectId(oid),
+      });
+    } catch (e) {
+      toast({
+        title: "An error has occurred.",
+        description:
+          "We encountered an issue while processing your request. Please try again.",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const createDraftPost = async () => {
     const files: AttachmentInfo[] = await Promise.all(
       fileArr.map(async (file) => {
         const key = file.name;
@@ -323,7 +381,28 @@ const PostCreationModal: React.FC<{
             isLoading={loading}
             _hover={loading ? {} : undefined}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
-            //TODO write the onClick
+            onClick={() => {
+              setLoading(true);
+              //TODO: Wait for success to close.
+              dispatch({
+                type: "setField",
+                key: "draft",
+                data: true,
+              });
+              createDraftPost()
+                .then(() => {
+                  utils.post.invalidate();
+                  setFileArr([]);
+                  setIsContentView(true);
+                  dispatch({
+                    type: "clear",
+                  });
+                  onClose();
+                })
+                .finally(() => {
+                  setLoading(false);
+                });
+            }}
           >
             Save as Draft
           </Button>

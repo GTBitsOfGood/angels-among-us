@@ -1,10 +1,19 @@
 import Select from "react-select";
 
-const showingMap: Map<Array<boolean | undefined>, string> = new Map([
-  [[undefined, undefined], "all posts"],
-  [[true, undefined], "only covered posts"],
-  [[false, undefined], "only uncovered posts"],
-  [[undefined, true], "only draft posts"],
+interface PostOptions {
+  covered?: boolean | undefined;
+  draft?: boolean | undefined;
+}
+
+// TODO: there is probably a better way to do this than to stringify this.
+const showingMap: Map<string, string> = new Map([
+  [JSON.stringify({ covered: undefined, draft: undefined }), "all posts"],
+  [JSON.stringify({ covered: true, draft: undefined }), "only covered posts"],
+  [
+    JSON.stringify({ covered: false, draft: undefined }),
+    "only uncovered posts",
+  ],
+  [JSON.stringify({ covered: undefined, draft: true }), "only draft posts"],
 ]);
 
 const allDropdownOptions = Array.from(showingMap.entries()).map(([k, v]) => ({
@@ -21,11 +30,15 @@ function FeedCoveredDropdown(props: {
   ) => void;
 }) {
   const { displayCovered, displayDraft, handleCoveredChange } = props;
-
-  const displayOptions = [displayCovered, displayDraft];
-  console.log(showingMap.keys());
-  console.log(showingMap.get(displayOptions));
-  const placeholder = `Showing ${showingMap.get(displayOptions)}`;
+  console.log(displayDraft);
+  const displayOptions: PostOptions = {
+    covered: displayCovered,
+    draft: displayDraft,
+  };
+  console.log(JSON.stringify(displayOptions));
+  const placeholder = `Showing ${showingMap.get(
+    JSON.stringify(displayOptions)
+  )}`;
 
   return (
     <div>
@@ -68,7 +81,10 @@ function FeedCoveredDropdown(props: {
           (option) => option.value !== displayOptions
         )}
         onChange={(event) => {
-          handleCoveredChange(event!.value[0], event!.value[1]);
+          handleCoveredChange(
+            JSON.parse(event!.value).covered,
+            JSON.parse(event!.value).draft
+          );
         }}
       />
     </div>

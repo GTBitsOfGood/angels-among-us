@@ -54,6 +54,7 @@ const postSchema = z.object({
   breed: z.array(z.nativeEnum(Breed)),
   gender: z.nativeEnum(Gender),
   age: z.nativeEnum(Age),
+  draft: z.boolean(),
   temperament: z.array(z.nativeEnum(Temperament)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
@@ -140,7 +141,6 @@ export const postRouter = router({
           date: new Date(),
           covered: false,
           usersAppliedTo: [],
-          isDraft: false,
         },
         session
       );
@@ -295,8 +295,8 @@ export const postRouter = router({
           ...input.updateFields,
           date: existingPost.date,
           covered: existingPost.covered,
+          draft: existingPost.draft,
           usersAppliedTo: existingPost.usersAppliedTo,
-          isDraft: false,
         });
         return newPost;
       } catch (e) {
