@@ -200,12 +200,11 @@ export type HandleFilterChangeActions =
  */
 function parseFeedFilter(query: Record<string, any>): FilterAPIInput {
   const result = feedFilterSchema.safeParse(query);
-  console.log(result);
   if (!result.success) {
     throw new Error("Could not parse URL");
   }
-  const { covered, ...postFilters } = result.data;
-  return { covered, postFilters };
+  const { covered, draft, ...postFilters } = result.data;
+  return { covered, draft, postFilters };
 }
 
 const defaultQueryParams = {
@@ -242,8 +241,7 @@ function FeedPage() {
       postFilters: parsedFilters.postFilters,
       covered:
         role === Role.Volunteer ? false : parsedFilters.covered ?? undefined,
-      draft:
-        role === Role.Volunteer ? undefined : parsedFilters.draft ?? undefined,
+      draft: role === Role.Volunteer ? false : parsedFilters.draft ?? undefined,
     };
   }, [query]);
 
@@ -254,7 +252,6 @@ function FeedPage() {
 
   const { data: feedPosts, isLoading } =
     trpc.post.getFilteredPosts.useQuery(debouncedFilters);
-
   /**
    * Handles all changes to filter state, except for `covered`. This includes
    * option selection/deselection, dropdown modifications, reset,

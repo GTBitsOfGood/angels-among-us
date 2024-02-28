@@ -85,6 +85,17 @@ function FeedPostCard(props: { post: IFeedPost }) {
               position="absolute"
               top={5}
               right={5}
+              display={{ base: "none", lg: post.draft ? "flex" : "none" }}
+              fontSize={20}
+              fontWeight="semibold"
+              zIndex={3}
+            >
+              Draft
+            </Text>
+            <Text
+              position="absolute"
+              top={5}
+              right={5}
               display={{
                 base: "none",
                 lg: post.userAppliedTo && !post.covered ? "flex" : "none",

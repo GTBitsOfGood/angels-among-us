@@ -36,8 +36,6 @@ function FeedSection(props: Props) {
     feedPosts,
   } = props;
 
-  console.log(feedPosts);
-
   const { userData } = useAuth();
   const role = userData?.role;
 

@@ -120,7 +120,7 @@ const formSchema = z.object({
 export type FormState = z.input<typeof formSchema>;
 
 export type Action<K extends keyof FormState, V extends FormState[K]> = {
-  type: "setField" | "clear";
+  type: "setField" | "clear" | "removeField";
   key?: K;
   data?: V;
 };
@@ -198,6 +198,11 @@ const EditPostModal: React.FC<{
           ...state,
           [action.key!]: action.data,
         };
+      case "removeField":
+        return {
+          ...state,
+          [action.key!]: undefined,
+        };
       case "clear":
         return defaultFormState;
       default:
@@ -248,7 +253,7 @@ const EditPostModal: React.FC<{
   const postUpdate = trpc.post.editPost.useMutation();
   const postFinalize = trpc.post.finalizeEdit.useMutation();
 
-  const editPost = async () => {
+  const editPost = async (isDraft: boolean) => {
     const files: AttachmentInfo[] = await Promise.all(
       fileArr.map(async (file) => {
         const key = file.name;
@@ -283,6 +288,7 @@ const EditPostModal: React.FC<{
         _id: oid,
         updateFields: {
           ...(formState as z.output<typeof formSchema>),
+          draft: isDraft,
           attachments: files,
         },
       });
@@ -394,14 +400,8 @@ const EditPostModal: React.FC<{
             onClick={() => {
               //TODO: Wait for success to close.
               setIsLoading(true);
-              dispatch({
-                type: "setField",
-                key: "draft",
-                data: true,
-              });
-              editPost()
+              editPost(true)
                 .then(() => {
-                  onClose();
                   setFileArr(fileArr);
                   setIsContentView(true);
                   dispatch({
@@ -443,12 +443,8 @@ const EditPostModal: React.FC<{
                 : () => {
                     //TODO: Wait for success to close.
                     setIsLoading(true);
-                    dispatch({
-                      type: "setField",
-                      key: "draft",
-                      data: undefined,
-                    });
-                    editPost()
+
+                    editPost(false)
                       .then(() => {
                         onClose();
                         setFileArr(fileArr);

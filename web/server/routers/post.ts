@@ -295,7 +295,6 @@ export const postRouter = router({
           ...input.updateFields,
           date: existingPost.date,
           covered: existingPost.covered,
-          draft: existingPost.draft,
           usersAppliedTo: existingPost.usersAppliedTo,
         });
         return newPost;
@@ -358,6 +357,7 @@ export const postRouter = router({
       z.object({
         postFilters: postFilterSchema,
         covered: z.optional(z.boolean()),
+        draft: z.optional(z.boolean()),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -412,6 +412,10 @@ export const postRouter = router({
       };
       if (input.covered !== undefined) {
         baseFilter.covered = input.covered;
+      }
+
+      if (input.draft !== undefined) {
+        baseFilter.draft = input.draft;
       }
 
       try {
