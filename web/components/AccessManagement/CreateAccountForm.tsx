@@ -39,15 +39,14 @@ export default function CreateAccountForm() {
     const emails = inputRef!.current!.value.split(",");
 
     let errorList = [] as string[];
-    //console.log("test "+ errorList.length);
     let failedList = [];
     for (let i = 0; i < emails.length; i++) {
-      const isValid = validateEmail(emails[i]);
+      const isValid = validateEmail(emails[i].trim());
       
 
 
       if (!isValid) {
-        failedList.push(emails[i]);
+        failedList.push(emails[i].trim());
       } else {
         const newAccount = {
           email: emails[i],
@@ -59,17 +58,12 @@ export default function CreateAccountForm() {
             setRole(Role.Volunteer);
           },
           onError: () => {
-            errorList.push(emails[i]);
-            //console.log("push " + errorList);
-            //console.log(errorList.length);
+            errorList.push(emails[i].trim() as string);
           },
         });
       }
 
     }
-    // console.log(errorList);
-    
-    // console.log(errorList.length);
     inputRef!.current!.value = "";
 
     if (failedList.length !== 0 && errorList.length !== 0) {
@@ -164,7 +158,7 @@ export default function CreateAccountForm() {
               placeholder="Email"
               size="md"
               focusBorderColor="#57a0d5"
-              maxW={{ base: "100%", lg: "80%" }}
+              maxW={{ base: "100%", lg: "100%" }}
               resize="vertical"
             />
           </Flex>
