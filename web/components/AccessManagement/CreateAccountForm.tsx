@@ -27,13 +27,13 @@ export default function CreateAccountForm() {
   const mutation = trpc.account.add.useMutation();
 
   function validateEmail(email: string) {
-    const emailSchema = z.string().email();
+    const emailSchema = z.string().trim().email();
     const result = emailSchema.safeParse(email);
     return result.success;
   }
 
   const updateAccountsHandler = () => {
-    if(inputRef!.current!.value === "") {
+    if (inputRef!.current!.value === "") {
       return;
     }
     const emails = inputRef!.current!.value.split(",");
@@ -41,12 +41,10 @@ export default function CreateAccountForm() {
     let errorList = [] as string[];
     let failedList = [];
     for (let i = 0; i < emails.length; i++) {
-      const isValid = validateEmail(emails[i].trim());
-      
-
+      const isValid = validateEmail(emails[i]);
 
       if (!isValid) {
-        failedList.push(emails[i].trim());
+        failedList.push(emails[i]);
       } else {
         const newAccount = {
           email: emails[i],
@@ -58,75 +56,74 @@ export default function CreateAccountForm() {
             setRole(Role.Volunteer);
           },
           onError: () => {
-            errorList.push(emails[i].trim() as string);
+            errorList.push(emails[i] as string);
           },
         });
       }
-
     }
     inputRef!.current!.value = "";
 
     if (failedList.length !== 0 && errorList.length !== 0) {
-      let message =  "Invalid emails: ";
-      for(let j = 0; j < failedList.length - 1; j++) {
-        message += (failedList[j]) + ", ";
+      let message = "Invalid emails: ";
+      for (let j = 0; j < failedList.length - 1; j++) {
+        message += failedList[j] + ", ";
       }
       message += failedList[failedList.length - 1];
-      
-      message += "\nError adding emails: "
-      for(let j = 0; j < errorList.length - 1; j++) {
-        message += (errorList[j]) + ", ";
+
+      message += "\nError adding emails: ";
+      for (let j = 0; j < errorList.length - 1; j++) {
+        message += errorList[j] + ", ";
       }
       message += errorList[errorList.length - 1];
-      
+
       toast({
-          title: "Error",
-          description: message,
-          position: "top",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
+        title: "Error",
+        description: message,
+        position: "top",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     } else if (failedList.length !== 0) {
-      let message =  "Invalid emails: ";
-      for(let j = 0; j < failedList.length - 1; j++) {
-        message += (failedList[j]) + ", ";
+      let message = "Invalid emails: ";
+      for (let j = 0; j < failedList.length - 1; j++) {
+        message += failedList[j] + ", ";
       }
       message += failedList[failedList.length - 1];
-        
-        toast({
-            title: "Error",
-            description: message,
-            position: "top",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
-      } else if (errorList.length !== 0) {
-        let message = "Error adding emails: "
-        for(let j = 0; j < errorList.length - 1; j++) {
-          message += (errorList[j]) + ", ";
-        }
-        message += errorList[errorList.length - 1];
-        
-        toast({
-            title: "Error",
-            description: message,
-            position: "top",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
-      } else {
-          toast({
-            title: "Success",
-            position: "top",
-            description: "All accounts added succesfully!",
-            status: "success",
-            duration: 2000,
-            isClosable: true,
-          });
+
+      toast({
+        title: "Error",
+        description: message,
+        position: "top",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else if (errorList.length !== 0) {
+      let message = "Error adding emails: ";
+      for (let j = 0; j < errorList.length - 1; j++) {
+        message += errorList[j] + ", ";
       }
+      message += errorList[errorList.length - 1];
+
+      toast({
+        title: "Error",
+        description: message,
+        position: "top",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Success",
+        position: "top",
+        description: "All accounts added succesfully!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -150,7 +147,9 @@ export default function CreateAccountForm() {
           >
             <Flex pb={4}>
               <Text fontSize="sm">
-                Enter one or more emails separated by commas...
+                Enter one or more emails separated by commas without spaces:
+                <br></br>
+                (ex: test@gmail.com,test2@gmail.com).
               </Text>
             </Flex>
             <Textarea
