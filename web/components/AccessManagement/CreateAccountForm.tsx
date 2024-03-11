@@ -41,13 +41,13 @@ export default function CreateAccountForm() {
     let errorList = [] as string[];
     let failedList = [];
     for (let i = 0; i < emails.length; i++) {
-      const isValid = validateEmail(emails[i]);
+      const isValid = validateEmail(emails[i].trim());
 
       if (!isValid) {
-        failedList.push(emails[i]);
+        failedList.push(emails[i].trim());
       } else {
         const newAccount = {
-          email: emails[i],
+          email: emails[i].trim(),
           role: role,
         } as HydratedDocument<IAccount>;
         mutation.mutate(newAccount, {
@@ -56,7 +56,7 @@ export default function CreateAccountForm() {
             setRole(Role.Volunteer);
           },
           onError: () => {
-            errorList.push(emails[i] as string);
+            errorList.push(emails[i].trim() as string);
           },
         });
       }
@@ -147,7 +147,7 @@ export default function CreateAccountForm() {
           >
             <Flex pb={4}>
               <Text fontSize="sm">
-                Enter one or more emails separated by commas without spaces:
+                Enter one or more emails separated by commas:
                 <br></br>
                 (ex: test@gmail.com,test2@gmail.com).
               </Text>
