@@ -118,12 +118,14 @@ function PostPage({
   }
 
   const postId = new Types.ObjectId(postData._id);
+  console.log(postData);
   const {
     name,
     description,
     type,
     size,
     age,
+    draft,
     spayNeuterStatus,
     behavioral,
     temperament,
@@ -248,28 +250,30 @@ function PostPage({
                   postData={postData}
                   attachments={attachments}
                 />
-                <Button
-                  variant="link"
-                  h={8}
-                  onClick={onCoveredConfirmationOpen}
-                  leftIcon={
-                    postData.covered ? (
-                      <ViewIcon color={coveredButtonColor} />
-                    ) : (
-                      <ViewOffIcon color={coveredButtonColor} />
-                    )
-                  }
-                >
-                  <Text textDecoration="underline" color={coveredButtonColor}>
-                    {postData.covered ? "Uncover Post" : "Mark as Covered"}
-                  </Text>
-                  <MarkCoveredModal
-                    isCoveredConfirmationOpen={isCoveredConfirmationOpen}
-                    onCoveredConfirmationClose={onCoveredConfirmationClose}
-                    postId={postId}
-                    isCovered={postData.covered}
-                  />
-                </Button>
+                {!draft && (
+                  <Button
+                    variant="link"
+                    h={8}
+                    onClick={onCoveredConfirmationOpen}
+                    leftIcon={
+                      postData.covered ? (
+                        <ViewIcon color={coveredButtonColor} />
+                      ) : (
+                        <ViewOffIcon color={coveredButtonColor} />
+                      )
+                    }
+                  >
+                    <Text textDecoration="underline" color={coveredButtonColor}>
+                      {postData.covered ? "Uncover Post" : "Mark as Covered"}
+                    </Text>
+                    <MarkCoveredModal
+                      isCoveredConfirmationOpen={isCoveredConfirmationOpen}
+                      onCoveredConfirmationClose={onCoveredConfirmationClose}
+                      postId={postId}
+                      isCovered={postData.covered}
+                    />
+                  </Button>
+                )}
                 <Button
                   variant="link"
                   h={8}
