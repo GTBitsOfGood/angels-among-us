@@ -12,6 +12,7 @@ import {
   finalizePostEdit,
   pushUserAppliedTo,
   getUserContextualizedPost,
+  createDraftPost,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -84,6 +85,30 @@ const postSchema = z.object({
   ),
 });
 
+const draftPostSchema = postSchema.partial({
+  name: true,
+  description: true,
+  type: true,
+  size: true,
+  breed: true,
+  gender: true,
+  age: true,
+  draft: true,
+  temperament: true,
+  medical: true,
+  behavioral: true,
+  houseTrained: true,
+  crateTrained: true,
+  spayNeuterStatus: true,
+  getsAlongWithMen: true,
+  getsAlongWithWomen: true,
+  getsAlongWithOlderKids: true,
+  getsAlongWithYoungKids: true,
+  getsAlongWithLargeDogs: true,
+  getsAlongWithSmallDogs: true,
+  getsAlongWithCats: true,
+});
+
 const fosterTypeEmails: Record<FosterType, string> = {
   [FosterType.FosterMove]: "foster@angelsrescue.org",
   [FosterType.Return]: "returns@angelsrescue.org, foster@angelsrescue.org",
@@ -136,6 +161,31 @@ export const postRouter = router({
     session.startTransaction();
     try {
       const post = await createPost(
+        {
+          ...input,
+          date: new Date(),
+          covered: false,
+          usersAppliedTo: [],
+        },
+        session
+      );
+      await session.commitTransaction();
+      return post;
+    } catch (e) {
+      await session.abortTransaction();
+
+      throw new TRPCError({
+        message: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+        cause: e,
+      });
+    }
+  }),
+  draft: procedure.input(draftPostSchema).mutation(async ({ input }) => {
+    const session = await Post.startSession();
+    session.startTransaction();
+    try {
+      const post = await createDraftPost(
         {
           ...input,
           date: new Date(),

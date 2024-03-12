@@ -347,6 +347,8 @@ export interface IPost {
   usersAppliedTo: string[];
 }
 
+export type IDraftPost = Partial<IPost>;
+
 export type IFeedPost = Omit<IPost, "usersAppliedTo"> & {
   _id: Types.ObjectId;
   userAppliedTo: boolean;
@@ -357,7 +359,10 @@ export type SerializedPost = Omit<IFeedPost, "_id" | "date"> & {
   date: string;
 };
 
-export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
+export type IPendingPost = Omit<
+  IPost | IDraftPost,
+  "attachments" | "pending"
+> & {
   attachments: AttachmentInfo[];
 };
 
