@@ -251,6 +251,7 @@ const EditPostModal: React.FC<{
   }, [attachments]);
 
   const postUpdate = trpc.post.editPost.useMutation();
+  const postDraftUpdate = trpc.post.editDraftPost.useMutation();
   const postFinalize = trpc.post.finalizeEdit.useMutation();
 
   const editPost = async (isDraft: boolean) => {
@@ -285,6 +286,73 @@ const EditPostModal: React.FC<{
       const oid = new Types.ObjectId(postData._id);
 
       const updateInfo = await postUpdate.mutateAsync({
+        _id: oid,
+        updateFields: {
+          ...(formState as z.output<typeof formSchema>),
+          draft: isDraft,
+          attachments: files,
+        },
+      });
+
+      const newId = new Types.ObjectId(updateInfo._id);
+      const uploadInfo = updateInfo.attachments;
+
+      for (let i = 0; i < fileArr.length; i++) {
+        const file = fileArr[i];
+        await uploadFile(uploadInfo[`${updateInfo._id}/${file.name}`], file);
+      }
+
+      const newPost = await postFinalize.mutateAsync({
+        oldId: oid,
+        newId,
+      });
+
+      router.replace(`/post/${newPost._id.toString()}`);
+    } catch (e) {
+      toast({
+        title: "An error has occurred.",
+        description:
+          "We encountered an issue while processing your request. Please try again.",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const editDraftPost = async (isDraft: boolean) => {
+    const files: AttachmentInfo[] = await Promise.all(
+      fileArr.map(async (file) => {
+        const key = file.name;
+        if (file.type.includes("image/")) {
+          const url = URL.createObjectURL(file);
+          return new Promise((resolve) => {
+            const image = new Image();
+            image.onload = () => {
+              URL.revokeObjectURL(url);
+              resolve({
+                type: "image",
+                key,
+                length: image.height,
+                width: image.width,
+              });
+            };
+            image.src = url;
+          });
+        } else {
+          return {
+            type: "video",
+            key,
+          };
+        }
+      })
+    );
+
+    try {
+      const oid = new Types.ObjectId(postData._id);
+
+      const updateInfo = await postDraftUpdate.mutateAsync({
         _id: oid,
         updateFields: {
           ...(formState as z.output<typeof formSchema>),
@@ -400,7 +468,7 @@ const EditPostModal: React.FC<{
             onClick={() => {
               //TODO: Wait for success to close.
               setIsLoading(true);
-              editPost(true)
+              editDraftPost(true)
                 .then(() => {
                   setFileArr(fileArr);
                   setIsContentView(true);

@@ -359,6 +359,36 @@ export const postRouter = router({
         });
       }
     }),
+
+  editDraftPost: procedure
+    .input(
+      z.object({
+        _id: zodOidType,
+        updateFields: draftPostSchema,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const existingPost = await getPost(input._id, false);
+        if (!existingPost) {
+          throw new Error("Unable to find existing post id.");
+        }
+        console.log(input);
+        const newPost = await createDraftPost({
+          ...input.updateFields,
+          date: existingPost.date,
+          covered: existingPost.covered,
+          usersAppliedTo: existingPost.usersAppliedTo,
+        });
+        return newPost;
+      } catch (e) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+          cause: e,
+        });
+      }
+    }),
   getAllPosts: procedure.query(async () => {
     try {
       return await getAllPosts();
@@ -420,7 +450,6 @@ export const postRouter = router({
           };
         }
       }, {});
-      console.log(postFilters);
       const baseFilter: FilterQuery<IPost | IDraftPost> = {
         $or: [{ breed: { $in: postFilters.breed } }, { breed: { $size: 0 } }],
         type: { $in: [...postFilters.type, null] },
