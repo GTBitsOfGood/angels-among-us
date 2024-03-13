@@ -252,8 +252,6 @@ function FeedPage() {
 
   const { data: feedPosts, isLoading } =
     trpc.post.getFilteredPosts.useQuery(debouncedFilters);
-
-  console.log(feedPosts);
   /**
    * Handles all changes to filter state, except for `covered`. This includes
    * option selection/deselection, dropdown modifications, reset,

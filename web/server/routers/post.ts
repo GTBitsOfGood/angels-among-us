@@ -373,7 +373,6 @@ export const postRouter = router({
         if (!existingPost) {
           throw new Error("Unable to find existing post id.");
         }
-        console.log(input);
         const newPost = await createDraftPost({
           ...input.updateFields,
           date: existingPost.date,

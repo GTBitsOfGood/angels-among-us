@@ -109,20 +109,22 @@ function FeedPostCard(props: { post: IFeedPost }) {
             <Text margin="0px" paddingY="0px" fontWeight="bold" fontSize="18px">
               {post.name}
             </Text>
-            <Text
-              margin="0px"
-              backgroundColor="#C6E3F9"
-              width="fit-content"
-              paddingX="16px"
-              paddingY="4px"
-              borderRadius="20px"
-              marginTop="5px"
-              marginBottom="10px"
-              fontSize="14px"
-              fontWeight="semibold"
-            >
-              {fosterTypeLabels[post.type]}
-            </Text>
+            {fosterTypeLabels[post.type] && (
+              <Text
+                margin="0px"
+                backgroundColor="#C6E3F9"
+                width="fit-content"
+                paddingX="16px"
+                paddingY="4px"
+                borderRadius="20px"
+                marginTop="5px"
+                marginBottom="10px"
+                fontSize="14px"
+                fontWeight="semibold"
+              >
+                {fosterTypeLabels[post.type]}
+              </Text>
+            )}
             <Text
               fontSize="14px"
               lineHeight="18px"

@@ -470,6 +470,7 @@ const EditPostModal: React.FC<{
               setIsLoading(true);
               editDraftPost(true)
                 .then(() => {
+                  onClose();
                   setFileArr(fileArr);
                   setIsContentView(true);
                   dispatch({
