@@ -118,7 +118,6 @@ function PostPage({
   }
 
   const postId = new Types.ObjectId(postData._id);
-  console.log(postData);
   const {
     name,
     description,

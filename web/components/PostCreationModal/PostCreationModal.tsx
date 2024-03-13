@@ -118,6 +118,21 @@ const formSchema = z.object({
   draft: z.boolean(),
 });
 
+const draftFormSchema = formSchema.extend({
+  description: z.string(),
+  gender: z
+    .nativeEnum(Gender, { required_error: "Gender required." })
+    .nullable(),
+  age: z.nativeEnum(Age, { required_error: "Age required." }).nullable(),
+  type: z
+    .nativeEnum(FosterType, {
+      required_error: "Foster type required.",
+    })
+    .nullable(),
+  size: z.nativeEnum(Size, { required_error: "Size required." }).nullable(),
+  breed: z.array(z.nativeEnum(Breed)),
+});
+
 export type FormState = z.input<typeof formSchema>;
 
 export type Action<K extends keyof FormState, V extends FormState[K]> = {
@@ -181,6 +196,7 @@ const PostCreationModal: React.FC<{
   const [formState, dispatch] = useReducer(reducer, defaultFormState);
 
   const postCreate = trpc.post.create.useMutation();
+  const postDraftCreate = trpc.post.draft.useMutation();
   const postFinalize = trpc.post.finalize.useMutation();
 
   const createPost = async () => {
@@ -267,8 +283,8 @@ const PostCreationModal: React.FC<{
       })
     );
     try {
-      const creationInfo = await postCreate.mutateAsync({
-        ...(formState as z.output<typeof formSchema>),
+      const creationInfo = await postDraftCreate.mutateAsync({
+        ...(formState as z.output<typeof draftFormSchema>),
         draft: true,
         attachments: files,
       });

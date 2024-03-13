@@ -12,39 +12,39 @@ import {
   Behavioral,
   Trained,
   Status,
+  IDraftPost,
 } from "../../utils/types/post";
 const { Schema } = mongoose;
 
-const postSchema = new Schema<IPost>({
+const postSchema = new Schema<IPost | IDraftPost>({
   date: { type: Date, default: Date.now },
   name: { type: String, required: true },
-  description: { type: String, required: true },
+  description: { type: String },
   type: {
     type: String,
-    required: true,
-    enum: Object.values(FosterType),
+    default: null,
+    enum: [...Object.values(FosterType), null],
   },
   size: {
     type: String,
-    required: true,
-    enum: Object.values(Size),
+    default: null,
+    enum: [...Object.values(Size), null],
   },
   breed: [
     {
       type: String,
-      required: true,
       enum: Object.values(Breed),
     },
   ],
   gender: {
     type: String,
-    required: true,
-    enum: Object.values(Gender),
+    default: null,
+    enum: [...Object.values(Gender), null],
   },
   age: {
     type: String,
-    required: true,
-    enum: Object.values(Age),
+    default: null,
+    enum: [...Object.values(Age), null],
   },
   temperament: [
     {

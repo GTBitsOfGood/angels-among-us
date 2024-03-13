@@ -347,7 +347,16 @@ export interface IPost {
   usersAppliedTo: string[];
 }
 
-export type IDraftPost = Partial<IPost>;
+export type IDraftPost = Omit<
+  IPost,
+  "type" | "size" | "breed" | "gender" | "age"
+> & {
+  type: FosterType | null;
+  size: Size | null;
+  breed: Breed[] | null;
+  gender: Gender | null;
+  age: Age | null;
+};
 
 export type IFeedPost = Omit<IPost, "usersAppliedTo"> & {
   _id: Types.ObjectId;

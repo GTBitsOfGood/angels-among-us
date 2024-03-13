@@ -27,6 +27,7 @@ import {
   Behavioral,
   Trained,
   IPost,
+  IDraftPost,
 } from "../../utils/types/post";
 import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
@@ -85,28 +86,12 @@ const postSchema = z.object({
   ),
 });
 
-const draftPostSchema = postSchema.partial({
-  name: true,
-  description: true,
-  type: true,
-  size: true,
-  breed: true,
-  gender: true,
-  age: true,
-  draft: true,
-  temperament: true,
-  medical: true,
-  behavioral: true,
-  houseTrained: true,
-  crateTrained: true,
-  spayNeuterStatus: true,
-  getsAlongWithMen: true,
-  getsAlongWithWomen: true,
-  getsAlongWithOlderKids: true,
-  getsAlongWithYoungKids: true,
-  getsAlongWithLargeDogs: true,
-  getsAlongWithSmallDogs: true,
-  getsAlongWithCats: true,
+const draftPostSchema = postSchema.extend({
+  type: z.nativeEnum(FosterType).nullable(),
+  size: z.nativeEnum(Size).nullable(),
+  breed: z.array(z.nativeEnum(Breed)).nullable(),
+  gender: z.nativeEnum(Gender).nullable(),
+  age: z.nativeEnum(Age).nullable(),
 });
 
 const fosterTypeEmails: Record<FosterType, string> = {
@@ -435,13 +420,13 @@ export const postRouter = router({
           };
         }
       }, {});
-
-      const baseFilter: FilterQuery<IPost> = {
-        breed: { $in: postFilters.breed },
-        type: { $in: postFilters.type },
-        age: { $in: postFilters.age },
-        size: { $in: postFilters.size },
-        gender: { $in: postFilters.gender },
+      console.log(postFilters);
+      const baseFilter: FilterQuery<IPost | IDraftPost> = {
+        $or: [{ breed: { $in: postFilters.breed } }, { breed: { $size: 0 } }],
+        type: { $in: [...postFilters.type, null] },
+        age: { $in: [...postFilters.age, null] },
+        size: { $in: [...postFilters.size, null] },
+        gender: { $in: [...postFilters.gender, null] },
         behavioral: { $nin: notAllowedBehavioral },
         getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
         getsAlongWithLargeDogs: {
