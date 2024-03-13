@@ -462,6 +462,7 @@ const EditPostModal: React.FC<{
           </Button>
           <Button
             size="lg"
+            mr={4}
             isLoading={isLoading}
             _hover={isLoading ? {} : undefined}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
@@ -489,9 +490,25 @@ const EditPostModal: React.FC<{
             onClick={
               isContentView
                 ? () => {
+                    setIsContentView(false);
+                  }
+                : () => {
+                    setIsLoading(true);
+                    //TODO: Wait for success to close.
                     const validation = formSchema.safeParse(formState);
                     if (validation.success) {
-                      setIsContentView(false);
+                      editPost(!formState.draft)
+                        .then(() => {
+                          onClose();
+                          setFileArr(fileArr);
+                          setIsContentView(true);
+                          dispatch({
+                            type: "clear",
+                          });
+                        })
+                        .finally(() => {
+                          setIsLoading(false);
+                        });
                     } else {
                       toast.closeAll();
                       toast({
@@ -509,24 +526,9 @@ const EditPostModal: React.FC<{
                       });
                     }
                   }
-                : () => {
-                    //TODO: Wait for success to close.
-                    setIsLoading(true);
-
-                    editPost(false)
-                      .then(() => {
-                        onClose();
-                        setFileArr(fileArr);
-                        setIsContentView(true);
-                        dispatch({
-                          type: "clear",
-                        });
-                      })
-                      .finally(() => setIsLoading(false));
-                  }
             }
           >
-            {isContentView ? "Next" : "Save"}
+            {isContentView ? "Next" : "Post"}
           </Button>
         </ModalFooter>
       </ModalContent>

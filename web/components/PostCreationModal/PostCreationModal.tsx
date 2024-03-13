@@ -396,6 +396,7 @@ const PostCreationModal: React.FC<{
           <Button
             size="lg"
             isLoading={loading}
+            mr={4}
             _hover={loading ? {} : undefined}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={async () => {
@@ -426,9 +427,26 @@ const PostCreationModal: React.FC<{
             onClick={
               isContentView
                 ? () => {
+                    setIsContentView(false);
+                  }
+                : () => {
+                    setLoading(true);
+                    //TODO: Wait for success to close.
                     const validation = formSchema.safeParse(formState);
                     if (validation.success) {
-                      setIsContentView(false);
+                      createPost()
+                        .then(() => {
+                          utils.post.invalidate();
+                          setFileArr([]);
+                          setIsContentView(true);
+                          dispatch({
+                            type: "clear",
+                          });
+                          onClose();
+                        })
+                        .finally(() => {
+                          setLoading(false);
+                        });
                     } else {
                       toast.closeAll();
                       toast({
@@ -445,23 +463,6 @@ const PostCreationModal: React.FC<{
                         position: "top",
                       });
                     }
-                  }
-                : () => {
-                    setLoading(true);
-                    //TODO: Wait for success to close.
-                    createPost()
-                      .then(() => {
-                        utils.post.invalidate();
-                        setFileArr([]);
-                        setIsContentView(true);
-                        dispatch({
-                          type: "clear",
-                        });
-                        onClose();
-                      })
-                      .finally(() => {
-                        setLoading(false);
-                      });
                   }
             }
           >
