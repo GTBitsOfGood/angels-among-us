@@ -430,10 +430,10 @@ const PostCreationModal: React.FC<{
                     setIsContentView(false);
                   }
                 : () => {
-                    setLoading(true);
                     //TODO: Wait for success to close.
                     const validation = formSchema.safeParse(formState);
                     if (validation.success) {
+                      setLoading(true);
                       createPost()
                         .then(() => {
                           utils.post.invalidate();

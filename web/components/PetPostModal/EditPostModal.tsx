@@ -493,10 +493,10 @@ const EditPostModal: React.FC<{
                     setIsContentView(false);
                   }
                 : () => {
-                    setIsLoading(true);
                     //TODO: Wait for success to close.
                     const validation = formSchema.safeParse(formState);
                     if (validation.success) {
+                      setIsLoading(true);
                       editPost(!formState.draft)
                         .then(() => {
                           onClose();
