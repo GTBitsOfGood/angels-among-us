@@ -320,10 +320,12 @@ function PostPage({
               About
             </Text>
             <Text>{description}</Text>
-            <Text>
-              I am a <b>{fosterTypeLabels[type].toLowerCase()}</b> dog.{" "}
-              {fosterTypeDescriptions[type]}
-            </Text>
+            {fosterTypeLabels[type] && (
+              <Text>
+                I am a <b>{fosterTypeLabels[type].toLowerCase()}</b> dog.{" "}
+                {fosterTypeDescriptions[type]}
+              </Text>
+            )}
           </Box>
           <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={5}>
             <GridItem>
@@ -432,7 +434,7 @@ function PostPage({
           colSpan={{ base: 1, md: 2 }}
         >
           <Button
-            isDisabled={postData.userAppliedTo}
+            isDisabled={postData.userAppliedTo || postData.draft}
             variant={
               postData.userAppliedTo ? "solid-secondary" : "solid-primary"
             }
@@ -451,16 +453,22 @@ function PostPage({
                   }
             }
           >
-            {postData.userAppliedTo ? "Applied" : "Foster Me!"}
+            {postData.userAppliedTo
+              ? "Applied"
+              : postData.draft
+              ? "This is a Draft"
+              : "Foster Me!"}
           </Button>
         </GridItem>
       </Grid>
-      <FosterQuestionnaire
-        fosterType={type}
-        postId={postId}
-        isFormViewOpen={isFormViewOpen}
-        onFormViewClose={onFormViewClose}
-      />
+      {!postData.draft && (
+        <FosterQuestionnaire
+          fosterType={type}
+          postId={postId}
+          isFormViewOpen={isFormViewOpen}
+          onFormViewClose={onFormViewClose}
+        />
+      )}
     </>
   );
 }
