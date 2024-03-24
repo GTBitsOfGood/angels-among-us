@@ -115,6 +115,22 @@ const formSchema = z.object({
   getsAlongWithLargeDogs: z.nativeEnum(Trained),
   getsAlongWithSmallDogs: z.nativeEnum(Trained),
   getsAlongWithCats: z.nativeEnum(Trained),
+  draft: z.boolean(),
+});
+
+const draftFormSchema = formSchema.extend({
+  description: z.string(),
+  gender: z
+    .nativeEnum(Gender, { required_error: "Gender required." })
+    .nullable(),
+  age: z.nativeEnum(Age, { required_error: "Age required." }).nullable(),
+  type: z
+    .nativeEnum(FosterType, {
+      required_error: "Foster type required.",
+    })
+    .nullable(),
+  size: z.nativeEnum(Size, { required_error: "Size required." }).nullable(),
+  breed: z.array(z.nativeEnum(Breed)),
 });
 
 export type FormState = z.input<typeof formSchema>;
@@ -146,6 +162,7 @@ const PostCreationModal: React.FC<{
     temperament: [],
     medical: [],
     behavioral: [],
+    draft: false,
     houseTrained: Trained.Unknown,
     crateTrained: Trained.Unknown,
     spayNeuterStatus: Trained.Unknown,
@@ -179,6 +196,7 @@ const PostCreationModal: React.FC<{
   const [formState, dispatch] = useReducer(reducer, defaultFormState);
 
   const postCreate = trpc.post.create.useMutation();
+  const postDraftCreate = trpc.post.draft.useMutation();
   const postFinalize = trpc.post.finalize.useMutation();
 
   const createPost = async () => {
@@ -211,6 +229,63 @@ const PostCreationModal: React.FC<{
     try {
       const creationInfo = await postCreate.mutateAsync({
         ...(formState as z.output<typeof formSchema>),
+        attachments: files,
+      });
+      const oid = creationInfo._id;
+      const uploadInfo = creationInfo.attachments;
+
+      for (let i = 0; i < fileArr.length; i++) {
+        const file = fileArr[i];
+        await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
+      }
+
+      await postFinalize.mutateAsync({
+        _id: new Types.ObjectId(oid),
+      });
+    } catch (e) {
+      toast({
+        title: "An error has occurred.",
+        description:
+          "We encountered an issue while processing your request. Please try again.",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const createDraftPost = async () => {
+    const files: AttachmentInfo[] = await Promise.all(
+      fileArr.map(async (file) => {
+        const key = file.name;
+        if (file.type.includes("image/")) {
+          const url = URL.createObjectURL(file);
+          return new Promise((resolve) => {
+            const image = new Image();
+            image.onload = () => {
+              URL.revokeObjectURL(url);
+              resolve({
+                type: "image",
+                key,
+                length: image.height,
+                width: image.width,
+              });
+            };
+            image.src = url;
+          });
+        } else {
+          return {
+            type: "video",
+            key,
+          };
+        }
+      })
+    );
+    try {
+      const creationInfo = await postDraftCreate.mutateAsync({
+        ...(formState as z.output<typeof draftFormSchema>),
+        draft: true,
         attachments: files,
       });
       const oid = creationInfo._id;
@@ -321,14 +396,57 @@ const PostCreationModal: React.FC<{
           <Button
             size="lg"
             isLoading={loading}
+            mr={4}
+            _hover={loading ? {} : undefined}
+            variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
+            onClick={async () => {
+              setLoading(true);
+              //TODO: Wait for success to close.
+              createDraftPost()
+                .then(() => {
+                  utils.post.invalidate();
+                  setFileArr([]);
+                  setIsContentView(true);
+                  dispatch({
+                    type: "clear",
+                  });
+                  onClose();
+                })
+                .finally(() => {
+                  setLoading(false);
+                });
+            }}
+          >
+            Save as Draft
+          </Button>
+          <Button
+            size="lg"
+            isLoading={loading}
             _hover={loading ? {} : undefined}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={
               isContentView
                 ? () => {
+                    setIsContentView(false);
+                  }
+                : () => {
+                    //TODO: Wait for success to close.
                     const validation = formSchema.safeParse(formState);
                     if (validation.success) {
-                      setIsContentView(false);
+                      setLoading(true);
+                      createPost()
+                        .then(() => {
+                          utils.post.invalidate();
+                          setFileArr([]);
+                          setIsContentView(true);
+                          dispatch({
+                            type: "clear",
+                          });
+                          onClose();
+                        })
+                        .finally(() => {
+                          setLoading(false);
+                        });
                     } else {
                       toast.closeAll();
                       toast({
@@ -345,23 +463,6 @@ const PostCreationModal: React.FC<{
                         position: "top",
                       });
                     }
-                  }
-                : () => {
-                    setLoading(true);
-                    //TODO: Wait for success to close.
-                    createPost()
-                      .then(() => {
-                        utils.post.invalidate();
-                        setFileArr([]);
-                        setIsContentView(true);
-                        dispatch({
-                          type: "clear",
-                        });
-                        onClose();
-                      })
-                      .finally(() => {
-                        setLoading(false);
-                      });
                   }
             }
           >

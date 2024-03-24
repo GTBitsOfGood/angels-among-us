@@ -1,6 +1,7 @@
 import { ClientSession, FilterQuery, Types, UpdateQuery } from "mongoose";
 import Post from "../models/Post";
 import {
+  IDraftPost,
   IFeedPost,
   IPendingFinalizePost,
   IPendingPost,
@@ -81,6 +82,36 @@ async function createPost(
   session?: ClientSession
 ): Promise<IPendingFinalizePost> {
   const pending = post.attachments.length !== 0;
+  const createdPost = await Post.create(
+    [
+      {
+        ...post,
+        pending: pending,
+        attachments: [],
+      },
+    ],
+    { session: session }
+  );
+  const postId = createdPost[0]._id;
+  const uploadInfo = await getAttachmentUploadURLs(postId, post);
+  let updatedPost = await Post.findOneAndUpdate(
+    { _id: postId },
+    {
+      attachments: Object.keys(uploadInfo),
+    },
+    { session: session, returnDocument: "after" }
+  );
+  return {
+    ...updatedPost.toObject(),
+    attachments: uploadInfo,
+  };
+}
+
+async function createDraftPost(
+  post: IPendingPost, //TODO
+  session?: ClientSession
+): Promise<IPendingFinalizePost> {
+  const pending = post.attachments?.length !== 0;
   const createdPost = await Post.create(
     [
       {
@@ -380,6 +411,7 @@ export {
   getPost,
   getUserContextualizedPost,
   createPost,
+  createDraftPost,
   deletePost,
   updatePostStatus,
   pushUserAppliedTo,
