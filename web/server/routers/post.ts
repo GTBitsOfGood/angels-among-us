@@ -12,6 +12,7 @@ import {
   finalizePostEdit,
   pushUserAppliedTo,
   getUserContextualizedPost,
+  createDraftPost,
 } from "../../db/actions/Post";
 import Post from "../../db/models/Post";
 import {
@@ -26,6 +27,7 @@ import {
   Behavioral,
   Trained,
   IPost,
+  IDraftPost,
 } from "../../utils/types/post";
 import { findUserByEmail, updateUserByUid } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
@@ -54,6 +56,7 @@ const postSchema = z.object({
   breed: z.array(z.nativeEnum(Breed)),
   gender: z.nativeEnum(Gender),
   age: z.nativeEnum(Age),
+  draft: z.boolean(),
   temperament: z.array(z.nativeEnum(Temperament)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
@@ -81,6 +84,14 @@ const postSchema = z.object({
       }),
     ])
   ),
+});
+
+const draftPostSchema = postSchema.extend({
+  type: z.nativeEnum(FosterType).nullable(),
+  size: z.nativeEnum(Size).nullable(),
+  breed: z.array(z.nativeEnum(Breed)).nullable(),
+  gender: z.nativeEnum(Gender).nullable(),
+  age: z.nativeEnum(Age).nullable(),
 });
 
 const fosterTypeEmails: Record<FosterType, string> = {
@@ -135,6 +146,31 @@ export const postRouter = router({
     session.startTransaction();
     try {
       const post = await createPost(
+        {
+          ...input,
+          date: new Date(),
+          covered: false,
+          usersAppliedTo: [],
+        },
+        session
+      );
+      await session.commitTransaction();
+      return post;
+    } catch (e) {
+      await session.abortTransaction();
+
+      throw new TRPCError({
+        message: "Internal Server Error",
+        code: "INTERNAL_SERVER_ERROR",
+        cause: e,
+      });
+    }
+  }),
+  draft: procedure.input(draftPostSchema).mutation(async ({ input }) => {
+    const session = await Post.startSession();
+    session.startTransaction();
+    try {
+      const post = await createDraftPost(
         {
           ...input,
           date: new Date(),
@@ -323,6 +359,35 @@ export const postRouter = router({
         });
       }
     }),
+
+  editDraftPost: procedure
+    .input(
+      z.object({
+        _id: zodOidType,
+        updateFields: draftPostSchema,
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const existingPost = await getPost(input._id, false);
+        if (!existingPost) {
+          throw new Error("Unable to find existing post id.");
+        }
+        const newPost = await createDraftPost({
+          ...input.updateFields,
+          date: existingPost.date,
+          covered: existingPost.covered,
+          usersAppliedTo: existingPost.usersAppliedTo,
+        });
+        return newPost;
+      } catch (e) {
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+          cause: e,
+        });
+      }
+    }),
   getAllPosts: procedure.query(async () => {
     try {
       return await getAllPosts();
@@ -356,6 +421,7 @@ export const postRouter = router({
       z.object({
         postFilters: postFilterSchema,
         covered: z.optional(z.boolean()),
+        draft: z.optional(z.boolean()),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -383,13 +449,12 @@ export const postRouter = router({
           };
         }
       }, {});
-
-      const baseFilter: FilterQuery<IPost> = {
-        breed: { $in: postFilters.breed },
-        type: { $in: postFilters.type },
-        age: { $in: postFilters.age },
-        size: { $in: postFilters.size },
-        gender: { $in: postFilters.gender },
+      const baseFilter: FilterQuery<IPost | IDraftPost> = {
+        $or: [{ breed: { $in: postFilters.breed } }, { breed: { $size: 0 } }],
+        type: { $in: [...postFilters.type, null] },
+        age: { $in: [...postFilters.age, null] },
+        size: { $in: [...postFilters.size, null] },
+        gender: { $in: [...postFilters.gender, null] },
         behavioral: { $nin: notAllowedBehavioral },
         getsAlongWithCats: { $in: getsAlongWith["getsAlongWithCats"] },
         getsAlongWithLargeDogs: {
@@ -410,6 +475,10 @@ export const postRouter = router({
       };
       if (input.covered !== undefined) {
         baseFilter.covered = input.covered;
+      }
+
+      if (input.draft !== undefined) {
+        baseFilter.draft = input.draft;
       }
 
       try {

@@ -341,10 +341,22 @@ export interface IPost {
   getsAlongWithSmallDogs: Trained;
   getsAlongWithCats: Trained;
   covered: boolean;
+  draft: boolean;
   pending: boolean;
   attachments: string[];
   usersAppliedTo: string[];
 }
+
+export type IDraftPost = Omit<
+  IPost,
+  "type" | "size" | "breed" | "gender" | "age"
+> & {
+  type: FosterType | null;
+  size: Size | null;
+  breed: Breed[] | null;
+  gender: Gender | null;
+  age: Age | null;
+};
 
 export type IFeedPost = Omit<IPost, "usersAppliedTo"> & {
   _id: Types.ObjectId;
@@ -356,7 +368,10 @@ export type SerializedPost = Omit<IFeedPost, "_id" | "date"> & {
   date: string;
 };
 
-export type IPendingPost = Omit<IPost, "attachments" | "pending"> & {
+export type IPendingPost = Omit<
+  IPost | IDraftPost,
+  "attachments" | "pending"
+> & {
   attachments: AttachmentInfo[];
 };
 

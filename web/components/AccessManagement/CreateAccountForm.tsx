@@ -6,17 +6,18 @@ import { IAccount } from "../../utils/types/account";
 import { trpc } from "../../utils/trpc";
 
 import {
-  Input,
   Flex,
   Button,
   Stack,
   useMediaQuery,
   useToast,
+  Textarea,
+  Text,
 } from "@chakra-ui/react";
 import { HydratedDocument } from "mongoose";
 
 export default function CreateAccountForm() {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [role, setRole] = useState(Role.Volunteer);
   const [isSmallerThanLg] = useMediaQuery("(max-width: 62em)");
 
@@ -26,59 +27,103 @@ export default function CreateAccountForm() {
   const mutation = trpc.account.add.useMutation();
 
   function validateEmail(email: string) {
-    const emailSchema = z.string().email();
+    const emailSchema = z.string().trim().email();
     const result = emailSchema.safeParse(email);
     return result.success;
   }
 
   const updateAccountsHandler = () => {
-    const isValid = validateEmail(inputRef!.current!.value);
-    if (!isValid) {
+    if (inputRef!.current!.value === "") {
+      return;
+    }
+    const emails = inputRef!.current!.value.split(",");
+
+    let errorList = [] as string[];
+    let failedList = [];
+    for (let i = 0; i < emails.length; i++) {
+      const isValid = validateEmail(emails[i].trim());
+
+      if (!isValid) {
+        failedList.push(emails[i].trim());
+      } else {
+        const newAccount = {
+          email: emails[i].trim(),
+          role: role,
+        } as HydratedDocument<IAccount>;
+        mutation.mutate(newAccount, {
+          onSuccess: () => {
+            utils.account.invalidate();
+            setRole(Role.Volunteer);
+          },
+          onError: () => {
+            errorList.push(emails[i].trim() as string);
+          },
+        });
+      }
+    }
+    inputRef!.current!.value = "";
+
+    if (failedList.length !== 0 && errorList.length !== 0) {
+      let message = "Invalid emails: ";
+      for (let j = 0; j < failedList.length - 1; j++) {
+        message += failedList[j] + ", ";
+      }
+      message += failedList[failedList.length - 1];
+
+      message += "\nError adding emails: ";
+      for (let j = 0; j < errorList.length - 1; j++) {
+        message += errorList[j] + ", ";
+      }
+      message += errorList[errorList.length - 1];
+
       toast({
         title: "Error",
-        description: "Invalid email address.",
+        description: message,
         position: "top",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
-      return;
+    } else if (failedList.length !== 0) {
+      let message = "Invalid emails: ";
+      for (let j = 0; j < failedList.length - 1; j++) {
+        message += failedList[j] + ", ";
+      }
+      message += failedList[failedList.length - 1];
+
+      toast({
+        title: "Error",
+        description: message,
+        position: "top",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else if (errorList.length !== 0) {
+      let message = "Error adding emails: ";
+      for (let j = 0; j < errorList.length - 1; j++) {
+        message += errorList[j] + ", ";
+      }
+      message += errorList[errorList.length - 1];
+
+      toast({
+        title: "Error",
+        description: message,
+        position: "top",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Success",
+        position: "top",
+        description: "All accounts added succesfully!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
     }
-
-    const newAccount = {
-      email: inputRef.current?.value,
-      role: role,
-    } as HydratedDocument<IAccount>;
-
-    mutation.mutate(newAccount, {
-      onSuccess: () => {
-        utils.account.invalidate();
-        inputRef!.current!.value = "";
-        setRole(Role.Volunteer);
-        toast({
-          title: "Success",
-          position: "top",
-          description: "Account added succesfully.",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-      },
-      onError: (error) => {
-        const message =
-          error.data?.code === "UNAUTHORIZED"
-            ? error.message
-            : "Unable to add account. Please try again later.";
-        toast({
-          title: "Error",
-          position: "top",
-          description: message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      },
-    });
   };
 
   return (
@@ -91,13 +136,32 @@ export default function CreateAccountForm() {
         p={0}
         pt={4}
       >
-        <Input
-          ref={inputRef}
-          placeholder="Email"
-          size="md"
-          focusBorderColor="#57a0d5"
-          maxW={{ base: "100%", lg: "45%" }}
-        />
+        <Stack dir="column" w="50%">
+          <Flex
+            direction={{ base: "column", lg: "column" }}
+            w="100%"
+            alignItems="flex-start"
+            justifyContent="space-between"
+            p={0}
+            pt={2}
+          >
+            <Flex pb={4}>
+              <Text fontSize="sm">
+                Enter one or more emails separated by commas:
+                <br></br>
+                (ex: test@gmail.com,test2@gmail.com).
+              </Text>
+            </Flex>
+            <Textarea
+              ref={inputRef}
+              placeholder="Email"
+              size="md"
+              focusBorderColor="#57a0d5"
+              maxW={{ base: "100%", lg: "100%" }}
+              resize="vertical"
+            />
+          </Flex>
+        </Stack>
         {!isSmallerThanLg && <PermissionSelector setRole={setRole} />}
       </Flex>
       <Flex

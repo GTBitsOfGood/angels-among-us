@@ -114,12 +114,13 @@ const formSchema = z.object({
   getsAlongWithLargeDogs: z.nativeEnum(Trained),
   getsAlongWithSmallDogs: z.nativeEnum(Trained),
   getsAlongWithCats: z.nativeEnum(Trained),
+  draft: z.boolean(),
 });
 
 export type FormState = z.input<typeof formSchema>;
 
 export type Action<K extends keyof FormState, V extends FormState[K]> = {
-  type: "setField" | "clear";
+  type: "setField" | "clear" | "removeField";
   key?: K;
   data?: V;
 };
@@ -145,6 +146,7 @@ const EditPostModal: React.FC<{
     type,
     size,
     age,
+    draft,
     spayNeuterStatus,
     houseTrained,
     crateTrained,
@@ -170,6 +172,7 @@ const EditPostModal: React.FC<{
     type,
     size,
     breed,
+    draft,
     temperament,
     spayNeuterStatus,
     houseTrained,
@@ -194,6 +197,11 @@ const EditPostModal: React.FC<{
         return {
           ...state,
           [action.key!]: action.data,
+        };
+      case "removeField":
+        return {
+          ...state,
+          [action.key!]: undefined,
         };
       case "clear":
         return defaultFormState;
@@ -243,9 +251,10 @@ const EditPostModal: React.FC<{
   }, [attachments]);
 
   const postUpdate = trpc.post.editPost.useMutation();
+  const postDraftUpdate = trpc.post.editDraftPost.useMutation();
   const postFinalize = trpc.post.finalizeEdit.useMutation();
 
-  const editPost = async () => {
+  const editPost = async (isDraft: boolean) => {
     const files: AttachmentInfo[] = await Promise.all(
       fileArr.map(async (file) => {
         const key = file.name;
@@ -280,6 +289,74 @@ const EditPostModal: React.FC<{
         _id: oid,
         updateFields: {
           ...(formState as z.output<typeof formSchema>),
+          draft: isDraft,
+          attachments: files,
+        },
+      });
+
+      const newId = new Types.ObjectId(updateInfo._id);
+      const uploadInfo = updateInfo.attachments;
+
+      for (let i = 0; i < fileArr.length; i++) {
+        const file = fileArr[i];
+        await uploadFile(uploadInfo[`${updateInfo._id}/${file.name}`], file);
+      }
+
+      const newPost = await postFinalize.mutateAsync({
+        oldId: oid,
+        newId,
+      });
+
+      router.replace(`/post/${newPost._id.toString()}`);
+    } catch (e) {
+      toast({
+        title: "An error has occurred.",
+        description:
+          "We encountered an issue while processing your request. Please try again.",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const editDraftPost = async (isDraft: boolean) => {
+    const files: AttachmentInfo[] = await Promise.all(
+      fileArr.map(async (file) => {
+        const key = file.name;
+        if (file.type.includes("image/")) {
+          const url = URL.createObjectURL(file);
+          return new Promise((resolve) => {
+            const image = new Image();
+            image.onload = () => {
+              URL.revokeObjectURL(url);
+              resolve({
+                type: "image",
+                key,
+                length: image.height,
+                width: image.width,
+              });
+            };
+            image.src = url;
+          });
+        } else {
+          return {
+            type: "video",
+            key,
+          };
+        }
+      })
+    );
+
+    try {
+      const oid = new Types.ObjectId(postData._id);
+
+      const updateInfo = await postDraftUpdate.mutateAsync({
+        _id: oid,
+        updateFields: {
+          ...(formState as z.output<typeof formSchema>),
+          draft: isDraft,
           attachments: files,
         },
       });
@@ -385,14 +462,53 @@ const EditPostModal: React.FC<{
           </Button>
           <Button
             size="lg"
+            mr={4}
+            isLoading={isLoading}
+            _hover={isLoading ? {} : undefined}
+            variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
+            onClick={() => {
+              //TODO: Wait for success to close.
+              setIsLoading(true);
+              editDraftPost(true)
+                .then(() => {
+                  onClose();
+                  setFileArr(fileArr);
+                  setIsContentView(true);
+                  dispatch({
+                    type: "clear",
+                  });
+                })
+                .finally(() => setIsLoading(false));
+            }}
+          >
+            Save as Draft
+          </Button>
+          <Button
+            size="lg"
             isLoading={isLoading}
             variant={fileArr.length > 0 ? "solid-primary" : "outline-primary"}
             onClick={
               isContentView
                 ? () => {
+                    setIsContentView(false);
+                  }
+                : () => {
+                    //TODO: Wait for success to close.
                     const validation = formSchema.safeParse(formState);
                     if (validation.success) {
-                      setIsContentView(false);
+                      setIsLoading(true);
+                      editPost(!formState.draft)
+                        .then(() => {
+                          onClose();
+                          setFileArr(fileArr);
+                          setIsContentView(true);
+                          dispatch({
+                            type: "clear",
+                          });
+                        })
+                        .finally(() => {
+                          setIsLoading(false);
+                        });
                     } else {
                       toast.closeAll();
                       toast({
@@ -410,23 +526,9 @@ const EditPostModal: React.FC<{
                       });
                     }
                   }
-                : () => {
-                    //TODO: Wait for success to close.
-                    setIsLoading(true);
-                    editPost()
-                      .then(() => {
-                        onClose();
-                        setFileArr(fileArr);
-                        setIsContentView(true);
-                        dispatch({
-                          type: "clear",
-                        });
-                      })
-                      .finally(() => setIsLoading(false));
-                  }
             }
           >
-            {isContentView ? "Next" : "Save"}
+            {isContentView ? "Next" : "Post"}
           </Button>
         </ModalFooter>
       </ModalContent>
