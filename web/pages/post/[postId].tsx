@@ -42,6 +42,7 @@ import {
   Trained,
   temperamentLabels,
   trainedLabels,
+  FosterType,
 } from "../../utils/types/post";
 import FosterQuestionnaire from "../../components/PetPostModal/FosterQuestionnaire";
 import { InferGetServerSidePropsType, GetServerSideProps } from "next";
@@ -320,7 +321,7 @@ function PostPage({
               About
             </Text>
             <Text>{description}</Text>
-            {fosterTypeLabels[type] && (
+            {fosterTypeLabels[type] && type !== FosterType.Boarding && (
               <Text>
                 I am a <b>{fosterTypeLabels[type].toLowerCase()}</b> dog.{" "}
                 {fosterTypeDescriptions[type]}
