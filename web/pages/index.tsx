@@ -50,15 +50,38 @@ function Home() {
       setLoading!(true);
     } catch (error: any) {
       setLoading!(false);
-      toast({
-        id: toastId,
-        title: error.code,
-        description: error.message,
-        status: "error",
-        duration: 30000,
-        isClosable: true,
-        position: "top",
-      });
+      if (error.code === "auth/account-exists-with-different-credential") {
+        toast({
+          id: toastId,
+          title: "Account exists with different credentials",
+          description: "Try using your Google Account for your login",
+          status: "error",
+          duration: 30000,
+          isClosable: true,
+          position: "top",
+        });
+      } else if (error.code === "auth/popup-closed-by-user") {
+        toast({
+          id: toastId,
+          title: "Popup was closed",
+          description:
+            "Make sure to complete the described instructions for the popup window",
+          status: "error",
+          duration: 30000,
+          isClosable: true,
+          position: "top",
+        });
+      } else {
+        toast({
+          id: toastId,
+          title: error.code,
+          description: error.message,
+          status: "error",
+          duration: 30000,
+          isClosable: true,
+          position: "top",
+        });
+      }
     }
   }
 
@@ -69,15 +92,38 @@ function Home() {
       setLoading!(true);
     } catch (error: any) {
       setLoading!(false);
-      toast({
-        id: toastId,
-        title: "An error has occurred",
-        description: "Please try again.",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top",
-      });
+      if (error.code === "auth/account-exists-with-different-credential") {
+        toast({
+          id: toastId,
+          title: "Account exists with different credentials",
+          description: "Try using your Facebook Account for your login",
+          status: "error",
+          duration: 30000,
+          isClosable: true,
+          position: "top",
+        });
+      } else if (error.code === "auth/popup-closed-by-user") {
+        toast({
+          id: toastId,
+          title: "Popup was closed",
+          description:
+            "Make sure to complete the described instructions for the popup window",
+          status: "error",
+          duration: 30000,
+          isClosable: true,
+          position: "top",
+        });
+      } else {
+        toast({
+          id: toastId,
+          title: error.code,
+          description: error.message,
+          status: "error",
+          duration: 30000,
+          isClosable: true,
+          position: "top",
+        });
+      }
     }
   }
 
