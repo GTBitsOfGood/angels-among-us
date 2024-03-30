@@ -31,7 +31,7 @@ export const fosterTypeLabels: Record<FosterType, string> = {
 
 export const fosterTypeDescriptions: Record<FosterType, string> = {
   [FosterType.Return]:
-    "I was returned back to Angels Among Us by my previous foster parent.",
+    "My adopter is no longer able to keep me and I need a foster home so I can return and find a new forever home.",
 
   [FosterType.Boarding]:
     "My foster parent or owner needs someone to care for me for while they are away for a bit.",
