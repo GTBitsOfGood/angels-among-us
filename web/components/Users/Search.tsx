@@ -32,6 +32,7 @@ import { ReducerAction } from "../../pages/users";
 import { Dispatch, SetStateAction } from "react";
 import { SearchUsersParams } from "../../db/actions/User";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { developmentLogger, stagingLogger, productionLogger } from '../../utils/analytics-logger';
 
 function Filter(props: {
   desc: string;
@@ -52,6 +53,19 @@ type SearchProps = {
   dispatch: Dispatch<ReducerAction>;
   setSearched: Dispatch<SetStateAction<boolean>>;
 };
+
+const logFilterClickEvent = (filterName: string) => {
+  const environmentUrl = window.location.href;
+  const logger = environmentUrl.includes("localhost") ? developmentLogger
+                : environmentUrl.includes("angels-among-us.netlify.app") ? stagingLogger
+                : productionLogger;
+
+  logger.logClickEvent({
+    objectId: `filter_${filterName}`,
+    userId: (Math.random() + 1).toString(36).substring(7), // Example of generating a random userID
+  });
+};
+
 
 export default function Search({
   filters,
@@ -106,7 +120,8 @@ export default function Search({
                         label: val,
                       })
                     )}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
+                      logFilterClickEvent('Foster Type');
                       dispatch({
                         type: "setField",
                         key: "type",
@@ -117,7 +132,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.type?.map((type) => ({
                       value: type as string,
                       label: fosterTypeLabels[type],
@@ -147,7 +162,8 @@ export default function Search({
                         label: val,
                       })
                     )}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
+                      logFilterClickEvent('Medical');
                       dispatch({
                         type: "setField",
                         key: "medical",
@@ -158,7 +174,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.medical?.map((medical) => ({
                       value: medical as string,
                       label: medicalLabels[medical],
@@ -185,7 +201,8 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
+                      logFilterClickEvent('Breed');
                       dispatch({
                         type: "setField",
                         key: "preferredBreeds",
@@ -196,7 +213,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.preferredBreeds?.map((breed) => ({
                       value: breed as string,
                       label: breedLabels[breed],
@@ -216,7 +233,8 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
+                      logFilterClickEvent('Age');
                       dispatch({
                         type: "setField",
                         key: "age",
@@ -227,7 +245,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.age?.map((age) => ({
                       value: age as string,
                       label: ageLabels[age],
@@ -247,7 +265,8 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
+                      logFilterClickEvent('Size');
                       dispatch({
                         type: "setField",
                         key: "size",
@@ -258,7 +277,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.size?.map((size) => ({
                       value: size as string,
                       label: sizeLabels[size],
@@ -278,7 +297,8 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
+                      logFilterClickEvent('Gender');
                       dispatch({
                         type: "setField",
                         key: "gender",
@@ -289,7 +309,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.gender?.map((gender) => ({
                       value: gender as string,
                       label: genderLabels[gender],
@@ -315,7 +335,8 @@ export default function Search({
                     options={Object.entries(goodWithLabels).map(
                       ([key, val]) => ({ value: key, label: val })
                     )}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
+                      logFilterClickEvent('Goodwith') 
                       dispatch({
                         type: "setField",
                         key: "dogsNotGoodWith",
@@ -326,7 +347,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.dogsNotGoodWith?.map((goodWith) => ({
                       value: goodWith as string,
                       label: goodWithLabels[goodWith],
@@ -345,7 +366,8 @@ export default function Search({
                     options={Object.entries(behavioralLabels).map(
                       ([key, val]) => ({ value: key, label: val })
                     )}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
+                      logFilterClickEvent('Behavioal') 
                       dispatch({
                         type: "setField",
                         key: "behavioral",
@@ -356,7 +378,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.behavioral?.map((b) => ({
                       value: b as string,
                       label: behavioralLabels[b],

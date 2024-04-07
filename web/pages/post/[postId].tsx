@@ -27,6 +27,8 @@ import { useAuth } from "../../context/auth";
 import { trpc } from "../../utils/trpc";
 import { Role } from "../../utils/types/account";
 import pageAccessHOC from "../../components/HOC/PageAccess";
+import { developmentLogger, stagingLogger, productionLogger } from '../../utils/analytics-logger';
+
 import Head from "next/head";
 import {
   fosterTypeLabels,
@@ -83,6 +85,22 @@ function PostPage({
     onOpen: onFormViewOpen,
     onClose: onFormViewClose,
   } = useDisclosure();
+
+  const enhancedOnFormViewOpen = () => {
+
+    const logger = window.location.href.includes("localhost") ? developmentLogger
+                  : window.location.href.includes("angels-among-us.netlify.app") ? stagingLogger
+                  : productionLogger;
+  
+    // Log the click event
+    logger.logClickEvent({
+      objectId: `dog_${postData?.name}`, 
+      userId: (Math.random() + 1).toString(36).substring(7),
+    });
+  
+
+    onFormViewOpen();
+  };
 
   const {
     isOpen: isDeleteConfirmationOpen,
@@ -196,8 +214,10 @@ function PostPage({
       (field) =>
         goodWithLabels[goodWithLabelMap[field as keyof typeof goodWithValueMap]]
     );
+    
 
   return (
+
     <>
       <Head>
         <title>{name}</title>
@@ -443,7 +463,7 @@ function PostPage({
             h={12}
             fontSize="lg"
             borderRadius={12}
-            onClick={onFormViewOpen}
+            onClick={enhancedOnFormViewOpen}
             _hover={
               postData.userAppliedTo
                 ? {}
