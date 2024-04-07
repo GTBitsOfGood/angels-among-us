@@ -94,13 +94,16 @@ function PostPage({
 
       // Log the click event
       logger.logClickEvent({
-        objectId: `dog_${postData?.name ?? "undefined"}`,
+        objectId: `dog_${postData?.name}`,
         userId: (Math.random() + 1).toString(36).substring(7),
       });
 
     }
-    logDogName().then().catch();
-  }, [])
+
+    if (postData?.name) {
+      logDogName().then().catch();
+    }
+  }, [JSON.stringify(postData)])
 
   const enhancedOnFormViewOpen = () => {
     onFormViewOpen();
