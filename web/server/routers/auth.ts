@@ -1,4 +1,3 @@
-import { Role } from  "../../utils/types/account";
 import { TRPCError } from "@trpc/server";
 import { findAccount } from "../../db/actions/Account";
 import {
@@ -32,22 +31,6 @@ export const authRouter = router({
         }
         const user = await findUserByEmail(ctx.session.email);
         const account = await findAccount(ctx.session.email);
-
-        // First-time sign-in, authorized account
-        const document = await createUser({
-          uid: ctx.session.uid,
-          email: ctx.session.email,
-          role: Role.Admin,
-          hasCompletedOnboarding: false,
-          disabled: false,
-          name: ctx.session.name,
-          picture: ctx.session.picture,
-        });
-        return {
-          user: document,
-          authorized: true,
-          hasCompletedOnboarding: false,
-        };
 
         if (user && account) {
           // Subsequent sign-in, authorized account

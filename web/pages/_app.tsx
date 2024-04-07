@@ -6,7 +6,7 @@ import { Box, ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 import NextAdapterPages from "next-query-params/pages";
 import { QueryParamProvider } from "use-query-params";
-import { developmentLogger, stagingLogger, productionLogger } from '../utils/analytics-logger';
+import { getAnalyticsLogger } from '../utils/analytics-logger';
 import React, { useEffect } from 'react';
 
 const semanticTokens = {
@@ -114,15 +114,20 @@ const theme = extendTheme({
 
 const App = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
-    const logger = window.location.href.includes("localhost") ? developmentLogger
-                  : window.location.href.includes("angels-among-us.netlify.app") ? stagingLogger
-                  : productionLogger;
 
-    logger.logVisitEvent({
-      userId: navigator.userAgent, 
-      pageUrl: '/'
-    });
-  },[])
+    const logUserAgent = async () => {
+      const logger = getAnalyticsLogger();
+
+      logger.logVisitEvent({
+        userId: navigator.userAgent,
+        pageUrl: '/'
+      });
+    }
+
+    logUserAgent().then().catch()
+
+  }, [])
+
   return (
     <ChakraProvider theme={theme}>
       <AuthProvider>

@@ -32,7 +32,7 @@ import { ReducerAction } from "../../pages/users";
 import { Dispatch, SetStateAction } from "react";
 import { SearchUsersParams } from "../../db/actions/User";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { developmentLogger, stagingLogger, productionLogger } from '../../utils/analytics-logger';
+import { getAnalyticsLogger } from '../../utils/analytics-logger';
 
 function Filter(props: {
   desc: string;
@@ -54,13 +54,10 @@ type SearchProps = {
   setSearched: Dispatch<SetStateAction<boolean>>;
 };
 
-const logFilterClickEvent = (filterName: string) => {
-  const environmentUrl = window.location.href;
-  const logger = environmentUrl.includes("localhost") ? developmentLogger
-                : environmentUrl.includes("angels-among-us.netlify.app") ? stagingLogger
-                : productionLogger;
+const logFilterClickEvent = async (filterName: string) => {
+  const logger = getAnalyticsLogger();
 
-  logger.logClickEvent({
+  await logger.logClickEvent({
     objectId: `filter_${filterName}`,
     userId: (Math.random() + 1).toString(36).substring(7), // Example of generating a random userID
   });
@@ -120,8 +117,8 @@ export default function Search({
                         label: val,
                       })
                     )}
-                    onChange={(newVals) => {
-                      logFilterClickEvent('Foster Type');
+                    onChange={async (newVals) => {
+                      await logFilterClickEvent('Foster Type');
                       dispatch({
                         type: "setField",
                         key: "type",
@@ -162,8 +159,8 @@ export default function Search({
                         label: val,
                       })
                     )}
-                    onChange={(newVals) => {
-                      logFilterClickEvent('Medical');
+                    onChange={async (newVals) => {
+                      await logFilterClickEvent('Medical');
                       dispatch({
                         type: "setField",
                         key: "medical",
@@ -201,8 +198,8 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) => {
-                      logFilterClickEvent('Breed');
+                    onChange={async (newVals) => {
+                      await logFilterClickEvent('Breed');
                       dispatch({
                         type: "setField",
                         key: "preferredBreeds",
@@ -233,8 +230,8 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) => {
-                      logFilterClickEvent('Age');
+                    onChange={async (newVals) => {
+                      await logFilterClickEvent('Age');
                       dispatch({
                         type: "setField",
                         key: "age",
@@ -265,8 +262,8 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) => {
-                      logFilterClickEvent('Size');
+                    onChange={async (newVals) => {
+                      await logFilterClickEvent('Size');
                       dispatch({
                         type: "setField",
                         key: "size",
@@ -297,8 +294,8 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) => {
-                      logFilterClickEvent('Gender');
+                    onChange={async (newVals) => {
+                      await logFilterClickEvent('Gender');
                       dispatch({
                         type: "setField",
                         key: "gender",
@@ -335,8 +332,8 @@ export default function Search({
                     options={Object.entries(goodWithLabels).map(
                       ([key, val]) => ({ value: key, label: val })
                     )}
-                    onChange={(newVals) => {
-                      logFilterClickEvent('Goodwith') 
+                    onChange={async (newVals) => {
+                      await logFilterClickEvent('Goodwith')
                       dispatch({
                         type: "setField",
                         key: "dogsNotGoodWith",
@@ -366,8 +363,8 @@ export default function Search({
                     options={Object.entries(behavioralLabels).map(
                       ([key, val]) => ({ value: key, label: val })
                     )}
-                    onChange={(newVals) => {
-                      logFilterClickEvent('Behavioal') 
+                    onChange={async (newVals) => {
+                      await logFilterClickEvent('Behavioral')
                       dispatch({
                         type: "setField",
                         key: "behavioral",
