@@ -4,6 +4,7 @@ import Search from "../components/Users/Search";
 import { useReducer, useState } from "react";
 import Results from "../components/Users/Results";
 import { SearchUsersParams } from "../db/actions/User";
+import { getAnalyticsLogger } from "../utils/analytics-logger";
 
 export type ReducerAction = {
   type: "setField" | "clear";
@@ -27,8 +28,13 @@ function Users() {
   const [searched, setSearched] = useState(false);
   const [filters, dispatch] = useReducer(
     (state: SearchUsersParams, action: ReducerAction) => {
+      const logger = getAnalyticsLogger();
       switch (action.type) {
         case "setField":
+          logger.logClickEvent({
+            objectId: `filter_${action.key}`,
+            userId: (Math.random() + 1).toString(36).substring(7), // random uuid
+          });
           return {
             ...state,
             [action.key!]: action.data!,
