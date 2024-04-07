@@ -105,10 +105,6 @@ function PostPage({
     }
   }, [JSON.stringify(postData)])
 
-  const enhancedOnFormViewOpen = () => {
-    onFormViewOpen();
-  };
-
   const {
     isOpen: isDeleteConfirmationOpen,
     onOpen: onDeleteConfirmationOpen,
@@ -470,7 +466,7 @@ function PostPage({
             h={12}
             fontSize="lg"
             borderRadius={12}
-            onClick={enhancedOnFormViewOpen}
+            onClick={onFormViewOpen}
             _hover={
               postData.userAppliedTo
                 ? {}
