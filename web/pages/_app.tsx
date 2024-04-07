@@ -6,7 +6,7 @@ import { Box, ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Navbar from "../components/Navbar";
 import NextAdapterPages from "next-query-params/pages";
 import { QueryParamProvider } from "use-query-params";
-import { getAnalyticsLogger } from '../utils/analytics-logger';
+import { getAnalyticsLogger, getBrowserName } from '../utils/analytics-logger';
 import React, { useEffect } from 'react';
 
 const semanticTokens = {
@@ -119,7 +119,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       const logger = getAnalyticsLogger();
 
       logger.logVisitEvent({
-        userId: navigator.userAgent,
+        userId: getBrowserName(navigator.userAgent),
         pageUrl: '/'
       });
     }
