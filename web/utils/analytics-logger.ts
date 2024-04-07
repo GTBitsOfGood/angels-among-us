@@ -10,9 +10,15 @@ stagingLogger.authenticate(apiKey);
 productionLogger.authenticate(apiKey);
 
 export function getAnalyticsLogger() {
-    return window.location.href.includes("https://fosters.angelsrescue.org") ? productionLogger
-        : window.location.href.includes("angels-among-us.netlify.app") ? stagingLogger
-            : developmentLogger
+    if (process.env.NEXT_PUBLIC_CONTEXT === "production") {
+        return productionLogger;
+    }
+
+    if (process.env.NEXT_PUBLIC_CONTEXT === "staging") {
+        return stagingLogger;
+    }
+
+    return developmentLogger;
 }
 
 export function getBrowserName(userAgent: string) {

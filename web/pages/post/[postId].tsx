@@ -101,9 +101,9 @@ function PostPage({
     }
 
     if (postData?.name) {
-      logDogName().then().catch();
+      logDogName()
     }
-  }, [JSON.stringify(postData)])
+  }, [postData])
 
   const {
     isOpen: isDeleteConfirmationOpen,

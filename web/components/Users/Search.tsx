@@ -118,7 +118,7 @@ export default function Search({
                       })
                     )}
                     onChange={async (newVals) => {
-                      await logFilterClickEvent('Foster Type');
+                      logFilterClickEvent('Foster Type');
                       dispatch({
                         type: "setField",
                         key: "type",
@@ -160,7 +160,7 @@ export default function Search({
                       })
                     )}
                     onChange={async (newVals) => {
-                      await logFilterClickEvent('Medical');
+                      logFilterClickEvent('Medical');
                       dispatch({
                         type: "setField",
                         key: "medical",
@@ -199,7 +199,7 @@ export default function Search({
                       label: val,
                     }))}
                     onChange={async (newVals) => {
-                      await logFilterClickEvent('Breed');
+                      logFilterClickEvent('Breed');
                       dispatch({
                         type: "setField",
                         key: "preferredBreeds",
@@ -231,7 +231,7 @@ export default function Search({
                       label: val,
                     }))}
                     onChange={async (newVals) => {
-                      await logFilterClickEvent('Age');
+                      logFilterClickEvent('Age');
                       dispatch({
                         type: "setField",
                         key: "age",
@@ -263,7 +263,7 @@ export default function Search({
                       label: val,
                     }))}
                     onChange={async (newVals) => {
-                      await logFilterClickEvent('Size');
+                      logFilterClickEvent('Size');
                       dispatch({
                         type: "setField",
                         key: "size",
@@ -295,7 +295,7 @@ export default function Search({
                       label: val,
                     }))}
                     onChange={async (newVals) => {
-                      await logFilterClickEvent('Gender');
+                      logFilterClickEvent('Gender');
                       dispatch({
                         type: "setField",
                         key: "gender",
@@ -333,7 +333,7 @@ export default function Search({
                       ([key, val]) => ({ value: key, label: val })
                     )}
                     onChange={async (newVals) => {
-                      await logFilterClickEvent('Goodwith')
+                      logFilterClickEvent('Goodwith')
                       dispatch({
                         type: "setField",
                         key: "dogsNotGoodWith",
@@ -364,7 +364,7 @@ export default function Search({
                       ([key, val]) => ({ value: key, label: val })
                     )}
                     onChange={async (newVals) => {
-                      await logFilterClickEvent('Behavioral')
+                      logFilterClickEvent('Behavioral')
                       dispatch({
                         type: "setField",
                         key: "behavioral",

@@ -124,7 +124,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       });
     }
 
-    logUserAgent().then().catch()
+    logUserAgent()
 
   }, [])
 
