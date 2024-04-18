@@ -44,6 +44,7 @@ import {
 import { z } from "zod";
 import FeedSection from "./Feed/FeedSection";
 import FilterSection from "./Filter/FilterSection";
+import { getAnalyticsLogger } from "../../utils/analytics-logger";
 
 type OptHandlers = {
   [K in FilterKeys]: OptHandler<FilterKeyTypeMap[K]>;
@@ -78,15 +79,15 @@ function parseOptArr<T extends FilterKeyTypeMap[FilterKeys]>(
 ): T[] {
   return inverse
     ? [
-        ...opts
-          .filter((f) => !userPreferenceArr?.includes(f.value))
-          .map((option) => option.value),
-      ]
+      ...opts
+        .filter((f) => !userPreferenceArr?.includes(f.value))
+        .map((option) => option.value),
+    ]
     : [
-        ...opts
-          .filter((f) => userPreferenceArr?.includes(f.value))
-          .map((option) => option.value),
-      ];
+      ...opts
+        .filter((f) => userPreferenceArr?.includes(f.value))
+        .map((option) => option.value),
+    ];
 }
 
 /**
@@ -259,11 +260,16 @@ function FeedPage() {
    */
   const handleFilterChange = useCallback(
     (action: HandleFilterChangeActions) => {
+      const logger = getAnalyticsLogger();
       switch (action.type) {
         case "reset":
           setQuery({}, "replace");
           break;
         case "checkboxChange":
+          logger.logClickEvent({
+            objectId: `filter_${action.key}`,
+            userId: (Math.random() + 1).toString(36).substring(7), // random uuid
+          });
           let newParams: FilterKeyTypeMap[FilterKeys][] | "";
           if (action.operation === "push") {
             newParams = [
@@ -273,7 +279,7 @@ function FeedPage() {
           } else {
             newParams = (
               validatedFilters.postFilters[
-                action.key
+              action.key
               ] as FilterKeyTypeMap[FilterKeys][]
             ).filter((val) => val !== action.value);
           }

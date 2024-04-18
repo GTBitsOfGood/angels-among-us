@@ -4,6 +4,7 @@ import Search from "../components/Users/Search";
 import { useReducer, useState } from "react";
 import Results from "../components/Users/Results";
 import { SearchUsersParams } from "../db/actions/User";
+import { getAnalyticsLogger } from "../utils/analytics-logger";
 
 export type ReducerAction = {
   type: "setField" | "clear";

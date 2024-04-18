@@ -106,7 +106,7 @@ export default function Search({
                         label: val,
                       })
                     )}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
                       dispatch({
                         type: "setField",
                         key: "type",
@@ -117,7 +117,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.type?.map((type) => ({
                       value: type as string,
                       label: fosterTypeLabels[type],
@@ -147,7 +147,7 @@ export default function Search({
                         label: val,
                       })
                     )}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
                       dispatch({
                         type: "setField",
                         key: "medical",
@@ -158,7 +158,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.medical?.map((medical) => ({
                       value: medical as string,
                       label: medicalLabels[medical],
@@ -185,7 +185,7 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
                       dispatch({
                         type: "setField",
                         key: "preferredBreeds",
@@ -196,7 +196,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.preferredBreeds?.map((breed) => ({
                       value: breed as string,
                       label: breedLabels[breed],
@@ -216,7 +216,7 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
                       dispatch({
                         type: "setField",
                         key: "age",
@@ -227,7 +227,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.age?.map((age) => ({
                       value: age as string,
                       label: ageLabels[age],
@@ -247,7 +247,7 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
                       dispatch({
                         type: "setField",
                         key: "size",
@@ -258,7 +258,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.size?.map((size) => ({
                       value: size as string,
                       label: sizeLabels[size],
@@ -278,7 +278,7 @@ export default function Search({
                       value: key,
                       label: val,
                     }))}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
                       dispatch({
                         type: "setField",
                         key: "gender",
@@ -289,7 +289,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.gender?.map((gender) => ({
                       value: gender as string,
                       label: genderLabels[gender],
@@ -315,7 +315,7 @@ export default function Search({
                     options={Object.entries(goodWithLabels).map(
                       ([key, val]) => ({ value: key, label: val })
                     )}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
                       dispatch({
                         type: "setField",
                         key: "dogsNotGoodWith",
@@ -326,7 +326,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.dogsNotGoodWith?.map((goodWith) => ({
                       value: goodWith as string,
                       label: goodWithLabels[goodWith],
@@ -345,7 +345,7 @@ export default function Search({
                     options={Object.entries(behavioralLabels).map(
                       ([key, val]) => ({ value: key, label: val })
                     )}
-                    onChange={(newVals) =>
+                    onChange={(newVals) => {
                       dispatch({
                         type: "setField",
                         key: "behavioral",
@@ -356,7 +356,7 @@ export default function Search({
                           }[]
                         ).map(({ value }) => value),
                       })
-                    }
+                    }}
                     value={filters?.behavioral?.map((b) => ({
                       value: b as string,
                       label: behavioralLabels[b],

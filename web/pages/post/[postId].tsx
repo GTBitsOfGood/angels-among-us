@@ -27,6 +27,8 @@ import { useAuth } from "../../context/auth";
 import { trpc } from "../../utils/trpc";
 import { Role } from "../../utils/types/account";
 import pageAccessHOC from "../../components/HOC/PageAccess";
+import { getAnalyticsLogger } from '../../utils/analytics-logger';
+
 import Head from "next/head";
 import {
   fosterTypeLabels,
@@ -47,6 +49,7 @@ import {
 import FosterQuestionnaire from "../../components/PetPostModal/FosterQuestionnaire";
 import { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { consts, Pages } from "../../utils/consts";
+import { useEffect } from "react";
 
 export const getServerSideProps = (async (context) => {
   if (!context.req.headers.referer) {
@@ -83,6 +86,24 @@ function PostPage({
     onOpen: onFormViewOpen,
     onClose: onFormViewClose,
   } = useDisclosure();
+
+  useEffect(() => {
+
+    const logDogName = async () => {
+      const logger = getAnalyticsLogger();
+
+      // Log the click event
+      logger.logClickEvent({
+        objectId: `dog_${postData?.name}`,
+        userId: (Math.random() + 1).toString(36).substring(7),
+      });
+
+    }
+
+    if (postData?.name) {
+      logDogName()
+    }
+  }, [postData])
 
   const {
     isOpen: isDeleteConfirmationOpen,
@@ -197,7 +218,9 @@ function PostPage({
         goodWithLabels[goodWithLabelMap[field as keyof typeof goodWithValueMap]]
     );
 
+
   return (
+
     <>
       <Head>
         <title>{name}</title>
@@ -354,36 +377,36 @@ function PostPage({
               temperament.length > 0 ||
               houseTrained !== Trained.Unknown ||
               crateTrained !== Trained.Unknown) && (
-              <GridItem>
-                <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
-                  Known Behavioral Information
-                </Text>
-                {behavioral.length > 0 && (
-                  <Text>
-                    <b>Traits: </b>
-                    {behavioral.map((b) => behavioralLabels[b]).join(", ")}
+                <GridItem>
+                  <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
+                    Known Behavioral Information
                   </Text>
-                )}
-                {temperament.length > 0 && (
-                  <Text>
-                    <b>Temperament: </b>
-                    {temperament.map((t) => temperamentLabels[t]).join(", ")}
-                  </Text>
-                )}
-                {houseTrained !== Trained.Unknown && (
-                  <Text>
-                    <b>House-trained: </b>
-                    {trainedLabels[houseTrained]}
-                  </Text>
-                )}
-                {crateTrained !== Trained.Unknown && (
-                  <Text>
-                    <b>Crate-trained: </b>
-                    {trainedLabels[crateTrained]}
-                  </Text>
-                )}
-              </GridItem>
-            )}
+                  {behavioral.length > 0 && (
+                    <Text>
+                      <b>Traits: </b>
+                      {behavioral.map((b) => behavioralLabels[b]).join(", ")}
+                    </Text>
+                  )}
+                  {temperament.length > 0 && (
+                    <Text>
+                      <b>Temperament: </b>
+                      {temperament.map((t) => temperamentLabels[t]).join(", ")}
+                    </Text>
+                  )}
+                  {houseTrained !== Trained.Unknown && (
+                    <Text>
+                      <b>House-trained: </b>
+                      {trainedLabels[houseTrained]}
+                    </Text>
+                  )}
+                  {crateTrained !== Trained.Unknown && (
+                    <Text>
+                      <b>Crate-trained: </b>
+                      {trainedLabels[crateTrained]}
+                    </Text>
+                  )}
+                </GridItem>
+              )}
             {(medical.length > 0 || spayNeuterStatus !== Trained.Unknown) && (
               <GridItem>
                 <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
@@ -448,17 +471,17 @@ function PostPage({
               postData.userAppliedTo
                 ? {}
                 : {
-                    borderColor: "btn-outline-primary-border",
-                    color: "text-primary",
-                    backgroundColor: "white",
-                  }
+                  borderColor: "btn-outline-primary-border",
+                  color: "text-primary",
+                  backgroundColor: "white",
+                }
             }
           >
             {postData.userAppliedTo
               ? "Applied"
               : postData.draft
-              ? "This is a Draft"
-              : "Foster Me!"}
+                ? "This is a Draft"
+                : "Foster Me!"}
           </Button>
         </GridItem>
       </Grid>
