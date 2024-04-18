@@ -28,13 +28,8 @@ function Users() {
   const [searched, setSearched] = useState(false);
   const [filters, dispatch] = useReducer(
     (state: SearchUsersParams, action: ReducerAction) => {
-      const logger = getAnalyticsLogger();
       switch (action.type) {
         case "setField":
-          logger.logClickEvent({
-            objectId: `filter_${action.key}`,
-            userId: (Math.random() + 1).toString(36).substring(7), // random uuid
-          });
           return {
             ...state,
             [action.key!]: action.data!,
