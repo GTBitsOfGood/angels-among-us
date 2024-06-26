@@ -43,7 +43,7 @@
     "@types/react-select": "^5.0.1",
     "@types/sharp": "^0.31.1",
     "axios": "^1.2.6",
-    "bog-analytics": "^0.0.10",
+    "bog-analytics": "^1.0.3",
     "bootstrap": "^5.2.3",
     "dayjs": "^1.11.10",
     "eslint": "8.30.0",
