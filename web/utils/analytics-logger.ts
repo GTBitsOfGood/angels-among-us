@@ -4,6 +4,18 @@ const developmentLogger = new AnalyticsLogger({ environment: EventEnvironment.DE
 const stagingLogger = new AnalyticsLogger({ environment: EventEnvironment.STAGING });
 const productionLogger = new AnalyticsLogger({ environment: EventEnvironment.PRODUCTION });
 
+export const CustomEventTypes = {
+    POST_CREATION: {
+        category: "Post",
+        subcategory: "Create"
+    },
+    USER_CREATION: {
+        category: "User",
+        subcategory: "Create"
+    }
+
+}
+
 const apiKey = process.env.NEXT_PUBLIC_BOG_ANALYTICS_CLIENT_API_KEY as string;
 developmentLogger.authenticate(apiKey);
 stagingLogger.authenticate(apiKey);
@@ -20,6 +32,21 @@ export function getAnalyticsLogger() {
 
     return developmentLogger;
 }
+
+export async function logPostCreateEvent(type: string) {
+    const analyticsLogger = getAnalyticsLogger();
+    await analyticsLogger.logCustomEvent(CustomEventTypes.POST_CREATION.category, CustomEventTypes.POST_CREATION.subcategory, {
+        type
+    })
+}
+
+export async function logUserCreateEvent(role: string) {
+    const analyticsLogger = getAnalyticsLogger();
+    await analyticsLogger.logCustomEvent(CustomEventTypes.USER_CREATION.category, CustomEventTypes.USER_CREATION.subcategory, {
+        role
+    })
+}
+
 
 export function getBrowserName(userAgent: string) {
     // The order matters here, and this may report false positives for unlisted browsers.
