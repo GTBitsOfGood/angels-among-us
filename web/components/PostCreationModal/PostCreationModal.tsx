@@ -32,6 +32,7 @@ import {
 import FileUploadSlide from "./FileUpload/FileUploadSlide";
 import { FormSlide } from "./Form/FormSlide";
 import { Types } from "mongoose";
+import { getAnalyticsLogger, logPostCreateEvent } from "../../utils/analytics-logger";
 
 function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
   if (val === null) {
@@ -242,6 +243,7 @@ const PostCreationModal: React.FC<{
       await postFinalize.mutateAsync({
         _id: new Types.ObjectId(oid),
       });
+      logPostCreateEvent(creationInfo.type);
     } catch (e) {
       toast({
         title: "An error has occurred.",
@@ -253,6 +255,7 @@ const PostCreationModal: React.FC<{
         isClosable: true,
       });
     }
+
   };
 
   const createDraftPost = async () => {
@@ -427,43 +430,43 @@ const PostCreationModal: React.FC<{
             onClick={
               isContentView
                 ? () => {
-                    setIsContentView(false);
-                  }
+                  setIsContentView(false);
+                }
                 : () => {
-                    //TODO: Wait for success to close.
-                    const validation = formSchema.safeParse(formState);
-                    if (validation.success) {
-                      setLoading(true);
-                      createPost()
-                        .then(() => {
-                          utils.post.invalidate();
-                          setFileArr([]);
-                          setIsContentView(true);
-                          dispatch({
-                            type: "clear",
-                          });
-                          onClose();
-                        })
-                        .finally(() => {
-                          setLoading(false);
+                  //TODO: Wait for success to close.
+                  const validation = formSchema.safeParse(formState);
+                  if (validation.success) {
+                    setLoading(true);
+                    createPost()
+                      .then(() => {
+                        utils.post.invalidate();
+                        setFileArr([]);
+                        setIsContentView(true);
+                        dispatch({
+                          type: "clear",
                         });
-                    } else {
-                      toast.closeAll();
-                      toast({
-                        title: "Error",
-                        description: validation.error.issues
-                          .map((issue) => issue.message)
-                          .join("\r\n"),
-                        containerStyle: {
-                          whiteSpace: "pre-line",
-                        },
-                        status: "error",
-                        duration: 5000,
-                        isClosable: true,
-                        position: "top",
+                        onClose();
+                      })
+                      .finally(() => {
+                        setLoading(false);
                       });
-                    }
+                  } else {
+                    toast.closeAll();
+                    toast({
+                      title: "Error",
+                      description: validation.error.issues
+                        .map((issue) => issue.message)
+                        .join("\r\n"),
+                      containerStyle: {
+                        whiteSpace: "pre-line",
+                      },
+                      status: "error",
+                      duration: 5000,
+                      isClosable: true,
+                      position: "top",
+                    });
                   }
+                }
             }
           >
             {isContentView ? "Next" : "Post"}
