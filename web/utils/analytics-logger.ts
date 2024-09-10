@@ -41,12 +41,10 @@ export async function logPostCreateEvent(type: string) {
 }
 
 export async function logUserCreateEvent(role: string) {
-    console.log("HELLO WORLD 1")
     const analyticsLogger = getAnalyticsLogger();
     await analyticsLogger.logCustomEvent(CustomEventTypes.USER_CREATION.category, CustomEventTypes.USER_CREATION.subcategory, {
         role
     })
-    console.log("HELLO WORLD 2")
 }
 
 
