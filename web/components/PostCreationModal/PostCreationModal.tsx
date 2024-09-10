@@ -32,7 +32,7 @@ import {
 import FileUploadSlide from "./FileUpload/FileUploadSlide";
 import { FormSlide } from "./Form/FormSlide";
 import { Types } from "mongoose";
-import { getAnalyticsLogger, logPostCreateEvent } from "../../utils/analytics-logger";
+import { logPostCreateEvent } from "../../utils/analytics-logger";
 
 function nullValidation<V>(val: V, ctx: z.RefinementCtx, field: string) {
   if (val === null) {
