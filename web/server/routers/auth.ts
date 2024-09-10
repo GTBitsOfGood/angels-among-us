@@ -6,6 +6,7 @@ import {
   updateUserByUid,
 } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
+import { logUserCreateEvent } from "../../utils/analytics-logger";
 
 const FACEBOOK_SIGN_IN_PROVIDER = "facebook.com" as const;
 
@@ -67,6 +68,7 @@ export const authRouter = router({
             name: ctx.session.name,
             picture: ctx.session.picture,
           });
+          await logUserCreateEvent(account.role);
           return {
             user: document,
             authorized: true,
