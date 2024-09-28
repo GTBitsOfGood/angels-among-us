@@ -16,13 +16,12 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
 1. Download [MongoDB Compass](https://www.mongodb.com/try/download/compass#compass) to view your database documents in a GUI.
 
-2. Obtain the Bitwarden password from your EM. Create a file named `bitwarden.env` in the root directory of the respository and fill it with the following contents:
+2. Obtain the Bitwarden password from your EM. Create a file named `bitwarden.env` in the root directory of the respository and fill it using the the following commands (or ask your EM):
 
    ```zsh
-   BW_PASSWORD=<provided bitwarden password>
+   bw login product@bitsofgood.org
+   bw get item 78839bf2-878b-4d5d-9129-af9300699ddf | npx fx .notes > bitwarden.env
    ```
-
-   This only needs to be done on your first run. After that, **you should delete the file from your repository to avoid accidentally pushing it to GitHub.**
 
 3. Boot up the Docker containers:
 
@@ -54,6 +53,7 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
     {
       _id: ...,
       email: "YOUR_EMAIL_HERE",
+      lowerEmail: "YOUR_EMAIL_HERE",
       role: "admin"
     }
    ```
