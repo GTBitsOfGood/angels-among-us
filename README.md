@@ -16,11 +16,11 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
 
 1. Download [MongoDB Compass](https://www.mongodb.com/try/download/compass#compass) to view your database documents in a GUI.
 
-2. Obtain the Bitwarden password from your EM. Create a file named `bitwarden.env` in the root directory of the respository and fill it using the the following commands (or ask your EM):
+2. Obtain the Bitwarden password from your EM. Create a file named `.env.local` in the root directory of the respository and fill it using the the following commands (or ask your EM). You will need [Bitwarden CLI](https://www.npmjs.com/package/@bitwarden/cli) installed for this:
 
    ```zsh
    bw login product@bitsofgood.org
-   bw get item 78839bf2-878b-4d5d-9129-af9300699ddf | npx fx .notes > bitwarden.env
+   bw get item 78839bf2-878b-4d5d-9129-af9300699ddf | npx fx .notes > .env.local
    ```
 
 3. Boot up the Docker containers:
@@ -58,7 +58,7 @@ Visit [this](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-64fad02c388449b
     }
    ```
 
-   The value of the email field should be the email address you will be logging in with via gmail. You have now added yourself as a valid account with an admin role.
+   The value of the email field should be the email address you will be logging in with via gmail. You have now added yourself as a valid account with an admin role. The value of lowerEmail should be your email but all lowercase.
 
 6. Navigate to `localhost:3000` using your web browser. Click "Sign in with Google" and log into using the email you used to make the `account` document.
 
