@@ -27,7 +27,7 @@ import { useAuth } from "../../context/auth";
 import { trpc } from "../../utils/trpc";
 import { Role } from "../../utils/types/account";
 import pageAccessHOC from "../../components/HOC/PageAccess";
-import { getAnalyticsLogger } from '../../utils/analytics-logger';
+import { getAnalyticsLogger } from "../../utils/analytics-logger";
 
 import Head from "next/head";
 import {
@@ -50,7 +50,7 @@ import FosterQuestionnaire from "../../components/PetPostModal/FosterQuestionnai
 import { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { consts, Pages } from "../../utils/consts";
 import { useEffect } from "react";
-
+import { FacebookShareButton, FacebookIcon } from "react-share";
 export const getServerSideProps = (async (context) => {
   if (!context.req.headers.referer) {
     return { props: { isFromFeed: false } };
@@ -74,6 +74,12 @@ function PostPage({
   const router = useRouter();
   const paramPostId = router.query.postId;
 
+  const origin =
+    typeof window !== "undefined" && window.location.origin
+      ? window.location.origin
+      : "";
+  const shareUrl = `${origin}${router.asPath}`;
+
   const { userData } = useAuth();
   const role = userData?.role;
 
@@ -88,7 +94,6 @@ function PostPage({
   } = useDisclosure();
 
   useEffect(() => {
-
     const logDogName = async () => {
       const logger = getAnalyticsLogger();
 
@@ -97,13 +102,12 @@ function PostPage({
         objectId: `dog_${postData?.name}`,
         userId: (Math.random() + 1).toString(36).substring(7),
       });
-
-    }
+    };
 
     if (postData?.name) {
-      logDogName()
+      logDogName();
     }
-  }, [postData])
+  }, [postData]);
 
   const {
     isOpen: isDeleteConfirmationOpen,
@@ -218,9 +222,7 @@ function PostPage({
         goodWithLabels[goodWithLabelMap[field as keyof typeof goodWithValueMap]]
     );
 
-
   return (
-
     <>
       <Head>
         <title>{name}</title>
@@ -453,10 +455,15 @@ function PostPage({
           display="flex"
           flexDir="row"
           w="100%"
-          justifyContent="flex-end"
-          alignItems={{ base: "center", md: "flex-end" }}
+          justifyContent="space-between"
+          alignItems="center" // Change to "center" for vertical alignment
           colSpan={{ base: 1, md: 2 }}
         >
+          {!postData.draft && (
+            <FacebookShareButton url={shareUrl || ""} hashtag={`${name} is seeking to be adopted!`}>
+              <FacebookIcon size={40} round />
+            </FacebookShareButton>
+          )}
           <Button
             isDisabled={postData.userAppliedTo || postData.draft}
             variant={
