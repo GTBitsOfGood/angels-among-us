@@ -460,7 +460,7 @@ function PostPage({
           colSpan={{ base: 1, md: 2 }}
         >
           {!postData.draft && (
-            <FacebookShareButton url={shareUrl || ""} hashtag={`${name} is seeking to be adopted!`} quotes>
+            <FacebookShareButton url={shareUrl || ""} hashtag={`${name} is seeking to be adopted!`}>
               <FacebookIcon size={40} round />
             </FacebookShareButton>
           )}
