@@ -27,7 +27,7 @@ import { useAuth } from "../../context/auth";
 import { trpc } from "../../utils/trpc";
 import { Role } from "../../utils/types/account";
 import pageAccessHOC from "../../components/HOC/PageAccess";
-import { getAnalyticsLogger } from '../../utils/analytics-logger';
+import { getAnalyticsLogger } from "../../utils/analytics-logger";
 
 import Head from "next/head";
 import {
@@ -50,7 +50,7 @@ import FosterQuestionnaire from "../../components/PetPostModal/FosterQuestionnai
 import { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { consts, Pages } from "../../utils/consts";
 import { useEffect } from "react";
-
+import { FacebookShareButton, FacebookIcon } from "react-share";
 export const getServerSideProps = (async (context) => {
   if (!context.req.headers.referer) {
     return { props: { isFromFeed: false } };
@@ -74,6 +74,12 @@ function PostPage({
   const router = useRouter();
   const paramPostId = router.query.postId;
 
+  const origin =
+    typeof window !== "undefined" && window.location.origin
+      ? window.location.origin
+      : "";
+  const shareUrl = `${origin}${router.asPath}`;
+
   const { userData } = useAuth();
   const role = userData?.role;
 
@@ -88,7 +94,6 @@ function PostPage({
   } = useDisclosure();
 
   useEffect(() => {
-
     const logDogName = async () => {
       const logger = getAnalyticsLogger();
 
@@ -97,13 +102,12 @@ function PostPage({
         objectId: `dog_${postData?.name}`,
         userId: (Math.random() + 1).toString(36).substring(7),
       });
-
-    }
+    };
 
     if (postData?.name) {
-      logDogName()
+      logDogName();
     }
-  }, [postData])
+  }, [postData]);
 
   const {
     isOpen: isDeleteConfirmationOpen,
@@ -218,9 +222,7 @@ function PostPage({
         goodWithLabels[goodWithLabelMap[field as keyof typeof goodWithValueMap]]
     );
 
-
   return (
-
     <>
       <Head>
         <title>{name}</title>
@@ -377,36 +379,36 @@ function PostPage({
               temperament.length > 0 ||
               houseTrained !== Trained.Unknown ||
               crateTrained !== Trained.Unknown) && (
-                <GridItem>
-                  <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
-                    Known Behavioral Information
+              <GridItem>
+                <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
+                  Known Behavioral Information
+                </Text>
+                {behavioral.length > 0 && (
+                  <Text>
+                    <b>Traits: </b>
+                    {behavioral.map((b) => behavioralLabels[b]).join(", ")}
                   </Text>
-                  {behavioral.length > 0 && (
-                    <Text>
-                      <b>Traits: </b>
-                      {behavioral.map((b) => behavioralLabels[b]).join(", ")}
-                    </Text>
-                  )}
-                  {temperament.length > 0 && (
-                    <Text>
-                      <b>Temperament: </b>
-                      {temperament.map((t) => temperamentLabels[t]).join(", ")}
-                    </Text>
-                  )}
-                  {houseTrained !== Trained.Unknown && (
-                    <Text>
-                      <b>House-trained: </b>
-                      {trainedLabels[houseTrained]}
-                    </Text>
-                  )}
-                  {crateTrained !== Trained.Unknown && (
-                    <Text>
-                      <b>Crate-trained: </b>
-                      {trainedLabels[crateTrained]}
-                    </Text>
-                  )}
-                </GridItem>
-              )}
+                )}
+                {temperament.length > 0 && (
+                  <Text>
+                    <b>Temperament: </b>
+                    {temperament.map((t) => temperamentLabels[t]).join(", ")}
+                  </Text>
+                )}
+                {houseTrained !== Trained.Unknown && (
+                  <Text>
+                    <b>House-trained: </b>
+                    {trainedLabels[houseTrained]}
+                  </Text>
+                )}
+                {crateTrained !== Trained.Unknown && (
+                  <Text>
+                    <b>Crate-trained: </b>
+                    {trainedLabels[crateTrained]}
+                  </Text>
+                )}
+              </GridItem>
+            )}
             {(medical.length > 0 || spayNeuterStatus !== Trained.Unknown) && (
               <GridItem>
                 <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
@@ -453,10 +455,15 @@ function PostPage({
           display="flex"
           flexDir="row"
           w="100%"
-          justifyContent="flex-end"
-          alignItems={{ base: "center", md: "flex-end" }}
+          justifyContent="space-between"
+          alignItems="center" // Change to "center" for vertical alignment
           colSpan={{ base: 1, md: 2 }}
         >
+          {!postData.draft && (
+            <FacebookShareButton url={shareUrl || ""} hashtag="#adopt">
+              <FacebookIcon size={40} round />
+            </FacebookShareButton>
+          )}
           <Button
             isDisabled={postData.userAppliedTo || postData.draft}
             variant={
@@ -471,17 +478,17 @@ function PostPage({
               postData.userAppliedTo
                 ? {}
                 : {
-                  borderColor: "btn-outline-primary-border",
-                  color: "text-primary",
-                  backgroundColor: "white",
-                }
+                    borderColor: "btn-outline-primary-border",
+                    color: "text-primary",
+                    backgroundColor: "white",
+                  }
             }
           >
             {postData.userAppliedTo
               ? "Applied"
               : postData.draft
-                ? "This is a Draft"
-                : "Foster Me!"}
+              ? "This is a Draft"
+              : "Foster Me!"}
           </Button>
         </GridItem>
       </Grid>
