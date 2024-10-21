@@ -379,36 +379,36 @@ function PostPage({
               temperament.length > 0 ||
               houseTrained !== Trained.Unknown ||
               crateTrained !== Trained.Unknown) && (
-              <GridItem>
-                <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
-                  Known Behavioral Information
-                </Text>
-                {behavioral.length > 0 && (
-                  <Text>
-                    <b>Traits: </b>
-                    {behavioral.map((b) => behavioralLabels[b]).join(", ")}
+                <GridItem>
+                  <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
+                    Known Behavioral Information
                   </Text>
-                )}
-                {temperament.length > 0 && (
-                  <Text>
-                    <b>Temperament: </b>
-                    {temperament.map((t) => temperamentLabels[t]).join(", ")}
-                  </Text>
-                )}
-                {houseTrained !== Trained.Unknown && (
-                  <Text>
-                    <b>House-trained: </b>
-                    {trainedLabels[houseTrained]}
-                  </Text>
-                )}
-                {crateTrained !== Trained.Unknown && (
-                  <Text>
-                    <b>Crate-trained: </b>
-                    {trainedLabels[crateTrained]}
-                  </Text>
-                )}
-              </GridItem>
-            )}
+                  {behavioral.length > 0 && (
+                    <Text>
+                      <b>Traits: </b>
+                      {behavioral.map((b) => behavioralLabels[b]).join(", ")}
+                    </Text>
+                  )}
+                  {temperament.length > 0 && (
+                    <Text>
+                      <b>Temperament: </b>
+                      {temperament.map((t) => temperamentLabels[t]).join(", ")}
+                    </Text>
+                  )}
+                  {houseTrained !== Trained.Unknown && (
+                    <Text>
+                      <b>House-trained: </b>
+                      {trainedLabels[houseTrained]}
+                    </Text>
+                  )}
+                  {crateTrained !== Trained.Unknown && (
+                    <Text>
+                      <b>Crate-trained: </b>
+                      {trainedLabels[crateTrained]}
+                    </Text>
+                  )}
+                </GridItem>
+              )}
             {(medical.length > 0 || spayNeuterStatus !== Trained.Unknown) && (
               <GridItem>
                 <Text fontWeight="extrabold" fontSize="xl" letterSpacing="wide">
@@ -460,7 +460,7 @@ function PostPage({
           colSpan={{ base: 1, md: 2 }}
         >
           {!postData.draft && (
-            <FacebookShareButton url={shareUrl || ""} hashtag="#adopt">
+            <FacebookShareButton url={shareUrl || ""} hashtag={`${name} is seeking to be adopted!`} quotes>
               <FacebookIcon size={40} round />
             </FacebookShareButton>
           )}
@@ -478,17 +478,17 @@ function PostPage({
               postData.userAppliedTo
                 ? {}
                 : {
-                    borderColor: "btn-outline-primary-border",
-                    color: "text-primary",
-                    backgroundColor: "white",
-                  }
+                  borderColor: "btn-outline-primary-border",
+                  color: "text-primary",
+                  backgroundColor: "white",
+                }
             }
           >
             {postData.userAppliedTo
               ? "Applied"
               : postData.draft
-              ? "This is a Draft"
-              : "Foster Me!"}
+                ? "This is a Draft"
+                : "Foster Me!"}
           </Button>
         </GridItem>
       </Grid>
