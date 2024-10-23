@@ -1,0 +1,17 @@
+{
+    "name": "email-notification",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "npx tsx send-email-notifications.ts"
+    },
+    "dependencies": {
+        "juno-sdk": "^0.0.4",
+        "mongoose": "^6.8.3",
+        "typescript": "^5.6.2"
+    },
+    "devDependencies": {
+        "@types/node": "^22.5.4",
+        "tsx": "^4.19.1"
+    }
+}
