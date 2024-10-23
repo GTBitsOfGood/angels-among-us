@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "start": "npx tsx delete-events.ts"
+        "start": "npx tsx send-email-notifications.ts"
     },
     "dependencies": {
         "juno-sdk": "^0.0.4",
