@@ -4,84 +4,88 @@ import juno from "juno-sdk";
 import { IPost, IUser, Role, Trained } from "./types";
 import { PostModel, UserModel } from "./models";
 
-const MONGODB_URI = process.env.DATABASE_URL as string;
+const DATABASE_URL = process.env.DATABASE_URL as string;
 const DATABASE_NAME = process.env.DATABASE_NAME || "angels-among-us-dev";
+const JUNO_API_KEY = process.env.JUNO_API_KEY as string;
+const JUNO_BASE_URL = process.env.JUNO_BASE_URL as string
+const JUNO_SENDER_EMAIL = process.env.JUNO_SENDER_EMAIL as string;
+const JUNO_SENDER_NAME = process.env.JUNO_SENDER_NAME as string;
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
 juno.init({
-    apiKey: process.env.JUNO_API_KEY as string,
-    baseURL: process.env.JUNO_BASE_URL as string
+  apiKey: JUNO_API_KEY as string,
+  baseURL: JUNO_BASE_URL as string
 })
 
 export async function sendEmail({ bccRecipients, ccRecipients, recipients, content, subject }:
-    { subject: string, content: EmailContent[], bccRecipients?: EmailRecipient[], recipients?: EmailRecipient[], ccRecipients?: EmailRecipient[], }) {
-    try {
-        await juno.email.sendEmail({
-            recipients: bccRecipients ?? [],
-            bcc: recipients ?? [],
-            cc: ccRecipients ?? [],
-            sender: {
-                email: process.env.JUNO_SENDER_EMAIL as string,
-                name: process.env.JUNO_SENDER_NAME as string
-            },
-            subject: subject,
-            contents: content
-        })
-    } catch (e) {
-        console.log(e)
-    }
+  { subject: string, content: EmailContent[], bccRecipients?: EmailRecipient[], recipients?: EmailRecipient[], ccRecipients?: EmailRecipient[], }) {
+  try {
+    await juno.email.sendEmail({
+      recipients: recipients ?? [],
+      bcc: bccRecipients ?? [],
+      cc: ccRecipients ?? [],
+      sender: {
+        email: JUNO_SENDER_EMAIL as string,
+        name: JUNO_SENDER_NAME as string
+      },
+      subject: subject,
+      contents: content
+    })
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 async function dbConnect(): Promise<void> {
-    if (mongoose.connections[0].readyState) return;
-    await mongoose
-        .connect(MONGODB_URI, {
-            socketTimeoutMS: 360000,
-            dbName: DATABASE_NAME,
-        })
-        .catch((error) => {
-            console.error("Unable to connect to database.");
-            throw error;
-        });
+  if (mongoose.connections[0].readyState) return;
+  await mongoose
+    .connect(DATABASE_URL, {
+      socketTimeoutMS: 360000,
+      dbName: DATABASE_NAME,
+    })
+    .catch((error) => {
+      console.error("Unable to connect to database.");
+      throw error;
+    });
 }
 async function getUsersByRole(role: Role) {
-    await dbConnect();
-    return await UserModel.find({ role });
+  await dbConnect();
+  return await UserModel.find({ role });
 }
 
 async function getPostsInLastDay() {
-    const cutoffDate = new Date(
-        Date.now() - ONE_DAY
-    );
+  const cutoffDate = new Date(
+    Date.now() - ONE_DAY
+  );
 
-    await dbConnect();
-    const posts = await PostModel.find({
-        date: { $gt: cutoffDate },
-        draft: false,
-    })
+  await dbConnect();
+  const posts = await PostModel.find({
+    date: { $gt: cutoffDate },
+    draft: false,
+  })
 
-    return posts
+  return posts
 }
 
 export function generateEmailTemplate(posts: IPost[]): string {
-    const formatDate = (date: Date): string => {
-        return date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
+  const formatDate = (date: Date): string => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
-    const getStatusClass = (status: Trained): string => {
-        return status === 'yes' ? 'status-yes' : 'status-no';
-    };
+  const getStatusClass = (status: Trained): string => {
+    return status === 'yes' ? 'status-yes' : 'status-no';
+  };
 
-    const getStatusText = (status: Trained): string => {
-        return status === 'unknown' ? 'unknown' : status;
-    };
+  const getStatusText = (status: Trained): string => {
+    return status === 'unknown' ? 'unknown' : status;
+  };
 
-    const generatePost = (post: IPost): string => `
+  const generatePost = (post: IPost): string => `
     <div class="post">
       <div class="post-header">
         <h2 class="post-title">${post.name}</h2>
@@ -176,7 +180,7 @@ export function generateEmailTemplate(posts: IPost[]): string {
     </div>
   `;
 
-    return `
+  return `
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
@@ -338,34 +342,34 @@ export function generateEmailTemplate(posts: IPost[]): string {
   `;
 }
 async function sendEmailNotification() {
-    const voluneers = await getUsersByRole(Role.Volunteer);
-    const recipients = voluneers.map((volunteer: IUser) => {
-        return { email: volunteer.email, name: volunteer.name }
+  const voluneers = await getUsersByRole(Role.Volunteer);
+  const recipients = voluneers.map((volunteer: IUser) => {
+    return { email: volunteer.email, name: volunteer.name }
+  })
+  const posts = await getPostsInLastDay();
+  console.log(generateEmailTemplate(posts))
+  if (posts.length > 0) {
+    await sendEmail({
+      bccRecipients: recipients,
+      subject: "Daily Foster Update From Angels Among Us",
+      content: [
+        { type: "text/html", value: generateEmailTemplate(posts) }
+      ]
     })
-    const posts = await getPostsInLastDay();
-    console.log(generateEmailTemplate(posts))
-    if (posts.length > 0) {
-        await sendEmail({
-            bccRecipients: [{ name: 'Bits of Good Engineering', email: 'gt.engineering@hack4impact.org' }],
-            subject: "Daily Foster Update From Angels Among Us",
-            content: [
-                { type: "text/html", value: generateEmailTemplate(posts) }
-            ]
-        })
-    }
-    return posts.length;
+  }
+  return posts.length;
 }
 
 sendEmailNotification()
-    .then((totalPosts) => {
-        if (totalPosts) {
-            console.log(`\nScript completed. Emails sent for: ${totalPosts} posts.`);
-        } else {
-            console.log(`\nScript completed. No emails sent due to no new posts.`);
-        }
-        process.exit(0);
-    })
-    .catch((error) => {
-        console.error("An error occurred:", error);
-        process.exit(1);
-    });
+  .then((totalPosts) => {
+    if (totalPosts) {
+      console.log(`\nScript completed. Emails sent for: ${totalPosts} posts.`);
+    } else {
+      console.log(`\nScript completed. No emails sent due to no new posts.`);
+    }
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error("An error occurred:", error);
+    process.exit(1);
+  });
