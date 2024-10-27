@@ -17,20 +17,27 @@ juno.init({
   baseURL: JUNO_BASE_URL as string
 })
 
-export async function sendEmail({ bccRecipients, ccRecipients, recipients, content, subject }:
+export async function sendEmail({ bccRecipients, content, subject }:
   { subject: string, content: EmailContent[], bccRecipients?: EmailRecipient[], recipients?: EmailRecipient[], ccRecipients?: EmailRecipient[], }) {
+  const BATCH_SIZE = 1000;
+
   try {
-    await juno.email.sendEmail({
-      recipients: recipients ?? [],
-      bcc: bccRecipients ?? [],
-      cc: ccRecipients ?? [],
-      sender: {
-        email: JUNO_SENDER_EMAIL as string,
-        name: JUNO_SENDER_NAME as string
-      },
-      subject: subject,
-      contents: content
-    })
+    for (let i = 0; i < (bccRecipients as EmailRecipient[]).length; i += BATCH_SIZE) {
+      const limitedBcc = (bccRecipients as EmailRecipient[]).slice(i, i + BATCH_SIZE);
+
+      await juno.email.sendEmail({
+        recipients: [],
+        bcc: limitedBcc ?? [],
+        cc: [],
+        sender: {
+          email: JUNO_SENDER_EMAIL as string,
+          name: JUNO_SENDER_NAME as string
+        },
+        subject: subject,
+        contents: content
+      })
+
+    }
   } catch (e) {
     console.log(e)
   }
