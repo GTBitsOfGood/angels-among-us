@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { EmailContent, EmailRecipient } from "juno-sdk/build/main/internal/api";
 import juno from "juno-sdk";
 import { IPost, IUser, Role, Trained } from "./types";
 import { PostModel, UserModel } from "./models";
+import { EmailContent, EmailRecipient } from "juno-sdk/internal/api";
 
 const DATABASE_URL = process.env.DATABASE_URL as string;
-const DATABASE_NAME = process.env.DATABASE_NAME || "angels-among-us-dev";
+const DATABASE_NAME = process.env.DATABASE_NAME as string;
 const JUNO_API_KEY = process.env.JUNO_API_KEY as string;
 const JUNO_BASE_URL = process.env.JUNO_BASE_URL as string
 const JUNO_SENDER_EMAIL = process.env.JUNO_SENDER_EMAIL as string;
@@ -354,7 +354,6 @@ async function sendEmailNotification() {
     return { email: volunteer.email, name: volunteer.name }
   })
   const posts = await getPostsInLastDay();
-  console.log(generateEmailTemplate(posts))
   if (posts.length > 0) {
     await sendEmail({
       bccRecipients: recipients,
