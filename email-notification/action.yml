@@ -1,0 +1,5 @@
+name: "Run Deletion Policy"
+description: "Executes the deletion policy to remove old events"
+runs:
+  using: "docker"
+  image: "Dockerfile"

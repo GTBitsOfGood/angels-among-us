@@ -3,7 +3,8 @@ node_modules
 .idea/
 .DS_Store
 mongo
-*.env*
+*.env.local
+*.env.prod
 
 # Local Netlify folder
 .netlify

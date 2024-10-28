@@ -1,0 +1,26 @@
+name: Run Email Notification on a CRON Schedule
+
+on:
+  schedule:
+    - cron: "0 0 * * *" 
+  workflow_dispatch:
+
+jobs:
+  run_email_notification:
+    if: github.ref == 'refs/heads/production'
+    runs-on: ubuntu-latest
+    name: A job to run the email notification cron
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run Email Notification Action Step
+        uses: ./email-notification
+        id: email-notification
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JUNO_API_KEY: ${{ secrets.JUNO_API_KEY }}
+          JUNO_BASE_URL: ${{ secrets.JUNO_BASE_URL }}
+          JUNO_SENDER_EMAIL: ${{ secrets.JUNO_SENDER_EMAIL }}
+          JUNO_SENDER_NAME: ${{ secrets.JUNO_SENDER_NAME }}
