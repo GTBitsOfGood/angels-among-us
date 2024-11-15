@@ -25,7 +25,7 @@ export async function sendEmail({ bccRecipients, content, subject }:
     for (let i = 0; i < (bccRecipients as EmailRecipient[]).length; i += BATCH_SIZE) {
       const limitedBcc = (bccRecipients as EmailRecipient[]).slice(i, i + BATCH_SIZE);
       await juno.email.sendEmail({
-        recipients: [],
+        recipients: [{ email: "gt.engineering@hack4impact.org", name: "Bits of Good Engineering" }],
         bcc: limitedBcc ?? [],
         cc: [],
         sender: {
