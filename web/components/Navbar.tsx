@@ -218,6 +218,27 @@ export default function Navbar() {
               </Link>
               <Link
                 as={NextLink}
+                href={Pages.REQUEST_MANAGEMENT}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.REQUEST_MANAGEMENT
+                      ? "text-primary"
+                      : "black",
+                }}
+              >
+                <Text
+                  color={
+                    router.pathname === Pages.REQUEST_MANAGEMENT
+                      ? "text-primary"
+                      : "black"
+                  }
+                >
+                  Request Management
+                </Text>
+              </Link>
+              <Link
+                as={NextLink}
                 href={Pages.USERS}
                 _hover={{
                   textDecoration: "underline",

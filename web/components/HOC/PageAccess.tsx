@@ -13,6 +13,7 @@ const restricted = new Set([Role.Admin]);
 const pageAccess: Record<Pages, Set<Role>> = {
   [Pages.ONBOARDING]: unrestricted,
   [Pages.ACCESS_MANAGEMENT]: restricted,
+  [Pages.REQUEST_MANAGEMENT]: restricted,
   [Pages.PROFILE]: unrestricted,
   [Pages.FEED]: unrestricted,
   [Pages.RESOURCES]: unrestricted,
@@ -23,6 +24,7 @@ const pageAccess: Record<Pages, Set<Role>> = {
 const pageTitles: Record<Pages, string> = {
   [Pages.ONBOARDING]: "Onboarding",
   [Pages.ACCESS_MANAGEMENT]: "Access Management",
+  [Pages.REQUEST_MANAGEMENT]: "Request Management",
   [Pages.PROFILE]: "Profile",
   [Pages.FEED]: "Feed",
   [Pages.RESOURCES]: "Resources",
