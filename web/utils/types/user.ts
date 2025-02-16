@@ -18,6 +18,7 @@ export interface IUser {
   preferredEmail?: string;
   name?: string;
   uid: string;
+  verifiedByAdmin: boolean;
   role: Role;
   disabled: boolean;
   hasCompletedOnboarding: boolean;

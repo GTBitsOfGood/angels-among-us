@@ -7,6 +7,7 @@ import {
 } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import { logUserCreateEvent } from "../../utils/analytics-logger";
+import { Role } from "../../utils/types/account";
 
 const FACEBOOK_SIGN_IN_PROVIDER = "facebook.com" as const;
 
@@ -48,20 +49,21 @@ export const authRouter = router({
             hasCompletedOnboarding: document!.hasCompletedOnboarding,
           };
         } else if (user && !account) {
-          // Subsequent sign-in, unauthorized account
+          // Subsequent sign-in, unauthorized account (approval request workflow)
           await updateUserByUid(ctx.session.uid, {
             disabled: true,
           });
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message:
-              "You are not permitted to log into this site. Ensure that the account you are logging in with has been given access to the tool.",
+              "You are not permitted to log into this site. Please try again after your request for access has been approved.",
           });
         } else if (!user && account) {
-          // First-time sign-in, authorized account
+          // First-time sign-in, authorized account (invitation workflow)
           const document = await createUser({
             uid: ctx.session.uid,
             email: ctx.session.email,
+            verifiedByAdmin: true,
             role: account.role,
             hasCompletedOnboarding: false,
             disabled: false,
@@ -75,11 +77,22 @@ export const authRouter = router({
             hasCompletedOnboarding: false,
           };
         } else {
-          // First-time sign-in, unauthorized
+          // First-time sign-in, unauthorized account (approval request workflow)
+          const document = await createUser({
+            uid: ctx.session.uid,
+            email: ctx.session.email,
+            verifiedByAdmin: false,
+            role: Role.Volunteer,
+            hasCompletedOnboarding: false,
+            disabled: true,
+            name: ctx.session.name,
+            picture: ctx.session.picture,
+          });
+          // TODO: send email to manager
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message:
-              "You are not permitted to log into this site. Ensure that the account you are logging in with has the correct email address.",
+              "You are not permitted to log into this site. Please try again after your request for access has been approved.",
           });
         }
       } catch (e) {

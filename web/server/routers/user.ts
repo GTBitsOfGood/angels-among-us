@@ -50,6 +50,7 @@ export const userRouter = router({
         if (!user) {
           await createUser({
             ...input,
+            verifiedByAdmin: false,
             disabled: false,
             hasCompletedOnboarding: false,
           });
