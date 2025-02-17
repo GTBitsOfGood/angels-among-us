@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { findAccount } from "../../db/actions/Account";
+import juno from "juno-sdk";
 import {
   createUser,
   findUserByEmail,
@@ -10,6 +11,15 @@ import { logUserCreateEvent } from "../../utils/analytics-logger";
 import { Role } from "../../utils/types/account";
 
 const FACEBOOK_SIGN_IN_PROVIDER = "facebook.com" as const;
+const JUNO_API_KEY = process.env.JUNO_API_KEY as string;
+const JUNO_BASE_URL = process.env.JUNO_BASE_URL as string;
+const JUNO_SENDER_EMAIL = process.env.JUNO_SENDER_EMAIL as string;
+const JUNO_SENDER_NAME = process.env.JUNO_SENDER_NAME as string;
+
+juno.init({
+  apiKey: JUNO_API_KEY as string,
+  baseURL: JUNO_BASE_URL as string,
+});
 
 export const authRouter = router({
   signIn: procedure
@@ -89,6 +99,24 @@ export const authRouter = router({
             picture: ctx.session.picture,
           });
           // TODO: send email to manager
+          const emailContent = `A new user signed up: ${ctx.session.email}, please go to admin request management portal to approve/decline their request.`;
+          await juno.email.sendEmail({
+            recipients: [
+              {
+                email: "josephshenq@gmail.com",
+                name: "Bits of Good Engineering",
+              },
+            ],
+            bcc: [],
+            cc: [],
+            sender: {
+              email: JUNO_SENDER_EMAIL as string,
+              name: JUNO_SENDER_NAME as string,
+            },
+            subject: "Angels Among Us New User Sign-in Request",
+            contents: [{ type: "text/html", value: emailContent }],
+          });
+
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message:
