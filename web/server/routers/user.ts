@@ -5,6 +5,9 @@ import {
   findUserByUid,
   updateUserByUid,
   searchUsers,
+  findUnverifiedUsers,
+  deleteUser,
+  updateUserByEmail,
 } from "../../db/actions/User";
 import { TRPCError } from "@trpc/server";
 import { Role } from "../../utils/types/account";
@@ -19,6 +22,8 @@ import {
   Behavioral,
 } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
+import { addAccount } from "../../db/actions/Account";
+import Account from "../../db/models/Account";
 
 const userPreferencesSchema = z.object({
   preferredEmail: z.string().email().optional(),
@@ -83,6 +88,20 @@ export const userRouter = router({
           });
       }
     }),
+  delete: procedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    try {
+      const deletedUser = await deleteUser(input);
+      return { success: true };
+    } catch (e) {
+      if (e instanceof TRPCError) throw e;
+      else
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+          cause: e,
+        });
+    }
+  }),
   disableStatus: procedure
     .input(
       z.object({
@@ -173,6 +192,72 @@ export const userRouter = router({
             code: "INTERNAL_SERVER_ERROR",
             cause: e,
           });
+      }
+    }),
+  getUnverifiedUsers: procedure.query(async () => {
+    try {
+      const res = await findUnverifiedUsers();
+      return res as IUser[];
+    } catch (e) {
+      if (e instanceof TRPCError) throw e;
+      else
+        throw new TRPCError({
+          message: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
+          cause: e,
+        });
+    }
+  }),
+  approveUser: procedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        role: z.nativeEnum(Role),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session?.email?.toLowerCase() === input.email.toLowerCase()) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User cannot add themselves",
+        });
+      }
+
+      const session = await Account.startSession();
+      session.startTransaction();
+
+      try {
+        const inputData: { email: string; role: Role } = {
+          email: input.email,
+          role: input.role,
+        };
+
+        if ((await addAccount(inputData, session)) === null) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Account already exists",
+          });
+        }
+
+        await updateUserByEmail(
+          input.email,
+          { verifiedByAdmin: true, role: input.role, disabled: false },
+          session
+        );
+
+        session.commitTransaction();
+        return { success: true };
+      } catch (e) {
+        session.abortTransaction();
+        if (e instanceof TRPCError) {
+          throw e;
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An unexpected error occurred",
+            cause: e,
+          });
+        }
       }
     }),
 });
