@@ -36,9 +36,10 @@ function RequestedUserCard(props: PropertyType) {
       <ApproveSelector requestedUser={user} />
       <Box
         as="button"
-        bgColor="tag-primary-bg"
+        bgColor="red.200"
         borderRadius={8}
-        paddingX={2}
+        paddingX={3}
+        paddingY={1}
         alignItems="center"
         justifyContent="center"
         onClick={() => handleDecline(user)}

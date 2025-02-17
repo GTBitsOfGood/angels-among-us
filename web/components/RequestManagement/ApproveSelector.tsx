@@ -53,10 +53,11 @@ function ApproveSelector(props: PropertyType) {
         <Flex
           direction="row"
           as="button"
-          bgColor="tag-primary-bg"
+          bgColor="green.200"
           disabled={mutation.isLoading}
           borderRadius={8}
-          paddingX={2}
+          paddingX={3}
+          paddingY={1}
           alignItems="center"
           justifyContent="center"
           gap={1}
