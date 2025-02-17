@@ -103,7 +103,7 @@ export const authRouter = router({
           await juno.email.sendEmail({
             recipients: [
               {
-                email: "josephshenq@gmail.com",
+                email: "gt.engineering@hack4impact.org",
                 name: "Bits of Good Engineering",
               },
             ],
