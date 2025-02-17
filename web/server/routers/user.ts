@@ -24,6 +24,7 @@ import {
 import { IUser } from "../../utils/types/user";
 import { addAccount } from "../../db/actions/Account";
 import Account from "../../db/models/Account";
+import { deleteFirebaseUser } from "../../utils/firebase/firebaseAdmin";
 
 const userPreferencesSchema = z.object({
   preferredEmail: z.string().email().optional(),
@@ -91,6 +92,7 @@ export const userRouter = router({
   delete: procedure.input(z.string()).mutation(async ({ ctx, input }) => {
     try {
       const deletedUser = await deleteUser(input);
+      await deleteFirebaseUser(input);
       return { success: true };
     } catch (e) {
       if (e instanceof TRPCError) throw e;
