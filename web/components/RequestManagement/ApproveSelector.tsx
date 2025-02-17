@@ -22,7 +22,7 @@ function ApproveSelector(props: PropertyType) {
   const { requestedUser } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const mutation = trpc.user.approveUser.useMutation();
+  const mutation = trpc.account.add.useMutation();
   const utils = trpc.useUtils();
 
   const options = Object.entries(roleLabels).map(([k, v]) => ({
