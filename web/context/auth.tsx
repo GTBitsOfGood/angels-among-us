@@ -83,7 +83,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (newSignIn.isError) {
         // Not authorized
         await signOut(auth);
-      } else if (!newSignIn.data!.hasCompletedOnboarding) {
+      } else if (!newSignIn.data!.authorized) {
+        router.replace(Pages.REQUEST_MANAGEMENT);
+      } else if (
+        newSignIn.data!.authorized &&
+        !newSignIn.data!.hasCompletedOnboarding
+      ) {
         router.replace(Pages.ONBOARDING);
       }
       setLoading(false);

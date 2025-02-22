@@ -96,7 +96,7 @@ export const accountRouter = router({
         await removeAllAccounts(input, session);
         await updateAllUsers(
           input,
-          { verifiedByAdmin: false, disabled: true },
+          { verifiedByAdmin: false, disabled: true, role: Role.Volunteer },
           session
         );
         session.commitTransaction();

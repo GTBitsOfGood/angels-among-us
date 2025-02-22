@@ -13,8 +13,6 @@ import { sendJunoEmail } from "../juno";
 
 const FACEBOOK_SIGN_IN_PROVIDER = "facebook.com" as const;
 
-
-
 export const authRouter = router({
   signIn: procedure
     // Firebase displayName needed to populate first-time sign in User
@@ -54,14 +52,14 @@ export const authRouter = router({
           };
         } else if (user && !account) {
           // Subsequent sign-in, unauthorized account (approval request workflow)
-          await updateUserByUid(ctx.session.uid, {
+          const document = await updateUserByUid(ctx.session.uid, {
             disabled: true,
           });
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message:
-              "You are not permitted to log into this site. Please try again after your request for access has been approved.",
-          });
+          return {
+            user: document,
+            authorized: false,
+            hasCompletedOnboarding: false,
+          };
         } else if (!user && account) {
           // First-time sign-in, authorized account (invitation workflow)
           const document = await createUser({
@@ -97,17 +95,23 @@ export const authRouter = router({
           const emailContent = `A new user signed up: ${ctx.session.email}, please go to admin request management portal to approve/decline their request.`;
 
           if (process.env.NEXT_PUBLIC_CONTEXT !== "production") {
-            await sendJunoEmail(emailContent, "Angels Among Us New User Sign-in Request",
-              [{
-                email: "gt.engineering@hack4impact.org",
-                name: "Bits of Good Engineering",
-              }], false);
+            await sendJunoEmail(
+              emailContent,
+              "Angels Among Us New User Sign-in Request",
+              [
+                {
+                  email: "gt.engineering@hack4impact.org",
+                  name: "Bits of Good Engineering",
+                },
+              ],
+              false
+            );
           }
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message:
-              "You are not permitted to log into this site. Please try again after your request for access has been approved.",
-          });
+          return {
+            user: document,
+            authorized: false,
+            hasCompletedOnboarding: false,
+          };
         }
       } catch (e) {
         if (e instanceof TRPCError) throw e;
