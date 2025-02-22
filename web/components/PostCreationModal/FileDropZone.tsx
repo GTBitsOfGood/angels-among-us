@@ -15,11 +15,6 @@ function FileDropZone(props: PropsType) {
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
-      console.log("REJECTIONS");
-      console.log(fileRejections);
-      console.log("ACCEPTED");
-      console.log(acceptedFiles);
-
       if (fileRejections.length > 0) {
         setShowAlert(true);
       } else setShowAlert(false);
