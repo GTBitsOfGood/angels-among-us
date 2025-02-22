@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { findAccount } from "../../db/actions/Account";
-import juno from "juno-sdk";
 import {
   createUser,
   findUserByEmail,
@@ -35,7 +34,6 @@ export const authRouter = router({
         }
         const user = await findUserByEmail(ctx.session.email);
         const account = await findAccount(ctx.session.email);
-
         if (user && account) {
           // Subsequent sign-in, authorized account
           const document = await updateUserByUid(ctx.session.uid, {
@@ -90,7 +88,7 @@ export const authRouter = router({
             name: ctx.session.name,
             picture: ctx.session.picture,
           });
-          console.log("HERE 3");
+
           // TODO: send email to manager
           const emailContent = `A new user signed up: ${ctx.session.email}, please go to admin request management portal to approve/decline their request.`;
 
