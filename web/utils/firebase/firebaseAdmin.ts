@@ -14,4 +14,15 @@ if (!firebaseAdmin.apps.length) {
   });
 }
 
+export const deleteFirebaseUser = async (uid: string) => {
+  try {
+    const user = await firebaseAdmin.auth().getUser(uid);
+    if (user) {
+      await firebaseAdmin.auth().deleteUser(uid);
+    }
+  } catch (error) {
+    console.error("Error deleting user:", error);
+  }
+}
+
 export { firebaseAdmin };

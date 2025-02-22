@@ -94,7 +94,11 @@ export const accountRouter = router({
 
       try {
         await removeAllAccounts(input, session);
-        await updateAllUsers(input, { disabled: true }, session);
+        await updateAllUsers(
+          input,
+          { verifiedByAdmin: false, disabled: true, role: Role.Volunteer },
+          session
+        );
         session.commitTransaction();
 
         return { success: true };
@@ -142,7 +146,7 @@ export const accountRouter = router({
 
         await updateUserByEmail(
           input.email,
-          { role: input.role, disabled: false },
+          { verifiedByAdmin: true, role: input.role, disabled: false },
           session
         );
 

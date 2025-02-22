@@ -57,6 +57,21 @@ async function findUserByEmail(
   );
 }
 
+async function findUnverifiedUsers(session?: ClientSession): Promise<IUser[]> {
+  return await User.find(
+    { verifiedByAdmin: false },
+    { _id: 0, __v: 0 },
+    { session }
+  ).exec();
+}
+
+async function deleteUser(
+  uid: string,
+  session?: ClientSession
+): Promise<IUser | null> {
+  return await User.findOneAndDelete({ uid: uid }, { session }).exec();
+}
+
 async function updateUserByEmail(
   email: string,
   update: UpdateQuery<IUser>,
@@ -141,6 +156,8 @@ export {
   createUser,
   findUserByUid,
   findUserByEmail,
+  findUnverifiedUsers,
+  deleteUser,
   updateAllUsers,
   updateUserByEmail,
   updateUserByUid,

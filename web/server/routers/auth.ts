@@ -7,6 +7,8 @@ import {
 } from "../../db/actions/User";
 import { router, procedure } from "../trpc";
 import { logUserCreateEvent } from "../../utils/analytics-logger";
+import { Role } from "../../utils/types/account";
+import { sendJunoEmail } from "../juno";
 
 const FACEBOOK_SIGN_IN_PROVIDER = "facebook.com" as const;
 
@@ -32,7 +34,6 @@ export const authRouter = router({
         }
         const user = await findUserByEmail(ctx.session.email);
         const account = await findAccount(ctx.session.email);
-
         if (user && account) {
           // Subsequent sign-in, authorized account
           const document = await updateUserByUid(ctx.session.uid, {
@@ -48,20 +49,21 @@ export const authRouter = router({
             hasCompletedOnboarding: document!.hasCompletedOnboarding,
           };
         } else if (user && !account) {
-          // Subsequent sign-in, unauthorized account
-          await updateUserByUid(ctx.session.uid, {
+          // Subsequent sign-in, unauthorized account (approval request workflow)
+          const document = await updateUserByUid(ctx.session.uid, {
             disabled: true,
           });
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message:
-              "You are not permitted to log into this site. Ensure that the account you are logging in with has been given access to the tool.",
-          });
+          return {
+            user: document,
+            authorized: false,
+            hasCompletedOnboarding: false,
+          };
         } else if (!user && account) {
-          // First-time sign-in, authorized account
+          // First-time sign-in, authorized account (invitation workflow)
           const document = await createUser({
             uid: ctx.session.uid,
             email: ctx.session.email,
+            verifiedByAdmin: true,
             role: account.role,
             hasCompletedOnboarding: false,
             disabled: false,
@@ -75,12 +77,39 @@ export const authRouter = router({
             hasCompletedOnboarding: false,
           };
         } else {
-          // First-time sign-in, unauthorized
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message:
-              "You are not permitted to log into this site. Ensure that the account you are logging in with has the correct email address.",
+          // First-time sign-in, unauthorized account (approval request workflow)
+          const document = await createUser({
+            uid: ctx.session.uid,
+            email: ctx.session.email,
+            verifiedByAdmin: false,
+            role: Role.Volunteer,
+            hasCompletedOnboarding: false,
+            disabled: true,
+            name: ctx.session.name,
+            picture: ctx.session.picture,
           });
+
+          // TODO: send email to manager
+          const emailContent = `A new user signed up: ${ctx.session.email}, please go to admin request management portal to approve/decline their request.`;
+
+          if (process.env.NEXT_PUBLIC_CONTEXT !== "production") {
+            await sendJunoEmail(
+              emailContent,
+              "Angels Among Us New User Sign-in Request",
+              [
+                {
+                  email: "gt.engineering@hack4impact.org",
+                  name: "Bits of Good Engineering",
+                },
+              ],
+              false
+            );
+          }
+          return {
+            user: document,
+            authorized: false,
+            hasCompletedOnboarding: false,
+          };
         }
       } catch (e) {
         if (e instanceof TRPCError) throw e;

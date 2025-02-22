@@ -35,8 +35,9 @@ import { auth } from "../utils/firebase/firebaseClient";
 interface AvatarProps {
   user: typeof auth.currentUser | null;
   onMenuClose: () => void;
+  authorized: boolean;
 }
-function Avatar({ user, onMenuClose }: AvatarProps) {
+function Avatar({ user, onMenuClose, authorized }: AvatarProps) {
   const { userData } = useAuth();
   const router = useRouter();
   const isMd = useBreakpointValue({
@@ -54,7 +55,9 @@ function Avatar({ user, onMenuClose }: AvatarProps) {
             p={{ base: 0, md: 4 }}
             _hover={{ bgColor: "white" }}
             _active={{ bgColor: "white" }}
-            borderLeft={{ md: "1px solid black" }}
+            borderLeft={
+              authorized ? { md: "1px solid black" } : { md: "0px solid black" }
+            }
             borderRadius={0}
             onClick={isOpen ? onClose : onMenuClose}
             rightIcon={isMd ? <ChevronDownIcon /> : undefined}
@@ -84,15 +87,17 @@ function Avatar({ user, onMenuClose }: AvatarProps) {
               </Text>
               <Text fontSize="sm">{user?.email}</Text>
             </Box>
-            <Link
-              as={NextLink}
-              href={Pages.PROFILE}
-              style={{ textDecoration: "none" }}
-            >
-              <MenuItem icon={<Icon boxSize={5} as={BsPerson} />}>
-                Profile
-              </MenuItem>
-            </Link>
+            {authorized && (
+              <Link
+                as={NextLink}
+                href={Pages.PROFILE}
+                style={{ textDecoration: "none" }}
+              >
+                <MenuItem icon={<Icon boxSize={5} as={BsPerson} />}>
+                  Profile
+                </MenuItem>
+              </Link>
+            )}
             <MenuDivider />
             <MenuItem
               icon={<Icon boxSize={5} as={PiSignOut} />}
@@ -123,11 +128,17 @@ export default function Navbar() {
 
   const visible = navbarVisiblity[router.pathname as Pages] ?? false;
 
-  if (!loading && visible && userData && !userData.hasCompletedOnboarding) {
+  if (
+    !loading &&
+    visible &&
+    userData &&
+    authorized &&
+    !userData.hasCompletedOnboarding
+  ) {
     return <></>;
   }
 
-  if (loading || !authorized || !visible) {
+  if (!user || loading || !visible) {
     return <></>;
   }
 
@@ -178,21 +189,25 @@ export default function Navbar() {
           alignItems="center"
           spacing={10}
         >
-          <Link
-            as={NextLink}
-            href={Pages.FEED}
-            _hover={{
-              textDecoration: "underline",
-              textDecorationColor:
-                router.pathname === Pages.FEED ? "text-primary" : "black",
-            }}
-          >
-            <Text
-              color={router.pathname === Pages.FEED ? "text-primary" : "black"}
+          {authorized && (
+            <Link
+              as={NextLink}
+              href={Pages.FEED}
+              _hover={{
+                textDecoration: "underline",
+                textDecorationColor:
+                  router.pathname === Pages.FEED ? "text-primary" : "black",
+              }}
             >
-              Feed
-            </Text>
-          </Link>
+              <Text
+                color={
+                  router.pathname === Pages.FEED ? "text-primary" : "black"
+                }
+              >
+                Feed
+              </Text>
+            </Link>
+          )}
           {role === Role.Admin && (
             <>
               <Link
@@ -218,6 +233,27 @@ export default function Navbar() {
               </Link>
               <Link
                 as={NextLink}
+                href={Pages.REQUEST_MANAGEMENT}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.REQUEST_MANAGEMENT
+                      ? "text-primary"
+                      : "black",
+                }}
+              >
+                <Text
+                  color={
+                    router.pathname === Pages.REQUEST_MANAGEMENT
+                      ? "text-primary"
+                      : "black"
+                  }
+                >
+                  Request Management
+                </Text>
+              </Link>
+              <Link
+                as={NextLink}
                 href={Pages.USERS}
                 _hover={{
                   textDecoration: "underline",
@@ -235,43 +271,61 @@ export default function Navbar() {
               </Link>
             </>
           )}
-          <Link
-            as={NextLink}
-            href={Pages.RESOURCES}
-            _hover={{
-              textDecoration: "underline",
-              textDecorationColor:
-                router.pathname === Pages.RESOURCES ? "text-primary" : "black",
-            }}
-          >
-            <Text
-              color={
-                router.pathname === Pages.RESOURCES ? "text-primary" : "black"
-              }
-            >
-              Resources
-            </Text>
-          </Link>
-          <Avatar user={user} onMenuClose={onMenuClose} />
+          {authorized && (
+            <>
+              <Link
+                as={NextLink}
+                href={Pages.RESOURCES}
+                _hover={{
+                  textDecoration: "underline",
+                  textDecorationColor:
+                    router.pathname === Pages.RESOURCES
+                      ? "text-primary"
+                      : "black",
+                }}
+              >
+                <Text
+                  color={
+                    router.pathname === Pages.RESOURCES
+                      ? "text-primary"
+                      : "black"
+                  }
+                >
+                  Resources
+                </Text>
+              </Link>
+            </>
+          )}
+          <Avatar
+            user={user}
+            onMenuClose={onMenuClose}
+            authorized={authorized}
+          />
         </Stack>
 
         <Box display={{ base: "block", md: "none" }}>
-          <Avatar user={user} onMenuClose={onMenuClose} />
+          <Avatar
+            user={user}
+            onMenuClose={onMenuClose}
+            authorized={authorized}
+          />
         </Box>
       </Flex>
 
       {isMenuOpen ? (
         <Box display={{ md: "none" }} p={2}>
           <Stack spacing={4}>
-            <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
-              <Text
-                color={
-                  router.pathname === Pages.FEED ? "text-primary" : "black"
-                }
-              >
-                Feed
-              </Text>
-            </Link>
+            {authorized && (
+              <Link as={NextLink} href={Pages.FEED} onClick={onMenuClose}>
+                <Text
+                  color={
+                    router.pathname === Pages.FEED ? "text-primary" : "black"
+                  }
+                >
+                  Feed
+                </Text>
+              </Link>
+            )}
             {role === Role.Admin && (
               <>
                 <Link
@@ -300,15 +354,19 @@ export default function Navbar() {
                 </Link>
               </>
             )}
-            <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
-              <Text
-                color={
-                  router.pathname === Pages.RESOURCES ? "text-primary" : "black"
-                }
-              >
-                Resources
-              </Text>
-            </Link>
+            {authorized && (
+              <Link as={NextLink} href={Pages.RESOURCES} onClick={onMenuClose}>
+                <Text
+                  color={
+                    router.pathname === Pages.RESOURCES
+                      ? "text-primary"
+                      : "black"
+                  }
+                >
+                  Resources
+                </Text>
+              </Link>
+            )}
           </Stack>
         </Box>
       ) : null}

@@ -11,6 +11,7 @@ import {
   Size,
 } from "../../utils/types/post";
 import { IUser } from "../../utils/types/user";
+import { boolean } from "zod";
 const { Schema } = mongoose;
 
 const userSchema = new Schema<IUser>({
@@ -42,6 +43,10 @@ const userSchema = new Schema<IUser>({
     required: true,
     unique: true,
     index: true,
+  },
+  verifiedByAdmin: {
+    type: Boolean,
+    required: true,
   },
   role: {
     type: String,
