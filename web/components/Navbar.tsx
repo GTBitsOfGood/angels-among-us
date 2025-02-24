@@ -343,6 +343,21 @@ export default function Navbar() {
                     Access Management
                   </Text>
                 </Link>
+                <Link
+                  as={NextLink}
+                  href={Pages.REQUEST_MANAGEMENT}
+                  onClick={onMenuClose}
+                >
+                  <Text
+                    color={
+                      router.pathname === Pages.REQUEST_MANAGEMENT
+                        ? "text-primary"
+                        : "black"
+                    }
+                  >
+                    Request Management
+                  </Text>
+                </Link>
                 <Link as={NextLink} href={Pages.USERS} onClick={onMenuClose}>
                   <Text
                     color={
