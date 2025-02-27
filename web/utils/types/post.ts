@@ -115,6 +115,7 @@ export enum Breed {
   TerrierSmall = "terrierSmall", // Terrier (Small)
   Weimaraner = "weimaraner",
   Whippet = "whippet",
+  Other = "other",
 }
 
 export const breedLabels: Record<Breed, string> = {
@@ -168,6 +169,7 @@ export const breedLabels: Record<Breed, string> = {
   [Breed.TerrierSmall]: "Terrier (Small)", // Terrier (Small)
   [Breed.Weimaraner]: "Weimaraner",
   [Breed.Whippet]: "Whippet",
+  [Breed.Other]: "Other",
 };
 
 export enum Gender {
@@ -325,6 +327,7 @@ export interface IPost {
   type: FosterType;
   size: Size;
   breed: Breed[];
+  otherBreedDescription: string;
   gender: Gender;
   age: Age;
   temperament: Temperament[];

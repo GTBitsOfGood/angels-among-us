@@ -36,6 +36,7 @@ const postSchema = new Schema<IPost | IDraftPost>({
       enum: Object.values(Breed),
     },
   ],
+  otherBreedDescription: { type: String },
   gender: {
     type: String,
     default: null,

@@ -12,5 +12,8 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,md}": "prettier --write"
+  },
+  "dependencies": {
+    "mongoose": "^8.11.0"
   }
 }

@@ -193,15 +193,31 @@ export const FormSlide: React.FC<{
               value: k,
               label: v,
             }))}
-            onChange={(e) =>
+            onChange={(e) => {
               dispatchFormState({
                 type: "setField",
                 key: "breed",
                 data: e!.map(({ value }) => value) as Breed[],
               })
             }
+            }
           />
         </FormControl>
+        {formState.breed.includes(Breed.Other) ?
+        <FormControl className="otherBreedForm" gridColumn="span 1">
+          <FormLabel>Other Breed Description</FormLabel>
+          <Textarea
+            value={formState.otherBreedDescription}
+            onChange={(e) =>
+              dispatchFormState({
+                type: "setField",
+                key: "otherBreedDescription",
+                data: e.target.value,
+              })
+            }
+          />
+        </FormControl>
+        : <></>}
         <FormControl className="temperamentForm" gridColumn="span 1">
           <FormLabel>Temperament</FormLabel>
           <Select

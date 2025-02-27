@@ -54,6 +54,7 @@ const postSchema = z.object({
   type: z.nativeEnum(FosterType),
   size: z.nativeEnum(Size),
   breed: z.array(z.nativeEnum(Breed)),
+  otherBreedDescription: z.string(),
   gender: z.nativeEnum(Gender),
   age: z.nativeEnum(Age),
   draft: z.boolean(),
