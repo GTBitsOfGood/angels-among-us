@@ -101,7 +101,7 @@ const formSchema = z.object({
   breed: z
     .array(z.nativeEnum(Breed))
     .transform((val, ctx) => arrayEmptyValidation(val, ctx, "Breed")),
-  otherBreedDescription: z.string(),
+  otherBreedDescription: z.string().optional(),
   temperament: z.array(z.nativeEnum(Temperament)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
@@ -493,42 +493,42 @@ const EditPostModal: React.FC<{
             onClick={
               isContentView
                 ? () => {
-                    setIsContentView(false);
-                  }
+                  setIsContentView(false);
+                }
                 : () => {
-                    //TODO: Wait for success to close.
-                    const validation = formSchema.safeParse(formState);
-                    if (validation.success) {
-                      setIsLoading(true);
-                      editPost(!formState.draft)
-                        .then(() => {
-                          onClose();
-                          setFileArr(fileArr);
-                          setIsContentView(true);
-                          dispatch({
-                            type: "clear",
-                          });
-                        })
-                        .finally(() => {
-                          setIsLoading(false);
+                  //TODO: Wait for success to close.
+                  const validation = formSchema.safeParse(formState);
+                  if (validation.success) {
+                    setIsLoading(true);
+                    editPost(!formState.draft)
+                      .then(() => {
+                        onClose();
+                        setFileArr(fileArr);
+                        setIsContentView(true);
+                        dispatch({
+                          type: "clear",
                         });
-                    } else {
-                      toast.closeAll();
-                      toast({
-                        title: "Error",
-                        description: validation.error.issues
-                          .map((issue) => issue.message)
-                          .join("\r\n"),
-                        containerStyle: {
-                          whiteSpace: "pre-line",
-                        },
-                        status: "error",
-                        duration: 5000,
-                        isClosable: true,
-                        position: "top",
+                      })
+                      .finally(() => {
+                        setIsLoading(false);
                       });
-                    }
+                  } else {
+                    toast.closeAll();
+                    toast({
+                      title: "Error",
+                      description: validation.error.issues
+                        .map((issue) => issue.message)
+                        .join("\r\n"),
+                      containerStyle: {
+                        whiteSpace: "pre-line",
+                      },
+                      status: "error",
+                      duration: 5000,
+                      isClosable: true,
+                      position: "top",
+                    });
                   }
+                }
             }
           >
             {isContentView ? "Next" : "Post"}
