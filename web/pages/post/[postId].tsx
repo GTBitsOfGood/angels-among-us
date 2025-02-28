@@ -157,6 +157,7 @@ function PostPage({
     medical,
     gender,
     breed,
+    otherBreedDescription,
     getsAlongWithOlderKids,
     getsAlongWithYoungKids,
     getsAlongWithLargeDogs,
@@ -364,7 +365,12 @@ function PostPage({
               </Text>
               <Text>
                 <b>Breed: </b>
-                {breed.map((breed) => breedLabels[breed]).join(", ")}
+                {breed.map((breed) => {
+                  if (breed === "other" && otherBreedDescription) {
+                    return "Other (" + otherBreedDescription + ")";
+                  }
+                  return breedLabels[breed]
+                }).join(", ")}
               </Text>
               <Text>
                 <b>Size: </b>
