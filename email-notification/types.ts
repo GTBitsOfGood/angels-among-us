@@ -77,6 +77,7 @@ export enum Breed {
     TerrierSmall = "terrierSmall", // Terrier (Small)
     Weimaraner = "weimaraner",
     Whippet = "whippet",
+    Other = "other",
 }
 
 export enum Gender {
@@ -143,6 +144,7 @@ export interface IPost {
     type: FosterType;
     size: Size;
     breed: Breed[];
+    otherBreedDescription?: string;
     gender: Gender;
     age: Age;
     temperament: Temperament[];

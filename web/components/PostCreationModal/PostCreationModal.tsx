@@ -103,6 +103,7 @@ const formSchema = z.object({
   breed: z
     .array(z.nativeEnum(Breed))
     .transform((val, ctx) => arrayEmptyValidation(val, ctx, "Breed")),
+  otherBreedDescription: z.string().optional(),
   temperament: z.array(z.nativeEnum(Temperament)),
   medical: z.array(z.nativeEnum(Medical)),
   behavioral: z.array(z.nativeEnum(Behavioral)),
@@ -160,6 +161,7 @@ const PostCreationModal: React.FC<{
     type: null,
     size: null,
     breed: [],
+    otherBreedDescription: "",
     temperament: [],
     medical: [],
     behavioral: [],
