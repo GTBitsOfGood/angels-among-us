@@ -71,8 +71,59 @@ function FileDropZone(props: PropsType) {
     lg: <FullDropZone />,
   });
 
+  const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
+  const MAX_IMAGE_SIZE = 3 * 1024 * 1024; // 3MB
+
+  async function resizeImage(file: File): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const img = new Image();
+        img.src = reader.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return reject(new Error("Canvas context not available"));
+
+          const MAX_WIDTH = 4096;
+          const MAX_HEIGHT = 4096;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+            if (width > height) {
+              height = (height * MAX_WIDTH) / width;
+              width = MAX_WIDTH;
+            } else {
+              width = (width * MAX_HEIGHT) / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(new File([blob], file.name, { type: "image/jpeg" }));
+              } else {
+                reject(new Error("Failed to resize image"));
+              }
+            },
+            "image/jpeg",
+            0.8
+          );
+        };
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  }
+
   const onDrop = useCallback(
-    (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+    async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       if (fileRejections.length > 0) {
         toast({
           status: "error",
@@ -104,7 +155,49 @@ function FileDropZone(props: PropsType) {
         return;
       }
 
-      setFileArr([...fileArr, ...acceptedFiles]);
+      let newFiles: File[] = [];
+
+      const processedFiles = await Promise.all(
+        acceptedFiles.map(async (file) => {
+          console.log(file.size);
+          if (file.type.startsWith("video/")) {
+            if (file.size > MAX_VIDEO_SIZE) {
+              toast({
+                status: "error",
+                position: "top",
+                title: "Error",
+                description: `The video ${file.name} exceeds the 50MB limit.`,
+                duration: 4000,
+                isClosable: true,
+              });
+              return null;
+            }
+            return file;
+          } else if (file.type.startsWith("image/")) {
+            if (file.size > MAX_IMAGE_SIZE) {
+              try {
+                return await resizeImage(file);
+              } catch (error) {
+                console.error(`Failed to resize image ${file.name}`, error);
+                toast({
+                  status: "error",
+                  position: "top",
+                  title: "Error",
+                  description: `Failed to resize image ${file.name}.`,
+                  duration: 4000,
+                  isClosable: true,
+                });
+                return null;
+              }
+            }
+            return file;
+          }
+          return null;
+        })
+      );
+
+      newFiles = processedFiles.filter((file): file is File => file !== null);
+      setFileArr([...fileArr, ...newFiles]);
     },
     [fileArr, setFileArr]
   );
