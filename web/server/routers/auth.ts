@@ -9,8 +9,10 @@ import { router, procedure } from "../trpc";
 import { logUserCreateEvent } from "../../utils/analytics-logger";
 import { Role } from "../../utils/types/account";
 import { sendJunoEmail } from "../juno";
+import { errorCodeMessageMap } from "../../utils/errorCode";
 
 const FACEBOOK_SIGN_IN_PROVIDER = "facebook.com" as const;
+const EMAIL_PASSWORD_SIGN_IN_PROVIDER = "password" as const;
 
 export const authRouter = router({
   signIn: procedure
@@ -32,6 +34,10 @@ export const authRouter = router({
             message: "Not authenticated",
           });
         }
+        const emailVerified =
+          ctx.session.firebase.sign_in_provider !==
+            EMAIL_PASSWORD_SIGN_IN_PROVIDER || ctx.session.email_verified;
+
         const user = await findUserByEmail(ctx.session.email);
         const account = await findAccount(ctx.session.email);
         if (user && account) {
@@ -46,6 +52,7 @@ export const authRouter = router({
           return {
             user: document,
             authorized: true,
+            emailVerified,
             hasCompletedOnboarding: document!.hasCompletedOnboarding,
           };
         } else if (user && !account) {
@@ -56,6 +63,7 @@ export const authRouter = router({
           return {
             user: document,
             authorized: false,
+            emailVerified,
             hasCompletedOnboarding: false,
           };
         } else if (!user && account) {
@@ -74,6 +82,7 @@ export const authRouter = router({
           return {
             user: document,
             authorized: true,
+            emailVerified,
             hasCompletedOnboarding: false,
           };
         } else {
@@ -108,6 +117,7 @@ export const authRouter = router({
           return {
             user: document,
             authorized: false,
+            emailVerified,
             hasCompletedOnboarding: false,
           };
         }
