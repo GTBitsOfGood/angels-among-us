@@ -44,7 +44,7 @@ function RequestedUserCard(props: PropertyType) {
         justifyContent="center"
         onClick={() => handleDecline(user)}
       >
-        Delete User
+        Deny User
       </Box>
     </Flex>
   );

@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import PageNotFoundError from "../404";
 import Head from "next/head";
 import Navbar from "../Navbar";
+import EmailVerification from "../EmailPasswordAuth/EmailVerification";
 
 const unrestricted = new Set([Role.Volunteer, Role.ContentCreator, Role.Admin]);
 const restricted = new Set([Role.Admin]);
@@ -56,6 +57,19 @@ const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {
       );
     }
 
+    if (user && !user.emailVerified) {
+      return (
+        <>
+          <Navbar />
+          <EmailVerification
+            onVerificationComplete={() => {
+              router.replace(router.pathname);
+            }}
+          />
+        </>
+      );
+    }
+
     if (!authorized) {
       return (
         <>
@@ -76,7 +90,7 @@ const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {
                   lineHeight="24px"
                   letterSpacing="wide"
                 >
-                  Sorry!
+                  Admin Approval Sent!
                 </Text>
               </Box>
               <Flex

@@ -34,10 +34,20 @@ import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import backgroundImage from "../public/backgroundImage.png";
 import Head from "next/head";
 import FeedPage from "../components/FeedPage/FeedPage";
+import EmailPasswordAuthModal from "../components/EmailPasswordAuth/LoginModal";
 
 function Home() {
   const { loading, setLoading, authorized, authError, userData } = useAuth();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isReminderOpen,
+    onOpen: openReminderModal,
+    onClose: onReminderClose,
+  } = useDisclosure();
+  const {
+    isOpen: isLoginOpen,
+    onOpen: openLoginModal,
+    onClose: onLoginClose,
+  } = useDisclosure();
   const toast = useToast();
   const toastId = "auth-toast" as const;
 
@@ -79,6 +89,10 @@ function Home() {
         position: "top",
       });
     }
+  }
+
+  async function handleLoginEmailPassword() {
+    openLoginModal();
   }
 
   useEffect(() => {
@@ -215,6 +229,22 @@ function Home() {
               <Button variant="solid-primary" onClick={handleLoginGoogle}>
                 Continue with Google
               </Button>
+              <Stack
+                direction="row"
+                width="100%"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Divider width="45%" border="1px solid white"></Divider>
+                <Text color="white">or</Text>
+                <Divider width="45%" border="1px solid white"></Divider>
+              </Stack>
+              <Button
+                variant="solid-primary"
+                onClick={handleLoginEmailPassword}
+              >
+                Continue with Email/Password
+              </Button>
             </Stack>
           </Stack>
           <Flex flex="0 1 0" width="200px" />
@@ -287,12 +317,20 @@ function Home() {
               <Text color="#BBBBBB" fontSize="small">
                 what is this tool?
               </Text>
-              <Flex bgColor="#D9D9D9" borderRadius="100%" onClick={onOpen}>
+              <Flex
+                bgColor="#D9D9D9"
+                borderRadius="100%"
+                onClick={openReminderModal}
+              >
                 <QuestionOutlineIcon boxSize={5} />
               </Flex>
             </Stack>
 
-            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <EmailPasswordAuthModal
+              isOpen={isLoginOpen}
+              onClose={onLoginClose}
+            />
+            <Modal isOpen={isReminderOpen} onClose={onReminderClose} isCentered>
               <ModalOverlay />
               <ModalContent width="80%" bgColor="#D9D9D9">
                 <ModalBody>
