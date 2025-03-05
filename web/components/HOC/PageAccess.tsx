@@ -90,7 +90,7 @@ const pageAccessHOC = <P extends object>(Component: React.FC<P>) => {
                   lineHeight="24px"
                   letterSpacing="wide"
                 >
-                  Sorry!
+                  Admin Approval Sent!
                 </Text>
               </Box>
               <Flex
