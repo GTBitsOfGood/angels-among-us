@@ -398,7 +398,7 @@ const PostCreationModal: React.FC<{
           </Stack>
         </ModalBody>
         <ModalFooter>
-          <Button
+          {/* <Button
             size="lg"
             isLoading={loading}
             mr={4}
@@ -423,7 +423,7 @@ const PostCreationModal: React.FC<{
             }}
           >
             Save as Draft
-          </Button>
+          </Button> */}
           <Button
             size="lg"
             isLoading={loading}
