@@ -500,7 +500,7 @@ const EditPostModal: React.FC<{
                   const validation = formSchema.safeParse(formState);
                   if (validation.success) {
                     setIsLoading(true);
-                    editPost(!formState.draft)
+                    editPost(false)
                       .then(() => {
                         onClose();
                         setFileArr(fileArr);
