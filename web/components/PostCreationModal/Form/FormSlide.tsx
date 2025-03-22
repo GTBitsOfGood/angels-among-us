@@ -8,6 +8,7 @@ import {
   Box,
   Textarea,
   Grid,
+  Checkbox,
 } from "@chakra-ui/react";
 import {
   Age,
@@ -290,6 +291,19 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
+        <FormControl className="urgentForm" gridColumn="span 1">
+          <FormLabel>Urgent Foster</FormLabel>
+          <Checkbox
+            checked = {formState.urgent}
+            onChange = {(e) => {
+              dispatchFormState({
+                type: "setField",
+                key: "urgent",
+                data: e.currentTarget.checked as boolean,
+              })
+            }}
+          />
+        </FormControl>
       </Grid>
       <Box>
         <Grid
@@ -380,11 +394,6 @@ export const FormSlide: React.FC<{
               val={formState.getsAlongWithCats}
               dispatchFormState={dispatchFormState}
             />
-          </Box>
-          <Box></Box>
-          <Box>
-            <Text>Urgent?</Text>
-            <input></input>
           </Box>
         </Grid>
       </Box>
