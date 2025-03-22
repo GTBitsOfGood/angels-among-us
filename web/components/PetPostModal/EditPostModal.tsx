@@ -463,7 +463,7 @@ const EditPostModal: React.FC<{
           >
             Cancel
           </Button>
-          <Button
+          {/* <Button
             size="lg"
             mr={4}
             isLoading={isLoading}
@@ -485,7 +485,7 @@ const EditPostModal: React.FC<{
             }}
           >
             Save as Draft
-          </Button>
+          </Button> */}
           <Button
             size="lg"
             isLoading={isLoading}
@@ -500,7 +500,7 @@ const EditPostModal: React.FC<{
                   const validation = formSchema.safeParse(formState);
                   if (validation.success) {
                     setIsLoading(true);
-                    editPost(!formState.draft)
+                    editPost(false)
                       .then(() => {
                         onClose();
                         setFileArr(fileArr);
