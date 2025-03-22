@@ -94,6 +94,7 @@ const formSchema = z.object({
     })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Foster type")),
+  urgent: z.boolean(),
   size: z
     .nativeEnum(Size, { required_error: "Size required." })
     .nullable()
@@ -145,6 +146,7 @@ const EditPostModal: React.FC<{
     name,
     description,
     type,
+    urgent,
     size,
     age,
     draft,
@@ -172,6 +174,7 @@ const EditPostModal: React.FC<{
     gender,
     age,
     type,
+    urgent,
     size,
     breed,
     otherBreedDescription,

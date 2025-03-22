@@ -151,6 +151,10 @@ const postSchema = new Schema<IPost | IDraftPost>({
         default: null,
         enum: [...Object.values(FosterType), null],
     },
+    urgent: {
+        type: Boolean,
+        default: false,
+    },
     size: {
         type: String,
         default: null,

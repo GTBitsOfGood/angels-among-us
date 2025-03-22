@@ -148,6 +148,7 @@ function PostPage({
     name,
     description,
     type,
+    urgent,
     size,
     age,
     draft,
