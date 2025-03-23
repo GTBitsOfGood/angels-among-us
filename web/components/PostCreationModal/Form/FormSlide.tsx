@@ -295,12 +295,12 @@ export const FormSlide: React.FC<{
           <FormLabel marginBottom="0">Urgent Foster</FormLabel>
           <Checkbox
             size = "lg"
-            checked = {formState.urgent}
+            isChecked = {formState.urgent}
             onChange = {(e) => {
               dispatchFormState({
                 type: "setField",
                 key: "urgent",
-                data: e.currentTarget.checked as boolean,
+                data: e.target.checked as boolean,
               })
             }}
           />
