@@ -351,7 +351,12 @@ function PostPage({
             {fosterTypeLabels[type] && type !== FosterType.Boarding && (
               <Text>
                 I am a <b>{fosterTypeLabels[type].toLowerCase()}</b> dog.{" "}
-                {fosterTypeDescriptions[type]}
+                {fosterTypeDescriptions[type]} 
+              </Text>
+            )}
+            {urgent && (
+              <Text>
+                Finding a new foster <b>quickly</b> is important for my well-being.
               </Text>
             )}
           </Box>
