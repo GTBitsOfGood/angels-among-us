@@ -325,6 +325,7 @@ export interface IPost {
   name: string;
   description: string;
   type: FosterType;
+  urgent: boolean;
   size: Size;
   breed: Breed[];
   otherBreedDescription?: string;
@@ -359,6 +360,7 @@ export type IDraftPost = Omit<
   breed: Breed[] | null;
   gender: Gender | null;
   age: Age | null;
+  
 };
 
 export type IFeedPost = Omit<IPost, "usersAppliedTo"> & {

@@ -96,6 +96,7 @@ const formSchema = z.object({
     })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Foster type")),
+  urgent: z.boolean(),
   size: z
     .nativeEnum(Size, { required_error: "Size required." })
     .nullable()
@@ -159,6 +160,7 @@ const PostCreationModal: React.FC<{
     gender: null,
     age: null,
     type: null,
+    urgent: false,
     size: null,
     breed: [],
     otherBreedDescription: "",
@@ -230,10 +232,12 @@ const PostCreationModal: React.FC<{
       })
     );
     try {
+      console.log(formState)
       const creationInfo = await postCreate.mutateAsync({
         ...(formState as z.output<typeof formSchema>),
         attachments: files,
       });
+      console.log(creationInfo)
       const oid = creationInfo._id;
       const uploadInfo = creationInfo.attachments;
 

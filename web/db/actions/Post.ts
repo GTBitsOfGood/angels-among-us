@@ -402,7 +402,7 @@ async function getFilteredPosts(filter: FilterQuery<IPost>, userUid: string) {
       },
     },
   ])
-    .sort({ date: -1 })
+    .sort({ urgent: -1, date: -1 })
     .exec();
   return posts;
 }

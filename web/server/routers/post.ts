@@ -52,6 +52,7 @@ const postSchema = z.object({
   name: z.string(),
   description: z.string(),
   type: z.nativeEnum(FosterType),
+  urgent: z.boolean(),
   size: z.nativeEnum(Size),
   breed: z.array(z.nativeEnum(Breed)),
   otherBreedDescription: z.string().optional(),
