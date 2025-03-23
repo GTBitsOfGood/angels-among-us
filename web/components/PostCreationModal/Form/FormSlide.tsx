@@ -291,9 +291,10 @@ export const FormSlide: React.FC<{
             }
           />
         </FormControl>
-        <FormControl className="urgentForm" gridColumn="span 1">
-          <FormLabel>Urgent Foster</FormLabel>
+        <FormControl className="urgentForm" gridColumn="span 1" display={"flex"} marginBottom="10px">
+          <FormLabel marginBottom="0">Urgent Foster</FormLabel>
           <Checkbox
+            size = "lg"
             checked = {formState.urgent}
             onChange = {(e) => {
               dispatchFormState({
