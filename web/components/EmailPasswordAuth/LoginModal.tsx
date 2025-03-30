@@ -76,6 +76,9 @@ const EmailPasswordAuthModal: React.FC<EmailPasswordAuthModalProps> = ({
         if (password !== confirmPassword) {
           throw new Error("Passwords do not match");
         }
+        if (password.length < 6) {
+          throw new Error("Your password must be at least 6 characters long. Please try again.");
+        }
         const { user } = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -101,26 +104,14 @@ const EmailPasswordAuthModal: React.FC<EmailPasswordAuthModalProps> = ({
       handleClose();
     } catch (error: any) {
       setIsLoading(false);
-      if (password.length < 6) {
-        toast({
-          title: "Authentication Error",
-          description:
-            "Your password must be at least 6 characters long. Please try again.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
-      } else {
-        toast({
-          title: "Authentication Error",
-          description: error.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "top",
-        });
-      }
+      toast({
+        title: "Authentication Error",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
     }
   };
 
