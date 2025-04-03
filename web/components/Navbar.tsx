@@ -86,6 +86,7 @@ function Avatar({ user, onMenuClose, authorized }: AvatarProps) {
                 {userData?.name ?? user?.displayName ?? ""}
               </Text>
               <Text fontSize="sm">{user?.email}</Text>
+              <Text fontSize="sm" color="text-secondary">{userData?.role ? userData.role.charAt(0).toUpperCase() + userData.role.slice(1) : ""}</Text>
             </Box>
             {authorized && (
               <Link
