@@ -21,6 +21,7 @@ export function createRandomPost(): IPost & { _id: Types.ObjectId } {
     name: faker.person.fullName(),
     description: faker.lorem.sentence(),
     type: faker.helpers.arrayElement(Object.values(FosterType)),
+    urgent: faker.datatype.boolean(),
     size: faker.helpers.arrayElement(Object.values(Size)),
     breed: faker.helpers.uniqueArray(
       Object.values(Breed),
@@ -64,6 +65,7 @@ export function createRandomFeedPost(): IFeedPost {
     name: faker.person.fullName(),
     description: faker.lorem.sentence(),
     type: faker.helpers.arrayElement(Object.values(FosterType)),
+    urgent: faker.datatype.boolean(),
     size: faker.helpers.arrayElement(Object.values(Size)),
     breed: faker.helpers.uniqueArray(
       Object.values(Breed),

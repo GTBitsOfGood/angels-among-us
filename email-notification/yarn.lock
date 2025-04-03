@@ -1328,10 +1328,10 @@ jsprim@^1.2.2:
     json-schema "0.4.0"
     verror "1.10.0"
 
-juno-sdk@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/juno-sdk/-/juno-sdk-0.0.5.tgz#7bca2a273f62d6707c2ca6f875a3b9b69ea096b8"
-  integrity sha512-JJayvnYeuF8sjRV4HFtpMslZIwsWvCPcW3WxY1TXr4IM+tUpMc4sEhW02haBQJ5YEKCG/1HjLcPP9FjufpyZ4g==
+juno-sdk@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/juno-sdk/-/juno-sdk-0.0.6.tgz#6765bcc71b232a182b777848b9e13803c09818c5"
+  integrity sha512-WaMqG0FsVWC45JaQUcefbDa7dyPeyBb2a+z7DxsYyn1fVE0sKpRqo3862e4dNTKOe429ppHgE4FiaYOKH8W8eA==
   dependencies:
     "@bitauth/libauth" "^1.17.1"
     request "^2.88.2"

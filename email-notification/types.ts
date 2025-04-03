@@ -142,6 +142,7 @@ export interface IPost {
     name: string;
     description: string;
     type: FosterType;
+    urgent: boolean;
     size: Size;
     breed: Breed[];
     otherBreedDescription?: string;

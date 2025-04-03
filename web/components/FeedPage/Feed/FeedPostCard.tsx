@@ -109,6 +109,7 @@ function FeedPostCard(props: { post: IFeedPost }) {
             <Text margin="0px" paddingY="0px" fontWeight="bold" fontSize="18px">
               {post.name}
             </Text>
+            <Box display={"flex"} flexDirection={"row"}>
             {fosterTypeLabels[post.type] && (
               <Text
                 margin="0px"
@@ -125,6 +126,25 @@ function FeedPostCard(props: { post: IFeedPost }) {
                 {fosterTypeLabels[post.type]}
               </Text>
             )}
+            {post.urgent !== null && post.urgent === true && (
+              <Text
+              margin="0px"
+              backgroundColor="red.200"
+              width="fit-content"
+              paddingX="16px"
+              paddingY="4px"
+              borderRadius="20px"
+              marginTop="5px"
+              marginBottom="10px"
+              marginLeft="10px"
+              fontSize="14px"
+              fontWeight="semibold"
+            >
+              Urgent
+            </Text>
+            )}
+            </Box>
+            
             <Text
               fontSize="14px"
               lineHeight="18px"

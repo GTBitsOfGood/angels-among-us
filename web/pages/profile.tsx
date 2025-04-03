@@ -266,6 +266,13 @@ function Profile() {
                   ></Input>
                 </GridItem>
                 <GridItem>
+                  <Text fontWeight="medium">Role</Text>
+                  <Input
+                    placeholder={userData?.role ? userData.role.charAt(0).toUpperCase() + userData.role.slice(1) : undefined}
+                    disabled={true}
+                  ></Input>
+                </GridItem>
+                <GridItem>
                   <Text fontWeight="medium">
                     Which types of fosters can you help with?
                   </Text>

@@ -96,6 +96,7 @@ const formSchema = z.object({
     })
     .nullable()
     .transform((val, ctx) => nullValidation(val, ctx, "Foster type")),
+  urgent: z.boolean(),
   size: z
     .nativeEnum(Size, { required_error: "Size required." })
     .nullable()
@@ -120,20 +121,20 @@ const formSchema = z.object({
   draft: z.boolean(),
 });
 
-const draftFormSchema = formSchema.extend({
-  description: z.string(),
-  gender: z
-    .nativeEnum(Gender, { required_error: "Gender required." })
-    .nullable(),
-  age: z.nativeEnum(Age, { required_error: "Age required." }).nullable(),
-  type: z
-    .nativeEnum(FosterType, {
-      required_error: "Foster type required.",
-    })
-    .nullable(),
-  size: z.nativeEnum(Size, { required_error: "Size required." }).nullable(),
-  breed: z.array(z.nativeEnum(Breed)),
-});
+// const draftFormSchema = formSchema.extend({
+//   description: z.string(),
+//   gender: z
+//     .nativeEnum(Gender, { required_error: "Gender required." })
+//     .nullable(),
+//   age: z.nativeEnum(Age, { required_error: "Age required." }).nullable(),
+//   type: z
+//     .nativeEnum(FosterType, {
+//       required_error: "Foster type required.",
+//     })
+//     .nullable(),
+//   size: z.nativeEnum(Size, { required_error: "Size required." }).nullable(),
+//   breed: z.array(z.nativeEnum(Breed)),
+// });
 
 export type FormState = z.input<typeof formSchema>;
 
@@ -159,6 +160,7 @@ const PostCreationModal: React.FC<{
     gender: null,
     age: null,
     type: null,
+    urgent: false,
     size: null,
     breed: [],
     otherBreedDescription: "",
@@ -199,7 +201,7 @@ const PostCreationModal: React.FC<{
   const [formState, dispatch] = useReducer(reducer, defaultFormState);
 
   const postCreate = trpc.post.create.useMutation();
-  const postDraftCreate = trpc.post.draft.useMutation();
+  // const postDraftCreate = trpc.post.draft.useMutation();
   const postFinalize = trpc.post.finalize.useMutation();
 
   const createPost = async () => {
@@ -230,10 +232,12 @@ const PostCreationModal: React.FC<{
       })
     );
     try {
+      console.log(formState);
       const creationInfo = await postCreate.mutateAsync({
         ...(formState as z.output<typeof formSchema>),
         attachments: files,
       });
+      console.log(creationInfo);
       const oid = creationInfo._id;
       const uploadInfo = creationInfo.attachments;
 
@@ -257,65 +261,64 @@ const PostCreationModal: React.FC<{
         isClosable: true,
       });
     }
-
   };
 
-  const createDraftPost = async () => {
-    const files: AttachmentInfo[] = await Promise.all(
-      fileArr.map(async (file) => {
-        const key = file.name;
-        if (file.type.includes("image/")) {
-          const url = URL.createObjectURL(file);
-          return new Promise((resolve) => {
-            const image = new Image();
-            image.onload = () => {
-              URL.revokeObjectURL(url);
-              resolve({
-                type: "image",
-                key,
-                length: image.height,
-                width: image.width,
-              });
-            };
-            image.src = url;
-          });
-        } else {
-          return {
-            type: "video",
-            key,
-          };
-        }
-      })
-    );
-    try {
-      const creationInfo = await postDraftCreate.mutateAsync({
-        ...(formState as z.output<typeof draftFormSchema>),
-        draft: true,
-        attachments: files,
-      });
-      const oid = creationInfo._id;
-      const uploadInfo = creationInfo.attachments;
+  // const createDraftPost = async () => {
+  //   const files: AttachmentInfo[] = await Promise.all(
+  //     fileArr.map(async (file) => {
+  //       const key = file.name;
+  //       if (file.type.includes("image/")) {
+  //         const url = URL.createObjectURL(file);
+  //         return new Promise((resolve) => {
+  //           const image = new Image();
+  //           image.onload = () => {
+  //             URL.revokeObjectURL(url);
+  //             resolve({
+  //               type: "image",
+  //               key,
+  //               length: image.height,
+  //               width: image.width,
+  //             });
+  //           };
+  //           image.src = url;
+  //         });
+  //       } else {
+  //         return {
+  //           type: "video",
+  //           key,
+  //         };
+  //       }
+  //     })
+  //   );
+  //   try {
+  //     const creationInfo = await postDraftCreate.mutateAsync({
+  //       ...(formState as z.output<typeof draftFormSchema>),
+  //       draft: true,
+  //       attachments: files,
+  //     });
+  //     const oid = creationInfo._id;
+  //     const uploadInfo = creationInfo.attachments;
 
-      for (let i = 0; i < fileArr.length; i++) {
-        const file = fileArr[i];
-        await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
-      }
+  //     for (let i = 0; i < fileArr.length; i++) {
+  //       const file = fileArr[i];
+  //       await uploadFile(uploadInfo[`${oid}/${file.name}`], file);
+  //     }
 
-      await postFinalize.mutateAsync({
-        _id: new Types.ObjectId(oid),
-      });
-    } catch (e) {
-      toast({
-        title: "An error has occurred.",
-        description:
-          "We encountered an issue while processing your request. Please try again.",
-        status: "error",
-        position: "top",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
+  //     await postFinalize.mutateAsync({
+  //       _id: new Types.ObjectId(oid),
+  //     });
+  //   } catch (e) {
+  //     toast({
+  //       title: "An error has occurred.",
+  //       description:
+  //         "We encountered an issue while processing your request. Please try again.",
+  //       status: "error",
+  //       position: "top",
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   }
+  // };
 
   const uploadFile = async (url: string, file: File) => {
     let count = 0;
@@ -398,7 +401,7 @@ const PostCreationModal: React.FC<{
           </Stack>
         </ModalBody>
         <ModalFooter>
-          <Button
+          {/* <Button
             size="lg"
             isLoading={loading}
             mr={4}
@@ -423,7 +426,7 @@ const PostCreationModal: React.FC<{
             }}
           >
             Save as Draft
-          </Button>
+          </Button> */}
           <Button
             size="lg"
             isLoading={loading}
@@ -432,43 +435,43 @@ const PostCreationModal: React.FC<{
             onClick={
               isContentView
                 ? () => {
-                  setIsContentView(false);
-                }
-                : () => {
-                  //TODO: Wait for success to close.
-                  const validation = formSchema.safeParse(formState);
-                  if (validation.success) {
-                    setLoading(true);
-                    createPost()
-                      .then(() => {
-                        utils.post.invalidate();
-                        setFileArr([]);
-                        setIsContentView(true);
-                        dispatch({
-                          type: "clear",
-                        });
-                        onClose();
-                      })
-                      .finally(() => {
-                        setLoading(false);
-                      });
-                  } else {
-                    toast.closeAll();
-                    toast({
-                      title: "Error",
-                      description: validation.error.issues
-                        .map((issue) => issue.message)
-                        .join("\r\n"),
-                      containerStyle: {
-                        whiteSpace: "pre-line",
-                      },
-                      status: "error",
-                      duration: 5000,
-                      isClosable: true,
-                      position: "top",
-                    });
+                    setIsContentView(false);
                   }
-                }
+                : () => {
+                    //TODO: Wait for success to close.
+                    const validation = formSchema.safeParse(formState);
+                    if (validation.success) {
+                      setLoading(true);
+                      createPost()
+                        .then(() => {
+                          utils.post.invalidate();
+                          setFileArr([]);
+                          setIsContentView(true);
+                          dispatch({
+                            type: "clear",
+                          });
+                          onClose();
+                        })
+                        .finally(() => {
+                          setLoading(false);
+                        });
+                    } else {
+                      toast.closeAll();
+                      toast({
+                        title: "Error",
+                        description: validation.error.issues
+                          .map((issue) => issue.message)
+                          .join("\r\n"),
+                        containerStyle: {
+                          whiteSpace: "pre-line",
+                        },
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        position: "top",
+                      });
+                    }
+                  }
             }
           >
             {isContentView ? "Next" : "Post"}
