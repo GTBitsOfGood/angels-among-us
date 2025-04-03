@@ -17,6 +17,12 @@ import {
   Flex,
   Link,
   useDisclosure,
+  PopoverTrigger,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -25,6 +31,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../../utils/firebase/firebaseClient";
 import ForgotPasswordModal from "./ForgotPasswordModal";
+import { QuestionOutlineIcon } from "@chakra-ui/icons";
 
 interface EmailPasswordAuthModalProps {
   isOpen: boolean;
@@ -68,6 +75,11 @@ const EmailPasswordAuthModal: React.FC<EmailPasswordAuthModalProps> = ({
       if (isSignUp) {
         if (password !== confirmPassword) {
           throw new Error("Passwords do not match");
+        }
+        if (password.length < 6) {
+          throw new Error(
+            "Your password must be at least 6 characters long. Please try again."
+          );
         }
         const { user } = await createUserWithEmailAndPassword(
           auth,
@@ -130,7 +142,32 @@ const EmailPasswordAuthModal: React.FC<EmailPasswordAuthModalProps> = ({
                   />
                 </FormControl>
                 <FormControl id="password" isRequired>
-                  <FormLabel>Password</FormLabel>
+                  <Flex direction="row" alignItems="center" mb="2%">
+                    <FormLabel mr="1%" mb="0">
+                      Password
+                    </FormLabel>
+                    <Popover trigger="hover" placement="right">
+                      <PopoverTrigger>
+                        <Flex borderRadius="100%">
+                          <QuestionOutlineIcon boxSize={4} />
+                        </Flex>
+                      </PopoverTrigger>
+                      <PopoverContent backgroundColor="#D9D9D9">
+                        <PopoverArrow bgColor="#D9D9D9" />
+                        <PopoverCloseButton
+                          position="absolute"
+                          top="50%"
+                          transform="translateY(-50%)"
+                          right="4px"
+                        />
+                        <PopoverBody>
+                          <Text color="black" fontSize="sm">
+                            Password must be at least 6 characters long
+                          </Text>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  </Flex>
                   <Input
                     type="password"
                     value={password}

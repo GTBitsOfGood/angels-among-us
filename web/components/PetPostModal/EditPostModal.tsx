@@ -257,7 +257,7 @@ const EditPostModal: React.FC<{
   }, [attachments]);
 
   const postUpdate = trpc.post.editPost.useMutation();
-  const postDraftUpdate = trpc.post.editDraftPost.useMutation();
+  // const postDraftUpdate = trpc.post.editDraftPost.useMutation();
   const postFinalize = trpc.post.finalizeEdit.useMutation();
 
   const editPost = async (isDraft: boolean) => {
@@ -327,72 +327,72 @@ const EditPostModal: React.FC<{
     }
   };
 
-  const editDraftPost = async (isDraft: boolean) => {
-    const files: AttachmentInfo[] = await Promise.all(
-      fileArr.map(async (file) => {
-        const key = file.name;
-        if (file.type.includes("image/")) {
-          const url = URL.createObjectURL(file);
-          return new Promise((resolve) => {
-            const image = new Image();
-            image.onload = () => {
-              URL.revokeObjectURL(url);
-              resolve({
-                type: "image",
-                key,
-                length: image.height,
-                width: image.width,
-              });
-            };
-            image.src = url;
-          });
-        } else {
-          return {
-            type: "video",
-            key,
-          };
-        }
-      })
-    );
+  // const editDraftPost = async (isDraft: boolean) => {
+  //   const files: AttachmentInfo[] = await Promise.all(
+  //     fileArr.map(async (file) => {
+  //       const key = file.name;
+  //       if (file.type.includes("image/")) {
+  //         const url = URL.createObjectURL(file);
+  //         return new Promise((resolve) => {
+  //           const image = new Image();
+  //           image.onload = () => {
+  //             URL.revokeObjectURL(url);
+  //             resolve({
+  //               type: "image",
+  //               key,
+  //               length: image.height,
+  //               width: image.width,
+  //             });
+  //           };
+  //           image.src = url;
+  //         });
+  //       } else {
+  //         return {
+  //           type: "video",
+  //           key,
+  //         };
+  //       }
+  //     })
+  //   );
 
-    try {
-      const oid = new Types.ObjectId(postData._id);
+  //   try {
+  //     const oid = new Types.ObjectId(postData._id);
 
-      const updateInfo = await postDraftUpdate.mutateAsync({
-        _id: oid,
-        updateFields: {
-          ...(formState as z.output<typeof formSchema>),
-          draft: isDraft,
-          attachments: files,
-        },
-      });
+  //     const updateInfo = await postDraftUpdate.mutateAsync({
+  //       _id: oid,
+  //       updateFields: {
+  //         ...(formState as z.output<typeof formSchema>),
+  //         draft: isDraft,
+  //         attachments: files,
+  //       },
+  //     });
 
-      const newId = new Types.ObjectId(updateInfo._id);
-      const uploadInfo = updateInfo.attachments;
+  //     const newId = new Types.ObjectId(updateInfo._id);
+  //     const uploadInfo = updateInfo.attachments;
 
-      for (let i = 0; i < fileArr.length; i++) {
-        const file = fileArr[i];
-        await uploadFile(uploadInfo[`${updateInfo._id}/${file.name}`], file);
-      }
+  //     for (let i = 0; i < fileArr.length; i++) {
+  //       const file = fileArr[i];
+  //       await uploadFile(uploadInfo[`${updateInfo._id}/${file.name}`], file);
+  //     }
 
-      const newPost = await postFinalize.mutateAsync({
-        oldId: oid,
-        newId,
-      });
+  //     const newPost = await postFinalize.mutateAsync({
+  //       oldId: oid,
+  //       newId,
+  //     });
 
-      router.replace(`/post/${newPost._id.toString()}`);
-    } catch (e) {
-      toast({
-        title: "An error has occurred.",
-        description:
-          "We encountered an issue while processing your request. Please try again.",
-        status: "error",
-        position: "top",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
+  //     router.replace(`/post/${newPost._id.toString()}`);
+  //   } catch (e) {
+  //     toast({
+  //       title: "An error has occurred.",
+  //       description:
+  //         "We encountered an issue while processing your request. Please try again.",
+  //       status: "error",
+  //       position: "top",
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   }
+  // };
 
   const uploadFile = async (url: string, file: File) => {
     let count = 0;
@@ -496,42 +496,42 @@ const EditPostModal: React.FC<{
             onClick={
               isContentView
                 ? () => {
-                  setIsContentView(false);
-                }
-                : () => {
-                  //TODO: Wait for success to close.
-                  const validation = formSchema.safeParse(formState);
-                  if (validation.success) {
-                    setIsLoading(true);
-                    editPost(false)
-                      .then(() => {
-                        onClose();
-                        setFileArr(fileArr);
-                        setIsContentView(true);
-                        dispatch({
-                          type: "clear",
-                        });
-                      })
-                      .finally(() => {
-                        setIsLoading(false);
-                      });
-                  } else {
-                    toast.closeAll();
-                    toast({
-                      title: "Error",
-                      description: validation.error.issues
-                        .map((issue) => issue.message)
-                        .join("\r\n"),
-                      containerStyle: {
-                        whiteSpace: "pre-line",
-                      },
-                      status: "error",
-                      duration: 5000,
-                      isClosable: true,
-                      position: "top",
-                    });
+                    setIsContentView(false);
                   }
-                }
+                : () => {
+                    //TODO: Wait for success to close.
+                    const validation = formSchema.safeParse(formState);
+                    if (validation.success) {
+                      setIsLoading(true);
+                      editPost(false)
+                        .then(() => {
+                          onClose();
+                          setFileArr(fileArr);
+                          setIsContentView(true);
+                          dispatch({
+                            type: "clear",
+                          });
+                        })
+                        .finally(() => {
+                          setIsLoading(false);
+                        });
+                    } else {
+                      toast.closeAll();
+                      toast({
+                        title: "Error",
+                        description: validation.error.issues
+                          .map((issue) => issue.message)
+                          .join("\r\n"),
+                        containerStyle: {
+                          whiteSpace: "pre-line",
+                        },
+                        status: "error",
+                        duration: 5000,
+                        isClosable: true,
+                        position: "top",
+                      });
+                    }
+                  }
             }
           >
             {isContentView ? "Next" : "Post"}
