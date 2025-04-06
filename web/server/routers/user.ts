@@ -25,6 +25,7 @@ import { IUser } from "../../utils/types/user";
 import { addAccount } from "../../db/actions/Account";
 import Account from "../../db/models/Account";
 import { deleteFirebaseUser } from "../../utils/firebase/firebaseAdmin";
+import { sendJunoEmail } from "../juno";
 
 const userPreferencesSchema = z.object({
   preferredEmail: z.string().email().optional(),
@@ -91,8 +92,29 @@ export const userRouter = router({
     }),
   delete: procedure.input(z.string()).mutation(async ({ ctx, input }) => {
     try {
+      const user = await findUserByUid(input);
+      const userEmail = user?.email;
+
       const deletedUser = await deleteUser(input);
       await deleteFirebaseUser(input);
+
+      if (userEmail) {
+        const denialEmailContent = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Your account request has been denied</h2>
+            <p>We regret to inform you that your account request for Angels Among Us has been denied.</p>
+            <p>If you believe this was a mistake or would like to discuss this further, please contact us.</p>
+            <p>Best regards,<br>Angels Among Us Team</p>
+          </div>
+        `;
+        await sendJunoEmail(
+          denialEmailContent,
+          "Your account request has been denied",
+          [{ email: userEmail, name: userEmail.split("@")[0] }],
+          false
+        );
+      }
+
       return { success: true };
     } catch (e) {
       if (e instanceof TRPCError) throw e;
