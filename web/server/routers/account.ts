@@ -158,7 +158,7 @@ export const accountRouter = router({
             <h2>Your account has been approved!</h2>
             <p>Great news! Your account request for Angels Among Us has been approved.</p>
             <p>You can now log in to your account and start using the platform.</p>
-            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/login" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Now</a></p>
+            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Now</a></p>
             <p>Best regards,<br>Angels Among Us Team</p>
           </div>
         `;
