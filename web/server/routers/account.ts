@@ -12,6 +12,7 @@ import { updateAllUsers, updateUserByEmail } from "../../db/actions/User";
 import Account from "../../db/models/Account";
 import { IAccount, Role } from "../../utils/types/account";
 import { router, procedure } from "../trpc";
+import { sendJunoEmail } from "../juno";
 
 const emailInput = {
   email: z.string().email("Invalid email provided"),
@@ -151,6 +152,23 @@ export const accountRouter = router({
         );
 
         session.commitTransaction();
+
+        const approvalEmailContent = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Your account has been approved!</h2>
+            <p>Great news! Your account request for Angels Among Us has been approved.</p>
+            <p>You can now log in to your account and start using the platform.</p>
+            <p><a href="${process.env.NEXT_PUBLIC_APP_URL}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Login Now</a></p>
+            <p>Best regards,<br>Angels Among Us Team</p>
+          </div>
+        `;
+        await sendJunoEmail(
+          approvalEmailContent,
+          "Your account has been approved!",
+          [{ email: input.email, name: input.email.split("@")[0] }],
+          false
+        );
+
         return { success: true };
       } catch (e) {
         session.abortTransaction();
